@@ -52,6 +52,7 @@ void CoolingChannel::clear()
   rfFrequency.clear();
   rfWindowThickness.clear();
   rfWindowMaterial.clear();
+  magneticFieldModel = "block";
 }
 
 void CoolingChannel::PublishMembers()
@@ -83,6 +84,8 @@ void CoolingChannel::PublishMembers()
   publish("rfFrequency",       &CoolingChannel::rfFrequency);
   publish("rfWindowThickness", &CoolingChannel::rfWindowThickness);
   publish("rfWindowMaterial",  &CoolingChannel::rfWindowMaterial);
+
+  publish("magneticFieldModel",&CoolingChannel::magneticFieldModel);
   
   attribute_map_list_double["coilInnerRadius"]     = &coilInnerRadius;
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
@@ -127,7 +130,8 @@ void CoolingChannel::print()const
 	    << "rfPhase "                    << rfPhase                    << std::endl
 	    << "rfFrequency "                << rfFrequency                << std::endl
 	    << "rfWindowThickness "          << rfWindowThickness          << std::endl
-	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl;
+	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
+	    << "magneticFieldModel "         << magneticFieldModel         << std::endl;
 }
 
 template <class T>

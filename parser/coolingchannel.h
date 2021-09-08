@@ -65,6 +65,8 @@ namespace GMAD
     std::list<double> rfFrequency;
     std::list<double> rfWindowThickness;
     std::list<std::string> rfWindowMaterial;
+
+    std::string magneticFieldModel;
     
     /// Constructor
     CoolingChannel();

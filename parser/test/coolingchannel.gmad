@@ -20,4 +20,5 @@ extracool:  coolingchannel, nCoils=4,
 			    rfPhase = {0, 0, halfpi, halfpi},
 			    rfFrequency = {0, 0, 2*MHz, 3*MHz},
 			    rfWindowThickness = {100*um, 100*um, 100*um, 100*um},
-			    rfWindowMaterial = {"G4_B", "G4_B", "G4_B", "G4_Al"};
+			    rfWindowMaterial = {"G4_B", "G4_B", "G4_B", "G4_Al"},
+			    magneticFieldModel = "block";
