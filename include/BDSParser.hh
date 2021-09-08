@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSPARSER_H
 #define BDSPARSER_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -99,6 +100,11 @@ public:
 
   /// Return coolingchannel model list.
   inline const std::vector<GMAD::CoolingChannel>& GetCoolingChannels() const {return coolingchannel_list;}
+  
+  /// Return a cooling channel object by name. Returns nullptr if doesn't exist.
+  /// Uses a map of names to objects that is cached for resuse. If doesn't exist or
+  /// exapnded, it's built up again.
+  const GMAD::CoolingChannel* GetCoolingChannel(const std::string& objectName);
 
   /// Return the vector of field objects.
   inline const std::vector<GMAD::Field>& GetFields() const {return field_list;}
@@ -137,6 +143,11 @@ protected:
 private:
   /// Instance.
   static BDSParser* instance;
+
+  /// Keep a cached map of all cooling object definitions to retrieve them by name.
+  /// Do this as these don't map 1:1 to a simple recipe object and we don't want to
+  /// loop over them all each time we construct one.
+  std::map<std::string, GMAD::CoolingChannel*>* coolingChannelObjectMap;
 };
 
 #endif

@@ -21,7 +21,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParser.hh"
 #include "BDSUtilities.hh"
 
+#include <map>
 #include <string>
+#include <vector>
 
 BDSParser* BDSParser::instance = nullptr;
 
@@ -54,10 +56,12 @@ bool BDSParser::IsInitialised()
 BDSParser::~BDSParser()
 {
   instance = nullptr;
+  delete coolingChannelObjectMap;
 }
 
 BDSParser::BDSParser(const std::string& name):
-  GMAD::Parser(name)
+  GMAD::Parser(name),
+  coolingChannelObjectMap(nullptr)
 {
   std::cout << __METHOD_NAME__ << "Using input file: "<< name << std::endl;
 }
@@ -103,4 +107,25 @@ void BDSParser::CheckOptions()
 
   if (BDS::IsFinite(options.beamlineS) && beam.S0 == 0) 
     {beam.S0 = beam.S0 + options.beamlineS;}
+}
+
+const GMAD::CoolingChannel* BDSParser::GetCoolingChannel(const std::string& objectName)
+{
+  if (!coolingChannelObjectMap)
+    {
+      coolingChannelObjectMap = new std::map<std::string, GMAD::CoolingChannel*>();
+      for (auto& cco: coolingchannel_list)
+	{(*coolingChannelObjectMap)[cco.name] = &cco;}
+    }
+  else
+    {
+      if (coolingChannelObjectMap->size() != coolingchannel_list.size())
+	{
+	  coolingChannelObjectMap->clear();
+	  for (auto& cco: coolingchannel_list)
+	    {(*coolingChannelObjectMap)[cco.name] = &cco;}
+	}
+    }
+  auto search = coolingChannelObjectMap->find(objectName);
+  return (search != coolingChannelObjectMap->end()) ? search->second : nullptr;
 }
