@@ -45,7 +45,7 @@ namespace GMAD
     std::list<double> coilRadialThickness;
     std::list<double> coilLengthZ;
     std::list<double> coilCurrentDensity;
-    std::list<double> coilZOffset;
+    std::list<double> coilOffsetZ;
     bool mirrorCoils;
 
     std::string absorberType;
@@ -58,7 +58,7 @@ namespace GMAD
     double      absorberWedgeApexToBase;
 
     int nRFCavities;
-    std::list<double> rfZOffset;
+    std::list<double> rfOffsetZ;
     std::list<double> rfLength;
     std::list<double> rfVoltage;
     std::list<double> rfPhase;

@@ -34,7 +34,7 @@ void CoolingChannel::clear()
   coilRadialThickness.clear();
   coilLengthZ.clear();
   coilCurrentDensity.clear();
-  coilZOffset.clear();
+  coilOffsetZ.clear();
   mirrorCoils = false;
   absorberType = "";
   absorberCylinderLength = 0;
@@ -45,7 +45,7 @@ void CoolingChannel::clear()
   absorberWedgeDY = 0;
   absorberWedgeApexToBase = 0;
   nRFCavities = 0;
-  rfZOffset.clear();
+  rfOffsetZ.clear();
   rfLength.clear();
   rfVoltage.clear();
   rfPhase.clear();
@@ -63,7 +63,7 @@ void CoolingChannel::PublishMembers()
   publish("coilRadialThickness",  &CoolingChannel::coilRadialThickness);
   publish("coilLengthZ",          &CoolingChannel::coilLengthZ);
   publish("coilCurrentDensity",   &CoolingChannel::coilCurrentDensity);
-  publish("coilZOffset",          &CoolingChannel::coilZOffset);
+  publish("coilOffsetZ",          &CoolingChannel::coilOffsetZ);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
 
   publish("absorberType",               &CoolingChannel::absorberType);
@@ -76,7 +76,7 @@ void CoolingChannel::PublishMembers()
   publish("absorberWedgeApexToBase",    &CoolingChannel::absorberWedgeApexToBase);
 
   publish("nRFCavities",       &CoolingChannel::nRFCavities);
-  publish("rfZOffset",         &CoolingChannel::rfZOffset);
+  publish("rfOffsetZ",         &CoolingChannel::rfOffsetZ);
   publish("rfLength",          &CoolingChannel::rfLength);
   publish("rfVoltage",         &CoolingChannel::rfVoltage);
   publish("rfPhase",           &CoolingChannel::rfPhase);
@@ -88,8 +88,8 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
   attribute_map_list_double["coilLengthZ"]         = &coilLengthZ;
   attribute_map_list_double["coilCurrentDensity"]  = &coilCurrentDensity;
-  attribute_map_list_double["coilZOffset"]         = &coilZOffset;
-  attribute_map_list_double["rfZOffset"]           = &rfZOffset;
+  attribute_map_list_double["coilZOffset"]         = &coilOffsetZ;
+  attribute_map_list_double["rfOffsetZ"]           = &rfOffsetZ;
   attribute_map_list_double["rfLength"]            = &rfLength;
   attribute_map_list_double["rfVoltage"]           = &rfVoltage;
   attribute_map_list_double["rfPhase"]             = &rfPhase;
@@ -110,7 +110,7 @@ void CoolingChannel::print()const
 	    << "coilRadialThickness "        << coilRadialThickness        << std::endl
 	    << "coilLengthZ "                << coilLengthZ                << std::endl
 	    << "coilCurrentDensity "         << coilCurrentDensity         << std::endl
-	    << "coilZOffset "                << coilZOffset                << std::endl
+	    << "coilOffsetZ "                << coilOffsetZ                << std::endl
 	    << "mirrorCoils "                << mirrorCoils                << std::endl
 	    << "absorberType "               << absorberType               << std::endl
 	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
@@ -121,7 +121,7 @@ void CoolingChannel::print()const
     	    << "absorberWedgeDY "            << absorberWedgeDY            << std::endl
 	    << "absorberWedgeApexToBase "    << absorberWedgeApexToBase    << std::endl
 	    << "nRFCavities "                << nRFCavities                << std::endl
-	    << "rfZOffset "                  << rfZOffset                  << std::endl
+	    << "rfOffsetZ "                  << rfOffsetZ                  << std::endl
 	    << "rfLength"                    << rfLength                   << std::endl
 	    << "rfVoltage "                  << rfVoltage                  << std::endl
 	    << "rfPhase "                    << rfPhase                    << std::endl
