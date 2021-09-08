@@ -36,13 +36,15 @@ namespace BDS
     G4double innerRadius;
     G4double radialThickness;
     G4double lengthZ;
-    G4double zOffset;
+    G4double currentDensity;
+    G4double offsetZ;
+    G4Material* material;
   };
 
   struct MuonCoolerCavityInfo
   {
-    G4double zOffset;
-    G4double length;
+    G4double offsetZ;
+    G4double lengthZ;
     G4double windowThickness;
     G4Material* windowMaterial;
     BDSFieldInfo* fieldRecipe;
@@ -52,7 +54,7 @@ namespace BDS
   {
     G4String absorberType;
     G4double cylinderLength;
-    G4double cylinderRAdius;
+    G4double cylinderRadius;
     G4double wedgeOpeningAngle;
     G4double wedgeRotationAngle;
     G4ThreeVector wedgePlacement;
@@ -81,11 +83,16 @@ public:
 protected:
   /// Construct geometry.
   virtual void Build();
-
-private:  
+  
   /// Void function to fulfill BDSAcceleratorComponent requirements.
-  virtual void BuildContainerLogicalVolume(){;};
+  virtual void BuildContainerLogicalVolume();
 
+private:
+  void BuildCoils();
+  void BuildAbsorber();
+  void AttachOuterBField();
+  void BuildCavities();
+  
   G4double containerRadius;
   std::vector<BDS::MuonCoolerCoilInfo> coilInfos;
   std::vector<BDS::MuonCoolerCavityInfo> cavityInfos;
