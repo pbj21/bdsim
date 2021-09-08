@@ -47,7 +47,7 @@ namespace GMAD
     protected:
       /// Make pointer to member from class C and type T with accessible with a name
       template<typename T>
-        void publish(const std::string& name, T C::*mp);
+      void publish(const std::string& name, T C::*mp);
       ///@{
       /// Set member with name of class instance to value.
       /// Throws std::runtime_error if not found

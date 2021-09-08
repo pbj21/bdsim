@@ -289,10 +289,10 @@ namespace GMAD
     
     /// Find object by name in list
     template <class C>
-      bool FindAndExtend(const std::string& objectName);
+    bool FindAndExtend(const std::string& objectName);
     /// Extend object with maps
     template <class C>
-      void ExtendObject(C& object);
+    void ExtendObject(C& object);
 
     /// Map for options of type double for extending objects
     std::map<std::string, double> extendedNumbers;
