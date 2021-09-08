@@ -37,6 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLaserWire.hh"
 #include "BDSLine.hh"
 #include "BDSMagnet.hh"
+#include "BDSMuonCooler.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSScreen.hh"
 #include "BDSShield.hh"
@@ -77,6 +78,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetStrength.hh"
 #include "BDSMagnetType.hh"
 #include "BDSMaterials.hh"
+#include "BDSMuonCoolerBuilder.hh"
 #include "BDSParser.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
@@ -326,6 +328,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateRectangularCollimator(); break;}
     case ElementType::_JCOL:
       {component = CreateJawCollimator(); break;}
+    case ElementType::_MUONCOOLER:
+      {component = CreateMuonCooler(); break;}
     case ElementType::_MUONSPOILER:    
       {component = CreateMuonSpoiler(); break;}
     case ElementType::_SHIELD:
@@ -1399,6 +1403,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateMuonSpoiler()
 		       nullptr,
 		       0,
 		       outerField);
+}
+
+BDSAcceleratorComponent* BDSComponentFactory::CreateMuonCooler()
+{
+  if (!HasSufficientMinimumLength(element))
+    {return nullptr;}
+
+  auto result = BDS::BuildMuonCooler(element);
+  return result;
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateShield()
