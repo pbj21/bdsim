@@ -35,6 +35,7 @@ void CoolingChannel::clear()
   coilLengthZ.clear();
   coilCurrentDensity.clear();
   coilOffsetZ.clear();
+  coilMaterial.clear();
   mirrorCoils = false;
   absorberType = "";
   absorberCylinderLength = 0;
@@ -65,6 +66,7 @@ void CoolingChannel::PublishMembers()
   publish("coilLengthZ",          &CoolingChannel::coilLengthZ);
   publish("coilCurrentDensity",   &CoolingChannel::coilCurrentDensity);
   publish("coilOffsetZ",          &CoolingChannel::coilOffsetZ);
+  publish("coilMaterial",         &CoolingChannel::coilMaterial);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
 
   publish("absorberType",               &CoolingChannel::absorberType);
@@ -91,7 +93,8 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
   attribute_map_list_double["coilLengthZ"]         = &coilLengthZ;
   attribute_map_list_double["coilCurrentDensity"]  = &coilCurrentDensity;
-  attribute_map_list_double["coilZOffset"]         = &coilOffsetZ;
+  attribute_map_list_double["coilOffsetZ"]         = &coilOffsetZ;
+  attribute_map_list_string["coilMaterial"]        = &coilMaterial;
   attribute_map_list_double["rfOffsetZ"]           = &rfOffsetZ;
   attribute_map_list_double["rfLength"]            = &rfLength;
   attribute_map_list_double["rfVoltage"]           = &rfVoltage;
@@ -114,6 +117,7 @@ void CoolingChannel::print()const
 	    << "coilLengthZ "                << coilLengthZ                << std::endl
 	    << "coilCurrentDensity "         << coilCurrentDensity         << std::endl
 	    << "coilOffsetZ "                << coilOffsetZ                << std::endl
+	    << "coilMaterial "               << coilMaterial               << std::endl
 	    << "mirrorCoils "                << mirrorCoils                << std::endl
 	    << "absorberType "               << absorberType               << std::endl
 	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
@@ -153,7 +157,7 @@ void CoolingChannel::set_value(const std::string& property, Array* value)
     {
       auto search2 = attribute_map_list_string.find(property);
       if (search2 != attribute_map_list_string.end())
-	{value->set_vector(*search->second);}
+	{value->set_vector(*search2->second);}
       else
 	{
 	  std::cerr << "Error: parser> unknown coolingchannel option \"" << property << "\", or doesn't expect vector type" << std::endl;
