@@ -97,6 +97,9 @@ public:
   /// Return crystal model list.
   inline const std::vector<GMAD::Crystal>& GetCrystals() const {return crystal_list;}
 
+  /// Return coolingchannel model list.
+  inline const std::vector<GMAD::CoolingChannel>& GetCoolingChannels() const {return coolingchannel_list;}
+
   /// Return the vector of field objects.
   inline const std::vector<GMAD::Field>& GetFields() const {return field_list;}
 

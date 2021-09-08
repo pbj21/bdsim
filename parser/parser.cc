@@ -68,6 +68,7 @@ namespace GMAD {
   template void Parser::Add<Scorer, std::vector<Scorer> >();
   template void Parser::Add<Tunnel, std::vector<Tunnel> >();
   template void Parser::Add<Crystal, std::vector<Crystal> >();
+  template void Parser::Add<CoolingChannel, std::vector<CoolingChannel> >();
   template void Parser::Add<Aperture, std::vector<Aperture> >();
   template void Parser::Add<Material, std::vector<Material> >();
   template void Parser::Add<NewColour, std::vector<NewColour> >();
@@ -686,7 +687,7 @@ void Parser::Overwrite(const std::string& objectName)
   // find object and set values
 
   // possible object types are:
-  // element, atom, colour, crystal, field, material, physicsbiasing, placement,
+  // element, atom, colour, crystal, coolingchannel, field, material, physicsbiasing, placement,
   // query, region, tunnel, cavitymodel, samplerplacement, aperture, scorer, scorermesh, blm
   bool extended = false;
   auto element_it = element_list.find(objectName);
@@ -709,6 +710,7 @@ void Parser::Overwrite(const std::string& objectName)
     if (      (extended = FindAndExtend<Atom>       (objectName)) ) {}
     else if ( (extended = FindAndExtend<NewColour>  (objectName)) ) {}
     else if ( (extended = FindAndExtend<Crystal>    (objectName)) ) {}
+    else if ( (extended = FindAndExtend<CoolingChannel> (objectName)) ) {}
     else if ( (extended = FindAndExtend<Field>      (objectName)) ) {}
     else if ( (extended = FindAndExtend<Material>   (objectName)) ) {}
     else if ( (extended = FindAndExtend<Placement>  (objectName)) ) {}
@@ -816,6 +818,12 @@ namespace GMAD {
 
   template<>
   std::vector<Crystal>& Parser::GetList<Crystal>(){return crystal_list;}
+
+  template<>
+  CoolingChannel& Parser::GetGlobal(){return coolingchannel;}
+
+  template<>
+  std::vector<CoolingChannel>& Parser::GetList<CoolingChannel>(){return coolingchannel_list;}
   
   template<>
   Field& Parser::GetGlobal(){return field;}

@@ -132,6 +132,7 @@ dump { return DUMP; }
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }
 newcolour { return NEWCOLOUR; }
+coolingchannel { return COOLINGCHANNEL; }
 crystal { return CRYSTAL; }
 field { return FIELD; }
 placement { return PLACEMENT; }

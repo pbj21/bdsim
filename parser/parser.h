@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "blmplacement.h"
 #include "cavitymodel.h"
 #include "newcolour.h"
+#include "coolingchannel.h"
 #include "crystal.h"
 #include "element.h"
 #include "elementtype.h"
@@ -212,6 +213,7 @@ namespace GMAD
     std::vector<Atom>   atom_list;
     std::vector<NewColour> colour_list; ///< List of parser defined colours.
     std::vector<Crystal> crystal_list;  ///< List of parser defined crystals.
+    std::vector<CoolingChannel> coolingchannel_list;
     /// List of parser defined fields
     std::vector<Field>  field_list;
     /// List of parser defined materials
@@ -257,6 +259,7 @@ namespace GMAD
     Atom atom;
     NewColour  colour; ///< NewColour instance.
     Crystal crystal;   ///< Crystal instance.
+    CoolingChannel coolingchannel;
     /// Field instance;
     Field field;
     /// Material instance;

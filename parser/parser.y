@@ -95,7 +95,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
 %token SCORER SCORERMESH BLM
-%token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE
+%token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE COOLINGCHANNEL
 %token BEAM OPTION PRINT RANGE STOP USE SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE EQ FOR
 
@@ -298,6 +298,14 @@ decl : VARIABLE ':' component_with_params
              Parser::Instance()->Add<Crystal>();
          }
      }
+      | VARIABLE ':' coolingchannel
+     {
+       if(execute) {
+	 if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : coolingchannel" << std::endl;
+             Parser::Instance()->SetValue<CoolingChannel>("name", *($1));
+             Parser::Instance()->Add<CoolingChannel>();
+         }
+     }
      | VARIABLE ':' field
      {
          if(execute) {
@@ -400,6 +408,7 @@ region      : REGION      ',' region_options
 placement   : PLACEMENT   ',' placement_options
 newcolour   : NEWCOLOUR   ',' colour_options
 crystal     : CRYSTAL     ',' crystal_options
+coolingchannel : COOLINGCHANNEL ',' coolingchannel_options
 field       : FIELD       ',' field_options
 cavitymodel : CAVITYMODEL ',' cavitymodel_options
 query       : QUERY       ',' query_options
@@ -418,6 +427,7 @@ object_noparams : MATERIAL
                 | PLACEMENT
                 | NEWCOLOUR
                 | CRYSTAL
+                | COOLINGCHANNEL
                 | FIELD
                 | CAVITYMODEL
                 | QUERY
@@ -892,6 +902,14 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
               Parser::Instance()->Add<Crystal>();
             }
         }
+        | COOLINGCHANNEL ',' coolingchannel_options // coolingchannel
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> COOLINGCHANNEL" << std::endl;
+              Parser::Instance()->Add<CoolingChannel>();
+            }
+        }
         | FIELD ',' field_options // field
         {
           if(execute)
@@ -1109,6 +1127,16 @@ crystal_options : paramassign '=' aexpr crystal_options_extend
                 { if(execute) Parser::Instance()->SetValue<Crystal>((*$1),$3);}
               | paramassign '=' string crystal_options_extend
                 { if(execute) Parser::Instance()->SetValue<Crystal>((*$1),*$3);}
+
+coolingchannel_options_extend : /* nothing */
+                     | ',' coolingchannel_options
+
+coolingchannel_options : paramassign '=' aexpr coolingchannel_options_extend
+                { if(execute) Parser::Instance()->SetValue<CoolingChannel>((*$1),$3);}
+              | paramassign '=' string coolingchannel_options_extend
+                { if(execute) Parser::Instance()->SetValue<CoolingChannel>((*$1),*$3);}
+              | paramassign '=' vecexpr coolingchannel_options_extend
+	        { if(execute) Parser::Instance()->SetValue<CoolingChannel>(*($1),$3);}
 
 field_options_extend : /* nothing */
                      | ',' field_options
