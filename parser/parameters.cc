@@ -122,6 +122,7 @@ Parameters::Parameters()
   setMap["scintmaterial"]      = false;
   setMap["windowmaterial"]     = false;
   setMap["mountmaterial"]      = false;
+  setMap["coolingDefinition"]  = false;
   setMap["layerThicknesses"]   = false;
   setMap["layerMaterials"]     = false;
   setMap["layerIsSampler"]     = false;

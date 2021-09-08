@@ -218,6 +218,7 @@ void Element::PublishMembers()
   publish("scintmaterial",       &Element::scintmaterial);
   publish("windowmaterial",      &Element::windowmaterial);
   publish("mountmaterial",       &Element::mountmaterial);
+  publish("coolingDefinition",   &Element::coolingDefinition);
   publish("spec",                &Element::spec);
   publish("cavityModel",         &Element::cavityModel);
   publish("bias",                &Element::bias);
@@ -363,6 +364,11 @@ void Element::print(int ident)const{
 		  << "psi= "   << psi   << "rad" << std::endl;
 	break;
       }
+    case ElementType::_MUONCOOLER:
+      {
+	std::cout << "coolingDefinition= " << coolingDefinition << std::endl;
+	break;
+      }
     default:
       {break;}
     }
@@ -493,6 +499,8 @@ void Element::flush()
   windowmaterial     = "vacuum";
   mountmaterial      = "";
   scintmaterial      = "";
+
+  coolingDefinition = "";
 
   layerThicknesses.clear();
   layerMaterials.clear();

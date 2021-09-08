@@ -92,7 +92,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> SOLENOID RCOL JCOL ECOL LINE LASER TRANSFORM3D MUONSPOILER MUSPOILER
 %token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
-%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP MUONCOOLER
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
 %token SCORER SCORERMESH BLM
 %token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE COOLINGCHANNEL
@@ -401,6 +401,7 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | UNDULATOR   {$$=static_cast<int>(ElementType::_UNDULATOR);}
           | USERCOMPONENT {$$=static_cast<int>(ElementType::_USERCOMPONENT);}
           | DUMP        {$$=static_cast<int>(ElementType::_DUMP);}
+          | MUONCOOLER  {$$=static_cast<int>(ElementType::_MUONCOOLER);}
 
 atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options

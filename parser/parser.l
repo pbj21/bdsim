@@ -128,6 +128,7 @@ wirescanner { return WIRESCANNER; }
 undulator { return UNDULATOR; }
 usercomponent { return USERCOMPONENT; }
 dump { return DUMP; }
+muoncooler { return MUONCOOLER; }
 
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }

@@ -148,6 +148,9 @@ namespace GMAD
     std::string mountmaterial;
     ///@}
 
+    /// For muon cooler
+    std::string coolingDefinition;
+
     ///@{ for 3d transform and laser
     double xdir;
     double ydir;
