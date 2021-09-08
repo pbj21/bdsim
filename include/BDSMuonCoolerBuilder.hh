@@ -19,17 +19,45 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSMUONCOOLERBUILDER_H
 #define BDSMUONCOOLERBUILDER_H
 
+#include <vector>
+
 class BDSMuonCooler;
 namespace GMAD
 {
+  class CoolingChannel;
   struct Element;
 }
 
 namespace BDS
 {
-  /// Build a muon cooler beam line element interpeting and checking
+  struct MuonCoolerCoilInfo; // forward declaration
+  struct MuonCoolerCavityInfo;
+  struct MuonCoolerAbsorberInfo;
+  
+  /// Build a muon cooler beam line element interpreting and checking
   /// all the relevant parameters from the parser definition.
   BDSMuonCooler* BuildMuonCooler(const GMAD::Element* element);
+  
+  std::vector<BDS::MuonCoolerCoilInfo> BuildMuonCoolerCoilInfos(const GMAD::CoolingChannel* definition);
+  
+  void CheckMuonCoolerCoilInfosForOverlaps(const G4String& definitionName,
+                                           const G4String& elementName,
+                                           const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos,
+                                           G4double elementChordLength,
+                                           G4double elementRadius);
+  
+  std::vector<BDS::MuonCoolerCavityInfo> BuildMuonCoolerCavityInfos(const GMAD::CoolingChannel* definition);
+  
+  void CheckMuonCoolerCavityInfosForOverlaps(const G4String& definitionName,
+                                             const G4String& elementName,
+                                             const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfos,
+                                             G4double elementChordLength);
+  
+  BDS::MuonCoolerAbsorberInfo BuildMuonCoolerAbsorberInfo(const GMAD::CoolingChannel* definition);
+  void CheckMuonCoolerAbsorberInfoForOverlaps(const G4String& definitionName,
+                                              const G4String& elementName,
+                                              const BDS::MuonCoolerAbsorberInfo&,
+                                              G4double elementChordLength);
 }
 
 #endif
