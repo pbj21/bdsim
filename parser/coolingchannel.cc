@@ -37,14 +37,17 @@ void CoolingChannel::clear()
   coilOffsetZ.clear();
   coilMaterial.clear();
   mirrorCoils = false;
-  absorberType = "";
-  absorberCylinderLength = 0;
-  absorberCylinderRadius = 0;
-  absorberWedgeOpeningAngle = 0;
-  absorberWedgeRotationAngle = 0;
-  absorberWedgeDX = 0;
-  absorberWedgeDY = 0;
-  absorberWedgeApexToBase = 0;
+  nAbsorbers = 0;
+  absorberType.clear();
+  absorberMaterial.clear();
+  absorberOffsetZ.clear();
+  absorberCylinderLength.clear();
+  absorberCylinderRadius.clear();
+  absorberWedgeOpeningAngle.clear();
+  absorberWedgeRotationAngle.clear();
+  absorberWedgeOffsetX.clear();
+  absorberWedgeOffsetY.clear();
+  absorberWedgeApexToBase.clear();
   nRFCavities = 0;
   rfOffsetZ.clear();
   rfLength.clear();
@@ -53,6 +56,10 @@ void CoolingChannel::clear()
   rfFrequency.clear();
   rfWindowThickness.clear();
   rfWindowMaterial.clear();
+  rfWindowRadius.clear();
+  rfCavityMaterial.clear();
+  rfCavityRadius.clear();
+  rfCavityThickness.clear();
   magneticFieldModel = "block";
 }
 
@@ -69,13 +76,16 @@ void CoolingChannel::PublishMembers()
   publish("coilMaterial",         &CoolingChannel::coilMaterial);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
 
+  publish("nAbsorbers",                 &CoolingChannel::nAbsorbers);
   publish("absorberType",               &CoolingChannel::absorberType);
+  publish("absorberMaterial",           &CoolingChannel::absorberMaterial);
+  publish("absorberOffsetZ",            &CoolingChannel::absorberOffsetZ);
   publish("absorberCylinderLength",     &CoolingChannel::absorberCylinderLength);
   publish("absorberCylinderRadius",     &CoolingChannel::absorberCylinderRadius);
   publish("absorberWedgeOpeningAngle",  &CoolingChannel::absorberWedgeOpeningAngle);
   publish("absorberWedgeRotationAngle", &CoolingChannel::absorberWedgeRotationAngle);
-  publish("absorberWedgeDX",            &CoolingChannel::absorberWedgeDX);
-  publish("absorberWedgeDY",            &CoolingChannel::absorberWedgeDY);
+  publish("absorberWedgeOffsetX",       &CoolingChannel::absorberWedgeOffsetX);
+  publish("absorberWedgeOffsetY",       &CoolingChannel::absorberWedgeOffsetY);
   publish("absorberWedgeApexToBase",    &CoolingChannel::absorberWedgeApexToBase);
 
   publish("nRFCavities",       &CoolingChannel::nRFCavities);
@@ -86,6 +96,10 @@ void CoolingChannel::PublishMembers()
   publish("rfFrequency",       &CoolingChannel::rfFrequency);
   publish("rfWindowThickness", &CoolingChannel::rfWindowThickness);
   publish("rfWindowMaterial",  &CoolingChannel::rfWindowMaterial);
+  publish("rfWindowRadius",    &CoolingChannel::rfWindowRadius);
+  publish("rfCavityMaterial",  &CoolingChannel::rfCavityMaterial);
+  publish("rfCavityRadius",    &CoolingChannel::rfCavityRadius);
+  publish("rfCavityThickness", &CoolingChannel::rfCavityThickness);
 
   publish("magneticFieldModel",&CoolingChannel::magneticFieldModel);
   
@@ -95,6 +109,16 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["coilCurrentDensity"]  = &coilCurrentDensity;
   attribute_map_list_double["coilOffsetZ"]         = &coilOffsetZ;
   attribute_map_list_string["coilMaterial"]        = &coilMaterial;
+  attribute_map_list_string["absorberType"]        = &absorberType;
+  attribute_map_list_string["absorberMaterial"]    = &absorberMaterial;
+  attribute_map_list_double["absorberOffsetZ"]     = &absorberOffsetZ;
+  attribute_map_list_double["absorberCylinderLength"]     = &absorberCylinderLength;
+  attribute_map_list_double["absorberCylinderRadius"]     = &absorberCylinderRadius;
+  attribute_map_list_double["absorberWedgeOpeningAngle"]  = &absorberWedgeOpeningAngle;
+  attribute_map_list_double["absorberWedgeRotationAngle"] = &absorberWedgeRotationAngle;
+  attribute_map_list_double["absorberWedgeOffsetX"]       = &absorberWedgeOffsetX;
+  attribute_map_list_double["absorberWedgeOffsetY"]       = &absorberWedgeOffsetY;
+  attribute_map_list_double["absorberWedgeApexToBase"]    = &absorberWedgeApexToBase;
   attribute_map_list_double["rfOffsetZ"]           = &rfOffsetZ;
   attribute_map_list_double["rfLength"]            = &rfLength;
   attribute_map_list_double["rfVoltage"]           = &rfVoltage;
@@ -102,6 +126,10 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["rfFrequency"]         = &rfFrequency;
   attribute_map_list_double["rfWindowThickness"]   = &rfWindowThickness;
   attribute_map_list_string["rfWindowMaterial"]    = &rfWindowMaterial;
+  attribute_map_list_double["rfWindowRadius"]      = &rfWindowRadius;
+  attribute_map_list_string["rfCavityMaterial"]    = &rfCavityMaterial;
+  attribute_map_list_double["rfCavityRadius"]      = &rfCavityRadius;
+  attribute_map_list_double["rfCavityThickness"]   = &rfCavityThickness;
 }
 
 template <class T>
@@ -119,13 +147,16 @@ void CoolingChannel::print()const
 	    << "coilOffsetZ "                << coilOffsetZ                << std::endl
 	    << "coilMaterial "               << coilMaterial               << std::endl
 	    << "mirrorCoils "                << mirrorCoils                << std::endl
+	    << "nAbsorbers "                 << nAbsorbers                 << std::endl
 	    << "absorberType "               << absorberType               << std::endl
+      << "absorberMaterial "           << absorberMaterial           << std::endl
+	    << "absorberOffsetZ "            << absorberOffsetZ            << std::endl
 	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
 	    << "absorberCylinderRadius "     << absorberCylinderRadius     << std::endl
 	    << "absorberWedgeOpeningAngle "  << absorberWedgeOpeningAngle  << std::endl
 	    << "absorberWedgeRotationAngle " << absorberWedgeRotationAngle << std::endl
-	    << "absorberWedgeDX "            << absorberWedgeDX            << std::endl
-    	    << "absorberWedgeDY "            << absorberWedgeDY            << std::endl
+	    << "absorberWedgeOffsetX "       << absorberWedgeOffsetX       << std::endl
+	    << "absorberWedgeOffsetY "       << absorberWedgeOffsetY       << std::endl
 	    << "absorberWedgeApexToBase "    << absorberWedgeApexToBase    << std::endl
 	    << "nRFCavities "                << nRFCavities                << std::endl
 	    << "rfOffsetZ "                  << rfOffsetZ                  << std::endl
@@ -135,6 +166,10 @@ void CoolingChannel::print()const
 	    << "rfFrequency "                << rfFrequency                << std::endl
 	    << "rfWindowThickness "          << rfWindowThickness          << std::endl
 	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
+      << "rfWindowRadius "             << rfWindowRadius             << std::endl
+      << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
+	    << "rfCavityRadius "             << rfCavityRadius             << std::endl
+	    << "rfCavityThickness "          << rfCavityThickness          << std::endl
 	    << "magneticFieldModel "         << magneticFieldModel         << std::endl;
 }
 

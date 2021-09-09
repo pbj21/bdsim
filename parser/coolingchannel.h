@@ -40,32 +40,39 @@ namespace GMAD
   public:
     std::string name; ///< Object name
 
-    int nCoils;
-    std::list<double> coilInnerRadius;
-    std::list<double> coilRadialThickness;
-    std::list<double> coilLengthZ;
-    std::list<double> coilCurrentDensity;
-    std::list<double> coilOffsetZ;
+    int                    nCoils;
+    std::list<double>      coilInnerRadius;
+    std::list<double>      coilRadialThickness;
+    std::list<double>      coilLengthZ;
+    std::list<double>      coilCurrentDensity;
+    std::list<double>      coilOffsetZ;
     std::list<std::string> coilMaterial;
-    bool mirrorCoils;
+    bool                   mirrorCoils;
 
-    std::string absorberType;
-    double      absorberCylinderLength;
-    double      absorberCylinderRadius;
-    double      absorberWedgeOpeningAngle;
-    double      absorberWedgeRotationAngle;
-    double      absorberWedgeDX;
-    double      absorberWedgeDY;
-    double      absorberWedgeApexToBase;
+    int                    nAbsorbers;
+    std::list<std::string> absorberType;
+    std::list<std::string> absorberMaterial;
+    std::list<double>      absorberOffsetZ;
+    std::list<double>      absorberCylinderLength;
+    std::list<double>      absorberCylinderRadius;
+    std::list<double>      absorberWedgeOpeningAngle;
+    std::list<double>      absorberWedgeRotationAngle;
+    std::list<double>      absorberWedgeOffsetX;
+    std::list<double>      absorberWedgeOffsetY;
+    std::list<double>      absorberWedgeApexToBase;
 
-    int nRFCavities;
-    std::list<double> rfOffsetZ;
-    std::list<double> rfLength;
-    std::list<double> rfVoltage;
-    std::list<double> rfPhase;
-    std::list<double> rfFrequency;
-    std::list<double> rfWindowThickness;
+    int                    nRFCavities;
+    std::list<double>      rfOffsetZ;
+    std::list<double>      rfLength;
+    std::list<double>      rfVoltage;
+    std::list<double>      rfPhase;
+    std::list<double>      rfFrequency;
+    std::list<double>      rfWindowThickness;
     std::list<std::string> rfWindowMaterial;
+    std::list<double>      rfWindowRadius;
+    std::list<std::string> rfCavityMaterial;
+    std::list<double>      rfCavityRadius;
+    std::list<double>      rfCavityThickness;
 
     std::string magneticFieldModel;
     
