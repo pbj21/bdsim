@@ -47,6 +47,7 @@ namespace BDS
     G4double lengthZ;
     G4double windowThickness;
     G4Material* windowMaterial;
+    G4Material* cavityMaterial;
     BDSFieldInfo* fieldRecipe;
   };
 
@@ -59,6 +60,7 @@ namespace BDS
     G4double wedgeRotationAngle;
     G4ThreeVector wedgePlacement;
     G4double wedgeApexToBase;
+    G4Material* absorberMaterial;
   };
 }
 
@@ -72,12 +74,12 @@ class BDSMuonCooler: public BDSAcceleratorComponent
 {
 public:
   BDSMuonCooler(const G4String& nameIn,
-		G4double        lengthIn,
-		G4double        containerRadiusIn,
-		const std::vector<BDS::MuonCoolerCoilInfo>&   coilInfosIn,
-		const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfosIn,
-		const BDS::MuonCoolerAbsorberInfo&            absorberInfoIn,
-		BDSFieldInfo*   outerFieldRecipeIn);
+		G4double                                        lengthIn,
+		G4double                                        containerRadiusIn,
+		const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
+		const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
+		const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
+		BDSFieldInfo*                                   outerFieldRecipeIn);
   virtual ~BDSMuonCooler();
 
 protected:
@@ -96,7 +98,7 @@ private:
   G4double containerRadius;
   std::vector<BDS::MuonCoolerCoilInfo> coilInfos;
   std::vector<BDS::MuonCoolerCavityInfo> cavityInfos;
-  BDS::MuonCoolerAbsorberInfo absorberInfo;
+  std::vector<BDS::MuonCoolerAbsorberInfo> absorberInfos;
   BDSFieldInfo* outerFieldRecipe;
 };
 

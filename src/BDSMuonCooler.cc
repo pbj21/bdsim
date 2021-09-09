@@ -46,15 +46,15 @@ class G4Material;
 BDSMuonCooler::BDSMuonCooler(const G4String& nameIn,
 			     G4double        lengthIn,
 			     G4double        containerRadiusIn,
-			     const std::vector<BDS::MuonCoolerCoilInfo>&   coilInfosIn,
-			     const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfosIn,
-			     const BDS::MuonCoolerAbsorberInfo&            absorberInfoIn,
+			     const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
+			     const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
+			     const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
 			     BDSFieldInfo*   outerFieldRecipeIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "muoncooler", nullptr),
   containerRadius(containerRadiusIn),
   coilInfos(coilInfosIn),
   cavityInfos(cavityInfosIn),
-  absorberInfo(absorberInfoIn),
+  absorberInfos(absorberInfosIn),
   outerFieldRecipe(outerFieldRecipeIn)
 {;}
 
