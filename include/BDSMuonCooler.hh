@@ -57,10 +57,11 @@ namespace BDS
     G4double cylinderLength;
     G4double cylinderRadius;
     G4double wedgeOpeningAngle;
+    G4double wedgeHeight;
     G4double wedgeRotationAngle;
-    G4ThreeVector wedgePlacement;
+    G4ThreeVector placement;
     G4double wedgeApexToBase;
-    G4Material* absorberMaterial;
+    G4Material* material;
   };
 }
 
@@ -91,7 +92,7 @@ protected:
 
 private:
   void BuildCoils();
-  void BuildAbsorber();
+  void BuildAbsorbers();
   void AttachOuterBField();
   void BuildCavities();
   

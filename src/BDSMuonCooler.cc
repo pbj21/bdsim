@@ -27,16 +27,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMuonCooler.hh"
 
 #include "G4Colour.hh"
+#include "G4ExtrudedSolid.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4RotationMatrix.hh"
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4Tubs.hh"
 #include "G4Types.hh"
 #include "G4VisAttributes.hh"
+#include "G4TwoVector.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <cmath>
 #include <map>
 #include <set>
 #include <vector>
@@ -65,7 +69,7 @@ void BDSMuonCooler::Build()
 {
   BuildContainerLogicalVolume();
   BuildCoils();
-  BuildAbsorber();
+  BuildAbsorbers();
   AttachOuterBField();
   BuildCavities();
 }
@@ -143,8 +147,73 @@ void BDSMuonCooler::BuildCoils()
     }
 }
 
-void BDSMuonCooler::BuildAbsorber()
-{;}
+void BDSMuonCooler::BuildAbsorbers()
+{
+  // make a unique set of absorber visualisations - only what we need
+  std::set<G4Material*> absorberMaterials;
+  for (const auto& info : absorberInfos)
+    {absorberMaterials.insert(info.material);}
+  std::map<G4Material*, G4VisAttributes*> absorberVises;
+  for (const auto& material : absorberMaterials)
+    {
+      auto absVis = new G4VisAttributes(*BDSColourFromMaterial::Instance()->GetColour(material));
+      absVis->SetVisibility(true);
+      absVis->SetForceLineSegmentsPerCircle(BDSGlobalConstants::Instance()->NSegmentsPerCircle());
+      RegisterVisAttributes(absVis);
+      absorberVises[material] = absVis;
+    }
+  
+  // loop over absorbers and build and place them
+  G4int i = 0;
+  for (const auto& info : absorberInfos)
+    {
+      G4String iStr = std::to_string(i);
+      G4String baseName = name + "_absorber_" + iStr;
+      G4VSolid* absSolid;
+      G4RotationMatrix* rm = nullptr;
+      if (info.absorberType == "wedge")
+	{
+	  G4double halfHeight = 0.5*info.wedgeApexToBase;
+	  G4double dy = std::tan(info.wedgeOpeningAngle * 0.5) * info.wedgeApexToBase;
+	  std::vector<G4TwoVector> polygons = { {-halfHeight,0}, {halfHeight,dy}, {halfHeight,-dy} };
+	  absSolid = new G4ExtrudedSolid(baseName + "_solid",
+					 polygons,
+					 info.wedgeHeight*0.5,
+					 G4TwoVector(), 1.0,
+					 G4TwoVector(), 1.0);
+	  rm = new G4RotationMatrix();
+	  rm->rotate(CLHEP::halfpi, G4ThreeVector(1,0,0));
+	  rm->rotate(info.wedgeRotationAngle, G4ThreeVector(0,1,0));
+	  RegisterRotationMatrix(rm);
+	}
+      else if (info.absorberType == "cylinder")
+	{
+	  absSolid = new G4Tubs(baseName + "_solid",
+				0,
+				info.cylinderRadius,
+				0.5 * info.cylinderLength,
+				0,
+				CLHEP::twopi);
+	}
+      else
+	{throw BDSException(__METHOD_NAME__,"unknown absorber type \"" + info.absorberType + "\"");}
+      RegisterSolid(absSolid);
+      auto absLV = new G4LogicalVolume(absSolid, info.material, baseName + "_lv");
+      RegisterLogicalVolume(absLV);
+      absLV->SetVisAttributes(absorberVises[info.material]);
+      
+      auto coilPV = new G4PVPlacement(rm,
+				      info.placement,
+				      absLV,
+				      baseName + "_pv",
+				      containerLogicalVolume,
+				      false,
+				      0,
+				      checkOverlaps);
+      RegisterPhysicalVolume(coilPV);
+      i++;
+    }
+}
 
 void BDSMuonCooler::AttachOuterBField()
 {;}

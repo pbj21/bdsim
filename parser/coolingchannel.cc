@@ -44,6 +44,7 @@ void CoolingChannel::clear()
   absorberCylinderLength.clear();
   absorberCylinderRadius.clear();
   absorberWedgeOpeningAngle.clear();
+  absorberWedgeHeight.clear();
   absorberWedgeRotationAngle.clear();
   absorberWedgeOffsetX.clear();
   absorberWedgeOffsetY.clear();
@@ -83,6 +84,7 @@ void CoolingChannel::PublishMembers()
   publish("absorberCylinderLength",     &CoolingChannel::absorberCylinderLength);
   publish("absorberCylinderRadius",     &CoolingChannel::absorberCylinderRadius);
   publish("absorberWedgeOpeningAngle",  &CoolingChannel::absorberWedgeOpeningAngle);
+  publish("absorberWedgeHeight",        &CoolingChannel::absorberWedgeHeight);
   publish("absorberWedgeRotationAngle", &CoolingChannel::absorberWedgeRotationAngle);
   publish("absorberWedgeOffsetX",       &CoolingChannel::absorberWedgeOffsetX);
   publish("absorberWedgeOffsetY",       &CoolingChannel::absorberWedgeOffsetY);
@@ -115,6 +117,7 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["absorberCylinderLength"]     = &absorberCylinderLength;
   attribute_map_list_double["absorberCylinderRadius"]     = &absorberCylinderRadius;
   attribute_map_list_double["absorberWedgeOpeningAngle"]  = &absorberWedgeOpeningAngle;
+  attribute_map_list_double["absorberWedgeHeight"]        = &absorberWedgeHeight;
   attribute_map_list_double["absorberWedgeRotationAngle"] = &absorberWedgeRotationAngle;
   attribute_map_list_double["absorberWedgeOffsetX"]       = &absorberWedgeOffsetX;
   attribute_map_list_double["absorberWedgeOffsetY"]       = &absorberWedgeOffsetY;
@@ -154,6 +157,7 @@ void CoolingChannel::print()const
 	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
 	    << "absorberCylinderRadius "     << absorberCylinderRadius     << std::endl
 	    << "absorberWedgeOpeningAngle "  << absorberWedgeOpeningAngle  << std::endl
+      << "absorberWedgeHeight "        << absorberWedgeHeight        << std::endl
 	    << "absorberWedgeRotationAngle " << absorberWedgeRotationAngle << std::endl
 	    << "absorberWedgeOffsetX "       << absorberWedgeOffsetX       << std::endl
 	    << "absorberWedgeOffsetY "       << absorberWedgeOffsetY       << std::endl

@@ -56,6 +56,7 @@ namespace GMAD
     std::list<double>      absorberCylinderLength;
     std::list<double>      absorberCylinderRadius;
     std::list<double>      absorberWedgeOpeningAngle;
+    std::list<double>      absorberWedgeHeight;
     std::list<double>      absorberWedgeRotationAngle;
     std::list<double>      absorberWedgeOffsetX;
     std::list<double>      absorberWedgeOffsetY;

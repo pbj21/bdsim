@@ -236,6 +236,7 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                             "absorberCylinderLength",
                                             "absorberCylinderRadius",
                                             "absorberWedgeOpeningAngle",
+                                            "absorberWedgeHeight",
                                             "absorberWedgeRotationAngle",
                                             "absorberWedgeOffsetX",
                                             "absorberWedgeOffsetY",
@@ -245,6 +246,7 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                                    &(definition->absorberCylinderLength),
                                                    &(definition->absorberCylinderRadius),
                                                    &(definition->absorberWedgeOpeningAngle),
+                                                   &(definition->absorberWedgeHeight),
                                                    &(definition->absorberWedgeRotationAngle),
                                                    &(definition->absorberWedgeOffsetX),
                                                    &(definition->absorberWedgeOffsetY),
@@ -309,8 +311,8 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
   // build absorber infos
   for (G4int i = 0; i < nAbsorbers; i++)
     {
-      G4double dx = absVarSingleValued[i] ? absVarsV[5][0] * CLHEP::m : absVarsV[5][i] * CLHEP::m; // wedgeOffsetX
-      G4double dy = absVarSingleValued[i] ? absVarsV[6][0] * CLHEP::m : absVarsV[6][i] * CLHEP::m; // wedgeOffsetY
+      G4double dx = absVarSingleValued[i] ? absVarsV[6][0] * CLHEP::m : absVarsV[6][i] * CLHEP::m; // wedgeOffsetX
+      G4double dy = absVarSingleValued[i] ? absVarsV[7][0] * CLHEP::m : absVarsV[7][i] * CLHEP::m; // wedgeOffsetY
       G4double dz = absVarSingleValued[i] ? absVarsV[0][0] * CLHEP::m : absVarsV[0][i] * CLHEP::m;
       std::string matName = absorberMaterialSingleValued ? absorberMaterialNameV[0] : absorberMaterialNameV[i];
       G4Material* mat = absorberMaterials[matName];
@@ -318,10 +320,11 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
 					  absVarSingleValued[i] ? absVarsV[1][0] * CLHEP::m   : absVarsV[1][i] * CLHEP::m,   // cylinderLength
 					  absVarSingleValued[i] ? absVarsV[2][0] * CLHEP::m   : absVarsV[2][i] * CLHEP::m,   // cylinderRadius
 					  absVarSingleValued[i] ? absVarsV[3][0] * CLHEP::rad : absVarsV[3][i] * CLHEP::rad, // wedgeOpeningAngle
-					  absVarSingleValued[i] ? absVarsV[4][0] * CLHEP::rad : absVarsV[4][i] * CLHEP::rad, // wedgeRotationAngle
+					  absVarSingleValued[i] ? absVarsV[4][0] * CLHEP::m   : absVarsV[4][i] * CLHEP::m,   // wedgeHeight
+					  absVarSingleValued[i] ? absVarsV[5][0] * CLHEP::rad : absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
 					  G4ThreeVector(dx,dy,dz),
-					  absVarSingleValued[i] ? absVarsV[7][0] * CLHEP::rad : absVarsV[7][i] * CLHEP::rad, // wedgeRotationAngle
-            mat
+					  absVarSingleValued[i] ? absVarsV[8][0] * CLHEP::m   : absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
+					  mat
       };
       result.push_back(info);
     }
