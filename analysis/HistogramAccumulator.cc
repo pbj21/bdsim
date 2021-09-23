@@ -39,6 +39,12 @@ HistogramAccumulator::HistogramAccumulator():
   result(nullptr)
 {;}
 
+HistogramAccumulator::HistogramAccumulator(TH1* baseHistogram,
+					   const std::string& resultHistNameIn,
+					   const std::string& resultHistTitleIn):
+  HistogramAccumulator(baseHistogram, (int)baseHistogram->GetDimension(), resultHistNameIn, resultHistTitleIn)
+{;}
+
 HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
 					   int                nDimensionsIn,
 					   const std::string& resultHistNameIn,
