@@ -1,4 +1,5 @@
-extracool:  coolingchannel, nCoils=4,
+extracool:  coolingchannel, surroundMaterial="G4_Galactic",
+	    		    nCoils=4,
 	    		    coilInnerRadius = {0.1, 0.2, 0.3, 0.4},
 			    coilRadialThickness = {0.08, 0.08, 0.08, 0.12},
 			    coilLengthZ = {0.1, 0.1, 0.1, 0.3},

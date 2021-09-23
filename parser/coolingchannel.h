@@ -40,6 +40,8 @@ namespace GMAD
   public:
     std::string name; ///< Object name
 
+    std::string surroundingMaterial;
+    
     int                    nCoils;
     std::list<double>      coilInnerRadius;
     std::list<double>      coilRadialThickness;

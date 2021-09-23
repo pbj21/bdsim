@@ -50,12 +50,14 @@ class G4Material;
 BDSMuonCooler::BDSMuonCooler(const G4String& nameIn,
 			     G4double        lengthIn,
 			     G4double        containerRadiusIn,
+			     G4Material*     surroundingMaterialIn,
 			     const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
 			     const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
 			     const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
 			     BDSFieldInfo*   outerFieldRecipeIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "muoncooler", nullptr),
   containerRadius(containerRadiusIn),
+  surroundingMaterial(surroundingMaterialIn),
   coilInfos(coilInfosIn),
   cavityInfos(cavityInfosIn),
   absorberInfos(absorberInfosIn),
@@ -82,10 +84,9 @@ void BDSMuonCooler::BuildContainerLogicalVolume()
 			      0.5*chordLength,
 			      0,
 			      CLHEP::twopi);
-
-  G4Material* airMaterial = BDSMaterials::Instance()->GetMaterial("G4_AIR");
+  
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       airMaterial,
+					       surroundingMaterial,
 					       name + "_container_lv");
 
   BDSExtent ext(containerRadius, containerRadius, chordLength * 0.5);

@@ -29,6 +29,7 @@ CoolingChannel::CoolingChannel()
 void CoolingChannel::clear()
 {
   name = "";
+  surroundingMaterial = "vacuum";
   nCoils = 0;
   coilInnerRadius.clear();
   coilRadialThickness.clear();
@@ -68,6 +69,8 @@ void CoolingChannel::PublishMembers()
 {
   publish("name",                 &CoolingChannel::name);
 
+  publish("surroundingMaterial",  &CoolingChannel::surroundingMaterial);
+  
   publish("nCoils",               &CoolingChannel::nCoils);
   publish("coilInnerRadius",      &CoolingChannel::coilInnerRadius);
   publish("coilRadialThickness",  &CoolingChannel::coilRadialThickness);

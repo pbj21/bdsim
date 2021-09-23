@@ -77,6 +77,7 @@ public:
   BDSMuonCooler(const G4String& nameIn,
 		G4double                                        lengthIn,
 		G4double                                        containerRadiusIn,
+		G4Material*                                     surroundingMaterialIn,
 		const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
 		const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
 		const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
@@ -97,6 +98,7 @@ private:
   void BuildCavities();
   
   G4double containerRadius;
+  G4Material* surroundingMaterial;
   std::vector<BDS::MuonCoolerCoilInfo> coilInfos;
   std::vector<BDS::MuonCoolerCavityInfo> cavityInfos;
   std::vector<BDS::MuonCoolerAbsorberInfo> absorberInfos;
