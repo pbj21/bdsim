@@ -106,30 +106,20 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
                                              "coilLengthZ",
                                              "coilCurrentDensity",
                                              "coilOffsetZ"};
-  std::vector<G4bool> coilVarSingleValued;
   std::vector<const std::list<double>*> coilVars = {&(definition->coilInnerRadius),
                                                     &(definition->coilRadialThickness),
                                                     &(definition->coilLengthZ),
                                                     &(definition->coilCurrentDensity),
                                                     &(definition->coilOffsetZ)};
-  // convert to vectors from lists
   std::vector<std::vector<double> > coilVarsV;
-  coilVarsV.reserve(coilVars.size());
-  for (auto l: coilVars)
-    {coilVarsV.emplace_back(std::vector<double>{std::cbegin(*l), std::cend(*l)});}
+  std::vector<G4bool> coilVarSingleValued;
+  BDS::MuonParamsToVector(definition->name,
+			  coilVars,
+			  coilParamNames,
+			  nCoils,
+			  coilVarsV,
+			  coilVarSingleValued);
 
-  // check lengths are either 1 or nCoils
-  for (G4int i = 0; i < (G4int) coilVarsV.size(); i++)
-    {
-      const auto& v = coilVarsV[i];
-      if (((G4int) v.size() != nCoils && v.size() != 1) || v.empty())
-	{
-	  G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-	  msg += "number of " + coilParamNames[i] + " doesn't match nCoils (" + std::to_string(nCoils) + ") or isn't 1";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
-      coilVarSingleValued.push_back(v.size() == 1);
-    }
   
   // build coil infos
   G4double ampsPerCM2 = CLHEP::ampere / CLHEP::cm2;
@@ -244,7 +234,6 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                             "absorberWedgeOffsetX",
                                             "absorberWedgeOffsetY",
                                             "absorberWedgeApexToBase"};
-  std::vector<G4bool> absVarSingleValued;
   std::vector<const std::list<double>*> absVars = {&(definition->absorberOffsetZ),
                                                    &(definition->absorberCylinderLength),
                                                    &(definition->absorberCylinderRadius),
@@ -254,24 +243,15 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                                    &(definition->absorberWedgeOffsetX),
                                                    &(definition->absorberWedgeOffsetY),
                                                    &(definition->absorberWedgeApexToBase)};
-  // convert to vectors from lists
   std::vector<std::vector<double> > absVarsV;
+  std::vector<G4bool> absVarSingleValued;
+  BDS::MuonParamsToVector(definition->name,
+			  absVars,
+			  absParamNames,
+			  nAbsorbers,
+			  absVarsV,
+			  absVarSingleValued);
   absVarsV.reserve(absVars.size());
-  for (auto l: absVars)
-    {absVarsV.emplace_back(std::vector<double>{std::cbegin(*l), std::cend(*l)});}
-  
-  // check lengths are either 1 or nAbsorbers
-  for (G4int i = 0; i < (G4int) absVarsV.size(); i++)
-    {
-      const auto& v = absVarsV[i];
-      if (((G4int) v.size() != nAbsorbers && v.size() != 1) || v.empty())
-	{
-	  G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-	  msg += "number of " + absParamNames[i] + " doesn't match nAbsorbers (" + std::to_string(nAbsorbers) + ") or isn't 1";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
-      absVarSingleValued.push_back(v.size() == 1);
-    }
   
   // check the absorber type list
   const auto typeListSize = definition->absorberType.size();
@@ -460,3 +440,31 @@ std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCavities(const std::vect
    */
   return squares;
 }
+
+void BDS::MuonParamsToVector(const G4String& definitionName,
+			     const std::vector<const std::list<double>*>& params,
+			     const std::vector<std::string>&              paramNames,
+			     G4int                                        nExpectedParams,
+			     std::vector<std::vector<double>>&            paramsV,
+			     std::vector<G4bool>&                         paramsSingleValued)
+{
+  
+  // convert to vectors from lists
+  paramsV.reserve(params.size());
+  for (auto l: params)
+    {paramsV.emplace_back(std::vector<double>{std::cbegin(*l), std::cend(*l)});}
+  
+  // check lengths are either 1 or nCoils
+  for (G4int i = 0; i < (G4int) paramsV.size(); i++)
+    {
+      const auto& v = paramsV[i];
+      if (((G4int) v.size() != nExpectedParams && v.size() != 1) || v.empty())
+	{
+	  G4String msg = "error in coolingchannel definition \"" + definitionName + "\"\n";
+	  msg += "number of " + paramNames[i] + " doesn't match expected number (" + std::to_string(nExpectedParams) + ") or isn't 1";
+	  throw BDSException(__METHOD_NAME__, msg);
+	}
+      paramsSingleValued.push_back(v.size() == 1);
+    }
+}
+

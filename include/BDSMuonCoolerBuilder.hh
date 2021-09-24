@@ -96,6 +96,15 @@ namespace BDS
   std::vector<BDS::SquareCheck> MuonCoolerSquaresFromCoils(const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos);
   /// Utility function to make SquareCheck instances from cavity info.
   std::vector<BDS::SquareCheck> MuonCoolerSquaresFromCavities(const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfos);
+  /// Utility function to convert list of doubles to vector, build vector of whether single valued and throw an expection
+  /// if not nExpectedParams or 1.
+  void MuonParamsToVector(const G4String&                              definitionName,
+			  const std::vector<const std::list<double>*>& params,
+			  const std::vector<std::string>&              paramNames,
+			  G4int                                        nExpectedParams,
+			  std::vector<std::vector<double>>&            paramsV,
+			  std::vector<G4bool>&                         paramsSingleValued);
+
 }
 
 #endif
