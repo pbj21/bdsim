@@ -105,6 +105,14 @@ namespace BDS
 			  std::vector<std::vector<double>>&            paramsV,
 			  std::vector<G4bool>&                         paramsSingleValued);
 
+  /// Utility function that returns (ie modifies by reference) a vector of
+  /// G4Materials from either 1 or multiple materials in a list. Throws an
+  /// exception if the number isn't 1 or nExpectedParams.
+  void MuonParamsToMaterials(const G4String&               definitionName,
+			     const G4String&               variableName,
+			     const std::list<std::string>& materialNames,
+			     G4int                         nExpectedParams,
+			     std::vector<G4Material*>&     materials);
 }
 
 #endif

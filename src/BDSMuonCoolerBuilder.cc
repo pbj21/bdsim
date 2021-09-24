@@ -120,6 +120,13 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
 			  coilVarsV,
 			  coilVarSingleValued);
 
+  // make materials
+  std::vector<G4Material*> coilMaterials;
+  BDS::MuonParamsToMaterials(definition->name,
+			     "coilMaterial",
+			     definition->coilMaterial,
+			     nCoils,
+			     coilMaterials);
   
   // build coil infos
   G4double ampsPerCM2 = CLHEP::ampere / CLHEP::cm2;
@@ -130,34 +137,9 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
 				      coilVarSingleValued[i] ? coilVarsV[2][0] * CLHEP::m : coilVarsV[2][i] * CLHEP::m, // lengthZ
 				      coilVarSingleValued[i] ? coilVarsV[3][0] * ampsPerCM2 : coilVarsV[3][i] * ampsPerCM2, // currentDensity
 				      coilVarSingleValued[i] ? coilVarsV[4][0] * CLHEP::m : coilVarsV[4][i] * CLHEP::m, // offsetZ
-				      nullptr // no material for now
+				      coilMaterials[i] // no material for now
       };
       result.push_back(info);
-    }
-  
-  // make materials
-  if (definition->coilMaterial.size() == 1)
-    {
-      G4String materialName = G4String(definition->coilMaterial.front());
-      G4Material* material = BDSMaterials::Instance()->GetMaterial(materialName);
-      for (auto& info : result)
-	{info.material = material;}
-    }
-  else
-    {
-    auto matSize = definition->coilMaterial.size();
-      if ( ((G4int)matSize != nCoils && matSize != 1) || definition->coilMaterial.empty())
-	{
-	  G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-	  msg += "number of coilMaterial doesn't match nCoils (" + std::to_string(nCoils) + ") or isn't 1";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
-      std::vector<std::string> materialNames = {std::begin(definition->coilMaterial), std::end(definition->coilMaterial)};
-      for (G4int i = 0; i < (G4int)materialNames.size(); i++)
-	{
-	  G4Material* material = BDSMaterials::Instance()->GetMaterial(materialNames[i]);
-	  result[i].material = material;
-	}
     }
   
   if (definition->mirrorCoils)
@@ -278,18 +260,12 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
     }
   
   // check / prepare absorber material
-  const auto materialListSize = definition->absorberMaterial.size();
-  if (definition->absorberMaterial.empty() || (materialListSize != 1 && (G4int)materialListSize != nAbsorbers))
-    {
-      G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-      msg += "number of \"absorberMaterial\" doesn't match nAbsorbers (" + std::to_string(nAbsorbers) + ") or isn't 1";
-      throw BDSException(__METHOD_NAME__, msg);
-    }
-  std::vector<std::string> absorberMaterialNameV = {definition->absorberMaterial.begin(), definition->absorberMaterial.end()};
-  G4bool absorberMaterialSingleValued = materialListSize == 1;
-  std::map<std::string, G4Material*> absorberMaterials;
-  for (const auto& materialName : definition->absorberMaterial) // this may overwrite with duplicates - fine
-    {absorberMaterials[materialName] = BDSMaterials::Instance()->GetMaterial(materialName);}
+  std::vector<G4Material*> absorberMaterials;
+  BDS::MuonParamsToMaterials(definition->name,
+			     "absorberMaterial",
+			     definition->absorberMaterial,
+			     nAbsorbers,
+			     absorberMaterials);
   
   // build absorber infos
   for (G4int i = 0; i < nAbsorbers; i++)
@@ -297,8 +273,6 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
       G4double dx = absVarSingleValued[i] ? absVarsV[6][0] * CLHEP::m : absVarsV[6][i] * CLHEP::m; // wedgeOffsetX
       G4double dy = absVarSingleValued[i] ? absVarsV[7][0] * CLHEP::m : absVarsV[7][i] * CLHEP::m; // wedgeOffsetY
       G4double dz = absVarSingleValued[i] ? absVarsV[0][0] * CLHEP::m : absVarsV[0][i] * CLHEP::m;
-      std::string matName = absorberMaterialSingleValued ? absorberMaterialNameV[0] : absorberMaterialNameV[i];
-      G4Material* mat = absorberMaterials[matName];
       BDS::MuonCoolerAbsorberInfo info = {absorberTypeSingleValued ? absorberTypeV[0] : absorberTypeV[i],                    // absorberType
 					  absVarSingleValued[i] ? absVarsV[1][0] * CLHEP::m   : absVarsV[1][i] * CLHEP::m,   // cylinderLength
 					  absVarSingleValued[i] ? absVarsV[2][0] * CLHEP::m   : absVarsV[2][i] * CLHEP::m,   // cylinderRadius
@@ -307,7 +281,7 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
 					  absVarSingleValued[i] ? absVarsV[5][0] * CLHEP::rad : absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
 					  G4ThreeVector(dx,dy,dz),
 					  absVarSingleValued[i] ? absVarsV[8][0] * CLHEP::m   : absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
-					  mat
+					  absorberMaterials[i]
       };
       result.push_back(info);
     }
@@ -468,3 +442,36 @@ void BDS::MuonParamsToVector(const G4String& definitionName,
     }
 }
 
+void BDS::MuonParamsToMaterials(const G4String&               definitionName,
+				const G4String&               variableName,
+				const std::list<std::string>& materialNames,
+				G4int                         nExpectedParams,
+				std::vector<G4Material*>&     materials)
+{
+  // check size
+  if (materialNames.empty() || (materialNames.size() != 1 && (G4int)materialNames.size() != nExpectedParams))
+    {
+      G4String msg = "error in coolingchannel definition \"" + definitionName + "\"\n";
+      msg += "number of \"" + variableName + "\" doesn't match expected number (" + std::to_string(nExpectedParams) + ") or isn't 1";
+      throw BDSException(__METHOD_NAME__, msg);
+    }
+  
+  materials.reserve(nExpectedParams);  
+
+  if (materialNames.size() == 1)
+    {
+      G4String materialName = G4String(materialNames.front());
+      G4Material* material = BDSMaterials::Instance()->GetMaterial(materialName);
+      for (G4int i = 0; i < nExpectedParams; i++)
+	{materials.push_back(material);}
+    }
+  else
+    {
+      std::vector<std::string> materialNamesV = {std::begin(materialNames), std::end(materialNames)};
+      for (G4int i = 0; i < (G4int)materialNamesV.size(); i++)
+	{
+	  G4Material* material = BDSMaterials::Instance()->GetMaterial(materialNamesV[i]);
+	  materials[i] = material;
+	}
+    }
+}
