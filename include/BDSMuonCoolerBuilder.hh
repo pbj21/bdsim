@@ -102,8 +102,7 @@ namespace BDS
 			  const std::vector<const std::list<double>*>& params,
 			  const std::vector<std::string>&              paramNames,
 			  G4int                                        nExpectedParams,
-			  std::vector<std::vector<double>>&            paramsV,
-			  std::vector<G4bool>&                         paramsSingleValued);
+			  std::vector<std::vector<double>>&            paramsV);
 
   /// Utility function that returns (ie modifies by reference) a vector of
   /// G4Materials from either 1 or multiple materials in a list. Throws an

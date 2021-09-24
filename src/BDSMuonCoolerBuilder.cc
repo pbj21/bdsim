@@ -120,13 +120,11 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
                                                     &(definition->coilCurrentDensity),
                                                     &(definition->coilOffsetZ)};
   std::vector<std::vector<double> > coilVarsV;
-  std::vector<G4bool> coilVarSingleValued;
   BDS::MuonParamsToVector(definition->name,
 			  coilVars,
 			  coilParamNames,
 			  nCoils,
-			  coilVarsV,
-			  coilVarSingleValued);
+			  coilVarsV);
 
   std::vector<G4Material*> coilMaterials;
   BDS::MuonParamsToMaterials(definition->name,
@@ -139,12 +137,12 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
   G4double ampsPerCM2 = CLHEP::ampere / CLHEP::cm2;
   for (G4int i = 0; i < nCoils; i++)
     {
-      BDS::MuonCoolerCoilInfo info = {coilVarSingleValued[i] ? coilVarsV[0][0] * CLHEP::m : coilVarsV[0][i] * CLHEP::m, // innerRadius
-				      coilVarSingleValued[i] ? coilVarsV[1][0] * CLHEP::m : coilVarsV[1][i] * CLHEP::m, // radialThickness
-				      coilVarSingleValued[i] ? coilVarsV[2][0] * CLHEP::m : coilVarsV[2][i] * CLHEP::m, // lengthZ
-				      coilVarSingleValued[i] ? coilVarsV[3][0] * ampsPerCM2 : coilVarsV[3][i] * ampsPerCM2, // currentDensity
-				      coilVarSingleValued[i] ? coilVarsV[4][0] * CLHEP::m : coilVarsV[4][i] * CLHEP::m, // offsetZ
-				      coilMaterials[i] // no material for now
+      BDS::MuonCoolerCoilInfo info = {coilVarsV[0][i] * CLHEP::m,   // innerRadius
+                                      coilVarsV[1][i] * CLHEP::m,   // radialThickness
+                                      coilVarsV[2][i] * CLHEP::m,   // lengthZ
+                                      coilVarsV[3][i] * ampsPerCM2, // currentDensity
+                                      coilVarsV[4][i] * CLHEP::m,   // offsetZ
+                                      coilMaterials[i]              // no material for now
       };
       result.push_back(info);
     }
@@ -232,13 +230,11 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                                    &(definition->absorberWedgeOffsetY),
                                                    &(definition->absorberWedgeApexToBase)};
   std::vector<std::vector<double> > absVarsV;
-  std::vector<G4bool> absVarSingleValued;
   BDS::MuonParamsToVector(definition->name,
 			  absVars,
 			  absParamNames,
 			  nAbsorbers,
-			  absVarsV,
-			  absVarSingleValued);
+			  absVarsV);
   absVarsV.reserve(absVars.size());
   
   // check the absorber type list
@@ -249,11 +245,15 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
       msg += "number of \"absorberType\" doesn't match nAbsorbers (" + std::to_string(nAbsorbers) + ") or isn't 1";
       throw BDSException(__METHOD_NAME__, msg);
     }
-  G4bool absorberTypeSingleValued = typeListSize == 1;
   
   // check contents of absorber type list
   const std::set<std::string> absorberTypes = {"wedge", "cylinder"};
   std::vector<std::string> absorberTypeV = {definition->absorberType.begin(), definition->absorberType.end()};
+  if (absorberTypeV.size() == 1)
+    {
+      for (G4int i = 1; i < nAbsorbers; i++)
+	{absorberTypeV[i] = absorberTypeV[0];}
+    }
   for (G4int i = 0; i < (G4int)absorberTypeV.size(); i++)
     {
       auto search = absorberTypes.find(absorberTypeV[i]);
@@ -275,17 +275,17 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
   // build absorber infos
   for (G4int i = 0; i < nAbsorbers; i++)
     {
-      G4double dx = absVarSingleValued[i] ? absVarsV[6][0] * CLHEP::m : absVarsV[6][i] * CLHEP::m; // wedgeOffsetX
-      G4double dy = absVarSingleValued[i] ? absVarsV[7][0] * CLHEP::m : absVarsV[7][i] * CLHEP::m; // wedgeOffsetY
-      G4double dz = absVarSingleValued[i] ? absVarsV[0][0] * CLHEP::m : absVarsV[0][i] * CLHEP::m;
-      BDS::MuonCoolerAbsorberInfo info = {absorberTypeSingleValued ? absorberTypeV[0] : absorberTypeV[i],                    // absorberType
-					  absVarSingleValued[i] ? absVarsV[1][0] * CLHEP::m   : absVarsV[1][i] * CLHEP::m,   // cylinderLength
-					  absVarSingleValued[i] ? absVarsV[2][0] * CLHEP::m   : absVarsV[2][i] * CLHEP::m,   // cylinderRadius
-					  absVarSingleValued[i] ? absVarsV[3][0] * CLHEP::rad : absVarsV[3][i] * CLHEP::rad, // wedgeOpeningAngle
-					  absVarSingleValued[i] ? absVarsV[4][0] * CLHEP::m   : absVarsV[4][i] * CLHEP::m,   // wedgeHeight
-					  absVarSingleValued[i] ? absVarsV[5][0] * CLHEP::rad : absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
-					  G4ThreeVector(dx,dy,dz),
-					  absVarSingleValued[i] ? absVarsV[8][0] * CLHEP::m   : absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
+      G4double dx = absVarsV[6][i] * CLHEP::m; // wedgeOffsetX
+      G4double dy = absVarsV[7][i] * CLHEP::m; // wedgeOffsetY
+      G4double dz = absVarsV[0][i] * CLHEP::m;
+      BDS::MuonCoolerAbsorberInfo info = {absorberTypeV[i],            // absorberType
+					  absVarsV[1][i] * CLHEP::m,   // cylinderLength
+					  absVarsV[2][i] * CLHEP::m,   // cylinderRadius
+					  absVarsV[3][i] * CLHEP::rad, // wedgeOpeningAngle
+					  absVarsV[4][i] * CLHEP::m,   // wedgeHeight
+					  absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
+					  G4ThreeVector(dx,dy,dz),     // wedgeOffset
+					  absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
 					  absorberMaterials[i]
       };
       result.push_back(info);
@@ -424,8 +424,7 @@ void BDS::MuonParamsToVector(const G4String& definitionName,
 			     const std::vector<const std::list<double>*>& params,
 			     const std::vector<std::string>&              paramNames,
 			     G4int                                        nExpectedParams,
-			     std::vector<std::vector<double>>&            paramsV,
-			     std::vector<G4bool>&                         paramsSingleValued)
+			     std::vector<std::vector<double>>&            paramsV)
 {
   
   // convert to vectors from lists
@@ -436,14 +435,20 @@ void BDS::MuonParamsToVector(const G4String& definitionName,
   // check lengths are either 1 or nCoils
   for (G4int i = 0; i < (G4int) paramsV.size(); i++)
     {
-      const auto& v = paramsV[i];
+      auto& v = paramsV[i];
       if (((G4int) v.size() != nExpectedParams && v.size() != 1) || v.empty())
 	{
 	  G4String msg = "error in coolingchannel definition \"" + definitionName + "\"\n";
 	  msg += "number of " + paramNames[i] + " doesn't match expected number (" + std::to_string(nExpectedParams) + ") or isn't 1";
 	  throw BDSException(__METHOD_NAME__, msg);
 	}
-      paramsSingleValued.push_back(v.size() == 1);
+      // if the vector is single-valued, then we copy the first value up to nExpected
+      // values so all are the same size
+      if (v.size() == 1)
+      {
+        for (G4int j = 1; j < nExpectedParams; j++)
+        {v.push_back(v[0]);}
+      }
     }
 }
 
