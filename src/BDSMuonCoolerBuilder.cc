@@ -51,8 +51,11 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
   
   G4double elementChordLength = element->l * CLHEP::m;
   G4double elementRadius = element->horizontalWidth * 0.5 * CLHEP::m;
-  
+
+  // build recipes for coils
   std::vector<BDS::MuonCoolerCoilInfo> coilInfos = BDS::BuildMuonCoolerCoilInfos(definition);
+
+  // check potential overlaps
   // boundary squares in 2D - keep them to reuse for various checks
   std::vector<BDS::SquareCheck> coilSquares = BDS::MuonCoolerSquaresFromCoils(coilInfos);
   BDS::CheckMuonCoolerCoilInfosForOverlaps(definition->name,
@@ -60,8 +63,10 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
                                            coilSquares,
                                            elementChordLength,
                                            elementRadius);
-  
+
+  // build recipes for rf cavities
   std::vector<BDS::MuonCoolerCavityInfo> cavityInfos = BDS::BuildMuonCoolerCavityInfos(definition);
+  // check potential overlaps
   // boundary squares in 2D - keep them to reuse for various checks
   std::vector<BDS::SquareCheck> cavitySquares = BDS::MuonCoolerSquaresFromCavities(cavityInfos);
   BDS::CheckMuonCoolerCavityInfosForOverlaps(definition->name,
@@ -70,8 +75,10 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
                                              coilSquares,
                                              elementChordLength,
                                              elementRadius);
-  
+
+  // build recipes for absorbers
   std::vector<BDS::MuonCoolerAbsorberInfo> absorberInfos = BDS::BuildMuonCoolerAbsorberInfo(definition);
+  // check potential overlaps
   BDS::CheckMuonCoolerAbsorberInfoForOverlaps(definition->name,
                                               element->name,
                                               absorberInfos,
@@ -80,14 +87,15 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
                                               elementChordLength,
                                               elementRadius);
 
+  // build combined field recipe
   BDSFieldInfo* outerFieldRecipe = nullptr;
 
+  // build final object for beam line
   G4Material* surroundingMaterial = BDSMaterials::Instance()->GetMaterial(definition->surroundingMaterial);
-
   auto result = new BDSMuonCooler(G4String(element->name),
                                   elementChordLength,
 				  elementRadius,
-          surroundingMaterial,
+				  surroundingMaterial,
 				  coilInfos,
 				  cavityInfos,
 				  absorberInfos,
@@ -120,7 +128,6 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
 			  coilVarsV,
 			  coilVarSingleValued);
 
-  // make materials
   std::vector<G4Material*> coilMaterials;
   BDS::MuonParamsToMaterials(definition->name,
 			     "coilMaterial",
@@ -205,7 +212,6 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
 {
   std::vector<BDS::MuonCoolerAbsorberInfo> result;
   
-  // Check we have matching coil parameter sizes or tolerate 1 variable for all
   G4int nAbsorbers = definition->nAbsorbers;
   std::vector<std::string> absParamNames = {"absorberOffsetZ",
                                             "absorberCylinderLength",
@@ -259,7 +265,6 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
 	}
     }
   
-  // check / prepare absorber material
   std::vector<G4Material*> absorberMaterials;
   BDS::MuonParamsToMaterials(definition->name,
 			     "absorberMaterial",
