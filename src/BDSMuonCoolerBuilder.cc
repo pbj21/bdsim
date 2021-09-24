@@ -82,9 +82,12 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
 
   BDSFieldInfo* outerFieldRecipe = nullptr;
 
+  G4Material* surroundingMaterial = BDSMaterials::Instance()->GetMaterial(definition->surroundingMaterial);
+
   auto result = new BDSMuonCooler(G4String(element->name),
                                   elementChordLength,
 				  elementRadius,
+          surroundingMaterial,
 				  coilInfos,
 				  cavityInfos,
 				  absorberInfos,
