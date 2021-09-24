@@ -43,11 +43,14 @@ namespace BDS
 
   struct MuonCoolerCavityInfo
   {
-    G4double offsetZ;
-    G4double lengthZ;
-    G4double windowThickness;
+    G4double    offsetZ;
+    G4double    lengthZ;
+    G4double    windowThickness;
     G4Material* windowMaterial;
+    G4double    windowRadius;
     G4Material* cavityMaterial;
+    G4double    cavityRadius;
+    G4double    cavityThickness;
     BDSFieldInfo* fieldRecipe;
   };
 

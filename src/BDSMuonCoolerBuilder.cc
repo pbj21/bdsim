@@ -307,78 +307,59 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
 {
   std::vector<BDS::MuonCoolerCavityInfo> result;
   
-  /*
-  // Check we have matching coil parameter sizes or tolerate 1 variable for all
   G4int nRFCavities = definition->nRFCavities;
-  std::vector<std::string> rfParamNames = {"coilInnerRadius",
-                                             "coilRadialThickness",
-                                             "coilLengthZ",
-                                             "coilCurrentDensity",
-                                             "coilOffsetZ"};
-  std::vector<G4bool> rfVarSingleValued;
-  std::vector<const std::list<double>*> rfVars = {&(definition->coilInnerRadius),
-                                                    &(definition->coilRadialThickness),
-                                                    &(definition->coilLengthZ),
-                                                    &(definition->coilCurrentDensity),
-                                                    &(definition->coilOffsetZ)};
-  // convert to vectors from lists
-  std::vector<std::vector<double> > coilVarsV;
-  coilVarsV.reserve(coilVars.size());
-  for (auto l: coilVars)
-  {coilVarsV.emplace_back(std::vector<double>{std::cbegin(*l), std::cend(*l)});}
-  
-  // check lengths are either 1 or nCoils
-  for (G4int i = 0; i < (G4int) coilVarsV.size(); i++)
-  {
-    const auto& v = coilVarsV[i];
-    if (((G4int) v.size() != nRFCavities && v.size() != 1) || v.empty())
-    {
-      G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-      msg += "number of " + coilParamNames[i] + " doesn't match nCoils (" + std::to_string(nRFCavities) + ") or isn't 1";
-      throw BDSException(__METHOD_NAME__, msg);
-    }
-    coilVarSingleValued.push_back(v.size() == 1);
-  }
-  
-  // build coil infos
-  G4double ampsPerCM2 = CLHEP::ampere / CLHEP::cm2;
+  std::vector<std::string> rfParamNames = {"rfOffsetZ",
+                                           "rfLength",
+					   "rfVoltage",
+					   "rfPhase",
+					   "rfFrequency",
+					   "rfWindowThickness",
+					   "rfWindowRadius",
+					   "rfCavityRadius",
+					   "rfCavityThickness"};
+  std::vector<const std::list<double>*> rfVars = {&(definition->rfOffsetZ),
+                                                  &(definition->rfLength),
+						  &(definition->rfVoltage),
+						  &(definition->rfPhase),
+						  &(definition->rfFrequency),
+						  &(definition->rfWindowThickness),
+						  &(definition->rfWindowRadius),
+						  &(definition->rfCavityRadius),
+						  &(definition->rfCavityThickness)};
+  std::vector<std::vector<double> > rfVarsV;
+  BDS::MuonParamsToVector(definition->name,
+			  rfVars,
+			  rfParamNames,
+			  nRFCavities,
+			  rfVarsV);
+  std::vector<G4Material*> windowMaterials;
+  BDS::MuonParamsToMaterials(definition->name,
+                             "rfWindowMaterial",
+                             definition->rfWindowMaterial,
+                             nRFCavities,
+                             windowMaterials);
+  std::vector<G4Material*> cavityMaterials;
+  BDS::MuonParamsToMaterials(definition->name,
+                             "rfCavityMaterial",
+                             definition->rfCavityMaterial,
+                             nRFCavities,
+                             cavityMaterials);
+
+  // build cavity infos
   for (G4int i = 0; i < nRFCavities; i++)
-  {
-    BDS::MuonCoolerCoilInfo info = {coilVarSingleValued[i] ? coilVarsV[0][0] * CLHEP::m : coilVarsV[0][i] * CLHEP::m, // innerRadius
-                                    coilVarSingleValued[i] ? coilVarsV[1][0] * CLHEP::m : coilVarsV[1][i] * CLHEP::m, // radialThickness
-                                    coilVarSingleValued[i] ? coilVarsV[2][0] * CLHEP::m : coilVarsV[2][i] * CLHEP::m, // lengthZ
-                                    coilVarSingleValued[i] ? coilVarsV[3][0] * ampsPerCM2 : coilVarsV[3][i] * ampsPerCM2, // currentDensity
-                                    coilVarSingleValued[i] ? coilVarsV[4][0] * CLHEP::m : coilVarsV[4][i] * CLHEP::m, // offsetZ
-                                    nullptr // no material for now
-    };
-    result.push_back(info);
-  }
+    {
+      BDS::MuonCoolerCavityInfo info = {rfVarsV[0][i] * CLHEP::m, // offsetZ
+	                                rfVarsV[1][i] * CLHEP::m, // lengthZ
+					rfVarsV[5][i] * CLHEP::m, // windowThickness
+                                        windowMaterials[i],       // window material
+					rfVarsV[6][i] * CLHEP::m, // windowRadius
+					cavityMaterials[i],       // cavity material
+					rfVarsV[7][i] * CLHEP::m, // cavityRadius
+					rfVarsV[8][i] * CLHEP::m, // cavityThickness
+					nullptr};                 // no field recipe for now
+      result.push_back(info);
+    }
   
-  // make materials
-  if (definition->coilMaterial.size() == 1)
-  {
-    G4String materialName = G4String(definition->coilMaterial.front());
-    G4Material* material = BDSMaterials::Instance()->GetMaterial(materialName);
-    for (auto& info : result)
-    {info.material = material;}
-  }
-  else
-  {
-    auto matSize = definition->coilMaterial.size();
-    if ( ((G4int)matSize != nRFCavities && matSize != 1) || definition->coilMaterial.empty())
-    {
-      G4String msg = "error in coolingchannel definition \"" + definition->name + "\"\n";
-      msg += "number of coilMaterial doesn't match nCoils (" + std::to_string(nRFCavities) + ") or isn't 1";
-      throw BDSException(__METHOD_NAME__, msg);
-    }
-    std::vector<std::string> materialNames = {std::begin(definition->coilMaterial), std::end(definition->coilMaterial)};
-    for (G4int i = 0; i < (G4int)materialNames.size(); i++)
-    {
-      G4Material* material = BDSMaterials::Instance()->GetMaterial(materialNames[i]);
-      result[i].material = material;
-    }
-  }
-   */
   return result;
 }
 
