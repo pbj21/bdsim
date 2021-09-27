@@ -67,7 +67,7 @@ BDSCavityFactoryBase* BDSCavityFactory::GetAppropriateFactory(const BDSCavityTyp
   return result;
 }
 
-BDSCavity* BDSCavityFactory::CreateCavity(const G4String&       name,
+BDSCavity* BDSCavityFactory::CreateCavity(const G4String&      name,
 					  G4double             totalChordLength,
 					  const BDSCavityInfo* info,
 					  G4Material*          vacuumMaterial)

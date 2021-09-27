@@ -36,7 +36,7 @@ class G4Material;
 class BDSCavityElement: public BDSAcceleratorComponent
 {
 public:
-  BDSCavityElement(G4String             name,
+  BDSCavityElement(const G4String&      name,
 		   G4double             chordLength,
 		   G4Material*          vacuumMaterialIn,
 		   const BDSFieldInfo*  vacuumField,

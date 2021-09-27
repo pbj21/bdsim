@@ -37,7 +37,7 @@ BDSCavityFactoryRectangular::BDSCavityFactoryRectangular()
 BDSCavityFactoryRectangular::~BDSCavityFactoryRectangular()
 {;}
 
-G4double BDSCavityFactoryRectangular::CreateSolids(G4String             name,
+G4double BDSCavityFactoryRectangular::CreateSolids(const G4String&      name,
 						   G4double             totalChordLength,
 						   const BDSCavityInfo* info)
 {

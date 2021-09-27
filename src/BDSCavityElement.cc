@@ -31,7 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LogicalVolume.hh"
 
 
-BDSCavityElement::BDSCavityElement(G4String             nameIn,
+BDSCavityElement::BDSCavityElement(const G4String&      nameIn,
 				   G4double             chordLengthIn,
 				   G4Material*          vacuumMaterialIn,
 				   const BDSFieldInfo*  vacuumFieldInfoIn,

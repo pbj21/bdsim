@@ -53,7 +53,7 @@ public:
 
   /// Method that calls protected virtual methods in order. Sets general
   /// recipe of construction - in order below.
-  BDSCavity* CreateCavity(G4String             name,
+  BDSCavity* CreateCavity(const G4String&      name,
 			  G4double             totalChordLength,
 			  const BDSCavityInfo* info,
 			  G4Material*          vacuumMaterial);
@@ -68,12 +68,12 @@ protected:
   void CleanUpBase();
 
   /// Create vacuumSolid and cavitySolid. Must return the container radius.
-  virtual G4double CreateSolids(G4String             name,
+  virtual G4double CreateSolids(const G4String&      name,
 				G4double             totalChordLength,
 				const BDSCavityInfo* info) = 0;
 
   /// Create vacuumLV, cavityLV and containerLV.
-  virtual void CreateLogicalVolumes(G4String             name,
+  virtual void CreateLogicalVolumes(const G4String&      name,
 				    const BDSCavityInfo* info,
 				    G4Material*          vacuumMaterial);
 
@@ -82,10 +82,10 @@ protected:
   virtual void SetUserLimits(G4double length);
 
   /// Set vis attributes for cavityLV, vacuumLV and containerLV.
-  virtual void SetVisAttributes(G4String colourName = "rfcavity");
+  virtual void SetVisAttributes(const G4String& colourName = "rfcavity");
 
   /// Place the vacuum and cavity centrally in the container logical volume.
-  virtual void PlaceComponents(G4String name);
+  virtual void PlaceComponents(const G4String& name);
 
   /// Construct output object and register all temporary objects from vectors.
   virtual BDSCavity* BuildCavityAndRegisterObjects(const BDSExtent& extent);

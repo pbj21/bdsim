@@ -51,7 +51,7 @@ BDSCavityFactoryBase::BDSCavityFactoryBase()
   CleanUpBase(); // initialise variables
 }
 
-BDSCavity* BDSCavityFactoryBase::CreateCavity(G4String             name,
+BDSCavity* BDSCavityFactoryBase::CreateCavity(const G4String&      name,
 					      G4double             totalChordLength,
 					      const BDSCavityInfo* info,
 					      G4Material*          vacuumMaterial)
@@ -86,7 +86,7 @@ void BDSCavityFactoryBase::CleanUpBase()
   containerLV    = nullptr;
 }
 
-void BDSCavityFactoryBase::CreateLogicalVolumes(G4String             name,
+void BDSCavityFactoryBase::CreateLogicalVolumes(const G4String&      name,
 						const BDSCavityInfo* info,
 						G4Material*          vacuumMaterial)
 {
@@ -121,7 +121,7 @@ void BDSCavityFactoryBase::SetUserLimits(G4double length)
     {lv->SetUserLimits(ul);}
 }
 
-void BDSCavityFactoryBase::SetVisAttributes(G4String colourName)
+void BDSCavityFactoryBase::SetVisAttributes(const G4String& colourName)
 {
   // visualisation attributes
   auto col = BDSColours::Instance()->GetColour(colourName);
@@ -137,7 +137,7 @@ void BDSCavityFactoryBase::SetVisAttributes(G4String colourName)
   containerLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
 }
 
-void BDSCavityFactoryBase::PlaceComponents(G4String name)
+void BDSCavityFactoryBase::PlaceComponents(const G4String& name)
 {
   G4PVPlacement* vacuumPV = new G4PVPlacement(nullptr,               // rotation
 					      G4ThreeVector(),       // position

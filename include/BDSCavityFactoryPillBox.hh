@@ -38,7 +38,7 @@ public:
   BDSCavityFactoryPillBox();
   virtual ~BDSCavityFactoryPillBox();
 
-  virtual G4double CreateSolids(G4String             name,
+  virtual G4double CreateSolids(const G4String&      name,
 				G4double             totalChordLength,
 				const BDSCavityInfo* info);
 };

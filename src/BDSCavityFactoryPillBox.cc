@@ -37,7 +37,7 @@ BDSCavityFactoryPillBox::BDSCavityFactoryPillBox()
 BDSCavityFactoryPillBox::~BDSCavityFactoryPillBox()
 {;}
 
-G4double BDSCavityFactoryPillBox::CreateSolids(G4String             name,
+G4double BDSCavityFactoryPillBox::CreateSolids(const G4String&      name,
 					       G4double             totalChordLength,
 					       const BDSCavityInfo* info)
 {
