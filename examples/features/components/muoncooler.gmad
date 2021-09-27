@@ -28,6 +28,7 @@ cooldef1:  coolingchannel, nCoils=4,
 			   rfWindowMaterial = {"G4_B", "G4_B", "G4_B", "G4_Al"},
 			   rfWindowRadius = {10*cm},
 			   rfCavityMaterial = {"G4_Cu"},
+			   rfCavityVacuumMaterial = {"vacuum"},
 			   rfCavityRadius = {35*cm},
 			   rfCavityThickness = {5*mm};
 

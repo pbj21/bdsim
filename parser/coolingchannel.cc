@@ -60,6 +60,7 @@ void CoolingChannel::clear()
   rfWindowMaterial.clear();
   rfWindowRadius.clear();
   rfCavityMaterial.clear();
+  rfCavityVacuumMaterial.clear();
   rfCavityRadius.clear();
   rfCavityThickness.clear();
   magneticFieldModel = "block";
@@ -103,6 +104,7 @@ void CoolingChannel::PublishMembers()
   publish("rfWindowMaterial",  &CoolingChannel::rfWindowMaterial);
   publish("rfWindowRadius",    &CoolingChannel::rfWindowRadius);
   publish("rfCavityMaterial",  &CoolingChannel::rfCavityMaterial);
+  publish("rfCavityVacuumMaterial", &CoolingChannel::rfCavityVacuumMaterial);
   publish("rfCavityRadius",    &CoolingChannel::rfCavityRadius);
   publish("rfCavityThickness", &CoolingChannel::rfCavityThickness);
 
@@ -132,6 +134,7 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["rfFrequency"]         = &rfFrequency;
   attribute_map_list_double["rfWindowThickness"]   = &rfWindowThickness;
   attribute_map_list_string["rfWindowMaterial"]    = &rfWindowMaterial;
+  attribute_map_list_string["rfCavityVacuumMaterial"] = &rfCavityVacuumMaterial;
   attribute_map_list_double["rfWindowRadius"]      = &rfWindowRadius;
   attribute_map_list_string["rfCavityMaterial"]    = &rfCavityMaterial;
   attribute_map_list_double["rfCavityRadius"]      = &rfCavityRadius;
@@ -173,6 +176,7 @@ void CoolingChannel::print()const
 	    << "rfFrequency "                << rfFrequency                << std::endl
 	    << "rfWindowThickness "          << rfWindowThickness          << std::endl
 	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
+      << "rfCavityVacuumMaterial "     << rfCavityVacuumMaterial     << std::endl
       << "rfWindowRadius "             << rfWindowRadius             << std::endl
       << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
 	    << "rfCavityRadius "             << rfCavityRadius             << std::endl

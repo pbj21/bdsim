@@ -74,6 +74,7 @@ namespace GMAD
     std::list<std::string> rfWindowMaterial;
     std::list<double>      rfWindowRadius;
     std::list<std::string> rfCavityMaterial;
+    std::list<std::string> rfCavityVacuumMaterial;
     std::list<double>      rfCavityRadius;
     std::list<double>      rfCavityThickness;
 
