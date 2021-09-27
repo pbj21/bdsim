@@ -344,12 +344,19 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
                              definition->rfCavityMaterial,
                              nRFCavities,
                              cavityMaterials);
+  std::vector<G4Material*> cavityVacuumMaterials;
+  BDS::MuonParamsToMaterials(definition->name,
+                             "rfCavityVaccumMaterial",
+                             definition->rfCavityVacuumMaterial,
+                             nRFCavities,
+                             cavityVacuumMaterials);
 
   // build cavity infos
   for (G4int i = 0; i < nRFCavities; i++)
     {
       BDS::MuonCoolerCavityInfo info = {rfVarsV[0][i] * CLHEP::m, // offsetZ
 	                                rfVarsV[1][i] * CLHEP::m, // lengthZ
+                                        cavityVacuumMaterials[i], // cavity vacuum material
 					rfVarsV[5][i] * CLHEP::m, // windowThickness
                                         windowMaterials[i],       // window material
 					rfVarsV[6][i] * CLHEP::m, // windowRadius

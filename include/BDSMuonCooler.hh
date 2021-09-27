@@ -45,6 +45,7 @@ namespace BDS
   {
     G4double    offsetZ;
     G4double    lengthZ;
+    G4Material* vacuumMaterial;
     G4double    windowThickness;
     G4Material* windowMaterial;
     G4double    windowRadius;

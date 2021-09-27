@@ -17,6 +17,10 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAcceleratorComponent.hh"
+#include "BDSCavity.hh"
+#include "BDSCavityFactory.hh"
+#include "BDSCavityInfo.hh"
+#include "BDSCavityType.hh"
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
 #include "BDSDebug.hh"
@@ -43,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 class G4Material;
@@ -220,4 +225,35 @@ void BDSMuonCooler::AttachOuterBField()
 {;}
 
 void BDSMuonCooler::BuildCavities()
-{;}
+{
+  std::vector<BDSCavityInfo> recipes;
+  for (const auto& info : cavityInfos)
+  {
+    auto r = BDSCavityInfo(BDSCavityType::pillbox,
+                           info.cavityMaterial,
+                           info.windowRadius,
+                           info.cavityThickness,
+                           info.cavityRadius,
+                           info.lengthZ * 0.5);
+    recipes.push_back(r);
+  }
+
+  std::vector<BDSCavity*> cavities;
+  for (G4int i = 0; i < (G4int)recipes.size(); i++)
+  {
+    G4String cavityName = name + "_cavity_" + std::to_string(i);
+    auto cavity = BDSCavityFactory::Instance()->CreateCavity(cavityName,
+                                                             cavityInfos[i].lengthZ,
+                                                             &recipes[i],
+                                                             cavityInfos[i].vacuumMaterial);
+
+    new G4PVPlacement(nullptr,
+                      G4ThreeVector(0,0,cavityInfos[i].offsetZ),
+                      cavity->GetContainerLogicalVolume(),
+                      cavityName + "_pv",
+                      containerLogicalVolume,
+                      false,
+                      0,
+                      checkOverlaps);
+  }
+}
