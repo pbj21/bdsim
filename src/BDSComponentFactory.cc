@@ -529,22 +529,22 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
   G4bool buildIncomingFringe = buildCavityFringes;
   // only check if trying to build fringes to begin with as this check should only ever turn off fringe building
   if (prevElement && buildIncomingFringe) // could be nullptr
-	{// only build fringe if previous element isn't another cavity
-		buildIncomingFringe = prevElement->type != ElementType::_RF;
-	}
-
+    {// only build fringe if previous element isn't another cavity
+      buildIncomingFringe = prevElement->type != ElementType::_RF;
+    }
+  
   G4bool buildOutgoingFringe = buildCavityFringes;
   // only check if trying to build fringes to begin with as this check should only ever turn off fringe building
-	if (nextElement && buildOutgoingFringe) // could be nullptr
-	{// only build fringe if next element isn't another cavity
-		buildOutgoingFringe = nextElement->type != ElementType::_RF;
-	}
-
+  if (nextElement && buildOutgoingFringe) // could be nullptr
+    {// only build fringe if next element isn't another cavity
+      buildOutgoingFringe = nextElement->type != ElementType::_RF;
+    }
+  
   if (buildIncomingFringe)
-	{cavityLength -= thinElementLength;}
+    {cavityLength -= thinElementLength;}
   if (buildOutgoingFringe)
-	{cavityLength -= thinElementLength;}
-
+    {cavityLength -= thinElementLength;}
+  
   // supply currentArcLength (not element length) to strength as its needed
   // for time offset from s=0 position
   BDSMagnetStrength* stIn  = nullptr;
@@ -585,18 +585,18 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
   G4double cavityApertureRadius = cavityInfo->irisRadius;
 
   if (!BDS::IsFinite((*st)["efield"]) || !buildCavityFringes)
-	{// ie no rf field - don't bother with fringe effects
-	  delete stIn;
-	  delete stOut;
-	  return new BDSCavityElement(elementName,
-	                              cavityLength,
-		                          vacuumMaterial,
-		                          vacuumField,
-		                          cavityInfo);
-	}
-
+    {// ie no rf field - don't bother with fringe effects
+      delete stIn;
+      delete stOut;
+      return new BDSCavityElement(elementName,
+				  cavityLength,
+				  vacuumMaterial,
+				  vacuumField,
+				  cavityInfo);
+    }
+  
   BDSLine* cavityLine = new BDSLine(elementName);
-
+  
   if (buildIncomingFringe)
     {
       //BDSMagnetStrength* stIn = PrepareCavityFringeStrength(element, cavityLength, currentArcLength, true);
