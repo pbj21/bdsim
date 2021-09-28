@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAcceleratorComponent.hh"
+#include "BDSBeamPipe.hh"
+#include "BDSBeamPipeFactory.hh"
+#include "BDSBeamPipeInfo.hh"
 #include "BDSCavity.hh"
 #include "BDSCavityFactory.hh"
 #include "BDSCavityInfo.hh"
@@ -59,6 +62,7 @@ BDSMuonCooler::BDSMuonCooler(const G4String& nameIn,
 			     const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
 			     const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
 			     const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
+			     BDSBeamPipeInfo* beamPipeTemplateIn,
 			     BDSFieldInfo*   outerFieldRecipeIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "muoncooler", nullptr),
   containerRadius(containerRadiusIn),
@@ -66,6 +70,7 @@ BDSMuonCooler::BDSMuonCooler(const G4String& nameIn,
   coilInfos(coilInfosIn),
   cavityInfos(cavityInfosIn),
   absorberInfos(absorberInfosIn),
+  beamPipeTemplate(beamPipeTemplateIn),
   outerFieldRecipe(outerFieldRecipeIn)
 {;}
 
@@ -226,34 +231,58 @@ void BDSMuonCooler::AttachOuterBField()
 
 void BDSMuonCooler::BuildCavities()
 {
+  struct DriftSpec
+  {
+    BDSBeamPipeInfo* bpRecipe;
+    G4ThreeVector position;
+  };
+  std::vector<DriftSpec> beampipeInfos;
+  for (G4int i = 0; i < (G4int)cavityInfos.size() - 1; i++)
+    {
+      G4double zA = cavityInfos[i].offsetZ   + 0.5*cavityInfos[i].lengthZ;
+      G4double zB = cavityInfos[i+1].offsetZ - 0.5*cavityInfos[i+1].lengthZ;
+      G4double dZ = zB - zA;
+      if (dZ >= 1*CLHEP::mm)
+	{
+	  G4ThreeVector position = {0,0,zB-0.5*dZ};
+	  beampipeInfos.emplace_back(DriftSpec{beamPipeTemplate,position});
+	}
+    }
+  
   std::vector<BDSCavityInfo> recipes;
   for (const auto& info : cavityInfos)
-  {
-    auto r = BDSCavityInfo(BDSCavityType::pillbox,
-                           info.cavityMaterial,
-                           info.windowRadius,
-                           info.cavityThickness,
-                           info.cavityRadius,
-                           info.lengthZ * 0.5);
-    recipes.push_back(r);
-  }
-
+    {
+      auto r = BDSCavityInfo(BDSCavityType::pillbox,
+			     info.cavityMaterial,
+			     info.windowRadius,
+			     info.cavityThickness,
+			     info.cavityRadius,
+			     info.lengthZ * 0.5);
+      r.inputWindowMaterial   = info.windowMaterial;
+      r.inputWindowThickness  = info.windowThickness;
+      r.outputWindowMaterial  = info.windowMaterial;
+      r.outputWindowThickness = info.windowThickness;
+      recipes.push_back(r);
+    }
+  
   std::vector<BDSCavity*> cavities;
   for (G4int i = 0; i < (G4int)recipes.size(); i++)
-  {
-    G4String cavityName = name + "_cavity_" + std::to_string(i);
-    auto cavity = BDSCavityFactory::Instance()->CreateCavity(cavityName,
-                                                             cavityInfos[i].lengthZ,
-                                                             &recipes[i],
-                                                             cavityInfos[i].vacuumMaterial);
-
-    new G4PVPlacement(nullptr,
-                      G4ThreeVector(0,0,cavityInfos[i].offsetZ),
-                      cavity->GetContainerLogicalVolume(),
-                      cavityName + "_pv",
-                      containerLogicalVolume,
-                      false,
-                      0,
-                      checkOverlaps);
-  }
+    {
+      G4String cavityName = name + "_cavity_" + std::to_string(i);
+      auto cavity = BDSCavityFactory::Instance()->CreateCavity(cavityName,
+							       cavityInfos[i].lengthZ,
+							       &recipes[i],
+							       cavityInfos[i].vacuumMaterial);
+      
+      auto cavityPV = new G4PVPlacement(nullptr,
+					G4ThreeVector(0,0,cavityInfos[i].offsetZ),
+					cavity->GetContainerLogicalVolume(),
+					cavityName + "_pv",
+					containerLogicalVolume,
+					false,
+					0,
+					checkOverlaps);
+      RegisterPhysicalVolume(cavityPV);
+      RegisterDaughter(cavity);
+    }
 }
