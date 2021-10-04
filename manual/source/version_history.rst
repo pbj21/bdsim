@@ -69,6 +69,9 @@ Bug Fixes
   definition of material "ups923a".
 * "FASTCOMPONENT", "FASTTIMECONSTANT", and "YIELDRATIO" material properties for various optical
   materials have no effect when BDSIM is compiled with respect to Geant4 V11 onwards.
+* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
+  reminder, any material without a specific colour will default to a shade of grey according to
+  its density.
 
 Output Changes
 --------------
