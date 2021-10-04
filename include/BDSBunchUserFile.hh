@@ -68,6 +68,9 @@ public:
   /// Get the next particle.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
   
+  /// For this class we generally can expect a few extra particle types.
+  virtual G4bool ExpectChangingParticleType() const {return true;}
+  
 private:
   G4String distrFile;     ///< Bunch file.
   G4String distrFilePath; ///< Bunch file including absolute path.

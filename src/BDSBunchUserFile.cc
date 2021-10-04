@@ -371,9 +371,9 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
   std::string line;
   std::getline(InputBunchFile, line);
   lineCounter++;
-
-  // skip empty lines and comment lines
-  std::regex comment("^\\#.*");
+  
+  // skip empty lines and comment lines (starting with # or !)
+  std::regex comment("^\\s*\\#|\\!.*");
   G4bool lineIsBad = true;
   while (lineIsBad)
     {

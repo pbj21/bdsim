@@ -96,6 +96,10 @@ namespace BDS
   /// Construct the minimum particle set required (gamma, electron, positron,
   /// proton and anti-proton.
   void ConstructMinimumParticleSet();
+  
+  /// Construct all leptons, pi+- K+- K. Utility function for
+  /// when we expect other possible beam particles.
+  void ConstructExtendedParticleSet();
 
   /// Print all the processes by name as registered to the primary particle type.
   /// Note, this should only be done after the physics lists are fully constructed.

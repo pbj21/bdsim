@@ -2,6 +2,9 @@
 53 0.034 24 0.025 0 3.4
 # bananas bananas bananas
 34 0.031 56 0.028 0 3.41
+ # a space before the comment character
 26 0.039 12 0.026 0 3.42
+ ! another space before the comment character
 19 0.024 38 0.032 0 3.43
+! some notes here about particly stuff
 51 0.045 43 0.045 0 3.44

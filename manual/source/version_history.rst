@@ -41,6 +41,10 @@ General
 * The executable option :code:`--geant4Macro` (for a post-visualisation macro)
   has been renamed to :code:`--geant4MacroFileName` to be the same as the option in
   the input GMAD file. The old one is still accepted for backwards compatibility.
+* The userfile distribution will tolerate `!` to denote a comment line to match GMAD syntax now.
+  It will also tolerate any whitespace before either `#` or `!` to mark a comment line,
+  whereas previously it would only identify a comment if the very first character
+  of the line was `#`.
 
 Bug Fixes
 ---------

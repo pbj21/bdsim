@@ -265,6 +265,9 @@ int BDSIM::Initialise()
   /// We no longer need beamParticle so delete it to avoid confusion. The definition is
   /// held inside bdsBunch (can be updated dynamically).
   delete beamParticle;
+  /// Construct extra common particles for possible tracking if required without using a physics list.
+  if (bdsBunch->ExpectChangingParticleType())
+    {BDS::ConstructExtendedParticleSet();}
   
   /// Optionally generate primaries only and exit
   /// Unfortunately, this has to be here as we can't query the geant4 particle table

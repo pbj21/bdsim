@@ -53,6 +53,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4KaonPlus.hh"
 #include "G4MuonMinus.hh"
 #include "G4KaonZeroLong.hh"
+#include "G4LeptonConstructor.hh"
 #include "G4MuonPlus.hh"
 #include "G4NeutrinoE.hh"
 #include "G4Neutron.hh"
@@ -300,7 +301,7 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
 
       G4IonTable* ionTable = particleTable->GetIonTable();
       /// cache this here in case the particle definition isn't available until during a run
-      G4int ionPDGID = ionTable->GetNucleusEncoding(ionDef->Z(), ionDef->A());
+      G4int ionPDGID  = G4IonTable::GetNucleusEncoding(ionDef->Z(), ionDef->A());
       G4double mass   = ionTable->GetIonMass(ionDef->Z(), ionDef->A());
       mass += ionDef->NElectrons()*G4Electron::Definition()->GetPDGMass();
       G4double charge = ionDef->Charge(); // correct even if overridden
@@ -393,6 +394,15 @@ void BDS::ConstructMinimumParticleSet()
 
   // photon
   G4Gamma::Gamma();
+}
+
+void BDS::ConstructExtendedParticleSet()
+{
+  G4LeptonConstructor::ConstructParticle();
+  G4PionPlus::PionPlusDefinition();
+  G4PionMinus::PionMinusDefinition();
+  G4KaonPlus::KaonPlusDefinition();
+  G4KaonMinus::KaonMinusDefinition();
 }
 
 void BDS::PrintPrimaryParticleProcesses(const G4String& primaryParticleName)

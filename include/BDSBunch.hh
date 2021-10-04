@@ -74,6 +74,9 @@ public:
   /// Main interface. Calls GetNextParticleLocal() and then applies the curvilinear
   /// transform if required.
   BDSParticleCoordsFullGlobal GetNextParticle();
+  
+  /// A hint of whether we expect to require and extended particle set (ie pions, kaons, muons).
+  virtual G4bool ExpectChangingParticleType() const {return false;}
 
   /// Interface to allow multiple calls until a safe particle is generated. This will
   /// repeatedly call GetNextParticle() until a particle is generated where the total

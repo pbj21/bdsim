@@ -111,7 +111,12 @@ A few minimal examples of beam definition are::
 
 
 Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
-be specified as described in the following sections. The beam particle may be specified by name
+be specified as described in the following sections.
+
+Beam Particle Type
+^^^^^^^^^^^^^^^^^^
+
+The beam particle may be specified by name
 as it is in Geant4 (exactly) or by its PDG ID. The follow are available by default:
 
 * `e-` or `e+`
@@ -140,7 +145,7 @@ physics processes registered to that particle.
 
 The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
 
-* `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
+* `<https://pdg.lbl.gov/2020/reviews/rpp2020-rev-monte-carlo-numbering.pdf>`_
 
 Ion Beams
 ^^^^^^^^^
@@ -880,7 +885,7 @@ one for directional, and one for energy & time.
 +----------------------+--------------------------------+------------------------+
 | **Variable**         | **Description**                | **Coordinates Used**   |
 +======================+================================+========================+
-| `spaceDistrType`     | Sptial distribution type       | x,y,z                  |
+| `spaceDistrType`     | Spatial distribution type      | x,y,z                  |
 +----------------------+--------------------------------+------------------------+
 | `directionDistrType` | Directional distribution type  | xp,yp,zp               |
 +----------------------+--------------------------------+------------------------+
@@ -928,7 +933,9 @@ particle coordinates from the beginning. A warning will be printed out in this c
 
 * **tar + gz** will not work. The file must be a single file compressed through gzip only.
 * Coordinates not specified are taken from the default `reference`_ distribution parameters.
-* Lines starting with `#` will be ignored.
+* Lines starting with `#` or `!` will be ignored.
+* Comments must be on their own line and are not tolerated after numerical values (i.e. at
+  the end of a line).
 * Empty lines will also be ignored.
 * A warning will be printed if the line is shorter than the number of variables specified
   in `distrFileFormat` and the event aborted - the simulation safely proceeds to the next event.
@@ -937,7 +944,16 @@ particle coordinates from the beginning. A warning will be printed out in this c
   :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
 * **Conflicting** parameters cannot be set. Exclusive column sets are `E`, `Ek`, `P`, and also
   `z` and `S`. The skip column symbol `-` can be used in `distrFileFormat` to skip the others.
-  
+
+.. warning:: If the `pdgid` column is specified and the file contains exotic particles, the
+	     **"all_particles"** physics list should be included in the physicsList (see `Beam Parameters`_
+	     and `Modular Physics Lists`_) otherwise exotic events will be aborted. By default,
+	     the particles available without any physics list are those listed in `Beam Particle Type`_.
+	     Aside from the basic particles listed there, other particle definitions are only
+	     available through a relevant physics list. The `all_particles` "physics list"
+	     is a proxy to load their definitions. Note, without decay physics used, unstable
+	     particles will be tracked beyond their normal lifetime.
+
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
@@ -2704,7 +2720,7 @@ with the following options.
 | storeSamplerIon                    | Stores A, Z and Boolean whether the entry is an ion or not as well |
 |                                    | as the `nElectrons` variable for possible number of electrons.     |
 +------------------------------------+--------------------------------------------------------------------+
-| samplersSplitLevel                 | The ROOT splitlevel of the branch. Default 0 (unsplit). Set to 1   |
+| samplersSplitLevel                 | The ROOT split-level of the branch. Default 0 (unsplit). Set to 1  |
 |                                    | or 2 to allow columnar access (e.g. with `uproot`).                |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectory                    | Whether to store trajectories. If turned on, only the primary      |

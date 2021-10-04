@@ -5,6 +5,7 @@ simple_testing(bunch-userfile-assumed-particle "--file=userfile-assumed-particle
 simple_testing(bunch-userfile-below-rest-mass  "--file=userfile-below-rest-mass.gmad"  "")
 simple_testing(bunch-userfile-blank-lines      "--file=userfile-blank-lines.gmad"      "")
 simple_testing(bunch-userfile-comment-line     "--file=userfile-comment.gmad"          "")
+simple_testing(bunch-userfile-extended-particle-set "--file=userfile-extended-particle-set.gmad" "")
 simple_testing(bunch-userfile-incomplete-row   "--file=userfile-incomplete-row.gmad"   "")
 simple_testing(bunch-userfile-one-column       "--file=userfile-one-column.gmad"       "")
 simple_testing(bunch-userfile-neutral-particle "--file=userfile-neutral.gmad"          "")
