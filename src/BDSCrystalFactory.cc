@@ -241,8 +241,8 @@ BDSExtent BDSCrystalFactory::CalculateExtents(G4double xBendingAngle,
     }
   G4double dz = (xBendingRadius + xThickness*0.5) * std::sin(std::abs(xBendingAngle)*0.5);
 
-  // note this is the extent the partial cylinder would have with it's intended placement
-  // convenient for now but doesn't not strictly match the solid which is build along the z axis.
+  // note this is the extent the partial cylinder would have with its intended placement.
+  // convenient for now but doesn't strictly match the solid which is built along the z axis.
   BDSExtent ext = BDSExtent(xLow, xHi,
 			    recipe->lengthY * 0.5, recipe->lengthY * 0.5,
 			    -dz, dz);

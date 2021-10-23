@@ -126,8 +126,8 @@ const BDSFieldValue& BDSArray2DCoordsRQuad::GetConst(const G4int x,
 
   if (swapResult)
     {
-      G4double xv = returnValue.x();
-      G4double yv = returnValue.y();
+      auto xv = returnValue.x();
+      auto yv = returnValue.y();
       returnValue = BDSFieldValue(yv,xv,returnValue.z());
     }
   

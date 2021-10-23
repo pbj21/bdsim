@@ -364,15 +364,17 @@ is shown in :ref:`field-interpolators`.
 
 * This string is case-insensitive.
 
-+------------+---------------------------------+
-| **String** | **Description**                 |
-+============+=================================+
-| nearest    | Nearest neighbour interpolation |
-+------------+---------------------------------+
-| linear     | Linear interpolation            |
-+------------+---------------------------------+
-| cubic      | Cubic interpolation             |
-+------------+---------------------------------+
++------------+------------------------------------+
+| **String** | **Description**                    |
++============+====================================+
+| nearest    | Nearest neighbour interpolation    |
++------------+------------------------------------+
+| linear     | Linear interpolation               |
++------------+------------------------------------+
+| cubic      | Cubic interpolation                |
++------------+------------------------------------+
+| linearmag  | Linear and magnitude interpolation |
++------------+------------------------------------+
 
 Internally there is a different implementation for different numbers of dimensions and this
 is automatically chosen based on the number of dimensions in the field map type.

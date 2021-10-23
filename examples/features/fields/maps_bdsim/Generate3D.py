@@ -1,10 +1,10 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
-import tarfile
+from subprocess import check_call as _check_call
 
 def main():
     # generate x,y,z points along their own axes
@@ -38,20 +38,17 @@ def main():
     f = pybdsim.Field.Field3D(data)
     f.Write('3dexample.dat')
 
+    # compress the result
+    _check_call(['gzip', "3dexample.dat"])
+
+
     # construct flipped ordered data for testing purposes
     ff = pybdsim.Field.Field3D(data,flip=False) # flipped data looping order
     ff.header['loopOrder'] = "zyx" # manually add key to header for test
     ff.Write('3dexample_zyx.dat')
 
     # compress the result
-    tar = tarfile.open("3dexample.tar.gz", "w:gz")
-    tar.add('3dexample.dat')
-    tar.close()
-
-    # compress flipped data too
-    tar2 = tarfile.open("3dexample_zyx.tar.gz", "w:gz")
-    tar2.add('3dexample_zyx.dat')
-    tar2.close()
+    _check_call(['gzip', "3dexample_zyx.dat"])
 
     #Plot(data)
     return data

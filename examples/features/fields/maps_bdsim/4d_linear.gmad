@@ -1,5 +1,5 @@
 f1: field, type="bmap4d",
-                 magneticFile = "bdsim4d:4dexample.tar.gz",
+                 magneticFile = "bdsim4d:4dexample.dat.gz",
 		 magneticInterpolator = "linear";
 
 q1: query, nDimensions=4,

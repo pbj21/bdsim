@@ -1,9 +1,9 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
-import tarfile
+from subprocess import check_call as _check_call
 
 def main():
     # generate x and y points along their own axes
@@ -30,9 +30,8 @@ def main():
     f.Write('1dexample.dat')
 
     # compress the result
-    tar = tarfile.open("1dexample.tar.gz", "w:gz")
-    tar.add('1dexample.dat')
-    tar.close()
+    _check_call(['gzip', "1dexample.dat"])
+    f.Write('1dexample.dat') # write again to keep original
 
     #Plot(data[:,0],data[:,1],data[:,2],data[:,3])
     return data

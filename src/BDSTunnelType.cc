@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 #include <map>
+#include <string>
 
 // dictionary for BDSTunnelType
 template<>
@@ -50,14 +51,12 @@ BDSTunnelType BDS::DetermineTunnelType(G4String tunnelType)
 
   auto result = types.find(tunnelType);
   if (result == types.end() )
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << " " << tunnelType << " is not a valid tunnel type" << G4endl;
-
-      G4cout << "Available tunnel types are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "invalid tunnel type");
+    {// it's not a valid key
+      G4String msg = "\"" + tunnelType + "\" is not a valid tunnel type\n";
+      msg += "Available tunnel types are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
   
 #ifdef BDSDEBUG

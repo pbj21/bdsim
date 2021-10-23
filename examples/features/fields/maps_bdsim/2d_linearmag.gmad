@@ -1,0 +1,13 @@
+f1: field, type="bmap2d",
+                 magneticFile = "bdsim2d:2dexample.dat",
+		 magneticInterpolator = "linearmag";
+
+q1: query, nDimensions=2,
+    	   nx = 200,
+	   xmin = -30*cm,
+	   xmax = 30*cm,
+	   ny = 200,
+	   ymin = -50*cm,
+	   ymax = 50*cm,
+	   outfile = "2d_interpolated_linear_mag.dat",
+	   fieldObject = "f1";

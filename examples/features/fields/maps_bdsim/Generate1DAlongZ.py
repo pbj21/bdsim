@@ -1,37 +1,31 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 import numpy as _np
+import pybdsim
+from subprocess import check_call as _check_call
 
 def main():
     amplitude = 0.5
-    length    = 0.6 #m
-    period    = 0.1 #m
-    ncells    = length / period
-    zStep     = length / 100.
-    z  = _np.arange(0, length+1e-9, zStep)
+    length    = 60.0 # cm
+    period    = 10.0 # cm
+    
+    z = _np.linspace(0, length, 120) # 120 points
     by = amplitude * _np.sin(2*_np.pi * z / period)
-    
-    zlen = len(z)
-    zmin = z.min()*100
-    zmax = z.max()*100
-    
-    # make new file name 
-    outputFileName = "1dexample-along-z.dat"
 
-    # open file 
-    f = open(outputFileName,"w")
+    data = []
+    for zi,byi in zip(z,by):
+        data.append([zi, 0.0, byi, 0.0])
 
-    # write header 
-    f.write("zmin> " + str(zmin) + '\n')
-    f.write("nz>   " + str(zlen) + '\n')
-    f.write("zmax> " + str(zmax) + '\n')
-    f.write("! Z Fx Fy Fz\n")
-    
-    # write field
-    for i in range(0,len(z),1) : 
-        f.write("%.9f %.9f %.9f %.9f\n" % (z[i]*100, 0, by[i], 0))
-    f.close()
-    return z,by
+    data = _np.array(data)
+
+    f = pybdsim.Field.Field1D(data, column="Z")
+    f.Write("1dexample-along-z.dat")
+
+    # compress the result
+    _check_call(['gzip', "1dexample-along-z.dat"])
+    f.Write('1dexample-along-z.dat') # write again to keep original
+
+    return data
 
 if __name__ == "__main__":
     main()

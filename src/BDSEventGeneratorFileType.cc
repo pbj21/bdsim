@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 #include <map>
+#include <string>
 
 // dictionary for BDSEventGeneratorFileType
 template<>
@@ -51,13 +52,12 @@ BDSEventGeneratorFileType BDS::DetermineEventGeneratorFileType(G4String distrTyp
 
   auto result = types.find(distrType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << distrType << " is not a valid event generator file format" << G4endl;
-      G4cout << "Available formats are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "can't determine event generator file type");
+    {// it's not a valid key
+      G4String msg = "\"" + distrType + "\" is not a valid event generator file format\n";
+      msg += "Available formats are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
   
 #ifdef BDSDEBUG

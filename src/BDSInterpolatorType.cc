@@ -40,6 +40,11 @@ std::map<BDSInterpolatorType, std::string>* BDSInterpolatorType::dictionary =
       {BDSInterpolatorType::linear2d,   "linear2d"},
       {BDSInterpolatorType::linear3d,   "linear3d"},
       {BDSInterpolatorType::linear4d,   "linear4d"},
+      {BDSInterpolatorType::linearauto, "linearmagauto"},
+      {BDSInterpolatorType::linear1d,   "linearmag1d"},
+      {BDSInterpolatorType::linear2d,   "linearmag2d"},
+      {BDSInterpolatorType::linear3d,   "linearmag3d"},
+      {BDSInterpolatorType::linear4d,   "linearmag4d"},
       {BDSInterpolatorType::cubicauto,  "cubicauto"},
       {BDSInterpolatorType::cubic1d,    "cubic1d"},
       {BDSInterpolatorType::cubic2d,    "cubic2d"},
@@ -50,35 +55,37 @@ std::map<BDSInterpolatorType, std::string>* BDSInterpolatorType::dictionary =
 BDSInterpolatorType BDS::DetermineInterpolatorType(G4String interpolatorType)
 {
   std::map<G4String, BDSInterpolatorType> types;
-  types["nearest"]   = BDSInterpolatorType::nearestauto;
-  types["nearest1d"] = BDSInterpolatorType::nearest1d;
-  types["nearest2d"] = BDSInterpolatorType::nearest2d;
-  types["nearest3d"] = BDSInterpolatorType::nearest3d;
-  types["nearest4d"] = BDSInterpolatorType::nearest4d;
-  types["linear"]    = BDSInterpolatorType::linearauto;
-  types["linear1d"]  = BDSInterpolatorType::linear1d;
-  types["linear2d"]  = BDSInterpolatorType::linear2d;
-  types["linear3d"]  = BDSInterpolatorType::linear3d;
-  types["linear4d"]  = BDSInterpolatorType::linear4d;
-  types["cubic"]     = BDSInterpolatorType::cubicauto;
-  types["cubic1d"]   = BDSInterpolatorType::cubic1d;
-  types["cubic2d"]   = BDSInterpolatorType::cubic2d;
-  types["cubic3d"]   = BDSInterpolatorType::cubic3d;
-  types["cubic4d"]   = BDSInterpolatorType::cubic4d;
+  types["nearest"]     = BDSInterpolatorType::nearestauto;
+  types["nearest1d"]   = BDSInterpolatorType::nearest1d;
+  types["nearest2d"]   = BDSInterpolatorType::nearest2d;
+  types["nearest3d"]   = BDSInterpolatorType::nearest3d;
+  types["nearest4d"]   = BDSInterpolatorType::nearest4d;
+  types["linear"]      = BDSInterpolatorType::linearauto;
+  types["linear1d"]    = BDSInterpolatorType::linear1d;
+  types["linear2d"]    = BDSInterpolatorType::linear2d;
+  types["linear3d"]    = BDSInterpolatorType::linear3d;
+  types["linear4d"]    = BDSInterpolatorType::linear4d;
+  types["linearmag"]   = BDSInterpolatorType::linearmagauto;
+  types["linearmag1d"] = BDSInterpolatorType::linearmag1d;
+  types["linearmag2d"] = BDSInterpolatorType::linearmag2d;
+  types["linearmag3d"] = BDSInterpolatorType::linearmag3d;
+  types["linearmag4d"] = BDSInterpolatorType::linearmag4d;
+  types["cubic"]       = BDSInterpolatorType::cubicauto;
+  types["cubic1d"]     = BDSInterpolatorType::cubic1d;
+  types["cubic2d"]     = BDSInterpolatorType::cubic2d;
+  types["cubic3d"]     = BDSInterpolatorType::cubic3d;
+  types["cubic4d"]     = BDSInterpolatorType::cubic4d;
 
   interpolatorType.toLower();
 
   auto result = types.find(interpolatorType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << "\"" << interpolatorType
-	     << "\" is not a valid field type" << G4endl;
-
-      G4cout << "Available interpolator types are:" << G4endl;
+    {// it's not a valid key
+      G4String msg = "\"" + interpolatorType + "\" is not a valid field type\n";
+      msg += "Available interpolator types are:\n";
       for (const auto& it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
 
 #ifdef BDSDEBUG
@@ -94,18 +101,22 @@ G4int BDS::NDimensionsOfInterpolatorType(const BDSInterpolatorType& it)
     {
       case BDSInterpolatorType::nearest1d:
       case BDSInterpolatorType::linear1d:
+      case BDSInterpolatorType::linearmag1d:
       case BDSInterpolatorType::cubic1d:
         {result = 1; break;}
       case BDSInterpolatorType::nearest2d:
       case BDSInterpolatorType::linear2d:
+      case BDSInterpolatorType::linearmag2d:
       case BDSInterpolatorType::cubic2d:
         {result = 2; break;}
       case BDSInterpolatorType::nearest3d:
       case BDSInterpolatorType::linear3d:
+      case BDSInterpolatorType::linearmag3d:
       case BDSInterpolatorType::cubic3d:
-         {result = 3; break;}
+	{result = 3; break;}
       case BDSInterpolatorType::nearest4d:
-      case BDSInterpolatorType::linear4d:
+      case BDSInterpolatorType::linear4d:	
+      case BDSInterpolatorType::linearmag4d:
       case BDSInterpolatorType::cubic4d:
         {result = 4; break;}
       default:
@@ -121,6 +132,7 @@ G4bool BDS::InterpolatorTypeIsAuto(BDSInterpolatorType typeIn)
     {
     case BDSInterpolatorType::nearestauto:
     case BDSInterpolatorType::linearauto:
+    case BDSInterpolatorType::linearmagauto:
     case BDSInterpolatorType::cubicauto:
       {result = true; break;}
     default:
@@ -133,18 +145,22 @@ BDSInterpolatorType BDS::InterpolatorTypeSpecificFromAuto(G4int               nD
 							  BDSInterpolatorType autoType)
 {
   std::map<std::pair<G4int, BDSInterpolatorType>, BDSInterpolatorType> mapping = {
-    {std::make_pair(1, BDSInterpolatorType::nearestauto), BDSInterpolatorType::nearest1d},
-    {std::make_pair(2, BDSInterpolatorType::nearestauto), BDSInterpolatorType::nearest2d},
-    {std::make_pair(3, BDSInterpolatorType::nearestauto), BDSInterpolatorType::nearest3d},
-    {std::make_pair(4, BDSInterpolatorType::nearestauto), BDSInterpolatorType::nearest4d},
-    {std::make_pair(1, BDSInterpolatorType::linearauto),  BDSInterpolatorType::linear1d},
-    {std::make_pair(2, BDSInterpolatorType::linearauto),  BDSInterpolatorType::linear2d},
-    {std::make_pair(3, BDSInterpolatorType::linearauto),  BDSInterpolatorType::linear3d},
-    {std::make_pair(4, BDSInterpolatorType::linearauto),  BDSInterpolatorType::linear4d},
-    {std::make_pair(1, BDSInterpolatorType::cubicauto),   BDSInterpolatorType::cubic1d},
-    {std::make_pair(2, BDSInterpolatorType::cubicauto),   BDSInterpolatorType::cubic2d},
-    {std::make_pair(3, BDSInterpolatorType::cubicauto),   BDSInterpolatorType::cubic3d},
-    {std::make_pair(4, BDSInterpolatorType::cubicauto),   BDSInterpolatorType::cubic4d},
+    {std::make_pair(1, BDSInterpolatorType::nearestauto),    BDSInterpolatorType::nearest1d},
+    {std::make_pair(2, BDSInterpolatorType::nearestauto),    BDSInterpolatorType::nearest2d},
+    {std::make_pair(3, BDSInterpolatorType::nearestauto),    BDSInterpolatorType::nearest3d},
+    {std::make_pair(4, BDSInterpolatorType::nearestauto),    BDSInterpolatorType::nearest4d},
+    {std::make_pair(1, BDSInterpolatorType::linearauto),     BDSInterpolatorType::linear1d},
+    {std::make_pair(2, BDSInterpolatorType::linearauto),     BDSInterpolatorType::linear2d},
+    {std::make_pair(3, BDSInterpolatorType::linearauto),     BDSInterpolatorType::linear3d},
+    {std::make_pair(4, BDSInterpolatorType::linearauto),     BDSInterpolatorType::linear4d},
+    {std::make_pair(1, BDSInterpolatorType::linearmagauto),  BDSInterpolatorType::linearmag1d},
+    {std::make_pair(2, BDSInterpolatorType::linearmagauto),  BDSInterpolatorType::linearmag2d},
+    {std::make_pair(3, BDSInterpolatorType::linearmagauto),  BDSInterpolatorType::linearmag3d},
+    {std::make_pair(4, BDSInterpolatorType::linearmagauto),  BDSInterpolatorType::linearmag4d},
+    {std::make_pair(1, BDSInterpolatorType::cubicauto),      BDSInterpolatorType::cubic1d},
+    {std::make_pair(2, BDSInterpolatorType::cubicauto),      BDSInterpolatorType::cubic2d},
+    {std::make_pair(3, BDSInterpolatorType::cubicauto),      BDSInterpolatorType::cubic3d},
+    {std::make_pair(4, BDSInterpolatorType::cubicauto),      BDSInterpolatorType::cubic4d},
   };
   auto key = std::make_pair(nDimension, autoType);
   auto search = mapping.find(key);

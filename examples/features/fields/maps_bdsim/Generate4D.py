@@ -1,10 +1,10 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
-import tarfile
+from subprocess import check_call as _check_call
 
 def main():
     # generate x,y,z,t points along their own axes
@@ -49,12 +49,10 @@ def main():
     # construct a BDSIM format field object and write it out
     f = pybdsim.Field.Field4D(data)
     f.Write('4dexample.dat')
-
-    # compress the result
-    tar = tarfile.open("4dexample.tar.gz", "w:gz")
-    tar.add('4dexample.dat')
-    tar.close()
     
+    # compress the result
+    _check_call(['gzip', "4dexample.dat"])
+
     return data
     
 if __name__ == "__main__":

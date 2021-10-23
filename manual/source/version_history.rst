@@ -31,6 +31,7 @@ New Features
   command line. Useful when BDSIM is executed from a different directory from the main GMAD input
   file and with a relatively complex model.
 * rebdsim will now default to "intputfilename" + "_ana.root" if no outputfile name is specified.
+* "linearmag" experimental interpolation.
   
 General
 -------
@@ -56,7 +57,7 @@ Bug Fixes
 * Fix the wrong value being stored in PrimaryFirstHist.postStepProcessType which was in fact SubType again.
 * When storing trajectories, it was possible if store transportation steps was
   purposively turned off that the first step point may not be stored. So, the pre-step
-  was the creation of the particle and the post step was an interaction (ie not
+  was the creation of the particle and the post step was an interaction (i.e. not
   transportation). Previously, this step would not be stored breaking the indexing
   for parent step index.
 * Materials are now stored for each trajectory step point (optionally) as described
@@ -72,6 +73,11 @@ Bug Fixes
 * GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
   reminder, any material without a specific colour will default to a shade of grey according to
   its density.
+* Fix field interpolation manual figures. Z component was transposed.
+* Fixed example field map generation scripts to not use tar as we don't support loading
+  of tar.gz (only gzipped or uncompressed) files (historical hangover).
+* Fixed field map interpolation and plotting scripts as well as make use of improvements
+  in pybdsim.
 
 Output Changes
 --------------

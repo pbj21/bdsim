@@ -16,12 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSMagnetGeometryType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSMagnetGeometryType.hh"
 
 #include "globals.hh"
 
 #include <map>
+#include <string>
 
 // dictionary for BDSMagnetGeometryType
 template<>
@@ -59,14 +61,12 @@ BDSMagnetGeometryType BDS::DetermineMagnetGeometryType(G4String geometryType)
   
   auto result = types.find(geometryType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cout << __METHOD_NAME__ << "\"" << geometryType << "\" is not a valid geometry type" << G4endl;
-      
-      G4cout << "Available magnet geometry types are:" << G4endl;
-      for (auto& it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+    {// it's not a valid key
+      G4String msg = "\"" + geometryType + "\" is not a valid geometry type\n";
+      msg += "Available magnet geometry types are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
   
 #ifdef BDSDEBUG

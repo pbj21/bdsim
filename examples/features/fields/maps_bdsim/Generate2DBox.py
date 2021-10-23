@@ -2,6 +2,7 @@ from math import sqrt
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
+from subprocess import check_call as _check_call
 
 def main():
     GenerateBoxField(0.0, 1.0, 0.0, "2dboxexample-1T",xmax=20,ymax=20)
@@ -29,8 +30,8 @@ def GenerateBoxField(fx,fy,fz, filename, xmax=10, ymax=20, plot=False):
     fd.Write(filename+'_dp.dat')
 
     # compress the result
-    from subprocess import check_call
-    check_call(['gzip', filename+'.dat'])
+    _check_call(['gzip', filename+'.dat'])
+    _check_call(['gzip', filename+'_dp.dat'])
 
     if plot:
         Plot(data)

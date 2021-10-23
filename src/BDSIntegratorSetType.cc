@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSIntegratorSetType.hh"
 
+#include "globals.hh"
 #include "G4Version.hh"
 
 #include <map>
@@ -55,14 +57,12 @@ BDSIntegratorSetType BDS::DetermineIntegratorSetType(G4String integratorSet)
 
   auto result = types.find(integratorSet);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << integratorSet << " is not a valid integrator set" << G4endl;
-
-      G4cout << "Available sets are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+    {// it's not a valid key
+      G4String msg = "\"" + integratorSet + "\" is not a valid integrator set\n";
+      msg += "Available sets are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
 
 #ifdef BDSDEBUG

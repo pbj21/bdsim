@@ -1,6 +1,6 @@
 ! test mismatch between cubic2d but 3d field format
 f1: field, type="bmap3d",
-    	   magneticFile="bdsim3d:3dexample.tar.gz",
+    	   magneticFile="bdsim3d:3dexample.dat.gz",
 	   magneticInterpolator="cubic2d",
 	   bScaling=0.5;
 

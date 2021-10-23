@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSBeamPipeInfo.hh"
 #include "BDSBunchType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
@@ -24,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 #include <map>
+#include <string>
 
 // dictionary for BDSBunchType
 template<>
@@ -75,8 +75,7 @@ BDSBunchType BDS::DetermineBunchType(G4String distrType)
 
   auto result = types.find(distrType);
   if (result == types.end())
-    {
-      // it's not a valid key
+    {// it's not a valid key
       G4String message = "\"" + distrType + "\" is not a valid distribution\n";
       message += "Available distributions are:\n";
       for (const auto& it : types)

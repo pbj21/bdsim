@@ -64,7 +64,7 @@ G4VPrimitiveScorer* BDSScorerFactory::CreateScorer(const BDSScorerInfo*    info,
   return primitiveScorer;
 }
 
-G4VPrimitiveScorer *BDSScorerFactory::GetAppropriateScorer(const BDSScorerInfo&    info,
+G4VPrimitiveScorer* BDSScorerFactory::GetAppropriateScorer(const BDSScorerInfo&    info,
 							   const BDSHistBinMapper* mapper,
 							   G4double*               unit)
 {
@@ -188,6 +188,9 @@ BDSSDFilterAnd* BDSScorerFactory::CreateFilter(const G4String&      name,
 
   // if we didn't register any filters, just delete it
   if (result->size() == 0)
-    {delete result; result = nullptr;}
+    {
+      delete result;
+      return nullptr;
+    }
   return result;
 }

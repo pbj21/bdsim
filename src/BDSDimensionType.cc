@@ -20,9 +20,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDimensionType.hh"
 #include "BDSException.hh"
 
-#include "globals.hh" // geant4 types  globals
+#include "globals.hh"
 
 #include <map>
+#include <string>
 
 template<>
 std::map<BDSDimensionType,std::string>* BDSDimensionType::dictionary=
@@ -46,18 +47,16 @@ BDSDimensionType BDS::DetermineDimensionType(G4String dimensionType)
 
   auto result = types.find(dimensionType);
   if (result == types.end())
-    {
-      G4cerr << __METHOD_NAME__ << "unknown dimension \""
-	     << dimensionType << "\" please specify one of:" << G4endl;
-      G4cout << "Available dimensions are:" << G4endl;
-      for (auto keyvalue : types)
-	{G4cout << "\"" << keyvalue.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "can't determine dimension type");
+    {// it's not a valid key
+      G4String msg = "\"" + dimensionType + "\" is not a valid dimension\n";
+      msg += "Available dimensions are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "determined format \"" << dimensionType << "\" to be "
-	 << result->first << G4endl;
-#endif
   
+#ifdef BDSDEBUG
+  G4cout << __METHOD_NAME__ << "determined format \"" << dimensionType << "\" to be " << result->first << G4endl;
+#endif
   return result->second;
 }

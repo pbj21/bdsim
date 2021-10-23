@@ -48,18 +48,22 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSInterpolator1D.hh"
 #include "BDSInterpolator1DCubic.hh"
 #include "BDSInterpolator1DLinear.hh"
+#include "BDSInterpolator1DLinearMag.hh"
 #include "BDSInterpolator1DNearest.hh"
 #include "BDSInterpolator2D.hh"
 #include "BDSInterpolator2DCubic.hh"
 #include "BDSInterpolator2DLinear.hh"
+#include "BDSInterpolator2DLinearMag.hh"
 #include "BDSInterpolator2DNearest.hh"
 #include "BDSInterpolator3D.hh"
 #include "BDSInterpolator3DCubic.hh"
 #include "BDSInterpolator3DLinear.hh"
+#include "BDSInterpolator3DLinearMag.hh"
 #include "BDSInterpolator3DNearest.hh"
 #include "BDSInterpolator4D.hh"
 #include "BDSInterpolator4DCubic.hh"
 #include "BDSInterpolator4DLinear.hh"
+#include "BDSInterpolator4DLinearMag.hh"
 #include "BDSInterpolator4DNearest.hh"
 #include "BDSInterpolatorType.hh"
 #include "BDSFieldMagGradient.hh"
@@ -436,6 +440,8 @@ BDSInterpolator1D* BDSFieldLoader::CreateInterpolator1D(BDSArray1DCoords*   arra
       {result = new BDSInterpolator1DNearest(array); break;}
     case BDSInterpolatorType::linear1d:
       {result = new BDSInterpolator1DLinear(array); break;}
+    case BDSInterpolatorType::linearmag1d:
+      {result = new BDSInterpolator1DLinearMag(array); break;}
     case BDSInterpolatorType::cubic1d:
       {result = new BDSInterpolator1DCubic(array); break;}
     default:
@@ -454,6 +460,8 @@ BDSInterpolator2D* BDSFieldLoader::CreateInterpolator2D(BDSArray2DCoords*   arra
       {result = new BDSInterpolator2DNearest(array); break;}
     case BDSInterpolatorType::linear2d:
       {result = new BDSInterpolator2DLinear(array); break;}
+    case BDSInterpolatorType::linearmag2d:
+      {result = new BDSInterpolator2DLinearMag(array); break;}
     case BDSInterpolatorType::cubic2d:
       {result = new BDSInterpolator2DCubic(array); break;}
     default:
@@ -472,6 +480,8 @@ BDSInterpolator3D* BDSFieldLoader::CreateInterpolator3D(BDSArray3DCoords*   arra
       {result = new BDSInterpolator3DNearest(array); break;}
     case BDSInterpolatorType::linear3d:
       {result = new BDSInterpolator3DLinear(array); break;}
+    case BDSInterpolatorType::linearmag3d:
+      {result = new BDSInterpolator3DLinearMag(array); break;}
     case BDSInterpolatorType::cubic3d:
       {result = new BDSInterpolator3DCubic(array); break;}
     default:
@@ -490,6 +500,8 @@ BDSInterpolator4D* BDSFieldLoader::CreateInterpolator4D(BDSArray4DCoords*   arra
       {result = new BDSInterpolator4DNearest(array); break;}
     case BDSInterpolatorType::linear4d:
       {result = new BDSInterpolator4DLinear(array); break;}
+    case BDSInterpolatorType::linearmag4d:
+      {result = new BDSInterpolator4DLinearMag(array); break;}
     case BDSInterpolatorType::cubic4d:
       {result = new BDSInterpolator4DCubic(array); break;}
     default:

@@ -20,6 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 
+#include "globals.hh"
+
 #include <map>
 #include <string>
 
@@ -43,13 +45,12 @@ BDSCrystalType BDS::DetermineCrystalType(G4String crystalType)
 
   auto result = types.find(crystalType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cout << __METHOD_NAME__ << "\"" << crystalType << "\" is not a valid crystal shape" << G4endl;
-      G4cout << "Available crystal shapes are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "can't determine crystal type");
+    {// it's not a valid key
+      G4String msg = "\"" + crystalType + "\" is not a valid crystal shape\n";
+      msg += "Available crystal shapes are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
   
 #ifdef BDSDEBUG

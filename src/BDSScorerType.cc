@@ -41,9 +41,9 @@ std::map<BDSScorerType, std::string>* BDSScorerType::dictionary =
 	    {BDSScorerType::cellflux3d,      "cellflux3d"},
 	    {BDSScorerType::cellfluxscaled,  "cellfluxscaled"},
 	    {BDSScorerType::cellfluxscaled3d,"cellfluxscaled3d"},
-        {BDSScorerType::cellfluxscaledperparticle,   "cellfluxscaledperparticle"},
+	    {BDSScorerType::cellfluxscaledperparticle,   "cellfluxscaledperparticle"},
 	    {BDSScorerType::cellfluxscaledperparticle3d, "cellfluxscaledperparticle3d"},
-        {BDSScorerType::cellflux4d,"cellflux4d"}
+	    {BDSScorerType::cellflux4d,"cellflux4d"}
         });
 
 BDSScorerType BDS::DetermineScorerType(G4String scorerType)
@@ -69,13 +69,12 @@ BDSScorerType BDS::DetermineScorerType(G4String scorerType)
   
   auto result = types.find(scorerType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cout << __METHOD_NAME__ << "\"" << scorerType << "\" is not a valid scorer type" << G4endl;
-      G4cout << "Available scorer types are:" << G4endl;
+    {// it's not a valid key
+      G4String msg = "\"" + scorerType + "\" is not a valid scorer type\n";
+      msg += "Available scorer types are:\n";
       for (const auto& it : types)
-        {G4cout << "\"" << it.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "error.");
+        {msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
   
 #ifdef BDSDEBUG

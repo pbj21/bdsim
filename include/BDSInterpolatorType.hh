@@ -36,11 +36,11 @@ struct interpolatortypes_def
   enum type
     {
       none,
-      nearestauto, linearauto, cubicauto,
-      nearest1d, linear1d, cubic1d,
-      nearest2d, linear2d, cubic2d,
-      nearest3d, linear3d, cubic3d,
-      nearest4d, linear4d, cubic4d
+      nearestauto, linearauto, linearmagauto, cubicauto,
+      nearest1d, linear1d, linearmag1d, cubic1d,
+      nearest2d, linear2d, linearmag2d, cubic2d,
+      nearest3d, linear3d, linearmag3d, cubic3d,
+      nearest4d, linear4d, linearmag4d, cubic4d
     };
 };
 

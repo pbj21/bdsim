@@ -1,5 +1,5 @@
 f1: field, type="bmap1d",
-                 magneticFile = "bdsim1d:1dexample.tar.gz",
+                 magneticFile = "bdsim1d:1dexample.dat.gz",
 		 magneticInterpolator = "nearest1D";
 
 q1: query, nDimensions=1,

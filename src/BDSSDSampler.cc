@@ -118,7 +118,7 @@ G4bool BDSSDSampler::ProcessHits(G4Step* aStep, G4TouchableHistory* /*readOutTH*
       G4cout << __METHOD_NAME__ << "Getting transform dynamically from geometry." << G4endl;
 #endif
       // Transform not provided so look up geometry and get the transform. OK in mass world
-      // but error prone in parallel worlds for very thin volumes.
+      // but error-prone in parallel worlds for very thin volumes.
       // NOTE: we're looking up mass world here!
       G4AffineTransform tf = preStepPoint->GetTouchableHandle()->GetHistory()->GetTopTransform();
       localPosition  = tf.TransformPoint(pos);

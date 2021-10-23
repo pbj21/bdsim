@@ -1,6 +1,6 @@
 ! test mismatch between cubic2d but 3d field format
 f1: field, type="emap3d",
-    	   electricFile="bdsim3d:3dexample.tar.gz",
+    	   electricFile="bdsim3d:3dexample.dat.gz",
 	   electricInterpolator="cubic1d",
 	   eScaling=0.5;
 

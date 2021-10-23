@@ -1,6 +1,6 @@
 ! default integrator and interpolation are assumed
 f1: field, type="bmap3d",
-    	   magneticFile="bdsim3d:3dexample.tar.gz",
+    	   magneticFile="bdsim3d:3dexample.dat.gz",
 	   bScaling=0.5;
 
 box: element, fieldAll="f1", l=1.1*m, geometry="gdml:abox.gdml";

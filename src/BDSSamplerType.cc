@@ -16,8 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSSamplerType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh" // geant4 types / globals
 
@@ -44,12 +45,13 @@ BDSSamplerType BDS::DetermineSamplerType(G4String samplerType)
 
   auto result = types.find(samplerType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << samplerType << " is not a valid sampler type" << G4endl;
-      // don't need to output types here as only for developer
-      exit(1);
+    {// it's not a valid key
+      G4String msg = "\"" + samplerType + "\" is not a valid sampler type\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
+  
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "determined sampler type to be " << result->second << G4endl;
 #endif

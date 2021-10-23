@@ -24,4 +24,5 @@ simple_fail(bunch-ptc-bad-parms               "--file=ptc-bad.gmad"             
 simple_fail(bunch-ring-bad-parms              "--file=ring-bad.gmad"                 "")
 simple_fail(bunch-sixtrack-bad-parms          "--file=sixtrack-bad.gmad"             "")
 simple_fail(bunch-square-bad-parms            "--file=square-bad.gmad"               "")
+simple_fail(bunch-type-bad                    "--file=bunch-type-bad.gmad"           "")
 simple_fail(bunch-userfile-bad-parms          "--file=userfile-bad.gmad"             "")

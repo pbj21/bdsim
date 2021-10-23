@@ -1,0 +1,19 @@
+f1: field, type="bmap4d",
+                 magneticFile = "bdsim4d:4dexample.dat.gz",
+		 magneticInterpolator = "linearmag";
+
+q1: query, nDimensions=4,
+    	   nx = 20,
+	   xmin = -30*cm,
+	   xmax = 30*cm,
+	   ny = 30,
+	   ymin = -50*cm,
+	   ymax = 50*cm,
+	   nz = 40,
+	   zmin = -50*cm,
+	   zmax = 50*cm,
+	   nt = 50,
+	   tmin = -2*ns,
+	   tmax = 2*ns,
+	   outfile = "4d_interpolated_linear_mag.dat",
+	   fieldObject = "f1";

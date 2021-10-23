@@ -1,0 +1,16 @@
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       distrType="bananas",
+       envelopeX  = 0.002*mm, 
+       envelopeY  = -0.002*mm, 
+       envelopeXp = 0.09*0.005,
+       envelopeYp = 0.09*0.005,
+       envelopeT  = 1e-9;
+       envelopeE  = 1e-5;
+
+! bananas isn't a bunch type
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;
