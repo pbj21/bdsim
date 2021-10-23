@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSComponentFactory.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSFieldInfo.hh"
@@ -90,6 +91,8 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
   // build combined field recipe
   BDSFieldInfo* outerFieldRecipe = nullptr;
 
+  auto beamPipeInfo = BDSComponentFactory::PrepareBeamPipeInfo(element);
+
   // build final object for beam line
   G4Material* surroundingMaterial = BDSMaterials::Instance()->GetMaterial(definition->surroundingMaterial);
   auto result = new BDSMuonCooler(G4String(element->name),
@@ -99,6 +102,7 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
 				  coilInfos,
 				  cavityInfos,
 				  absorberInfos,
+				  beamPipeInfo,
 				  outerFieldRecipe);
   return result;
 }

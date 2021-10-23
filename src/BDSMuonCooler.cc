@@ -63,7 +63,7 @@ BDSMuonCooler::BDSMuonCooler(const G4String& nameIn,
 			     const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
 			     const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
 			     BDSBeamPipeInfo* beamPipeTemplateIn,
-			     BDSFieldInfo*   outerFieldRecipeIn):
+			     BDSFieldInfo*    outerFieldRecipeIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "muoncooler", nullptr),
   containerRadius(containerRadiusIn),
   surroundingMaterial(surroundingMaterialIn),
