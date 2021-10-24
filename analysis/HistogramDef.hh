@@ -43,6 +43,9 @@ public:
 	       const std::string& selectionIn = "1",
 	       bool               perEnetry   = true);
   virtual ~HistogramDef(){;};
+
+  /// Copy this instance. Virtual to be overridden in derived classes.
+  virtual HistogramDef* Clone() const {return new HistogramDef(*this);}
   
   std::string treeName;
   std::string histName;

@@ -68,11 +68,11 @@ namespace RBDS
   void WarningMissingHistogram(const std::string& histName,
 			       const std::string& fileName);
 
-  /// Basic structure for accumulating histogram from rebdsim output file.
+  /// Basic structure for accumulating histogram from rebdsim output files.
   struct HistogramPath
   {
-    std::string path; // without histogram name
-    std::string name; // name of histogram
+    std::string path; ///< Without histogram name.
+    std::string name; ///< Name of histogram.
     HistogramAccumulator* accumulator;
     TDirectory* outputDir;
     bool BDSBH4Dtype;
@@ -94,6 +94,7 @@ namespace RBDS
 class HistogramMap
 {
 public:
+  HistogramMap() = delete; ///< No need for default constructor.
   HistogramMap(TFile* file,
 	       TFile* output,
 	       bool   debugIn = false);
@@ -105,12 +106,10 @@ public:
 		    TFile*      output,
 		    const std::string& parentDir);
 
-  /// Access full map of histograms.
-  inline const std::vector<RBDS::HistogramPath> Histograms() const {return histograms;}
+  /// Access full vector of histograms.
+  inline const std::vector<RBDS::HistogramPath>& Histograms() const {return histograms;}
   
 private:
-  HistogramMap() = delete; ///< No need for default constructor.
-
   bool debug;                                   ///< Debug flag.
   std::vector<RBDS::HistogramPath> histograms;  ///< Storage of all objects.
 };

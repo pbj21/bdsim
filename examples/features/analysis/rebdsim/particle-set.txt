@@ -1,0 +1,6 @@
+InputFilePath	../../data/shower1.root
+OutputFileName	ana_particle-set.root
+
+#Object           Sampler Name
+ParticleSet       c1
+SimpleParticleSet c1

@@ -403,6 +403,7 @@ void BDS::ConstructExtendedParticleSet()
   G4PionMinus::PionMinusDefinition();
   G4KaonPlus::KaonPlusDefinition();
   G4KaonMinus::KaonMinusDefinition();
+  G4GenericIon::GenericIonDefinition();
 }
 
 void BDS::PrintPrimaryParticleProcesses(const G4String& primaryParticleName)

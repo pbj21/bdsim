@@ -119,6 +119,7 @@ private:
   std::vector<std::string> treeNames;
   std::vector<std::string> branchNames;  // non-sampler branch names
   std::vector<std::string> samplerNames; // sampler branch names
+  std::vector<std::string> allSamplerNames; // used to know what branches are samplers
   std::vector<std::string> collimatorNames;
 
   TChain* heaChain;

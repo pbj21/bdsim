@@ -93,7 +93,7 @@ void Analysis::SimpleHistograms()
     {
       auto definitions = Config::Instance()->HistogramDefinitionsSimple(treeName);
       for (auto definition : definitions)
-	{FillHistogram(definition);}
+	    {FillHistogram(definition);}
     }
 }
 
@@ -108,7 +108,7 @@ void Analysis::PreparePerEntryHistograms()
     }
 }
 
-void Analysis::AccumulatePerEntryHistograms(const long int& entryNumber)
+void Analysis::AccumulatePerEntryHistograms(long int entryNumber)
 {
   for (auto& peHist : perEntryHistograms)
     {peHist->AccumulateCurrentEntry(entryNumber);}
@@ -147,22 +147,10 @@ void Analysis::Write(TFile* outputFile)
 
   // simple histograms
   simpleDir->cd();
-  for (auto& h : histograms1D)
-    {simpleDir->Add(h.second);}
-  for (auto& h : histograms2D)
-    {simpleDir->Add(h.second);}
-  for (auto& h : histograms3D)
-    {simpleDir->Add(h.second);}
-  for (auto& h : histograms4D)
-    {simpleDir->Add(h.second);}
-  for (auto& h : histograms1D)
-    {h.second->Write();}
-  for (auto& h : histograms2D)
-    {h.second->Write();}
-  for (auto& h : histograms3D)
-    {h.second->Write();}
-  for (auto& h : histograms4D)
-    {h.second->Write();}
+  for (auto& h : simpleHistograms)
+    {simpleDir->Add(h);}
+  for (auto& h : simpleHistograms)
+    {h->Write();}
 
   // merged histograms
   if (histoSum)
@@ -175,7 +163,8 @@ void Analysis::Write(TFile* outputFile)
   outputFile->cd("/");  // return to root of the file
 }
 
-void Analysis::FillHistogram(HistogramDef* definition)
+void Analysis::FillHistogram(HistogramDef* definition,
+                             std::vector<TH1*>* outputHistograms)
 {
   // ensure new histograms are added to file..
   // this is crucial for the draw command to work as it finds the histograms by name
@@ -186,53 +175,17 @@ void Analysis::FillHistogram(HistogramDef* definition)
 
   
   // pull out communal information in base class
-  int         nDim      = definition->nDimensions;
   std::string name      = definition->histName;
   std::string command   = definition->variable + " >> " + definition->histName;
   std::string selection = definition->selection;
 
   HistogramFactory factory;
-  
-  switch (nDim)
-    {
-    case 1:
-      {
-	HistogramDef1D* d = static_cast<HistogramDef1D*>(definition);
-	TH1D* h = factory.CreateHistogram1D(d);
-	chain->Draw(command.c_str(), selection.c_str(),"goff");
-	histogramNames.push_back(name);
-	histograms1D[name] = h;
-	break;
-      }
-    case 2:
-      {
-	HistogramDef2D* d = static_cast<HistogramDef2D*>(definition);
-	TH2D* h = factory.CreateHistogram2D(d);
-	chain->Draw(command.c_str(), selection.c_str(),"goff");
-	histogramNames.push_back(name);
-	histograms2D[name] = h;
-	break;
-      }
-    case 3:
-      {
-	HistogramDef3D* d = static_cast<HistogramDef3D*>(definition);
-	TH3D* h = factory.CreateHistogram3D(d);
-	chain->Draw(command.c_str(), selection.c_str(),"goff");
-	histogramNames.push_back(name);
-	histograms3D[name] = h;
-	break;
-      }
-    case 4:
-      {
-    HistogramDef4D* d = static_cast<HistogramDef4D*>(definition);
-    BDSBH4DBase* h = factory.CreateHistogram4D(d);
-    chain->Draw(command.c_str(), selection.c_str(),"goff");
-    histogramNames.push_back(name);
-    histograms4D[name] = h;
-    break;
-      }
-    default:
-      {break;}
-    }
-}
+  TH1* h = factory.CreateHistogram(definition);
+  chain->Draw(command.c_str(), selection.c_str(),"goff");
 
+  if (outputHistograms)
+    {outputHistograms->push_back(h);}
+  else
+    {simpleHistograms.push_back(h);}
+
+}

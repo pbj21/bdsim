@@ -20,12 +20,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSIonDefinition.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
 #include "BDSWarning.hh"
 
 #include "parser/beam.h"
 
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 #include "G4String.hh"
@@ -478,16 +480,28 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
     {
       // type is an int so FindParticle(int) is used here
       G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-      G4ParticleDefinition* particleDef = particleTable->FindParticle(type);
+      G4ParticleDefinition* particleDef = nullptr;
+      BDSIonDefinition* ionDef = nullptr;
+      if (type < 1e9) // not a pdg ion
+	{particleDef = particleTable->FindParticle(type);}
+      else
+	{
+	  G4IonTable* ionTable = particleTable->GetIonTable();
+	  G4int ionA, ionZ, ionLevel;
+	  G4double ionE;
+    G4IonTable::GetNucleusByEncoding(type, ionZ, ionA, ionE, ionLevel);
+	  ionDef = new BDSIonDefinition(ionA, ionZ, ionZ);
+	  particleDef = ionTable->GetIon(ionDef->Z(), ionDef->A(), ionDef->ExcitationEnergy());
+	}
+      
       if (!particleDef)
-	    {throw BDSException("BDSBunchUserFile> Particle \"" + std::to_string(type) + "\" not found");}
-	      
+        {throw BDSException("BDSBunchUserFile> Particle \"" + std::to_string(type) + "\" not found");}
       // Wrap in our class that calculates momentum and kinetic energy.
       // Requires that one of E, Ek, P be non-zero (only one).
       delete particleDefinition;
       try
         {
-          particleDefinition = new BDSParticleDefinition(particleDef, E, Ek, P, ffact);
+          particleDefinition = new BDSParticleDefinition(particleDef, E, Ek, P, ffact, ionDef);
           E = particleDefinition->TotalEnergy();
           particleDefinitionHasBeenUpdated = true;
         }

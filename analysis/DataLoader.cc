@@ -210,8 +210,9 @@ void DataLoader::BuildEventBranchNameList()
   Model* modTemporary = new Model(false, dataVersion);
   modTemporary->SetBranchAddress(mt);
   mt->GetEntry(0);
+  allSamplerNames = modTemporary->SamplerNames();
   if (processSamplers)
-    {samplerNames = modTemporary->SamplerNames();} // copy sampler names out
+    {samplerNames = allSamplerNames;} // copy sampler names out
   // collimator names was only added in data version 4 - can leave as empty vector
   if (dataVersion > 3)
     {collimatorNames = modTemporary->CollimatorNames();}
@@ -263,6 +264,11 @@ void DataLoader::SetBranchAddress(bool allOn,
     {
       if (bToTurnOn->find("Event.") != bToTurnOn->end())
 	{evtBranches = &(*bToTurnOn).at("Event.");}
+	for (const auto& bName : *evtBranches)
+      {
+        if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
+          {samplerNames.push_back(bName + ".");}
+      }
     }
   evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames);
 

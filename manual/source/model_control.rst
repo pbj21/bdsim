@@ -944,6 +944,7 @@ particle coordinates from the beginning. A warning will be printed out in this c
   :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
 * **Conflicting** parameters cannot be set. Exclusive column sets are `E`, `Ek`, `P`, and also
   `z` and `S`. The skip column symbol `-` can be used in `distrFileFormat` to skip the others.
+* Ion PDG IDs can be used but only fully ionised ions can currently be used.
 
 .. warning:: If the `pdgid` column is specified and the file contains exotic particles, the
 	     **"all_particles"** physics list should be included in the physicsList (see `Beam Parameters`_

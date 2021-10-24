@@ -1,0 +1,10 @@
+beam,  particle="e-",
+       energy = 100*GeV,
+       distrType  = "userfile",
+       distrFile  = "userbeamdata-ions.dat",
+       distrFileFormat = "pdgid";
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=3;

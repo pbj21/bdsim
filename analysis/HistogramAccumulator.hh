@@ -91,6 +91,10 @@ public:
   /// Accessor.
   inline TH1* Result() const {return result;}
 
+  /// Permit the number of recorded entries to be incremented with zero values,
+  /// ie just increment n.
+  inline void AddNEmptyEntries(unsigned long i){n += i;}
+
 protected:
   /// Accumulate a single value into the online mean and variance histograms.
   /// This by default accumulates the mean and variance with a new value x.

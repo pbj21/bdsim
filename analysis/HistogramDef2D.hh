@@ -48,6 +48,9 @@ public:
   
   virtual ~HistogramDef2D();
   
+  /// Copy this instance. Virtual to be overridden in derived classes.
+  virtual HistogramDef* Clone() const {return new HistogramDef2D(*this);}
+    
   BinSpecification yBinning;
   
   ClassDef(HistogramDef2D, 1);

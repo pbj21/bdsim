@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 ClassImp(Event)
 
 Event::Event():
+  tree(nullptr),
   debug(false),
   processSamplers(false),
   dataVersion(0),
@@ -49,9 +50,11 @@ Event::Event():
 Event::Event(bool debugIn,
 	     bool processSamplersIn,
 	     int  dataVersionIn):
+  tree(nullptr),
   debug(debugIn),
   processSamplers(processSamplersIn),
-  dataVersion(dataVersionIn)
+  dataVersion(dataVersionIn),
+  usePrimaries(false)
 {
   CommonCtor();
 }
@@ -113,7 +116,29 @@ BDSOutputROOTEventSampler<float>* Event::GetSampler(const std::string& name)
   if (found != samplerMap.end())
     {return found->second;}
   else
-    {return nullptr;}
+    {
+      if (tree)
+	{
+	  auto branch = tree->GetBranch(name.c_str());
+	  if (!branch)
+	    {return nullptr;}
+	  else
+	    {
+#ifdef __ROOTDOUBLE__
+	      Samplers.push_back(new BDSOutputROOTEventSampler<double>(name));
+#else
+	      Samplers.push_back(new BDSOutputROOTEventSampler<float>(name));
+#endif
+	      samplerNames.push_back(name);  // cache the name in a vector
+	      samplerMap[name] = Samplers.back();// cache the sampler in a map
+	      tree->SetBranchStatus((name+"*").c_str(), true);
+	      RelinkSamplers();
+	      return Samplers.back();
+	    }
+	}
+      else
+	{return nullptr;}
+    }
 }
 
 #ifdef __ROOTDOUBLE__
@@ -159,9 +184,11 @@ void Event::SetBranchAddress(TTree* t,
 			     const RBDS::VectorString* branchesToTurnOn,
 			     const RBDS::VectorString* collimatorNamesIn)
 {
-  if(debug)
+  if (debug)
     {std::cout << "Event::SetBranchAddress" << std::endl;}
 
+  tree = t; // cache tree used in case we update samplers later
+  
   // turn off all branches by default and build up by turning things back on
   // loop speed is dependent on how much we load each event -> only what we need
   t->SetBranchStatus("*", false);
@@ -302,7 +329,7 @@ void Event::SetBranchAddress(TTree* t,
       std::cout << "Event::SetBranchAddress> Info.               " << Info               << std::endl;
     }
 
-  if (processSamplers && samplerNamesIn)
+  if (processSamplers || samplerNamesIn)
     {
       unsigned int nrSamplers = samplerNamesIn->size();
       Samplers.resize(nrSamplers); // reserve and nominally instantiate instances.
@@ -319,10 +346,18 @@ void Event::SetBranchAddress(TTree* t,
 	    
 	  t->SetBranchAddress(sampName.c_str(), &Samplers[i]);
 	  t->SetBranchStatus((sampName+"*").c_str(), true);
-	  if(debug)
+	  if (debug)
 	    {std::cout << "Event::SetBranchAddress> " << (*samplerNamesIn)[i] << " " << Samplers[i] << std::endl;}
 	}
     }
+}
+
+void Event::RelinkSamplers()
+{
+  if (!tree)
+    {throw RBDSException("Event::RelinkSamplers>", "no tree from set branch address");}
+  for (const auto& item : samplerMap)
+    {tree->SetBranchAddress(item.first.c_str(), (void*)&item.second);}
 }
 
 RBDS::VectorString Event::RemoveDuplicates(const RBDS::VectorString& namesIn) const
@@ -445,5 +480,4 @@ void Event::FlushCollimators()
 {
   for (auto c : collimators)
     {c->Flush();}
-
 }

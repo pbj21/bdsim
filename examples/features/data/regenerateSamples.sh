@@ -26,3 +26,6 @@ $BDSIM --file=originalmodels/fodo-no-primaries.gmad --batch --ngenerate=100 --ou
 # job with an event generator -> to test recreation with such a setup
 # seed and ngenerate are set internally for that model
 $BDSIM --file=../beam/eventgeneratorfile/eventgeneratorfile-hepmc2.gmad --batch --outfile=../beam/eventgeneratorfile/egf-hepmc2-output
+
+# more complex data for spectra
+$BDSIM --file=originalmodels/shower.gmad --batch --outfile=shower

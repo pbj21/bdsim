@@ -46,6 +46,9 @@ public:
 		 bool                    perEntryIn  = true);
   
   virtual ~HistogramDef1D();
+    
+  /// Copy this instance. Virtual to be overridden in derived classes.
+  virtual HistogramDef* Clone() const {return new HistogramDef1D(*this);}
 
   BinSpecification xBinning;
 

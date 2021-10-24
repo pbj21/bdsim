@@ -20,10 +20,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BinLoader.hh"
 #include "BinSpecification.hh"
 #include "Config.hh"
+#include "HistogramDefSet.hh"
 #include "HistogramDef1D.hh"
 #include "HistogramDef2D.hh"
 #include "HistogramDef3D.hh"
 #include "RBDSException.hh"
+#include "SpectraParticles.hh"
 
 #include <algorithm>
 #include <fstream>
@@ -102,6 +104,10 @@ Config::~Config()
       for (auto& histoDef : nameDefs.second)
 	    {delete histoDef;}
     }
+  for (auto def : eventHistoDefSetsSimple)
+    {delete def;}
+  for (auto def : eventHistoDefSetsPerEntry)
+    {delete def;}
 }
 
 void Config::InitialiseOptions(const std::string& analysisFile)
@@ -177,6 +183,10 @@ void Config::ParseInputFile()
   std::regex comment("^\\#.*");
   // match a line starting with 'histogram', ignoring case
   std::regex histogram("(?:simple)*histogram.*", std::regex_constants::icase);
+  // match a line starting with 'spectra', ignoring case - quite exact to avoid mismatching 'spectra' in file name in options
+  std::regex spectra("(?:simple)*spectra(?:TE|rigidity)*(?:log)*(?:\\s+)", std::regex_constants::icase);
+  // match particleset ignoring case
+  std::regex particleSet("(?:simple)*particleset", std::regex_constants::icase);
 
   while (std::getline(f, line))
     {
@@ -189,6 +199,10 @@ void Config::ParseInputFile()
 	    {continue;} // skip lines starting with '#'
 	  else if (std::regex_search(line, histogram))
 	    {ParseHistogramLine(line);} // any histogram - must be before settings
+	  else if (std::regex_search(line, spectra))
+	    {ParseSpectraLine(line);}
+	  else if (std::regex_search(line, particleSet))
+	    {ParseParticleSetLine(line);}
 	  else
 	    {ParseSetting(line);} // any setting
 	}
@@ -314,7 +328,7 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
   if (nColons > nDim - 1)
     {
       std::string err = "Error: Histogram \"" + histName + "\" variable includes too many single\n";
-	  err += "colons specifying more dimensions than the number of specified dimensions.\n";
+      err += "colons specifying more dimensions than the number of specified dimensions.\n";
       err += "Declared dimensions: " + std::to_string(nDim) + "\n";
       err += "Number of dimensions in variables " + std::to_string(nColons + 1);
       throw RBDSException(err);
@@ -352,17 +366,121 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
     {
       histoDefs[treeName].push_back(result);
       if (perEntry)
-	    {histoDefsPerEntry[treeName].push_back(result);}
+	{histoDefsPerEntry[treeName].push_back(result);}
       else
-	    {histoDefsSimple[treeName].push_back(result);}
+	{histoDefsSimple[treeName].push_back(result);}
       UpdateRequiredBranches(result);
     }
+}
+
+void Config::ParseSpectraLine(const std::string& line)
+{
+  // split line on white space
+  std::vector<std::string> results = SplitOnWhiteSpace(line);
+  
+  if (results.size() < 6)
+    {throw RBDSException("Too few columns in spectra definition.");}
+  if (results.size() > 6)
+    {throw RBDSException("Too many columns in spectra definition - check there's no extra whitespace");}
+  
+  bool xLog = false;
+  bool yLog = false; // duff values to fulfill function
+  bool zLog = false;
+  ParseLog(results[0], xLog, yLog, zLog);
+  
+  bool perEntry = true;
+  ParsePerEntry(results[0], perEntry);
+  
+  std::string variable = ".kineticEnergy"; // kinetic energy by default
+  if (ContainsWordCI(results[0], "TE"))
+    {variable = ".energy";}
+  else if (ContainsWordCI(results[0], "Rigidity"))
+    {variable = ".rigidity";}
+    
+  std::string samplerName = results[1];
+  // because we can have multiple spectra on a branch and there are no user-specified names for this
+  int nSpectraThisBranch = 0;
+  auto search = spectraNames.find(samplerName);
+  if (search != spectraNames.end())
+    {// branch name already exists
+      nSpectraThisBranch = search->second;
+      search->second++;
+    }
+  else
+    {spectraNames[samplerName] = 1;}
+  std::string histogramName = samplerName + "_" + std::to_string(nSpectraThisBranch);
+  std::string selection = results[5];
+
+  BinSpecification xBinning;
+  BinSpecification yBinning;
+  BinSpecification zBinning;
+  ParseBins(results[2], 1, xBinning, yBinning, zBinning);
+  ParseBinning(results[3], 1, xBinning, yBinning, zBinning, xLog, yLog, zLog);
+    
+  std::set<ParticleSpec> particles;
+  try
+    {particles = ParseParticles(results[4]);}
+  catch (RBDSException& e)
+    {
+      e.AppendToMessage("\nError in spectra particle definition.");
+      throw RBDSException(e);
+    }
+  
+  // simple spectra using 'top' or 'ions' or 'particles' won't dynamically build up the pdg ids
+  // per event so we should warn the user about this as it'll create no histograms
+  if (particles.empty() && !perEntry)
+    {throw RBDSException("Simple spectra cannot be used with 'topN'- only works for specific particles");}
+  
+  HistogramDef1D* def = new HistogramDef1D("Event.", histogramName,
+					   xBinning,
+					   samplerName + variable,
+					   selection, perEntry);
+  
+  HistogramDefSet* result = new HistogramDefSet(samplerName,
+						def,
+						particles,
+						results[4]);
+  delete def; // no longer needed
+  
+  if (perEntry)
+    {eventHistoDefSetsPerEntry.push_back(result);}
+  else
+    {eventHistoDefSetsSimple.push_back(result);}
+  
+  SetBranchToBeActivated("Event.", samplerName);
+}
+
+void Config::ParseParticleSetLine(const std::string& line)
+{
+  std::vector<std::string> results = SplitOnWhiteSpace(line);
+  if (results.size() < 2)
+    {throw RBDSException("Too few columns in particle set definition.");}
+  if (results.size() > 2)
+    {throw RBDSException("Too many columns in particle set definition - check there's no extra whitespace");}
+  
+  std::string samplerName = results[1];
+  SetBranchToBeActivated("Event", samplerName);
+  
+  bool perEntry = true;
+  ParsePerEntry(results[0], perEntry);
+  if (perEntry)
+    {eventParticleSetBranches.push_back(samplerName);}
+  else
+    {eventParticleSetSimpleBranches.push_back(samplerName);}
 }
 
 void Config::ParsePerEntry(const std::string& name, bool& perEntry) const
 {
   std::string res = LowerCase(name);
   perEntry = res.find("simple") == std::string::npos;
+}
+
+bool Config::ContainsWordCI(const std::string& input,
+			    const std::string& word) const
+{
+  std::string il = LowerCase(input);
+  std::string wl = LowerCase(word);
+  return il.find(wl) != std::string::npos;
 }
 
 void Config::ParseLog(const std::string& definition,
@@ -531,6 +649,81 @@ void Config::ParseBinning(const std::string& binning,
       + binning + "\nDimension defined by \"low:high\" and comma separated";
       throw RBDSException(errString);
     }
+}
+
+std::vector<std::string> Config::SplitOnWhiteSpace(const std::string& line) const
+{
+  std::vector<std::string> results;
+  std::regex wspace("\\s+"); // any whitespace
+  // -1 here makes it point to the suffix, ie the word rather than the wspace
+  std::sregex_token_iterator iter(line.begin(), line.end(), wspace, -1);
+  std::sregex_token_iterator end;
+  for (; iter != end; ++iter)
+    {
+      std::string res = (*iter).str();
+      results.push_back(res);
+    }
+  return results;
+}
+
+std::set<ParticleSpec> Config::ParseParticles(const std::string& word) const
+{
+  std::string wordLower = LowerCase(word);
+  std::vector<std::string> specialKeys = {"top", "particles", "all", "ions"};
+  for (const auto& key : specialKeys)
+    {
+      if (wordLower.find(key) != std::string::npos)
+        {return std::set<ParticleSpec>();}
+    }
+
+  // some numbers in brackets -> try to split up
+  // detect brackets and strip off
+  std::regex inBrackets("^\\{(.+)\\}$");
+  std::smatch match;
+  auto firstSearch = std::regex_search(word, match, inBrackets);
+  if (!firstSearch)
+    {throw RBDSException("Invalid particle definition - no braces");}
+
+  // split up numbers inside brackets on commas
+  std::string numbers = match[1];
+  std::set<ParticleSpec> result;  
+  std::regex commas(",");
+  // -1 here makes it point to the suffix, ie the word rather than the wspace
+  std::sregex_token_iterator iter(numbers.begin(), numbers.end(), commas, -1);
+  std::sregex_token_iterator end;
+  for (; iter != end; ++iter)
+    {
+      std::string res = (*iter).str();
+      std::regex selection("^([a-zA-Z]){1}(\\d+)");
+      std::smatch matchSelection;
+      if (std::regex_search(res, matchSelection, selection))
+	{
+	  auto keySearch = RBDS::spectraParticlesKeys.find(matchSelection[1]);
+	  RBDS::SpectraParticles which;
+	  if (keySearch != RBDS::spectraParticlesKeys.end())
+	    {which = keySearch->second;}
+	  else
+	    {throw RBDSException("Invalid particle specifier \"" + matchSelection[1].str() + "\"");}
+	  try
+	    {
+	      long long int id = std::stoll(matchSelection[2].str());
+	      result.insert(ParticleSpec(id, which));
+	    }
+	  catch (const std::exception& e)
+	    {throw RBDSException(e.what());}
+	}
+      else
+	{
+	  try
+	    {
+	      long long int id = std::stoll(res);
+	      result.insert(ParticleSpec(id, RBDS::SpectraParticles::all));
+	    }
+	  catch (const std::exception& e)
+	    {throw RBDSException(e.what());}
+	}
+    }
+  return result;
 }
 
 std::string Config::LowerCase(const std::string& st) const

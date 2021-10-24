@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBH4DBase.hh"
 #include "BDSBH4DTypeDefs.hh"
 #else
+#include "RBDSException.hh"
 #include <iostream>
 #endif
 
@@ -84,7 +85,7 @@ TH1* HistogramFactory::CreateHistogram(const HistogramDef* definition,
 	if (d)
 	  {result = CreateHistogram4D(d, overRideName, overRideTitle);}
 #else
-	std::cerr << "Not compiled with BOOST libraries - no 4D histograms." << std::endl;	
+  throw RBDSException("HistogramFactory::CreateHistogram>", "Not compiled with BOOST libraries - no 4D histograms.");
 #endif
 	break;
       }
