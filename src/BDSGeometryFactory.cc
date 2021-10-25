@@ -96,12 +96,20 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
 						       G4double               suggestedHorizontalWidth,
 						       std::vector<G4String>* namedVacuumVolumes,
 						       G4bool                 makeSensitive,
-						       BDSSDType              sensitivityType)
+						       BDSSDType              sensitivityType,
+                                                       G4bool                 stripOuterVolumeAndMakeAssembly)
 {
   std::pair<G4String, G4String> ff = BDS::SplitOnColon(formatAndFileName);
   G4String fileName = BDS::GetFullPath(ff.second);
 
-  const auto search = registry.find(fileName);
+  G4String searchName = fileName;
+  // If we strip the outer volume we're technically modifying the geometry
+  // and should prepare a unique load of it and cache that otherwise, we
+  // will get either the original or the stripped version only if we place
+  // the load the same geometry twice with/without stripping
+  if (stripOuterVolumeAndMakeAssembly)
+    {searchName += "_stripped";}
+  const auto search = registry.find(searchName);
   if (search != registry.end())
     {return search->second;}// it was found already in registry
   // else wasn't found so continue
@@ -121,11 +129,13 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   
   if (result)
     {
+      if (stripOuterVolumeAndMakeAssembly)
+        {result->StripOuterAndMakeAssemblyVolume();}
       // Set all volumes to be sensitive.
       if (makeSensitive)
 	{result->MakeAllVolumesSensitive(sensitivityType);}
       
-      registry[(std::string)fileName] = result;
+      registry[(std::string)searchName] = result; // cache using optionally modified name
       storage.insert(result);
     }
   

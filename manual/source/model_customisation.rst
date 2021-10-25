@@ -1244,6 +1244,9 @@ the input.
   geometry be placed "inside" BDSIM geometry.
 * The geometry may also have a field map overlaid on it.
 * Placements cannot be made with respect to other placements.
+* There is the possiblity to strip off the outermost logical volume and place the contents
+  with the compound transform in the world. Useful for preparing for example, shielding.
+  See the parameter below :code:`stripOuterVolume=1`.
 
 For geometry to be placed as part of the beam line, use the :ref:`element` component in a line.
 
@@ -1290,6 +1293,11 @@ The following parameters may be specified with a placement in BDSIM:
 | **Parameter**           |  **Description**                                                   |
 +-------------------------+--------------------------------------------------------------------+
 | geometryFile            | :code:`format:file` - which geometry format and file to use        |
++-------------------------+--------------------------------------------------------------------+
+| stripOuterVolume        | (1 or 0) if true, then remove and discard the outer logical volume |
+|                         | from the loaded geometry and turn it into an 'assembly' volume     |
+|                         | with the contents placed with the correct relative transform in    |
+|                         | the world.                                                         |
 +-------------------------+--------------------------------------------------------------------+
 | bdsimElement            | Name of the beam line element defined in the parser to be used     |
 +-------------------------+--------------------------------------------------------------------+

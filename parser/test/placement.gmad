@@ -1,7 +1,15 @@
 ! define every parameter to check them all.
-leadblock: placement, x=10*m,y=3*cm,z=12*m,
+leadblock: placement, x=10*m,y=3*cm,z=12*m,s=1*cm,
 	   	      phi=1,theta=2,psi=3,
 		      axisX=1, axisY=0.5, axisZ=0.01,angle=0.003,
 		      sensitive=1,
 		      axisAngle=1,
-		      geometryFile="gdml:afile.gdml";
+		      geometryFile="gdml:afile.gdml",
+		      bdsimElement="",
+		      sequence="mangoes",
+		      referenceElement="lhc",
+		      referenceElementNumber=2,
+		      sideOffset=0.3,
+		      autoColour=1,
+		      stripOuterVolume=1,
+		      fieldAll="pineapples";

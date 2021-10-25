@@ -349,20 +349,14 @@ G4int BDSLinkDetectorConstruction::PlaceOneComponent(const BDSBeamlineElement* e
 						    const G4String&           originalName)
 {
   G4String placementName = element->GetPlacementName() + "_pv";
-  G4Transform3D* placementTransform = element->GetPlacementTransform();
   G4int copyNumber = element->GetCopyNo();
-  new G4PVPlacement(*placementTransform,
-                    placementName,
-                    element->GetContainerLogicalVolume(),
-                    worldPV,
-                    false,
-                    copyNumber,
-                    true);
+  std::set<G4VPhysicalVolume*> pvs = element->PlaceElement(placementName, worldPV, false, copyNumber, true);
 
   auto lc = dynamic_cast<BDSLinkComponent*>(element->GetAcceleratorComponent());
   if (!lc)
     {return -1;}
   BDSLinkOpaqueBox* el = lc->Component();
+  G4Transform3D* placementTransform = element->GetPlacementTransform();
   G4Transform3D elCentreToStart = el->TransformToStart();
   G4Transform3D globalToStart = elCentreToStart * (*placementTransform);
   G4int linkID = linkRegistry->Register(el, globalToStart);

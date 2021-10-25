@@ -187,13 +187,13 @@ std::vector<long long int> PerEntryHistogramSet::TopUtility(const std::set<long 
 
   // take advantage of a multimap being (by definition) ordered - therefore, the integrals
   // are ordered low to high, so reverse iterate to get in decreasing order.
-  std::vector<long long int> result;
+  std::vector<long long int> topResult;
   int i = 0;
   int nInt = (int)n;
   // reverse iterate up to the end of the result or n, whichever is smaller
   for (auto it = sorted.rbegin(); it != sorted.rend() && i < nInt; it++, i++)
-    {result.push_back(it->second);}
-  return result;
+    {topResult.push_back(it->second);}
+  return topResult;
 }
 
 std::vector<long long int> PerEntryHistogramSet::TopNNonIons(int n) const

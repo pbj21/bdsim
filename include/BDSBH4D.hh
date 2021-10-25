@@ -40,7 +40,6 @@ template<class T>
 class BDSBH4D: public BDSBH4DBase
 {
 #ifdef USE_BOOST
-
 public:
   BDSBH4D();
   BDSBH4D(std::string& name, std::string& title, const std::string& eScale,

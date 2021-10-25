@@ -153,7 +153,7 @@ void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
 		  {
 		    for (int e = -1; e <= h1->GetNbinsE(); ++e)
 		      {
-			var = std::pow(ht->At(j,k,l,e), 2) * factor;
+			var = std::pow(ht->AtError(j,k,l,e), 2) * factor;
 			AccumulateSingleValue(h1->At(j,k,l,e),
 					      h1e->At(j,k,l,e),
 					      ht->At(j,k,l,e),

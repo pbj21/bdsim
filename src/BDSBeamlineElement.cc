@@ -26,12 +26,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTiltOffset.hh"
 #include "BDSUtilities.hh"
 
+#include "G4AssemblyVolume.hh"
+#include "G4PVPlacement.hh"
 #include "G4RotationMatrix.hh"
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
 
+#include <algorithm>
 #include <ostream>
+#include <set>
 #include <string>
 
 BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
@@ -104,6 +108,56 @@ BDSBeamlineElement::~BDSBeamlineElement()
   delete placementTransform;
   delete placementTransformCL;
   delete samplerPlacementTransform;
+}
+
+std::set<G4VPhysicalVolume*> BDSBeamlineElement::GetPVsFromAssembly(G4AssemblyVolume* av)
+{
+  // this is obtuse because of the lack of access in G4Assembly
+  std::vector<G4VPhysicalVolume*> allPlacementsFromThisAssembly;
+  auto it = av->GetVolumesIterator();
+  for (G4int i = 0; i < (G4int)av->TotalImprintedVolumes(); it++, i++)
+    {allPlacementsFromThisAssembly.push_back(*it);}
+  std::set<G4VPhysicalVolume*> result(allPlacementsFromThisAssembly.begin(), allPlacementsFromThisAssembly.end());
+  return result;
+}
+
+std::set<G4VPhysicalVolume*> BDSBeamlineElement::PlaceElement(const G4String& pvName,
+                                                    G4VPhysicalVolume* motherPV,
+                                                    G4bool             useCLPlacementTransform,
+                                                    G4int              pvCopyNumber,
+                                                    G4bool             checkOverlaps) const
+{
+  G4Transform3D* pvTransform = GetPlacementTransform();
+  if (useCLPlacementTransform)
+    {pvTransform = GetPlacementTransformCL();}
+  
+  std::set<G4VPhysicalVolume*> result;
+  if (component->ContainerIsAssembly())
+    {
+      G4AssemblyVolume* av = component->GetContainerAssemblyVolume();
+      auto existingPVSet = GetPVsFromAssembly(av);
+      av->MakeImprint(motherPV->GetLogicalVolume(),
+		      *pvTransform,
+		      pvCopyNumber,checkOverlaps);
+      
+      // need to get pvs before and afterwards and o the difference
+      auto updatedPVSet = GetPVsFromAssembly(av);
+      std::set_difference(updatedPVSet.begin(), updatedPVSet.end(),
+			  existingPVSet.begin(), existingPVSet.end(),
+			  std::inserter(result, result.begin()));
+    }
+  else
+    {
+      G4LogicalVolume* lv = component->GetContainerLogicalVolume();
+      result.insert(new G4PVPlacement(*pvTransform,       // placement transform
+				      pvName,             // placement name
+				      lv,                 // volume to be placed
+				      motherPV,           // volume to place it in
+				      false,              // no boolean operation
+				      pvCopyNumber,       // copy number
+				      checkOverlaps));    // overlap checking
+    }
+  return result;
 }
 
 BDSExtentGlobal BDSBeamlineElement::GetExtentGlobal() const

@@ -99,7 +99,9 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
 								    placement.autoColour,
 								    0, 0,
 								    nullptr,
-								    placement.sensitive);
+								    placement.sensitive,
+								    BDSSDType::energydep,
+								    placement.stripOuterVolume);
 	  
 	  chordLength = geom->GetExtent().DZ();
 	  comp = new BDSSimpleComponent(placement.name + "_" + geom->GetName(), geom, chordLength);

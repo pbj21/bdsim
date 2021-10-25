@@ -34,6 +34,10 @@ New Features
   file and with a relatively complex model.
 * rebdsim will now default to "intputfilename" + "_ana.root" if no outputfile name is specified.
 * "linearmag" experimental interpolation.
+* When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
+  outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
+  world with the compound transforms: relative to the former outermost logical volume and also
+  the placements transform in the world.
   
 General
 -------
@@ -48,6 +52,8 @@ General
   It will also tolerate any whitespace before either `#` or `!` to mark a comment line,
   whereas previously it would only identify a comment if the very first character
   of the line was `#`.
+* BDSGeometryComponent class refactored to permit a G4AssemblyVolume as the container
+  for a piece of geometry. It's in addition to a logical volume.
 
 Bug Fixes
 ---------

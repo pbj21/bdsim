@@ -65,6 +65,7 @@ namespace GMAD
     std::string side;     ///< which side to attach to: top, bottom, left, right.
     double sideOffset;    ///< Gap between side and component.
     bool   autoColour;    ///< Whether to auto colour the geometry.
+    bool   stripOuterVolume; ///< Whether to place the world LV as a G4AssemblyVolume.
     
     std::string fieldAll; ///< Name of field object to apply to all of placement.
     

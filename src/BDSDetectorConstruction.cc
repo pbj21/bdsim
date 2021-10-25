@@ -698,7 +698,7 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
 
   const auto& extras = BDSAcceleratorModel::Instance()->ExtraBeamlines();
   for (auto const& bl : extras)
-    {// extras is map so iterator has first and second for key and value
+    {// extras is a map so iterator has first and second for key and value
       // note these are currently not sensitive as there's no CL frame for them
       PlaceBeamlineInWorld(bl.second.massWorld, worldPV, checkOverlaps);
       PlaceBeamlineInWorld(bl.second.endPieces, worldPV, checkOverlaps);
@@ -739,28 +739,21 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
       // setup the sensitivity
       element->GetAcceleratorComponent()->AttachSensitiveDetectors();
       
-      G4String placementName = element->GetPlacementName() + "_pv";
-      G4Transform3D* placementTransform = element->GetPlacementTransform();
-      if (useCLPlacementTransform)
-	{placementTransform = element->GetPlacementTransformCL();}
+      // make the placement
       G4int copyNumber = useIncrementalCopyNumbers ? i : element->GetCopyNo();
-      auto pv = new G4PVPlacement(*placementTransform,                  // placement transform
-				  placementName,                        // placement name
-				  element->GetContainerLogicalVolume(), // volume to be placed
-				  containerPV,                          // volume to place it in
-				  false,                                // no boolean operation
-				  copyNumber,                           // copy number
-				  checkOverlaps);                       // overlap checking
-
+      G4String placementName = element->GetPlacementName() + "_pv";
+      std::set<G4VPhysicalVolume*> pvs = element->PlaceElement(placementName, containerPV, useCLPlacementTransform,
+                                                               copyNumber, checkOverlaps);
+      
       if (registerInfo)
         {
 	  BDSPhysicalVolumeInfo* theinfo = new BDSPhysicalVolumeInfo(element->GetName(),
-								     placementName,
+                                                               placementName,
 								     element->GetSPositionMiddle(),
 								     element->GetIndex(),
 								     beamline);
 	  
-	  BDSPhysicalVolumeInfoRegistry::Instance()->RegisterInfo(pv, theinfo, true);
+	  BDSPhysicalVolumeInfoRegistry::Instance()->RegisterInfo(pvs, theinfo, true);
         }
       i++; // for incremental copy numbers
     }

@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTiltOffset.hh"
 
 #include <ostream>
+#include <set>
 
 namespace HepGeom {
   class Transform3D;
@@ -38,6 +39,7 @@ namespace CLHEP {
   class HepRotation;
 }
 typedef CLHEP::HepRotation G4RotationMatrix;
+class G4VPhysicalVolume;
 
 /**
  * @brief A class that holds a fully constructed BDSAcceleratorComponent
@@ -82,6 +84,17 @@ public:
 		     G4int                    indexIn       = -1);
 
   ~BDSBeamlineElement();
+
+  /// Make a placement of the element with the desired name and copy number. In
+  /// the case of an assembly, a set of pvs is returned.
+  std::set<G4VPhysicalVolume*> PlaceElement(const G4String&    pvName,
+					    G4VPhysicalVolume* containerPV,
+					    G4bool             useCLPlacementTransform,
+					    G4int              copyNumber,
+					    G4bool             checkOverlaps) const;
+
+  /// Utility method to account for the interface in G4AssemblyVolume.
+  static std::set<G4VPhysicalVolume*> GetPVsFromAssembly(G4AssemblyVolume* av);
   
   ///@{ Accessor
   inline BDSAcceleratorComponent* GetAcceleratorComponent() const {return component;}
@@ -94,7 +107,6 @@ public:
   inline BDSExtent         GetExtent()                    const {return component->GetExtent();}
   inline G4String          GetPlacementName()             const {return placementName;}
   inline G4int             GetCopyNo()                    const {return copyNumber;}
-  inline G4LogicalVolume*  GetContainerLogicalVolume()    const {return component->GetContainerLogicalVolume();}
   inline G4ThreeVector     GetPositionStart()             const {return positionStart;}
   inline G4ThreeVector     GetPositionMiddle()            const {return positionMiddle;}
   inline G4ThreeVector     GetPositionEnd()               const {return positionEnd;}

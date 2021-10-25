@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "HistSparse1D.hh"
 
+#include "TH1.h"
 #include "TH1D.h"
 
 #include <map>
@@ -34,17 +35,22 @@ public:
   typedef HistSparse1D<long long int> HistSparse;
   TH1Set();
   TH1Set(const char* name, const char* title);
-  virtual ~TH1Set();
+  ~TH1Set() override;
 
-  const HistSparse& HistSparse1D() const {return data;}
-
-  virtual Int_t Fill(Double_t x) {return Fill(x,1.0);}
-  virtual Int_t Fill(Double_t x, Double_t w);
-  virtual void  DoFillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t stride=1);
+  const HistSparse& GetHistSparse1D() const {return data;}
+  
+  Int_t Fill(const char*, Double_t)  override {return 0;}
+  Int_t Fill(Double_t x)             override {return this->Fill(x,1.0);}
+  Int_t Fill(Double_t x, Double_t w) override;
+  void  DoFillN(Int_t ntimes, const Double_t* x, const Double_t* w, Int_t stride=1) override;
   
   Int_t AddNewBin(long long int x);
   
-  virtual Bool_t Add(const TH1 *h1, Double_t c1);
+  // Have to implement these to prevent a warning in older GCC.
+  Bool_t Add(TF1*, Double_t, Option_t*) override {return false;}
+  Bool_t Add(const TH1*, const TH1*, Double_t, Double_t) override {return false;}
+  // The one we implement.
+  Bool_t Add(const TH1*, Double_t) override;
   
   Double_t GetBinContentByAbscissa(long long int x) const;
   Double_t GetBinErrorByAbscissa(long long int x) const;
@@ -76,7 +82,7 @@ virtual void SetBinContent(Int_t bin, Double_t content);
 virtual void SetBinError(Int_t bin, Double_t error);
 virtual void GetStats(Double_t *stats) const;
 */
-  ClassDef(TH1Set,1)
+  ClassDefOverride(TH1Set,1)
 };
 
 #endif

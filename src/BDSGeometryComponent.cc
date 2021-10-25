@@ -23,7 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDManager.hh"
 #include "BDSSDType.hh"
 
-#include "globals.hh"              // geant4 globals / types
+#include "globals.hh"
+#include "G4AssemblyVolume.hh"
 #include "G4LogicalVolume.hh"
 #include "G4RotationMatrix.hh"
 #include "G4UserLimits.hh"
@@ -43,8 +44,27 @@ BDSGeometryComponent::BDSGeometryComponent(G4VSolid*            containerSolidIn
 					   const BDSExtent&     innerExtentIn,
 					   const G4ThreeVector& placementOffsetIn,
 					   G4RotationMatrix*    placementRotationIn):
+  containerIsAssembly(false),
   containerSolid(containerSolidIn),
   containerLogicalVolume(containerLVIn),
+  containerAssembly(nullptr),
+  outerExtent(extentIn),
+  innerExtent(innerExtentIn),
+  overrideSensitivity(false),
+  placementOffset(placementOffsetIn),
+  placementRotation(placementRotationIn),
+  lvsExcludedFromBiasing(nullptr)
+{;}
+
+BDSGeometryComponent::BDSGeometryComponent(G4AssemblyVolume* containerAssemblyIn,
+                                           const BDSExtent&     extentIn,
+                                           const BDSExtent&     innerExtentIn,
+                                           const G4ThreeVector& placementOffsetIn,
+                                           G4RotationMatrix*    placementRotationIn):
+  containerIsAssembly(true),
+  containerSolid(nullptr),
+  containerLogicalVolume(nullptr),
+  containerAssembly(containerAssemblyIn),
   outerExtent(extentIn),
   innerExtent(innerExtentIn),
   overrideSensitivity(false),
@@ -54,8 +74,10 @@ BDSGeometryComponent::BDSGeometryComponent(G4VSolid*            containerSolidIn
 {;}
 
 BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component):
+  containerIsAssembly(component.containerIsAssembly),
   containerSolid(component.containerSolid),
   containerLogicalVolume(component.containerLogicalVolume),
+  containerAssembly(component.containerAssembly),
   outerExtent(component.outerExtent),
   innerExtent(component.innerExtent),
   overrideSensitivity(component.overrideSensitivity),
@@ -233,4 +255,32 @@ void BDSGeometryComponent::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
   if (!lvsExcludedFromBiasing)
     {lvsExcludedFromBiasing = new std::set<G4LogicalVolume*>();}
   lvsExcludedFromBiasing->insert(lv);
+}
+
+void BDSGeometryComponent::StripOuterAndMakeAssemblyVolume()
+{
+  if (containerIsAssembly)
+    {return;}
+  containerAssembly = new G4AssemblyVolume();
+  for (G4int i = 0; i < (G4int)containerLogicalVolume->GetNoDaughters(); i++)
+    {
+      auto daughterPV = containerLogicalVolume->GetDaughter(i);
+      auto daughterLV = daughterPV->GetLogicalVolume();
+      auto translation = daughterPV->GetObjectTranslation();
+      auto rotation = daughterPV->GetObjectRotation(); // could be nullptr
+      G4RotationMatrix* rm = rotation ? new G4RotationMatrix(*(rotation)) : nullptr;
+      containerAssembly->AddPlacedVolume(daughterLV, translation, rm);
+    }
+  containerIsAssembly = true;
+}
+
+void BDSGeometryComponent::AttachUserLimitsToAssembly(G4AssemblyVolume* av,
+                                                      G4UserLimits* ul)
+{
+  std::set<G4LogicalVolume*> lvSet;
+  auto it = av->GetVolumesIterator();
+  for (G4int i = 0; i < (G4int)av->TotalImprintedVolumes(); i++, it++)
+    {lvSet.insert((*it)->GetLogicalVolume());}
+  for (auto& lv : lvSet)
+    {lv->SetUserLimits(ul);}
 }

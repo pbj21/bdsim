@@ -63,7 +63,8 @@ public:
 				     G4double               suggestedHorizontalWidth = 0,
 				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
 				     G4bool                 makeSensitive            = true,
-				     BDSSDType              sensitivityType          = BDSSDType::energydep);
+				     BDSSDType              sensitivityType          = BDSSDType::energydep,
+				     G4bool                 stripOuterVolumeAndMakeAssembly = false);
  
 private:
   /// Private accessor as singleton

@@ -53,6 +53,7 @@ void Placement::clear()
   side       = "";
   sideOffset = 0;
   autoColour = true;
+  stripOuterVolume = false;
   fieldAll   = "";
 }
 
@@ -80,6 +81,7 @@ void Placement::PublishMembers()
   publish("side",          &Placement::side);
   publish("sideOffset",    &Placement::sideOffset);
   publish("autoColour",    &Placement::autoColour);
+  publish("stripOuterVolume", &Placement::stripOuterVolume);
   publish("fieldAll",      &Placement::fieldAll);
 }
 
@@ -108,7 +110,8 @@ void Placement::print()const
 	    << "side \""        << side          << "\"\n"
             << "sideOffset "    << sideOffset    << "\n"
 	    << "axisAngle "     << axisAngle     << "\n"
-	    << "autoColour "    << autoColour    << "\n"
+        << "autoColour "    << autoColour    << "\n"
+        << "stripOuterVolume "    << stripOuterVolume << "\n"
 	    << "fieldAll \""    << fieldAll      << "\"" << std::endl;
 }
 
@@ -136,6 +139,7 @@ Placement::Placement(const SamplerPlacement& sp):
   angle     = sp.angle;
   axisAngle = sp.axisAngle;
   autoColour = false;
+  stripOuterVolume = false;
 }
 
 Placement::Placement(const ScorerMesh& sm):
@@ -162,6 +166,7 @@ Placement::Placement(const ScorerMesh& sm):
   angle     = sm.angle;
   axisAngle = sm.axisAngle;
   autoColour = false;
+  stripOuterVolume = false;
 }
 
 Placement::Placement(const BLMPlacement& bp):
@@ -188,4 +193,5 @@ Placement::Placement(const BLMPlacement& bp):
   side       = bp.side;
   sideOffset = bp.sideOffset;
   autoColour = false;
+  stripOuterVolume = false;
 }
