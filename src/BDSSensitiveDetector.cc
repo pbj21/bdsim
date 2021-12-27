@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4TouchableHistory;
 
-BDSSensitiveDetector::BDSSensitiveDetector(G4String name):
+BDSSensitiveDetector::BDSSensitiveDetector(const G4String& name):
   G4VSensitiveDetector(name)
 {;}
 

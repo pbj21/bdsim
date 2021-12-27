@@ -1,0 +1,28 @@
+f1: field, type="bmap2d",
+                 magneticFile = "bdsim2d:muon-field.dat.gz",
+		 magneticInterpolator = "linear";
+
+q1: query, nDimensions=2,
+    	   nx = 50,
+	   xmin = -300*cm,
+	   xmax = 300*cm,
+	   ny = 50,
+	   ymin = -300*cm,
+	   ymax = 300*cm,
+	   outfile = "muon-field-interpolated-linear.dat",
+	   fieldObject = "f1";
+
+
+f2: field, type="bmap2d",
+                 magneticFile = "bdsim2d:muon-field.dat.gz",
+		 magneticInterpolator = "linearmag";
+
+q1: query, nDimensions=2,
+    	   nx = 50,
+	   xmin = -300*cm,
+	   xmax = 300*cm,
+	   ny = 50,
+	   ymin = -300*cm,
+	   ymax = 300*cm,
+	   outfile = "muon-field-interpolated-linearmag.dat",
+	   fieldObject = "f2";

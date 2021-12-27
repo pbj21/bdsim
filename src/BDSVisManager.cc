@@ -107,20 +107,22 @@ void BDSVisManager::StartSession(int argc, char** argv)
     }
   else
     {// user specified visualisation macro - check if it exists
-      if (BDS::FileExists(visMacPath) == false)
+      if (!BDS::FileExists(visMacPath))
         {
-          std::cout << __METHOD_NAME__ << "ERROR: visualisation file "
-                    << visMacPath << " not present!" << G4endl;
+          std::cout << __METHOD_NAME__ << "ERROR: visualisation file " << visMacPath << " not present!" << G4endl;
           return;
         }
+      G4cout << __METHOD_NAME__ << "Using visualisation macro: " << visMacName << G4endl;
     }
   // execute the macro
   UIManager->ApplyCommand("/control/execute " + visMacPath);
 
   // apply optional macro if file name not empty
   if (!geant4MacroFileName.empty())
-    {UIManager->ApplyCommand("/control/execute " + geant4MacroFileName);}
-  
+    {
+      G4cout << __METHOD_NAME__ << "Applying geant4MacroFileName: " << geant4MacroFileName << G4endl;
+      UIManager->ApplyCommand("/control/execute " + geant4MacroFileName);
+    }
   
 #if G4VERSION_NUMBER < 1030
   if (session2->IsGUI())

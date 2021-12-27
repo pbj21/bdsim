@@ -1,3 +1,4 @@
 protonsh10: scorer, type="h10", particleName="proton", minimumKineticEnergy=40*MeV, maximumKineticEnergy=10*GeV, conversionFactorFile="lalala.dat", particlePDGID=2212, minimumTime=0*s, maximumTime=5*s;
-
+print, protonsh10;
 !protonshten: type="h102", minimumKineticEnergy=1*GeV;!, particleTypeName="neutron";
+print, protonsh10;

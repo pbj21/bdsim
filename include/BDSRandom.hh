@@ -54,10 +54,10 @@ namespace BDSRandom
   G4String GetSeedState();
 
   /// Load a seedstate.txt file and restore the engine to this status.
-  void LoadSeedState (G4String inSeedFilename);
+  void LoadSeedState(const G4String& inSeedFilename);
 
   /// Set the seed state from a string.
-  void SetSeedState(G4String seedState);
+  void SetSeedState(const G4String& seedState);
   void SetSeedState(std::stringstream& seedState);
 }
 

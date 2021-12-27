@@ -16,5 +16,6 @@ mesh: scorermesh, nx=100, ny=20, nz=30, scoreQuantity="redprotons",
       angle = pi,
       axisAngle = 1;
 
-
+print, mesh;
 mesh: x = -1, y = 9*cm;
+print, mesh;

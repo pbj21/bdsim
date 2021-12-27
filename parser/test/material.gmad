@@ -1,4 +1,7 @@
-iron : matdef, Z=26, A=55.845, density=7.87, T=300,P=1,state="solid";
+iron : matdef, Z=26, A=55.845, density=7.87, T=300, P=1, state="solid";
 niobium :  atom, symbol="myNb", Z=41, A=92.906;
 titanium : atom, symbol="myTi", Z=22, A=47;
 myNbTi : matdef, density=5.6, T=4.0, components=["myNb","myTi"], componentsWeights={1,1};
+print, iron;
+print, niobium;
+print, myNbTi;

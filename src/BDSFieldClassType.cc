@@ -16,11 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSDebug.hh"
 #include "BDSFieldClassType.hh"
-
-#include "globals.hh"
-#include "G4String.hh"
 
 #include <map>
 #include <string>

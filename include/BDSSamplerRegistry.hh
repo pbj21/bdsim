@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSSAMPLERREGISTRY_H
 #include "BDSDebug.hh"
 #include "BDSException.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -58,9 +58,9 @@ class BDSSamplerRegistry
 {
 private:
   /// Typedefs up first so we can declare public iterators.
-  typedef std::vector<BDSSamplerInfo> InfoVector;
+  typedef std::vector<BDSSamplerPlacementRecord> InfoVector;
 
-  /// Storage of registerd information.
+  /// Storage of registered information.
   InfoVector infos;
   
 public:
@@ -88,7 +88,7 @@ public:
 			G4double             S         = -1000,
 			const BDSBeamlineElement* element   = nullptr);
 
-  G4int RegisterSampler(BDSSamplerInfo& info);
+  G4int RegisterSampler(BDSSamplerPlacementRecord& info);
 
   ///@{ Iterator mechanics
   typedef InfoVector::iterator       iterator;
@@ -107,7 +107,7 @@ public:
   inline G4Transform3D  GetTransform(G4int index) const;
   inline G4Transform3D  GetTransformInverse(G4int index) const;
   inline G4double       GetSPosition(G4int index) const;
-  inline const BDSSamplerInfo& GetInfo(G4int index) const {return infos.at(index);}
+  inline const BDSSamplerPlacementRecord& GetInfo(G4int index) const {return infos.at(index);}
   inline G4int          GetBeamlineIndex(G4int index) const;
   /// @}
 

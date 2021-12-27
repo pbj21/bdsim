@@ -39,14 +39,18 @@ namespace GMAD
   public:
     std::string name;          ///< Name of this placement.
     std::string scoreQuantity; ///< Name of scorer object to use.
+    std::string geometryType; ///< Name of scorermesh geometry to use.
     
     int nx;             ///< Number of bins in x.
     int ny;             ///< Number of bins in y.
     int nz;             ///< Number of bins in z.
+    int nr;             ///< Number of bins in R.
+    int nphi;           ///< Number of bins in Phi.
     int ne;             ///< Number of bins in E.
     double xsize;       ///< X total width.
     double ysize;       ///< Y total width.
     double zsize;       ///< Z total width.
+    double rsize;       ///< R total length.
     double eLow;        ///< E Low limit.
     double eHigh;       ///< E High limit.
     std::string eScale; ///< E scaling type.

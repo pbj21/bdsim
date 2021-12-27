@@ -31,7 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 struct geometrytypes_def
 {
-  enum type {mokka, gmad, gdml};
+  enum type {mokka, gdml};
 };
 
 typedef BDSTypeSafeEnum<geometrytypes_def,int> BDSGeometryType;

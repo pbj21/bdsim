@@ -69,8 +69,9 @@ namespace GMAD
     _JCOL        = 71,
     _WIRESCANNER = 72,
     _USERCOMPONENT = 73,
-    _DUMP          = 74,
-    _MUONCOOLER  = 75
+    _DUMP        = 74,
+    _MUONCOOLER  = 75,
+    _CT          = 76
   };
 
   /// conversion from enum to string

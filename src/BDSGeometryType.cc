@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -30,7 +32,6 @@ template<>
 std::map<BDSGeometryType, std::string>* BDSGeometryType::dictionary =
   new std::map<BDSGeometryType, std::string> ({
    {BDSGeometryType::mokka,  "mokka"},
-   {BDSGeometryType::gmad,   "gmad"},
    {BDSGeometryType::gdml,   "gdml"}
 });	
 
@@ -38,10 +39,9 @@ BDSGeometryType BDS::DetermineGeometryType(G4String geometryType)
 {
   std::map<G4String, BDSGeometryType> types;
   types["mokka"]  = BDSGeometryType::mokka;
-  types["gmad"]   = BDSGeometryType::gmad;
   types["gdml"]   = BDSGeometryType::gdml;
 
-  geometryType.toLower();
+  geometryType = BDS::LowerCase(geometryType);
 
   auto result = types.find(geometryType);
   if (result == types.end())

@@ -22,11 +22,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSExtent.hh"
 #include "BDSExtentGlobal.hh"
+#include "BDSSamplerInfo.hh"
 #include "BDSSamplerType.hh"
+#include "BDSTiltOffset.hh"
 
 #include "globals.hh" // geant4 globals / types
 #include "G4ThreeVector.hh"
-#include "BDSTiltOffset.hh"
 
 #include <ostream>
 #include <set>
@@ -62,6 +63,9 @@ class G4VPhysicalVolume;
 class BDSBeamlineElement
 {
 public:
+  BDSBeamlineElement() = delete;
+  BDSBeamlineElement(const BDSBeamlineElement&) = delete;
+  BDSBeamlineElement& operator=(const BDSBeamlineElement&) = delete;
   BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
 		     const G4ThreeVector&     positionStartIn,
 		     const G4ThreeVector&     positionMiddleIn,
@@ -79,8 +83,7 @@ public:
 		     G4double                 sPositionMiddleIn,
 		     G4double                 sPositionEndIn,
 		     BDSTiltOffset*           tiltOffsetIn  = nullptr,
-		     BDSSamplerType           samplerTypeIn = BDSSamplerType::none,
-		     const G4String&          samplerNameIn = "",
+		     BDSSamplerInfo*          samplerInfoIn = nullptr,
 		     G4int                    indexIn       = -1);
 
   ~BDSBeamlineElement();
@@ -125,8 +128,8 @@ public:
   inline BDSTiltOffset*    GetTiltOffset()                const {return tiltOffset;}
   inline G4Transform3D*    GetPlacementTransform()        const {return placementTransform;}
   inline G4Transform3D*    GetPlacementTransformCL()      const {return placementTransformCL;}
-  inline BDSSamplerType    GetSamplerType()               const {return samplerType;}
-  inline G4String          GetSamplerName()               const {return samplerName;}
+  inline BDSSamplerInfo*   GetSamplerInfo()               const {return samplerInfo;}
+  inline BDSSamplerType    GetSamplerType()               const {return samplerInfo ? samplerInfo->samplerType : BDSSamplerType::none;}
   inline G4Transform3D*    GetSamplerPlacementTransform() const {return samplerPlacementTransform;}
   inline G4int             GetIndex()                     const {return index;}
   inline G4String          GetMaterial()                  const {return component->Material();}
@@ -146,7 +149,7 @@ public:
   /// @}
   
   /// Convenience accessor.
-  inline G4double          GetTilt() const {return tiltOffset ? tiltOffset->GetTilt() : 0.0;}
+  inline G4double GetTilt() const {return tiltOffset ? tiltOffset->GetTilt() : 0.0;}
   
   ///@{ Reassign the end variable as required when applying a transform
   inline void SetReferencePositionEnd(G4ThreeVector     newReferencePositionEnd);
@@ -156,15 +159,10 @@ public:
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSBeamlineElement const &element);
 
-  /// Whether this beam line element will oerlaps in 3D Cartesian coordinates with another.
+  /// Whether this beam line element will overlaps in 3D Cartesian coordinates with another.
   G4bool Overlaps(const BDSBeamlineElement* otherElement) const;
   
 private:
-  /// Private default constructor to force use of provided constructor
-  BDSBeamlineElement() = delete;
-  BDSBeamlineElement(const BDSBeamlineElement&) = delete;
-  BDSBeamlineElement& operator=(const BDSBeamlineElement&) = delete;
-    
   /// The accelerator component
   BDSAcceleratorComponent* component;
 
@@ -210,22 +208,19 @@ private:
   ///@}
 
   /// The tilt and offset this element was constructed with. Default is nullptr.
-  BDSTiltOffset*    tiltOffset;
+  BDSTiltOffset* tiltOffset;
 
   /// Transform made from positionMiddle and rotationMiddle. By using them as
   /// a transform, the rotation matrix is the correct way around (inversion).
-  G4Transform3D*    placementTransform;
+  G4Transform3D* placementTransform;
 
   /// Transform made from the referencePositionMiddle and referenceRottationMiddle.
   /// The read out (curvilinear) geometry should always align with the reference
   /// trajectory and not the possibly offset position of the mass geometry, hence
   /// have a separate transform for it.
-  G4Transform3D*    placementTransformCL;
+  G4Transform3D* placementTransformCL;
 
-  /// The type of sampler to attach to this element - could be none as well.
-  const BDSSamplerType samplerType;
-
-  const G4String samplerName;
+  BDSSamplerInfo* samplerInfo;
 
   /// The transform for where the sampler 'attached' to this element should be placed.
   /// Note this would normally overlap in the real 'mass' world, but this will be used
@@ -233,7 +228,7 @@ private:
   /// accelerator component are valid. This transform places the sampler just at the
   /// end of the element overlapping with the outgoing boundary as defined by the
   /// reference position at the end and the reference rotation at the end.
-  G4Transform3D*    samplerPlacementTransform;
+  G4Transform3D* samplerPlacementTransform;
 
   /// Index of this item in the beamline - saves keeping track of iterators and conversion.
   G4int index;

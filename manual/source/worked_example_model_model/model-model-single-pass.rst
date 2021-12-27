@@ -107,7 +107,7 @@ This writes a model in the directory "singlepass" and with the base name "bmm-sp
 The main model is :code:`singlepass/job-bmm-sp.gmad`. The contents are given below and then
 discussed. ::
 
-  include the basic model
+  !include the basic model
   include bmm-sp.gmad;
 
   ! now we go to town with the options

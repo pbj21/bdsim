@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <list>
 #include <string>
   
   using namespace GMAD;
@@ -53,6 +54,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
     bool execute = true;
     int element_count = -1; // for samplers , ranges etc. -1 means add to all
     ElementType element_type = ElementType::_NONE; // for samplers, ranges etc.
+    std::list<int>* samplerPartIDList = nullptr;
 
     /// helper method for undeclared variables
     void undeclaredVariable(std::string s)
@@ -92,7 +94,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> SOLENOID RCOL JCOL ECOL LINE LASER TRANSFORM3D MUONSPOILER MUSPOILER
 %token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
-%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP MUONCOOLER
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP MUONCOOLER CT
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
 %token SCORER SCORERMESH BLM
 %token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE COOLINGCHANNEL
@@ -106,7 +108,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %type <str> use_parameters
 %type <ival> component component_with_params newinstance
 %type <str> sample_options
-%type <str> csample_options
 %type <str> paramassign string
 
 /* printout format for debug output */
@@ -402,6 +403,7 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | USERCOMPONENT {$$=static_cast<int>(ElementType::_USERCOMPONENT);}
           | DUMP        {$$=static_cast<int>(ElementType::_DUMP);}
           | MUONCOOLER  {$$=static_cast<int>(ElementType::_MUONCOOLER);}
+          | CT          {$$=static_cast<int>(ElementType::_CT);}
 
 atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options
@@ -776,17 +778,22 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
         | print OPTION { if(execute) Parser::Instance()->PrintOptions(); }
         | print VARIABLE
           {
-            if(execute) {
-              Symtab *sp = Parser::Instance()->symlook(*($2));
-              if (!sp) {
-                // variable not defined, maybe an element? (will exit if not)
-                const Element& element = Parser::Instance()->find_element(*($2));
-                element.print();
-              }
-              else {
-                sp->Print();
-              }
-            }
+            if(execute)
+	      {
+		Symtab* sp = Parser::Instance()->symlook(*($2));
+		if (!sp)
+		  {
+		    bool printedObjectOk = Parser::Instance()->TryPrintingObject(*($2));
+		    if (!printedObjectOk)
+		      {
+			// variable not defined, maybe an element? (will exit if not)
+			const Element& element = Parser::Instance()->find_element(*($2));
+			element.print();
+		      }
+		  }
+		else
+		  {sp->Print();}
+	      }
           }
         | print STR    { if(execute) std::cout << *($2) << std::endl;}
         | print symbol { if(execute) $2->Print();}
@@ -800,21 +807,23 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
           if(execute)
             {
               if(ECHO_GRAMMAR) std::cout << "command -> SAMPLE" << std::endl;
-              Parser::Instance()->add_sampler(*($3), element_count, element_type);
+              Parser::Instance()->add_sampler(*($3), element_count, element_type, "plane", samplerPartIDList);
               element_count = -1;
               Parser::Instance()->ClearParams();
+              delete samplerPartIDList; samplerPartIDList = nullptr;
             }
         }
-        | CSAMPLE ',' csample_options // cylindrical sampler
+        | CSAMPLE ',' sample_options
         {
-          if(execute)
-            {
-              if(ECHO_GRAMMAR) std::cout << "command -> CSAMPLE" << std::endl;
-              Parser::Instance()->add_csampler(*($3), element_count, element_type);
-              element_count = -1;
-              Parser::Instance()->ClearParams();
-            }
-        }
+	  if(execute)
+	    {
+	      if(ECHO_GRAMMAR) std::cout << "command -> CSAMPLE" << std::endl;
+	      Parser::Instance()->add_sampler(*($3), element_count, element_type, "cylinder", samplerPartIDList);
+	      element_count = -1;
+	      Parser::Instance()->ClearParams();
+	      delete samplerPartIDList; samplerPartIDList = nullptr;
+	    }
+	}
         | ATOM ',' atom_options // atom
         {
           if(execute)
@@ -983,17 +992,24 @@ use_parameters :  VARIABLE
                    }
                }
 
-sample_options: RANGE '=' VARIABLE
+sample_options_extend : /* nothing */
+                      | ',' sample_options
+
+sample_options: RANGE '=' VARIABLE sample_options_extend
               {
                 if(ECHO_GRAMMAR) std::cout << "sample_opt : RANGE =  " << *($3) << std::endl;
                 if(execute) $$ = $3;
               }
-              | RANGE '=' VARIABLE '[' NUMBER ']'
+              | RANGE '=' VARIABLE '[' NUMBER ']' sample_options_extend
               {
                 if(ECHO_GRAMMAR) std::cout << "sample_opt : RANGE =  " << *($3) << " [" << $5 << "]" << std::endl;
-                if(execute) { $$ = $3; element_count = (int)$5; }
+                if(execute)
+                  {
+                    $$ = $3;
+                    element_count = (int)$5;
+                  }
               }
-              | ALL
+              | ALL sample_options_extend
               {
                 if(ECHO_GRAMMAR) std::cout << "sample_opt, all" << std::endl;
                 // -2: convention to add to all elements
@@ -1005,30 +1021,27 @@ sample_options: RANGE '=' VARIABLE
                     element_type=ElementType::_NONE;
                   }
               }
-	            | component
+	      | component sample_options_extend
               {
-                if(ECHO_GRAMMAR) std::cout << "sample_opt, all " << typestr(static_cast<ElementType>($1)) << std::endl;
-                if(execute) {
-                  element_type = static_cast<ElementType>($1);
-                  element_count = -2;
-                  $$ = new std::string("");
-                }
+                if(ECHO_GRAMMAR) std::cout << "sample_opt, component " << typestr(static_cast<ElementType>($1)) << std::endl;
+                if(execute)
+                  {
+                    element_type = static_cast<ElementType>($1);
+                    element_count = -2;
+                    $$ = new std::string("");
+                  }
               }
-
-csample_options_extend : /* nothing */
-                       | ',' csample_options
-
-csample_options : paramassign '=' aexpr csample_options_extend
+              | paramassign '=' vecexpr sample_options_extend
+              {//not extend in this rule as it should come last
+                if(ECHO_GRAMMAR) std::cout << "sample_opt, vecexpr " << std::endl;
+                if(execute)
                   {
-                    if(ECHO_GRAMMAR) std::cout << "csample_opt ->csopt " << (*$1) << " = " << $3 << std::endl;
-                    if(execute)
-                      Parser::Instance()->SetValue<Parameters>(*($1),$3);
+                    std::string parameterName = std::string(*$1);
+                    if (parameterName != "partID")
+                      {throw std::invalid_argument("invalid sampler parameter " + parameterName);}
+                    samplerPartIDList = Parser::Instance()->ArrayToList<int>($3);
                   }
-                | sample_options csample_options_extend
-                  {
-                    if(ECHO_GRAMMAR) std::cout << "csample_opt -> sopt, csopt" << std::endl;
-                    $$ = $1;
-                  }
+              }
 
 cavitymodel_options_extend : /* nothing */
                            | ',' cavitymodel_options
@@ -1079,7 +1092,20 @@ samplerplacement_options : paramassign '=' aexpr samplerplacement_options_extend
                     { if(execute) Parser::Instance()->SetValue<SamplerPlacement>((*$1),$3);}
                   | paramassign '=' string samplerplacement_options_extend
                     { if(execute) Parser::Instance()->SetValue<SamplerPlacement>(*$1,*$3);}
-
+                  | paramassign '=' vecexpr samplerplacement_options_extend
+                    {
+		      if(execute)
+                        {
+                          Parser::Instance()->SetValue<SamplerPlacement>(*($1),$3);
+                          if (*($1) == "partID")
+                          {// manually register the particle filter set
+                             std::list<int>* partIDSet = Parser::Instance()->ArrayToList<int>($3);
+                             int setID = Parser::Instance()->add_sampler_partIDSet(partIDSet);
+                             Parser::Instance()->GetGlobal<SamplerPlacement>().partIDSetID = setID;
+                             //Parser::Instance()->SetValue<SamplerPlacement>("partIDSetID", setID);
+                          }
+                        }
+                   }
 scorer_options_extend : /* nothing */
                   | ',' scorer_options
 

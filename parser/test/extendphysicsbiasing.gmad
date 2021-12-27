@@ -1,5 +1,5 @@
 biasDef0: xsecBias, particle="e-", proc="msc eIoni eBrem CoulombScat", xsecfact={10,10,10,10}, flag={1,1,1,1};
-
+print, biasDef0;
 biasDef0: particle="e+";
-
+print, biasDef0;
 d1 : drift, l=1*m, bias="biasDef0";

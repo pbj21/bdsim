@@ -27,3 +27,5 @@ q1: query, nDimensions = 2,
 	   tmax = 10*ns,
 	   outfile="test1.dat",
 	   fieldObject="uniformfield";
+
+print, q1;

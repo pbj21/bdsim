@@ -36,8 +36,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParallelWorldSampler.hh"
 #include "BDSParser.hh"
 #include "BDSSampler.hh"
+#include "BDSSamplerInfo.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
+#include "BDSSamplerType.hh"
 #include "BDSSDManager.hh"
 #include "BDSTiltOffset.hh"
 
@@ -97,9 +99,9 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
   
   auto acceleratorModel = BDSAcceleratorModel::Instance();
 
-  for (auto elementIt = beamline.begin(); elementIt != beamline.end(); ++elementIt)
+  for (const auto& element : beamline)
     {
-      GMAD::ElementType eType = elementIt->type;
+      GMAD::ElementType eType = element.type;
 
       if (eType == GMAD::ElementType::_LINE || eType == GMAD::ElementType::_REV_LINE)
         {continue;}
@@ -114,14 +116,14 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
 	{throw BDSException(G4String("Unsupported element type for link = " + GMAD::typestr(eType)));}
 
       // Only need first argument, the rest pertain to beamlines.
-      BDSAcceleratorComponent* component = componentFactory->CreateComponent(&(*elementIt),
+      BDSAcceleratorComponent* component = componentFactory->CreateComponent(&element,
 									     nullptr,
 									     nullptr,
 									     0);
 
-      BDSTiltOffset* to = new BDSTiltOffset(elementIt->offsetX * CLHEP::m,
-                                            elementIt->offsetY * CLHEP::m,
-                                            elementIt->tilt * CLHEP::rad);
+      BDSTiltOffset* to = new BDSTiltOffset(element.offsetX * CLHEP::m,
+                                            element.offsetY * CLHEP::m,
+                                            element.tilt * CLHEP::rad);
       BDSLinkOpaqueBox* opaqueBox = new BDSLinkOpaqueBox(component,
                                                          to,
                                                          component->GetExtent().MaximumAbsTransverse());
@@ -132,7 +134,7 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
 							opaqueBox,
 							opaqueBox->GetExtent().DZ());
       acceleratorModel->RegisterLinkComponent(comp); // memory management
-      nameToElementIndex[elementIt->name] = (G4int)linkBeamline->size();
+      nameToElementIndex[element.name] = (G4int)linkBeamline->size();
       linkBeamline->AddComponent(comp);
     }
 
@@ -161,7 +163,9 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
   for (auto element : *linkBeamline)
     {
       BDSLinkComponent* lc = dynamic_cast<BDSLinkComponent*>(element->GetAcceleratorComponent());
-      G4String name = lc ? lc->LinkName() : element->GetSamplerName();
+      BDSSamplerInfo* samplerInfo = element->GetSamplerInfo();
+      G4String samplerName = samplerInfo ? samplerInfo->name : "unknown";
+      G4String name = lc ? lc->LinkName() : samplerName;
       G4int linkID = PlaceOneComponent(element, name);
       nameToElementIndex[name] = linkID;
     }
@@ -196,8 +200,7 @@ G4int BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& colli
      {"tcpch.a4l7.b1", "stf75"},// b1 h new name
      {"tcpcv.a6l7.b1", "tcp76"} // b2 v new name
     };
-  G4String collimatorLower = collimatorName;
-  collimatorLower.toLower();
+  G4String collimatorLower = BDS::LowerCase(collimatorName);
   auto searchC = collimatorToCrystal.find(collimatorLower); // will use later if needed
   G4bool isACrystal = searchC != collimatorToCrystal.end();
   if (!isACrystal && isACrystalIn)
@@ -304,7 +307,8 @@ G4int BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& colli
 						opaqueBox,
 						opaqueBox->GetExtent().DZ());
   BDSAcceleratorModel::Instance()->RegisterLinkComponent(comp);
-  linkBeamline->AddComponent(comp, nullptr, BDSSamplerType::plane, comp->GetName() + "_out");
+  BDSSamplerInfo* samplerInfo = new BDSSamplerInfo(comp->GetName() + "_out", BDSSamplerType::plane);
+  linkBeamline->AddComponent(comp, nullptr, samplerInfo);
 
   // update world extents and world solid
   UpdateWorldSolid();
@@ -371,7 +375,7 @@ G4int BDSLinkDetectorConstruction::PlaceOneComponent(const BDSBeamlineElement* e
       if (!samplerWorld)
         {return -1;}
       
-      BDSSampler* sampler = samplerWorld->GeneralPlane();
+      BDSSamplerPlane* sampler = samplerWorld->GeneralPlane();
       G4String samplerName = originalName + "_in";
       G4double sStart = element->GetSPositionStart();
 

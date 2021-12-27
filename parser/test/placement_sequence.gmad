@@ -19,3 +19,5 @@ line2: placement, sequence = "l2",
 		  sensitive=1,
 		  axisAngle=1,
 		  geometryFile="gdml:afile.gdml";
+
+print, line2;

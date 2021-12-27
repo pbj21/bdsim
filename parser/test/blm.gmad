@@ -17,3 +17,5 @@ minidetector: blm, x=10*m,y=3*cm,z=12*m,
 		      sideOffset=1*cm,
 		      scoreQuantity="dose",
 		      bias="biasobjectname";
+
+print, minidetector;

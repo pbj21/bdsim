@@ -1,0 +1,18 @@
+d1: drift, l=1*cm;
+d2: drift, l=1*cm;
+d3: drift, l=1*cm;
+d4: drift, l=1*cm;
+l1: line=(d1,d2,d3,d4);
+use, l1;
+
+sample, range=d1, partID={11,-11,12,-12,13,-13};
+
+beam, particle="proton",
+      kineticEnergy=20*GeV,
+      distrType="userfile",
+      distrFileFormat="pdgid",
+      distrFile="varied-particles.dat";
+
+beam, matchDistrFileLength=1;
+
+option, physicsList="all_particles";

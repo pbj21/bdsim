@@ -5,13 +5,13 @@ use, l1;
 
 ! Score the ambient dose in the air for all particles
 ambientdose_material: scorer,
-             type="ambientdose",
+             type="cellfluxscaledperparticle",
              conversionFactorPath="conversion_factors/",
-             materialFilter="G4_AIR";
+             materialToExclude="G4_AIR";
 
 ! Score only the contribution of neutrons to the ambient dose
 ambientdose_particle: scorer,
-             type="ambientdose",
+             type="cellfluxscaledperparticle",
              minimumKineticEnergy=1e-11*MeV,
              maximumKineticEnergy=20*MeV,
              conversionFactorPath="conversion_factors/",

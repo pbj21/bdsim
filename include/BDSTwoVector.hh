@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSTWOVECTOR_H
 #define BDSTWOVECTOR_H
+#include "BDSException.hh"
 
 #include "globals.hh" // geant4 types / globals
 
@@ -54,6 +55,8 @@ public:
   /// Assignment operator.
   BDSTwoVector& operator=(const BDSTwoVector& rhs)
   {
+    if (this == &rhs)
+      {return *this;}
     values[0] = rhs.values[0];
     values[1] = rhs.values[1];
     return *this;
@@ -63,7 +66,7 @@ public:
   T& operator[](const G4int index)
   {
     if (index > 1)
-      {G4cerr << "index outside array" << G4endl; exit(1);}
+      {throw BDSException("BDSTwoVector::operator[]> index outside array");}
     return values[index];
   }
 
@@ -71,7 +74,7 @@ public:
   const T& operator[](const G4int index) const
   {
     if (index > 1)
-      {G4cerr << "index outside array" << G4endl; exit(1);}
+      {throw BDSException("BDSTwoVector::operator[]> index outside array");}
     return values[index];
   }
 

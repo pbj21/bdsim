@@ -47,7 +47,7 @@ sample, range = endl;
 !sample, range = mrb1b;
 !sample, range = mrb1b;
 
-option,ngenerate=51, nperfile=50;
+option,ngenerate=8;
 
 !print, line;
 

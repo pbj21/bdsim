@@ -6,5 +6,6 @@ minidetector: samplerplacement, x=10*m,y=3*cm,z=12*m,
 		      apertureModel="ap1",
 		      shape="rectangular",
 		      aper1=1*cm, aper2=2*cm, aper3=3*cm, aper4=4*cm;
-
+print, minidetector;
 minidetector: aper1 = 2*cm;
+print, minidetector;

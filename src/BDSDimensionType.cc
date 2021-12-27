@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSDimensionType.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -43,7 +45,7 @@ BDSDimensionType BDS::DetermineDimensionType(G4String dimensionType)
   types["z"] = BDSDimensionType::z;
   types["t"] = BDSDimensionType::t;
 
-  dimensionType.toLower();
+  dimensionType = BDS::LowerCase(dimensionType);
 
   auto result = types.find(dimensionType);
   if (result == types.end())

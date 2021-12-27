@@ -1,0 +1,24 @@
+d1: drift, l=1*m;
+c1: rcol, l=10*cm, xsize=1*cm, ysize=10*cm, material="Cu";
+
+l1: line = (d1, c1, d1, d1, d1);
+use,period=l1;
+
+option, ngenerate=1,
+	physicsList="em";
+	
+beam, particle="e-",
+      energy=10.0*GeV,
+      X0=1.01*cm;
+
+! note we don't use any other samplers in this to test that
+! this is still built (internal check)
+s1: samplerplacement, referenceElement="d1",
+		      referenceElementNumber=1,
+		      x=20*cm, y=-1*cm, s=30*cm,
+    		      axisAngle=1, axisY=1, angle=pi/4,
+		      aper1=10*cm,
+		      partID={12,-12,13,-13};
+
+s2: samplerplacement, x=-40*cm, aper1=10*cm,
+    		      partID={12,-12,13,-13};

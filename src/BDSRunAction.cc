@@ -28,7 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutput.hh"
 #include "BDSParser.hh"
 #include "BDSRunAction.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
 #include "BDSSamplerRegistry.hh"
 
 #include "parser/beamBase.h"

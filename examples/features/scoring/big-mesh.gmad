@@ -2,7 +2,7 @@ c1: rcol, l=0.2*m, material="W", horizontalWidth=2*m;
 l1: line=(c1);
 use, l1;
 
-protonAmbient: scorer, type="ambientdose",
+protonAmbient: scorer, type="cellfluxscaledperparticle",
 	       particleName="proton",
 	       minimumKineticEnergy=20*MeV,
 	       maximumKineticEnergy=100*GeV,

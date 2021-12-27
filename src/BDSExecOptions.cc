@@ -74,6 +74,8 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
 void BDSExecOptions::Parse(int argc, char **argv)
 {
   static struct option LongOptions[] = {{ "help" , 0, 0, 0 },
+                                        { "reference", 0, 0, 0},
+					{ "citation", 0, 0, 0},
                                         { "version", 0, 0, 0 },
                                         { "versionGit", 0, 0, 0 },
 					{ "verbose", 0, 0, 0 },
@@ -164,6 +166,11 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	    if ( !strcmp(optionName , "help") )
 	      {
 		Usage();
+		exit(0);
+	      }
+	    else if ( !strcmp(optionName, "reference") || !strcmp(optionName, "citation") )
+	      {
+		PrintCitation();
 		exit(0);
 	      }
 	    else if ( !strcmp(optionName, "version") )
@@ -422,6 +429,7 @@ void BDSExecOptions::Usage() const
   G4cout<<"Options (alphabetically):" << G4endl;
   G4cout<<"--file=<filename>            : specify the input file "                           << G4endl
 	<<"--batch                      : batch mode - no graphics"                          << G4endl
+    	<<"--reference or --citation    : print the citation information then quit"          << G4endl
 	<<"--circular                   : assume circular machine - turn control"            << G4endl
 	<<"--colours                    : list available colours included in bdsim"          << G4endl
 	<<"                               by default"                                        << G4endl
@@ -470,6 +478,37 @@ void BDSExecOptions::Usage() const
 	<<"--vis_mac=<file>             : file with the visualisation macro script, default" << G4endl
 	<<"                               provided by BDSIM openGL (OGLSQt))"                << G4endl
 	<<"--writeseedstate             : write an ASCII file seed state for each event"     << G4endl;
+}
+
+void BDSExecOptions::PrintCopyright() const
+{
+  // Print header & program information
+  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
+  G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London - GPLv3"  << G4endl;
+  G4cout<<G4endl;
+  G4cout<<"        Reference: Computer Physics Communications, 107200 (2020)" << G4endl;
+  G4cout<<"                   https://doi.org/10.1016/j.cpc.2020.107200"      << G4endl;
+  G4cout<<"                   https://arxiv.org/abs/1808.10745"               << G4endl;
+  G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
+  G4cout<<G4endl;
+}
+
+void BDSExecOptions::PrintCitation() const
+{
+  G4cout << "BDSIM: An accelerator tracking code with particle-matter interactions." << G4endl;
+  G4cout << "L.J. Nevay et al., Computer Physics Communications, 1070200 (2020)" << G4endl;
+  G4cout << "https://doi.org/10.1016/j.cpc.2020.107200" << G4endl << G4endl;
+  G4cout << R"(@article{NEVAY2020107200,)" << G4endl;
+  G4cout << R"(title = {BDSIM: An accelerator tracking code with particle–matter interactions},)" << G4endl;
+  G4cout << R"(journal = {Computer Physics Communications},)" << G4endl;
+  G4cout << R"(volume = {252},)" << G4endl;
+  G4cout << R"(pages = {107200},)" << G4endl;
+  G4cout << R"(year = {2020},)" << G4endl;
+  G4cout << R"(issn = {0010-4655},)" << G4endl;
+  G4cout << R"(doi = {https://doi.org/10.1016/j.cpc.2020.107200},)" << G4endl;
+  G4cout << R"(url = {https://www.sciencedirect.com/science/article/pii/S0010465520300400},)" << G4endl;
+  G4cout << R"(author = {L.J. Nevay and S.T. Boogert and J. Snuverink and A. Abramov and L.C. Deacon and H. Garcia-Morales and H. Lefebvre and S.M. Gibson and R. Kwee-Hinzmann and W. Shields and S.D. Walker},)" << G4endl;
+  G4cout << R"(})" << G4endl;
 }
 
 void BDSExecOptions::Print() const

@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -56,7 +58,7 @@ BDSBeamPipeType BDS::DetermineBeamPipeType(G4String apertureType)
   types["circularvacuum"] = BDSBeamPipeType::circularvacuum;
   types["clicpcl"]        = BDSBeamPipeType::clicpcl;
 
-  apertureType.toLower();
+  apertureType = BDS::LowerCase(apertureType);
 
   auto result = types.find(apertureType);
   if (result == types.end())

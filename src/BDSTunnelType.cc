@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSTunnelType.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -47,7 +49,7 @@ BDSTunnelType BDS::DetermineTunnelType(G4String tunnelType)
   types["ilc"]             = BDSTunnelType::ilc;
   types["rectaboveground"] = BDSTunnelType::rectaboveground;
 
-  tunnelType.toLower();
+  tunnelType = BDS::LowerCase(tunnelType);
 
   auto result = types.find(tunnelType);
   if (result == types.end() )

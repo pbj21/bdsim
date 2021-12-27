@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSAcceleratorComponent;
 class BDSBeamlineElement;
+class BDSSamplerInfo;
 class BDSSimpleComponent;
 class BDSTiltOffset;
 class BDSTransform3D;
@@ -65,14 +66,18 @@ private:
   /// Vector of beam line elements - the data.
   BeamlineVector beamline;
   
-public:
+public:  
+  /// assignment and copy constructor not implemented nor used.
+  BDSBeamline& operator=(const BDSBeamline&) = delete;
+  BDSBeamline(BDSBeamline&) = delete;
+  
   /// Versatile basic constructor that allows a finite position and rotation to be applied
   /// at the beginning of the beamline in global coordinates. Remember the maximum
   /// extents of the beamline will also be displaced. The default constructor is in effect
   /// achieved via defaults
-  BDSBeamline(G4ThreeVector     initialGlobalPosition = G4ThreeVector(0,0,0),
-	      G4RotationMatrix* initialGlobalRotation = nullptr,
-	      G4double          initialS              = 0.0);
+  BDSBeamline(const G4ThreeVector& initialGlobalPosition = G4ThreeVector(0,0,0),
+	      G4RotationMatrix*    initialGlobalRotation = nullptr,
+	      G4double             initialS              = 0.0);
 
   /// Constructor with transform instance that uses other constructor.
   explicit BDSBeamline(G4Transform3D initialTransform,
@@ -84,10 +89,9 @@ public:
   /// in which case, loop over it and apply
   /// AddSingleComponent(BDSAcceleratorComponent* component) to each component
   /// Returns vector of components added
-  void AddComponent(BDSAcceleratorComponent* component,
-		    BDSTiltOffset* tiltOffset  = nullptr,
-		    BDSSamplerType samplerType = BDSSamplerType::none,
-		    G4String       samplerNameIn = "");
+  void AddComponent(BDSAcceleratorComponent*  component,
+		    BDSTiltOffset*  tiltOffset  = nullptr,
+		    BDSSamplerInfo* samplerInfo = nullptr);
 
   /// Apply a Transform3D rotation and translation to the reference
   /// coordinates. Special method for the special case of unique component
@@ -240,12 +244,10 @@ public:
   
 private:
   /// Add a single component and calculate its position and rotation with respect
-  /// to the beginning of the beamline
-  /// Returns pointer to component added
+  /// to the beginning of the beamline. Returns pointer to the component added.
   void AddSingleComponent(BDSAcceleratorComponent* component,
 			  BDSTiltOffset*           tiltOffset  = nullptr,
-			  BDSSamplerType           samplerType = BDSSamplerType::none,
-			  G4String                 samplerNameIn = "");
+			  BDSSamplerInfo*          samplerInfo = nullptr);
   
   /// Register the fully created element to a map of names vs element pointers. Used to
   /// look up transforms by name.
@@ -285,10 +287,6 @@ private:
   /// index for the beamline element in the main BDSBeamlineVector element.
   /// This is filled in order so it's sorted by design.
   std::vector<G4double> sEnd;
-  
-  /// assignment and copy constructor not implemented nor used
-  BDSBeamline& operator=(const BDSBeamline&);
-  BDSBeamline(BDSBeamline&);
 };
 
 #endif

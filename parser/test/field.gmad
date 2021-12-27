@@ -1,17 +1,20 @@
 uniformfield: field, type="poisson",
 		     bScaling = 3.0,
 		     integrator = "g4classicalrk4",
+		     globalTransform = 1,
 		     magneticFile = "poisson2d:/Path/To/File.TXT",
 		     magneticInterpolator = "nearest2D",
-		     electricFile = "poisson2d:/Another/File.TX",
+		     electricFile = "poisson2d:/Another/File.TXT",
 		     electricInterpolator = "linear2D",
-		     x=1,y=0.3,z=3.5,
+		     x=1,y=0.3,z=3.5,t=0.1,
 		     phi=0,
 		     theta=0,
 		     psi=pi,
 		     axisX=0, axisY=0, axisZ=0, angle=0,
 		     axisAngle=0,
 		     autoScale=1,
-		     maximumStepLength=1*mm;
-
+		     maximumStepLength=1*mm,
+		     magneticSubField="lala1",
+		     electricSubField="lala2";
+print, uniformfield;
 d1: drift, l=0.5*m, aper1=4*cm, fieldAll="uniformfield";

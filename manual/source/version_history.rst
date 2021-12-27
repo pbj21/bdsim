@@ -16,9 +16,24 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 V1.7.0 - 2021 / XX / XX
 =======================
 
+* GGMAD Geometry format is now deprecated. This was not maintained for a long time and with
+  pyg4ometry and GDML we support much better geometry. The code is old and hard to maintain
+  and really needs to be rewritten.
+* New executable options :code:`--reference` and :code:`--citation` to display the citation
+  in bibtex to cite BDSIM easily.
+
 New Features
 ------------
 
+* Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
+  to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
+  This also applies to sampler placements.
+* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
+  instructions on how to run Docker. This is a container system where a complete
+  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
+  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
+  XWindows server is required for the visualiser. See :ref:`docker-build`.
+* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into voxelized geometries.
 * New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
   :ref:`spectra-definition` for more information.
 * The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
@@ -27,7 +42,7 @@ New Features
   logarithmic or user-defined energy axis scale (requires Boost).
 * New scorer type: cellflux4d
 * New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
-* new :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
+* New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
   introduced to permit overriding the energy of the beam.
 * New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
   command line. Useful when BDSIM is executed from a different directory from the main GMAD input
@@ -37,7 +52,8 @@ New Features
 * When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
   outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
   world with the compound transforms: relative to the former outermost logical volume and also
-  the placements transform in the world.
+  the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
+* New type of scorermesh geometry: cylindrical.
   
 General
 -------
@@ -54,10 +70,15 @@ General
   of the line was `#`.
 * BDSGeometryComponent class refactored to permit a G4AssemblyVolume as the container
   for a piece of geometry. It's in addition to a logical volume.
+* A `dump` element may now be specified without a length and will by default be 1 mm long.
 
 Bug Fixes
 ---------
 
+* Fix extension of all parser objects (i.e. not beam line elements), which was broken. Extension
+  is the access and update of a variable inside a defined object such as a field or scorer.
+* Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
+  would work with this command or variables in the input GMAD.
 * If a multipole has a zero-length, it will be converted in a thin multipole.
 * Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
   with pole face rotations. Issue #306.
@@ -87,6 +108,11 @@ Bug Fixes
   of tar.gz (only gzipped or uncompressed) files (historical hangover).
 * Fixed field map interpolation and plotting scripts as well as make use of improvements
   in pybdsim.
+* Fix visualisation of loaded GDML container volume.
+* Fix uncaught Geant4 exceptions by introducing our own exception handler to intercept
+  the Geant4 one and throw our own, safely handled exceptions a la standard C++.
+* Fix lack of user limits for RF cavity geometry.
+* Fix maximum step length user limit for externally loaded geometry.
 
 Output Changes
 --------------

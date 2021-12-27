@@ -74,7 +74,7 @@ add_test(gmad-duplicate-name ${gmadBinary} duplicateName.gmad)
 set_tests_properties(gmad-duplicate-name PROPERTIES WILL_FAIL 1)
 
 # add sampler to undefined element
-add_test(gmad-add-sampler-undefined-element ${gmadBinary} addSamplerUndefinedElement.gmad)
+add_test(gmad-add-sampler-undefined-element ${gmadBinary} addsampler_undefined_element.gmad)
 set_tests_properties(gmad-add-sampler-undefined-element PROPERTIES WILL_FAIL 1)
 
 # element with no options
@@ -152,12 +152,21 @@ add_test(gmad-test-add-sampler ${gmadBinary} addsampler.gmad)
 set_tests_properties(gmad-test-add-sampler PROPERTIES PASS_REGULAR_EXPRESSION plane)
 
 # test add all samplers
-add_test(gmad-test-add-all-samplers ${gmadBinary} addallsamplers.gmad)
-set_tests_properties(gmad-test-add-all-samplers PROPERTIES PASS_REGULAR_EXPRESSION plane)
+add_test(gmad-test-add-sampler-all ${gmadBinary} addsampler_all.gmad)
+set_tests_properties(gmad-test-add-sampler-all PROPERTIES PASS_REGULAR_EXPRESSION plane)
 
 # test add samplers at all quadrupoles
-add_test(gmad-test-add-quad-samplers ${gmadBinary} addquadsamplers.gmad)
-set_tests_properties(gmad-test-add-quad-samplers PROPERTIES PASS_REGULAR_EXPRESSION plane)
+add_test(gmad-test-add-sampler-element-type ${gmadBinary} addsampler_element_type.gmad)
+set_tests_properties(gmad-test-add-sampler-element-type PROPERTIES PASS_REGULAR_EXPRESSION plane)
+
+add_test(gmad-test-add-sampler-partID-filter-multiple ${gmadBinary} addsampler_multiple_partID_filter.gmad)
+set_tests_properties(gmad-test-add-sampler-partID-filter-multiple PROPERTIES PASS_REGULAR_EXPRESSION "samplerarticleSetID = 1")
+
+add_test(gmad-test-add-sampler-partID-filter ${gmadBinary} addsampler_partID_filter.gmad)
+set_tests_properties(gmad-test-add-sampler-partID-filter PROPERTIES PASS_REGULAR_EXPRESSION "samplerarticleSetID = 0")
+
+add_test(gmad-test-add-sampler-partID-filter-all ${gmadBinary} addsampler_all_partID_filter.gmad)
+set_tests_properties(gmad-test-add-sampler-partID-filter-all PROPERTIES PASS_REGULAR_EXPRESSION "samplerarticleSetID = 0")
 
 # test inheritance declaration
 add_test(gmad-inherit ${gmadBinary} inherit.gmad)
@@ -179,23 +188,23 @@ set_tests_properties(gmad-extend-nonvalid PROPERTIES WILL_FAIL 1)
 add_test(gmad-units ${gmadBinary} units.gmad)
 
 # test objects
-add_test(gmad-aperture           ${gmadBinary} aperture.gmad)
-add_test(gmad-atom               ${gmadBinary} atom.gmad)
-add_test(gmad-blm                ${gmadBinary} blm.gmad)
-add_test(gmad-cavitymodel        ${gmadBinary} cavitymodel.gmad)
-add_test(gmad-colour             ${gmadBinary} colour.gmad)
-add_test(gmad-coolingchannel     ${gmadBinary} coolingchannel.gmad)
-add_test(gmad-crystal            ${gmadBinary} crystal.gmad)
-add_test(gmad-field              ${gmadBinary} field.gmad)
-add_test(gmad-material           ${gmadBinary} material.gmad)
-add_test(gmad-physics-biasing    ${gmadBinary} physicsbiasing.gmad)
-add_test(gmad-placement          ${gmadBinary} placement.gmad)
-add_test(gmad-placement-sequence ${gmadBinary} placement_sequence.gmad)
-add_test(gmad-region             ${gmadBinary} region.gmad)
-add_test(gmad-samplerplacement   ${gmadBinary} samplerplacement.gmad)
-add_test(gmad-scorer             ${gmadBinary} scorer.gmad)
-add_test(gmad-scorermesh         ${gmadBinary} scorermesh.gmad)	
-add_test(gmad-tunnel             ${gmadBinary} tunnel.gmad)
+add_test(gmad-aperture                  ${gmadBinary} aperture.gmad)
+add_test(gmad-atom                      ${gmadBinary} atom.gmad)
+add_test(gmad-blm                       ${gmadBinary} blm.gmad)
+add_test(gmad-cavitymodel               ${gmadBinary} cavitymodel.gmad)
+add_test(gmad-colour                    ${gmadBinary} colour.gmad)
+add_test(gmad-coolingchannel            ${gmadBinary} coolingchannel.gmad)
+add_test(gmad-crystal                   ${gmadBinary} crystal.gmad)
+add_test(gmad-field                     ${gmadBinary} field.gmad)
+add_test(gmad-material                  ${gmadBinary} material.gmad)
+add_test(gmad-physics-biasing           ${gmadBinary} physicsbiasing.gmad)
+add_test(gmad-placement                 ${gmadBinary} placement.gmad)
+add_test(gmad-placement-sequence        ${gmadBinary} placement_sequence.gmad)
+add_test(gmad-region                    ${gmadBinary} region.gmad)
+add_test(gmad-samplerplacement          ${gmadBinary} samplerplacement.gmad)
+add_test(gmad-scorer                    ${gmadBinary} scorer.gmad)
+add_test(gmad-scorermesh                ${gmadBinary} scorermesh.gmad)
+add_test(gmad-tunnel                    ${gmadBinary} tunnel.gmad)
 
 # test object extensions
 add_test(gmad-extend-aperture         ${gmadBinary} extendaperture.gmad)

@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSElement: public BDSAcceleratorComponent
 {
 public:
+  BDSElement() = delete;
   BDSElement(const G4String& name,
 	     G4double        arcLength,
 	     G4double        horizontalWidthIn,
@@ -45,7 +46,8 @@ public:
 	     G4double        angle                       = 0,
 	     std::vector<G4String>* namedVacuumVolumesIn = nullptr,
 	     G4bool          autoColourGeometryIn        = true,
-	     G4bool          markAsCollimatorIn          = false);
+	     G4bool          markAsCollimatorIn          = false,
+         G4bool          stripOuterVolume            = false);
   virtual ~BDSElement(){;}
 
   // This is a little convoluted because ultimately we can't change the
@@ -66,24 +68,27 @@ public:
   virtual void ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv);
   virtual void AttachSensitiveDetectors();
   /// @}
+
+protected:
+  /// Specialise the method so as not to not overwrite the vis attributes
+  /// of the container volume that for external geometry are always made visible.
+  virtual void Build();
+
+  /// This does the full construction.  Loads the external geometry and field if there is one.
+  virtual void BuildContainerLogicalVolume();
    
 private:
-  /// Private default constructor to force the use of the supplied one.
-  BDSElement() = delete;
-
   /// @{ Assignment and copy constructor not implemented nor used
   BDSElement& operator=(const BDSElement&) = delete;
   BDSElement(BDSElement&) = delete;
   /// @}
-  
-  /// This does the full construction.  Loads the external geometry and field if there is one.
-  virtual void BuildContainerLogicalVolume();
 
   G4double horizontalWidth;
   G4String geometryFileName;
   std::vector<G4String> namedVacuumVolumes;
   G4bool   autoColourGeometry;
   G4bool   markAsCollimator;
+  G4bool   stripOuterVolume;
 
   /// Cache of the constructed geometry.  Used to forward onto various BDSGeometryComponent functions.
   BDSGeometryExternal* geometry;

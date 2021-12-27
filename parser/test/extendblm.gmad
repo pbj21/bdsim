@@ -10,5 +10,6 @@ minidetector: blm, x=10*m,y=3*cm,z=12*m,
 		      blm2=0.2,
 		      blm3=0.3,
 		      blm4=0.4;
-
+print, minidetector;
 minidetector: blm2 = 2.54321*cm;
+print, minidetector;

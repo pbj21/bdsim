@@ -1,1 +1,2 @@
 purplypurple: newcolour, red=139, green=0, blue=139, alpha=0.8;
+print, purplypurple;

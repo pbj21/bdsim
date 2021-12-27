@@ -6,6 +6,7 @@ lovelycrystal: crystal, material="G4_Si",
 			lengthZ=4*mm,
 			bendingAngleYAxis=50*urad,
 			bendingAngleZAxis=0;
-
+print, lovelycrystal;
 ! extend and change properties
 lovelycrystal: lengthZ=4*cm;
+print, lovelycrystal;

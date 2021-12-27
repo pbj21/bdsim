@@ -1,0 +1,9 @@
+DICOM: ct, l=1*m, dicomDataPath="./", dicomDataFile="data.dat";
+
+l1: line = (DICOM);
+use,period=l1;
+
+sample,all;
+
+beam, particle="proton",
+energy=1168.2720299999999*MeV;

@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSRunManager.hh"
 #include "BDSDebug.hh"
 #include "BDSDetectorConstruction.hh"
+#include "BDSExceptionHandler.hh"
 #include "BDSExtent.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 
@@ -26,16 +27,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSRunManager::BDSRunManager()
 {
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "constructing run manager"<<G4endl;
-#endif
+  // Construct an exception handler to catch Geant4 aborts.
+  // This has to be done after G4RunManager::G4RunManager() which constructs
+  // its own default exception handler which overwrites the one in G4StateManager
+  exceptionHandler = new BDSExceptionHandler();
 }
 
 BDSRunManager::~BDSRunManager()
 {
-#ifdef BDSDEBUG 
-  G4cout<< __FUNCTION__ << "> BDSRunManager deleting..."<<G4endl;
-#endif
+  delete exceptionHandler;
 }
 
 void BDSRunManager::Initialize()

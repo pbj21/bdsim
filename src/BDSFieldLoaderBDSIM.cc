@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSFieldLoaderBDSIM.hh"
 #include "BDSFieldValue.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4String.hh"
@@ -231,7 +232,7 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
           else
 	    {
               G4String key = G4String(matchHeaderNumber[1]);
-              key.toLower();
+              key = BDS::LowerCase(key);
 
 	      // check it's a valid key - header preloaded with valid keys
 	      if (header.find(key) == header.end())

@@ -1145,9 +1145,6 @@ formats are described in more detail in :ref:`external-geometry-formats`.
 | gdml                 | | Geometry Description Markup Language - Geant4's official geometry |
 |                      | | persistency format - recommended, maintained and supported        |
 +----------------------+---------------------------------------------------------------------+
-| ggmad                | | Simple text interface provided by BDSIM to some simple Geant4     |
-|                      | | geometry classes - not maintained                                 |
-+----------------------+---------------------------------------------------------------------+
 | mokka                | | An SQL style description of geometry - not maintained             |
 +----------------------+---------------------------------------------------------------------+
 

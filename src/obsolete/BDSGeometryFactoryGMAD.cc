@@ -203,7 +203,7 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	      dphi = 360; // degrees
 	      
 	      G4String name = "aCons_" + std::to_string(count);
-	      auto solid = new G4Cons("aCons" + G4String(count),
+	      auto solid = new G4Cons("aCons" + std::to_string(count),
 				      rmin,   // inner R
 				      rmax,
 				      rmin2,
@@ -297,7 +297,7 @@ G4String BDSGeometryFactoryGMAD::GetWord(std::ifstream& inputf) const
 
     // return char tokens 
     if (c=='=')
-      {return G4String(c);}
+      {return std::to_string(c);}
 
     // skip whitespace
     if ( (c != ' ' ) && (c != '\t' )&& (c != ',' ) && (c != '\n' ))

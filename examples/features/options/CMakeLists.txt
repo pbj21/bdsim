@@ -1,5 +1,7 @@
 # executable options - in the order they appear in BDSExecOptions
 simple_testing(option-executable-help                    "--help"                                      "")
+simple_testing(option-executable-citation                "--citation"                                  "")
+simple_testing(option-executable-reference               "--reference"                                 "")
 simple_testing(option-executable-version                 "--version"                                   "")
 simple_testing(option-executable-versionGit              "--versionGit"                                "")
 simple_testing(option-executable-verbose                 "--file=sm.gmad --verbose"                    "")

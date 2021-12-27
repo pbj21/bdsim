@@ -18,9 +18,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSIntegratorType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4Version.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -139,17 +141,16 @@ BDSIntegratorType BDS::DetermineIntegratorType(G4String integratorType)
   types["g4rk547feq3"]          = BDSIntegratorType::g4rk547feq3;
 #endif
 
-  integratorType.toLower();
+  integratorType = BDS::LowerCase(integratorType);
+  
   auto result = types.find(integratorType);
   if (result == types.end())
-    {
-      // it's not a valid key
-      G4cerr << __METHOD_NAME__ << integratorType << " is not a valid integrator type" << G4endl;
-
-      G4cout << "Available integrator types are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+    {// it's not a valid key
+      G4String msg = "\"" + integratorType + "\" is not a valid integrator type\n";
+      msg += "Available integrator types are:\n";
+      for (const auto& it : types)
+	{msg += "\"" + it.first + "\"\n";}
+      throw BDSException(__METHOD_NAME__, msg);
     }
 
 #ifdef BDSDEBUG

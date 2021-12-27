@@ -23,7 +23,7 @@ along with BDSIM.  If not, see http://www.gnu.org/licenses/.
 Referencing & Citation
 ----------------------
 
-Any publications including simulations made using BDSIM must cite:
+Any publications including simulations made using BDSIM **must** cite:
 
 L.J. Nevay et al., BDSIM: An Accelerator Tracking Code with Particle-Matter Interactions,
 Computer Physics Communications **252** 107200 (2020).
@@ -35,6 +35,9 @@ Please cite BDSIM as well as Geant4.
 
 Citations allow the authors to demonstrably show the code usage and therefore to
 continue to support the development and maintenance of BDSIM.
+
+.. note:: There is the executable options :code:`--reference` and :code:`--citation` to
+	  display the citation in bibtex to cite BDSIM easily.
 
 
 Geant4 Acknowledgement

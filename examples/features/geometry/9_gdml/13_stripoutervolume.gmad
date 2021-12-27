@@ -1,5 +1,7 @@
 d1: drift,l=67*cm;
-l1: line=(d1,d1,d1,d1,d1);
+l1: line=(d1,d1,d1,d1,d1,ele,d1,d1);
+ele: element, l=0.6*m, geometryFile="gdml:ln.gdml", stripOuterVolume=1;
+!ele: element, l=1.5*m, geometryFile="gdml:ln.gdml", stripOuterVolume=0;
 use, l1;
 
 ! reference placement off to the side without any rotation to compare to
@@ -16,12 +18,11 @@ lnpv: placement, geometryFile="gdml:ln.gdml",
       		 z=1.5*m, axisY=1, axisAngle=1,
 		 angle=0.05, stripOuterVolume=1;
 
-beam, particle = "proton",
+beam, particle = "e-",
       kineticEnergy = 1*GeV;
 
 ! some quick physics for scattering
 option, physicsList="em",
-	minimumKineticEnergy=10*MeV,
 	defaultRangeCut=5*cm;
-
+!	minimumKineticEnergy=10*MeV,
 option, checkOverlaps=1;

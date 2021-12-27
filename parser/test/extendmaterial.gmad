@@ -1,3 +1,4 @@
 NbTi : matdef, density=5.6, T=4.0, components=["Nb","Ti"];
-
+print, NbTi;
 NbTi : componentsWeights={1,1};
+print, NbTi;

@@ -186,7 +186,7 @@ G4double BDSParallelWorldImportance::GetCellImportanceValue(const G4String& cell
   // strip off the prepended componentName that we introduce in the geometry factory
   // this is controlled by the member variable of this class above
   G4String pureCellName = cellName;
-  if (pureCellName.contains(componentName))
+  if (BDS::StrContains(pureCellName, componentName))
     {
       // +1 for "_" that's added in the geometry factory
       pureCellName = pureCellName.erase(0, componentName.size()+1);
@@ -194,14 +194,14 @@ G4double BDSParallelWorldImportance::GetCellImportanceValue(const G4String& cell
 
   // strip off possible stupid PREPEND default from pyg4ometry
   const G4String prepend = "PREPEND";
-  if (pureCellName.contains(prepend))
+  if (BDS::StrContains(pureCellName, prepend))
     {
       std::size_t found = pureCellName.find(prepend); // should be found as contains() found it
       pureCellName.erase(found, found + prepend.size());
     }
 
   // replace stupid double pv suffix from pyg4ometry perpetual bug
-  if (pureCellName.contains("_pv_pv")) // would only be pv pv from pyg4ometry - can't tell otherwise
+  if (BDS::StrContains(pureCellName, "_pv_pv")) // would only be pv pv from pyg4ometry - can't tell otherwise
     {
       std::size_t found = pureCellName.find("_pv_pv");
       pureCellName.erase(found+3, found+6);

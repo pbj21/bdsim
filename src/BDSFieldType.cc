@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -136,8 +138,8 @@ BDSFieldType BDS::DetermineFieldType(G4String bType)
   types["multipoleouterdipolelhc"]      = BDSFieldType::multipoleouterdipolelhc;
   types["multipoleouterquadrupolelhc"]  = BDSFieldType::multipoleouterquadrupolelhc;
   types["multipoleoutersextupolelhc"]   = BDSFieldType::multipoleoutersextupolelhc;
-  
-  bType.toLower();
+
+  bType = BDS::LowerCase(bType);
 
   auto result = types.find(bType);
   if (result == types.end())

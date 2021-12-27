@@ -193,7 +193,7 @@ G4Colour* BDSColours::GetColour(const G4String& type)
 {
   G4String colourName = type;
   G4bool   canDefine  = false;
-  if (type.contains(":"))
+  if (BDS::StrContains(type, ":"))
     {
       colourName = type.substr(0, type.find(":"));
       canDefine  = true;

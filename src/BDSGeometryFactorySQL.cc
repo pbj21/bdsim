@@ -42,12 +42,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Polycone.hh"
 #include "G4PVPlacement.hh"
 #include "G4RotationMatrix.hh"
+#include "G4String.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4Torus.hh"
 #include "G4Trap.hh"
 #include "G4Tubs.hh"
 #include "G4UnionSolid.hh"
 #include "G4UserLimits.hh"
+#include "G4Version.hh"
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
 
@@ -147,7 +149,8 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
 						  G4bool                   autoColour,
 						  G4double                 suggestedLength,
 						  G4double                 suggestedHorizontalWidth,
-						  std::vector<G4String>* /*vacuumBiasVolumeNames*/)
+						  std::vector<G4String>* /*vacuumBiasVolumeNames*/,
+						  G4UserLimits*          /*userLimitsToAttachToAllLVs*/)
 {
   CleanUp();
   
@@ -185,7 +188,7 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
   char buffer[1000];
   while (ifs >> fileListLine)
     {
-      if(fileListLine.contains("#"))
+      if (BDS::StrContains(fileListLine, "#"))
 	{ifs.getline(buffer,1000);} // a comment or info line - store it
       else
 	{BuildSQLObjects(containingDir + fileListLine);} // a line with file to be parsed
@@ -236,32 +239,31 @@ void BDSGeometryFactorySQL::BuildSQLObjects(G4String file)
       G4cout << __METHOD_NAME__ << " i = " << i << ", TableName = " << TableName << G4endl;
 #endif
       G4int pos = TableName.find("_");
-      G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
-      G4String::caseCompare cmpmode = G4String::ignoreCase;
+      std::string ObjectType = TableName.substr(pos+1,TableName.length() - pos);
       NVariables = itsSQLTable[i]->GetVariable(0)->GetNVariables();
       for (G4int k=0; k<NVariables; k++)
 	{
 	  SetCommonParams(itsSQLTable[i], k);
 	  G4LogicalVolume* logVol;
-	  if(ObjectType.compareTo("CONE",cmpmode)==0)
+	  if(BDS::StrCompare(ObjectType, "CONE") == 0)
 	    {logVol = BuildCone(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("ELLIPTICALCONE",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "ELLIPTICALCONE") == 0)
 	    {logVol = BuildEllipticalCone(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("POLYCONE",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "POLYCONE") == 0)
 	    {logVol = BuildPolyCone(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("BOX",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "BOX") == 0)
 	    {logVol = BuildBox(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("TRAP",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "TRAP") == 0)
 	    {logVol =  BuildTrap(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("TORUS",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "TORUS") == 0)
 	    {logVol = BuildTorus(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("SAMPLER",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "SAMPLER") == 0)
 	    {logVol = BuildSampler(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("TUBE",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "TUBE") == 0)
 	    {logVol =  BuildTube(itsSQLTable[i],k);}
-	  else if(ObjectType.compareTo("ELLIPTICALTUBE",cmpmode)==0)
+	  else if(BDS::StrCompare(ObjectType, "ELLIPTICALTUBE") == 0)
 	    {logVol =  BuildEllipticalTube(itsSQLTable[i],k);}
-	  //else if(ObjectType.compareTo("PCLTUBE",cmpmode)==0)
+	  //else if(BDS::StrCompare(ObjectType, "PCLTUBE", G4String::ignoreCase)==0)
 	  //  {logVol =  BuildPCLTube(itsSQLTable[i],k);}
 	  else
 	    {throw BDSException(__METHOD_NAME__ + ObjectType + " not known.");}
@@ -321,7 +323,7 @@ void BDSGeometryFactorySQL::SetCommonParams(BDSMySQLTable* aSQLTable, G4int k)
   AssignVariable(aSQLTable,k,"NAME",Name);
   if(Name=="_SQL")
     {Name = TableName+std::to_string(k) + "_SQL";}
-  if(Name=="")
+  if(Name.empty())
     {Name = TableName+std::to_string(k);}
   Name = itsMarkerVol->GetName()+"_"+Name;
 #ifdef BDSDEBUG
@@ -375,7 +377,7 @@ void BDSGeometryFactorySQL::SetPlacementParams(BDSMySQLTable* aSQLTable, G4int k
   AssignVariable(aSQLTable,k,"NAME",Name);
   if(Name=="_SQL")
     {Name = TableName+std::to_string(k) + "_SQL";}
-  if(Name=="")
+  if(Name.empty())
     {Name = TableName+std::to_string(k);}
 
   Name = itsMarkerVol->GetName()+"_"+Name;
@@ -387,7 +389,8 @@ void BDSGeometryFactorySQL::SetPlacementParams(BDSMySQLTable* aSQLTable, G4int k
 G4VisAttributes* BDSGeometryFactorySQL::VisAtt()
 {
   G4VisAttributes* va = new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue, VisAlpha));
-  switch (VisType(0))
+  char testChar = VisType[0];
+  switch (testChar)
     {
     case 'W': va->SetForceWireframe(true); break;
     case 'I': va->SetVisibility(false); break;
@@ -886,17 +889,20 @@ G4RotationMatrix* BDSGeometryFactorySQL::RotateComponent(G4double psi,G4double p
 void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 					    std::vector<G4LogicalVolume*> VOL_LISTIn)
 {
-  G4String::caseCompare cmpmode = G4String::ignoreCase;
   for (G4int k=0; k<NVariables; k++) // Now run through and place according to
     { 
       SetPlacementParams(aSQLTable, k);
       G4int PARENTID=0;
-      if(PARENTNAME!="")
+      if(!PARENTNAME.empty())
 	{
 	  PARENTNAME+="_LogVol";
 	  for (G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
 	    {
-	      if(PARENTNAME.compareTo(VOL_LISTIn[i]->GetName(),cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+	      if (G4StrUtil::icompare(PARENTNAME, VOL_LISTIn[i]->GetName()) == 0)
+#else
+	      if(PARENTNAME.compareTo(VOL_LISTIn[i]->GetName(), G4String::ignoreCase)==0)
+#endif
 		{
 		  PARENTID = i;
 		  continue;
@@ -909,7 +915,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
       G4int ID=0;
       for (G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
 	{
-	  if(tmpname.compareTo(VOL_LISTIn[i]->GetName(),cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+    if (G4StrUtil::icompare(tmpname, VOL_LISTIn[i]->GetName()) == 0)
+#else
+	  if(tmpname.compareTo(VOL_LISTIn[i]->GetName(), G4String::ignoreCase)==0)
+#endif
 	    {
 	      ID = i;
 	      continue;
@@ -920,9 +930,13 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 	{sensitiveComponents.insert(VOL_LISTIn[ID]);}
       G4ThreeVector PlacementPoint(PosX,PosY,PosZ);
 
-      if(InheritStyle.compareTo("",cmpmode))
+    if(!InheritStyle.empty())
 	{ //True if InheritStyle is set
-	  if(InheritStyle.compareTo("SUBTRACT",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+      if (G4StrUtil::icompare(InheritStyle, "SUBTRACT") == 0)
+#else
+	  if(InheritStyle.compareTo("SUBTRACT", G4String::ignoreCase)==0)
+#endif
 	    {
 	      G4VSolid* original = VOL_LISTIn[PARENTID]->GetSolid();
 	      G4VSolid* sub = VOL_LISTIn[ID]->GetSolid();
@@ -933,7 +947,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 								  PlacementPoint));
 	      
 	    }
-	  else if(InheritStyle.compareTo("INTERSECT",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+      if (G4StrUtil::icompare(InheritStyle, "INTERSECT") == 0)
+#else
+	  else if(InheritStyle.compareTo("INTERSECT", G4String::ignoreCase)==0)
+#endif
 	    {
 	      G4VSolid* original = VOL_LISTIn[PARENTID]->GetSolid();
 	      G4VSolid* sub = VOL_LISTIn[ID]->GetSolid();
@@ -944,7 +962,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 								   PlacementPoint));
 	      
 	    }
-	  else if(InheritStyle.compareTo("UNION",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+      if (G4StrUtil::icompare(InheritStyle, "UNION") == 0)
+#else
+	  else if(InheritStyle.compareTo("UNION", G4String::ignoreCase)==0)
+#endif
 	    {
 	      G4VSolid* original = VOL_LISTIn[PARENTID]->GetSolid();
 	      G4VSolid* sub = VOL_LISTIn[ID]->GetSolid();
@@ -1007,8 +1029,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 
       // magnetic rigidity brho
       G4double brho = defaultRigidity;
-
-      if(MagType.compareTo("QUAD",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+    if (G4StrUtil::icompare(MagType, "QUAD") == 0)
+#else
+      if(MagType.compareTo("QUAD", G4String::ignoreCase)==0)
+#endif
 	{
 	  //hasFields = true;
 	  //nPoleField = 1;
@@ -1016,8 +1041,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 	  Quadvol.push_back(PhysiComp->GetName());
 	  quadVolBgrad[PhysiComp->GetName()]=(- brho * K1 / CLHEP::m2);
 	}
-
-      if(MagType.compareTo("SEXT",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+    if (G4StrUtil::icompare(MagType, "SEXT") == 0)
+#else
+      if(MagType.compareTo("SEXT", G4String::ignoreCase)==0)
+#endif
 	{
 	  //hasFields = true;
 	  //nPoleField = 2;
@@ -1025,8 +1053,11 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 	  Sextvol.push_back(PhysiComp->GetName());
 	  sextVolBgrad[PhysiComp->GetName()]=(- brho * K2 / CLHEP::m3);
 	}
-
-      if(MagType.compareTo("OCT",cmpmode)==0)
+#if G4VERSION_NUMBER > 1099
+    if (G4StrUtil::icompare(MagType, "OCT") == 0)
+#else
+      if(MagType.compareTo("OCT", G4String::ignoreCase)==0)
+#endif
 	{
 	  //hasFields = true;
 	  //nPoleField = 3;
@@ -1042,7 +1073,7 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 #ifdef BDSDEBUG
 	  G4cout << "BDSGeometryFactorySQL> volume " << PhysiComp->GetName() << " has the following uniform field: " << FieldX << " " << FieldY << " " << FieldZ << " " << G4endl;
 #endif
-	  UniformField.push_back(G4ThreeVector(FieldX*CLHEP::tesla,
+	  UniformField.emplace_back(G4ThreeVector(FieldX*CLHEP::tesla,
 					       FieldY*CLHEP::tesla,
 					       FieldZ*CLHEP::tesla));
 	  Fieldvol.push_back(PhysiComp->GetName());

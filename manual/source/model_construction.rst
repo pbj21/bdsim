@@ -142,6 +142,7 @@ The following elements may be defined
 * `element`_
 * `marker`_
 * `wirescanner`_
+* `ct`_
 
 .. TODO add screen, awakescreen
 
@@ -1234,7 +1235,7 @@ the beam.
 
 =================  ==================================  ===========  ===========
 Parameter          Description                         Default      Required
-`l`                Length [m]                          0            Yes
+`l`                Length [m]                          1 mm         No
 `horizontalWidth`  Outer full width [m]                global       No
 `apertureType`     Which shape                         rectangular  No
 =================  ==================================  ===========  ===========
@@ -1247,13 +1248,20 @@ necessary process is added automatically to enforce this.
 The dump may accept `apertureType` with the value of either `circular` or `rectangular` for
 the shape of the dump. By default it is rectangular.
 
+.. note:: Although the syntax is "rectangular", the shape for the dump will be square. This
+	  will be improved in future when any shape can be used.
+
 Examples: ::
 
-  d1: dump, l=0.2*m, horizontalWidth=20*cm;
-  d2: dump, l=0.4*m, horizontalWidth=30*cm, apertureType="circular";
+  d1: dump, horizontalWidth=20*cm;
+  d2: dump, horizontalWidth=30*cm, apertureType="circular";
   d3: dump, l=0.3*m, horizontalWidth=40*cm, apertureType="rectangular";
 
+Here, `d1` is a rectangular block 20 cm wide (full width) and 1 mm long in z. `d2` is a
+circular disk with diameter 30 cm and length of 1 mm in z. `d3` is 30 cm long in z and
+40 cm width (full width) in x and y with a square shape.
 
+  
 solenoid
 ^^^^^^^^
 
@@ -1628,6 +1636,8 @@ as required.
 An alternative strategy is to use the `gap`_ beam line element
 and make a placement at the appropriate point in global coordinates.
 
+.. tabularcolumns:: |p{4cm}|p{5cm}|p{2cm}|p{2cm}|
+
 +----------------------+----------------------------------+--------------+---------------+
 | **Parameter**        | **Description**                  | **Default**  | **Required**  |
 +======================+==================================+==============+===============+
@@ -1659,6 +1669,10 @@ and make a placement at the appropriate point in global coordinates.
 |                      | collimator so it appears in the  |              |               |
 |                      | collimator histograms and hits.  |              |               |
 +----------------------+----------------------------------+--------------+---------------+
+| `stripOuterVolume`   | 1 or 0. Whether to strip the     | 0            | No            |
+|                      | outermost volume from the loaded |              |               |
+|                      | geometry and make it an assembly |              |               |
++----------------------+----------------------------------+--------------+---------------+
 
 * `geometryFile` should be of the format `format:filename`, where `format` is the geometry
   format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the geometry
@@ -1669,6 +1683,8 @@ and make a placement at the appropriate point in global coordinates.
 * If marked as a collimator, the element will also appear in the collimator histograms
   and also have a collimator-specific branch made for it in the Event tree of the output
   as per the other collimators. The type in the output will be "element-collimator".
+* The outer volume can be stripped away and the geometry is made into an assembly volume
+  in Geant4 and placed in the world. Use the parameter :code:`stripOuterVolume=1` for this.
 
 .. note:: The length must be larger than the geometry so that it is contained within it and
 	  no overlapping geometry will be produced. However, care must be taken, as the length
@@ -1713,6 +1729,67 @@ then attach a sampler to the marker.
 Examples: ::
 
    m1: marker;
+
+ct
+^^^^
+
+.. figure:: figures/ct.png
+	    :width: 30%
+	    :align: center
+
+
+`ct` defines a Computed Tomographic (CT) image, saved in the international standard DICOM format. The DICOM module of
+BDSIM enables the conversion of CT images into Geant4 voxelized geometries. This conversion results in a regular mesh of
+voxels. In order to correctly allow the materials and densities to each individual voxel, a HUs-to-density (HUs stands
+for Hounsfield Units) table and a HUs-to-materials table must be provided. The data of this two tables must be provided
+into a single, two columns `data.dat` file. The required format for this file is illustrated below:
+
+.. figure:: figures/CTconversionFile.png
+	    :width: 40%
+	    :align: center
+
+The first line gives the level of compression of the image. For example :code:`:COMPRESSION 4` means that only one slice
+over four will be converted into the final voxelized geometry. The lines which start with :code:`:MATE` give data
+points for the HUs-to-materials curve, while the lines which start with :code:`:CT2D` give data points for the
+HUs-to-density curve. For each curve, a linear interpolation is done based on the data points to find the most
+appropriate density and material for each voxel. The user must give the path to this file in the definition of the `ct`
+element, as the parameter `dicomDataFile`. The user must also give the name of the dicom (.dcm) file to be converted.
+This must be done with the flag :code:`:FILE`, followed by the name of the file, which needs to be in the same folder
+as the interpolation data file. The last flag :code:`:FILE_OUT` is optional, and can be used to give a specific name to
+the temporary output file which is generated during the conversion CT image.
+
+An example of such a data file is provided in `bdsim/examples/features/dicom/data.dat` and can be used as a
+starting point.
+
+.. note:: For a correct visualization of the DICOM image, a path to a colourMap.dat file must also be given,
+    as the parameter `dicomDataPath`. This file will allow the mapping of each material to a specific color in the
+    viewer. Its first line should bethe number of materials used in the simulation. Each material given in the
+    `data.dat` file should then have a colour scheme which the user defines via four numbers with the syntax
+    :code:`:1MAT X Y Z A` where X, Y, Z and A are numbers between 0 and 1 respectively setting the amount of red, green,
+    blue and opacity of the colour defined for the material MAT. An example of such a colourMap.dat file is provided in
+    `bdsim/examples/features/dicom/colourMap.dat`.
+
+.. note:: To be able to load CT images, BDSIM must be compiled with the `USE_DICOM` variable set to ON. Moreover, the
+    conversion of the images requires the installation of the `DCMTK` package. This package is needed to easily extract
+    the HUs data from the images. Information to download and install DCMTK can be found
+    here: https://dicom.offis.de/dcmtk.php.en.
+
+Examples: ::
+
+    DICOM: ct, l=1*m, dicomDataPath="./", dicomDataFile="data.dat";
+
++-------------------------+--------------------------------------------------------------------+
+| **Parameter**           |  **Description**                                                   |
++-------------------------+--------------------------------------------------------------------+
+| `l`                     | Length of the CT element along the beamline.                       |
++-------------------------+--------------------------------------------------------------------+
+| `dicomDataFile`         | Name of the file which contains the conversion material-to-density |
+|                         | and material-to-HU tables.                                         |
++-------------------------+--------------------------------------------------------------------+
+| `dicomDataPath`         | Path to the colourMap.dat file. During the conversion of the CT    |
+|                         | image, the temporary .g4dcm file will also be stored in this path. |
++-------------------------+--------------------------------------------------------------------+
+
 
 .. _offsets-and-tilts:
 
@@ -1847,7 +1924,7 @@ beam line is produced by declaring a placement. The placement definition (see
 
 +------------------------+---------------------------------------------------------------+
 | **Parameter**          |  **Description**                                              |
-+------------------------+---------------------------------------------------------------+
++========================+===============================================================+
 | sequence               | Name of the sequence (with `line`) to use for the secondary   |
 |                        | beam line                                                     |
 +------------------------+---------------------------------------------------------------+
@@ -2200,4 +2277,3 @@ Examples
 		    blm1=20*cm,
 		    blm2=5*cm,
 		    scorerQuantity="blmdose";
-

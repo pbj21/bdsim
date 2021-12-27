@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDEnergyDepositionGlobal.hh"
 #include "BDSSDFilterIon.hh"
 #include "BDSSDFilterOr.hh"
+#include "BDSSDFilterPDGIDSet.hh"
 #include "BDSSDFilterPrimary.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDSampler.hh"
@@ -61,10 +62,12 @@ BDSSDManager* BDSSDManager::Instance()
 
 BDSSDManager::~BDSSDManager()
 {
-  // no need to delete SD's as they are all registered in G4SDManager
+  // no need to delete SDs as they are all registered in G4SDManager
   instance = nullptr;
 
-  for (auto kv : filters)
+  for (auto& kv : filters)
+    {delete kv.second;}
+  for (auto& kv : extraSamplerFilters)
     {delete kv.second;}
 }
 
@@ -401,4 +404,27 @@ void BDSSDManager::SetLinkRegistry(BDSLinkRegistry* registry)
 {
   if (samplerLink)
     {samplerLink->SetLinkRegistry(registry);}
+}
+
+void BDSSDManager::ConstructSamplerSDsForParticleSets(const std::map<int, std::set<int>>& samplerFilterIDtoPDGSetIn)
+{
+  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+  
+  for (const auto& IDAndSet : samplerFilterIDtoPDGSetIn)
+    {
+      G4String samplerName = "plane_with_PDG_set_" + std::to_string(IDAndSet.first);
+      auto aSampler = new BDSSDSampler(samplerName);
+      extraSamplerWithFilterNamesComplete.emplace_back(samplerName);
+      auto filter = new BDSSDFilterPDGIDSet("pdgid_set_number_"+std::to_string(IDAndSet.first), IDAndSet.second);
+      aSampler->SetFilter(filter);
+      extraSamplersWithFilters[(G4int)IDAndSet.first] = aSampler;
+      extraSamplerFilters[(G4int)IDAndSet.first] = filter; // keep a map of them for deleting later
+      SDMan->AddNewDetector(aSampler);
+    }
+}
+
+BDSSDSampler* BDSSDManager::SamplerPlaneWithFilter(G4int ID) const
+{
+  auto search = extraSamplersWithFilters.find(ID);
+  return search != extraSamplersWithFilters.end() ? search->second : nullptr;
 }

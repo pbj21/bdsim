@@ -55,8 +55,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
 				       G4double                 sPositionMiddleIn,
 				       G4double                 sPositionEndIn,
 				       BDSTiltOffset*           tiltOffsetIn,
-				       BDSSamplerType           samplerTypeIn,
-				       const G4String&          samplerNameIn,
+				       BDSSamplerInfo*          samplerInfoIn,
 				       G4int                    indexIn):
   component(componentIn),
   positionStart(positionStartIn), positionMiddle(positionMiddleIn), positionEnd(positionEndIn),
@@ -69,8 +68,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
   referenceRotationEnd(referenceRotationEndIn),
   sPositionStart(sPositionStartIn), sPositionMiddle(sPositionMiddleIn), sPositionEnd(sPositionEndIn),
   tiltOffset(tiltOffsetIn),
-  samplerType(samplerTypeIn),
-  samplerName(samplerNameIn),
+  samplerInfo(samplerInfoIn),
   samplerPlacementTransform(nullptr),
   index(indexIn)
 {
@@ -84,6 +82,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
   placementTransformCL = new G4Transform3D(*referenceRotationMiddle, referencePositionMiddle);
 
   // calculate sampler central position slightly away from end position of element.
+  auto samplerType = GetSamplerType();
   if (samplerType == BDSSamplerType::plane)
     {
       G4ThreeVector dZLocal = G4ThreeVector(0,0,1);
@@ -121,11 +120,11 @@ std::set<G4VPhysicalVolume*> BDSBeamlineElement::GetPVsFromAssembly(G4AssemblyVo
   return result;
 }
 
-std::set<G4VPhysicalVolume*> BDSBeamlineElement::PlaceElement(const G4String& pvName,
-                                                    G4VPhysicalVolume* motherPV,
-                                                    G4bool             useCLPlacementTransform,
-                                                    G4int              pvCopyNumber,
-                                                    G4bool             checkOverlaps) const
+std::set<G4VPhysicalVolume*> BDSBeamlineElement::PlaceElement(const G4String&    pvName,
+							      G4VPhysicalVolume* motherPV,
+							      G4bool             useCLPlacementTransform,
+							      G4int              pvCopyNumber,
+							      G4bool             checkOverlaps) const
 {
   G4Transform3D* pvTransform = GetPlacementTransform();
   if (useCLPlacementTransform)

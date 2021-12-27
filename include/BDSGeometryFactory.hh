@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSGeometryExternal;
 class BDSGeometryFactoryBase;
 class G4Colour;
+class G4UserLimits;
 
 /**
  * @brief Interface to external geometry construction.
@@ -64,7 +65,8 @@ public:
 				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
 				     G4bool                 makeSensitive            = true,
 				     BDSSDType              sensitivityType          = BDSSDType::energydep,
-				     G4bool                 stripOuterVolumeAndMakeAssembly = false);
+				     G4bool                 stripOuterVolumeAndMakeAssembly = false,
+				     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr);
  
 private:
   /// Private accessor as singleton
@@ -87,7 +89,6 @@ private:
 
   /// @{ Factory instance.
   BDSGeometryFactoryBase* gdml;
-  BDSGeometryFactoryBase* gmad;
   BDSGeometryFactoryBase* sql;
   /// @}
 };

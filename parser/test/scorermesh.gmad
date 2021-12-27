@@ -1,5 +1,6 @@
-mesh: scorermesh, nx=100, ny=20, nz=30, scoreQuantity="protonsh10",
-      xsize=10*cm, ysize=30*cm, zsize=15*cm,
+mesh: scorermesh, nx=100, ny=20, nz=30, nr=20, nphi=30,
+      scoreQuantity="protonsh10", geometryType="cylindrical",
+      xsize=10*cm, ysize=30*cm, zsize=15*cm, rsize=10*cm,
       sequence="one",
       referenceElement="d1",
       referenceElementNumber=2,
@@ -15,3 +16,5 @@ mesh: scorermesh, nx=100, ny=20, nz=30, scoreQuantity="protonsh10",
       axisZ = 0.2,
       angle = pi,
       axisAngle = 1;
+
+print, mesh;

@@ -11,3 +11,6 @@ protonsh10: scorer, type="h10",
 		    materialToExclude="air iron",
 		    scoreWorldVolumeOnly=1,
 		    scorePrimariesOnly=1;
+
+
+print, protonsh10;

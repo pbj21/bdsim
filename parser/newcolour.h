@@ -39,7 +39,7 @@ namespace GMAD
   class NewColour: public Published<NewColour>
   {
   public:
-    std::string name;                 ///< Name of object.
+    std::string name;
     double red;
     double green;
     double blue;

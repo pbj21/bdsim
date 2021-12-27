@@ -34,6 +34,7 @@ Parameters::Parameters()
   // usually same but some exceptions, those are commented
   setMap["userTypeName"]   = false;
   setMap["userParameters"] = false;
+  
   setMap["l"]         = false;
   setMap["scaling"]   = false;
   setMap["ks"]        = false;
@@ -59,6 +60,7 @@ Parameters::Parameters()
   setMap["ksl"]       = false;
   setMap["gradient"]  = false;
   setMap["E"]         = false;
+  setMap["gradient"]  = false;
   setMap["frequency"] = false;
   setMap["phase"]     = false;
   setMap["tOffset"]   = false;
@@ -92,6 +94,7 @@ Parameters::Parameters()
   setMap["apertureType"]       = false;
   setMap["beampipeMaterial"]   = false;
   setMap["vacuumMaterial"]     = false;
+  
   setMap["magnetGeometryType"] = false;
   setMap["horizontalWidth"]    = false;
   setMap["yokeOnInside"]       = false;
@@ -108,12 +111,17 @@ Parameters::Parameters()
   setMap["xsizeRight"]         = false;
   setMap["offsetX"]            = false;
   setMap["offsetY"]            = false;
+  
   setMap["tscint"]             = false;
   setMap["twindow"]            = false;
   setMap["tmount"]             = false;
   setMap["windowScreenGap"]    = false;
   setMap["screenXSize"]        = false;
   setMap["screenYSize"]        = false;
+  setMap["layerThicknesses"]   = false;
+  setMap["layerMaterials"]     = false;
+  setMap["layerIsSampler"]     = false;
+
   setMap["screenPSize"]        = false;
   setMap["screenEndZ"]         = false;
   setMap["poleStartZ"]         = false;
@@ -122,15 +130,11 @@ Parameters::Parameters()
   setMap["scintmaterial"]      = false;
   setMap["windowmaterial"]     = false;
   setMap["mountmaterial"]      = false;
-  setMap["coolingDefinition"]  = false;
-  setMap["layerThicknesses"]   = false;
-  setMap["layerMaterials"]     = false;
-  setMap["layerIsSampler"]     = false;
+  
   setMap["xdir"]               = false;
   setMap["ydir"]               = false;
   setMap["zdir"]               = false; 
   setMap["waveLength"]         = false;
-  setMap["gradient"]           = false;
   setMap["phi"]                = false;
   setMap["theta"]              = false;
   setMap["psi"]                = false;
@@ -138,26 +142,6 @@ Parameters::Parameters()
   setMap["axisY"]              = false;
   setMap["axisZ"]              = false;
   setMap["axisAngle"]          = false;
-
-  setMap["bias"]                 = false;
-  setMap["biasMaterial"]         = false;
-  setMap["biasVacuum"]           = false;
-  setMap["minimumKineticEnergy"] = false;
-  setMap["samplerName"]          = false;
-  setMap["samplerType"]          = false;
-  setMap["samplerRadius"]        = false;
-  setMap["region"]               = false;
-  setMap["fieldOuter"]           = false;
-  setMap["fieldVacuum"]          = false;
-  setMap["fieldAll"]             = false;
-
-  setMap["geometryFile"]   = false;
-  setMap["autoColour"]     = false;
-  setMap["material"]       = false;
-  setMap["namedVacuumVolumes"] = false;
-  setMap["markAsCollimator"] = false;
-  setMap["spec"]           = false;
-  setMap["cavityModel"]    = false;
 
   setMap["numberWedges"]      = false;
   setMap["wedgeLength"]       = false;
@@ -171,9 +155,36 @@ Parameters::Parameters()
   setMap["wireOffsetY"]       = false;
   setMap["wireOffsetZ"]       = false;
   setMap["wireAngle"]         = false;
+  
   setMap["undulatorPeriod"]       = false;
   setMap["undulatorGap"]          = false;
   setMap["undulatorMagnetHeight"] = false;
+
+  setMap["bias"]                 = false;
+  setMap["biasMaterial"]         = false;
+  setMap["biasVacuum"]           = false;
+  
+  setMap["minimumKineticEnergy"] = false;
+  
+  setMap["samplerName"]          = false;
+  setMap["samplerType"]          = false;
+  setMap["samplerRadius"]        = false;
+  setMap["region"]               = false;
+  setMap["fieldOuter"]           = false;
+  setMap["fieldVacuum"]          = false;
+  setMap["fieldAll"]             = false;
+
+  setMap["geometryFile"]   = false;
+  setMap["stripOuterVolume"] = false;
+  setMap["autoColour"]     = false;
+  setMap["material"]       = false;
+  setMap["namedVacuumVolumes"] = false;
+  setMap["markAsCollimator"] = false;
+  setMap["spec"]           = false;
+  setMap["cavityModel"]    = false;
+
+  setMap["dicomDataPath"]  = false;
+  setMap["dicomDataFile"]  = false;
 
   setMap["colour"] = false;
 
@@ -182,6 +193,8 @@ Parameters::Parameters()
   setMap["crystalBoth"]            = false;
   setMap["crystalAngleYAxisLeft"]  = false;
   setMap["crystalAngleYAxisRight"] = false;
+
+  setMap["coolingDefinition"] = false;
 }
 
 void Parameters::flush()
@@ -204,14 +217,14 @@ void Parameters::inherit_properties(const Element& e)
 	{
 	  std::string property = i.first;
           // method can in theory throw runtime_error (shouldn't happen), catch and exit gracefully
-	  try {
-	    Published<Element>::set(this,(Element*)&e,property);
-	  }
-	  catch(const std::runtime_error&) {
-	    std::cerr << "Error: element> unknown property \"" << property << "\" from element " << e.name  << std::endl;
-	    exit(1);
-	  }
-	  
+	  try
+	    {Published<Element>::set(this,(Element*)&e,property);}
+	  catch(const std::runtime_error&)
+	    {
+	      std::cerr << "Error: element> unknown property \"" << property
+			<< "\" from element " << e.name  << std::endl;
+	      exit(1);
+	    }
 	  i.second = true;
 	}
     }

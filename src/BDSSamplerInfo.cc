@@ -18,23 +18,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSSamplerInfo.hh"
 
-#include "globals.hh" // geant4 types / globals
-#include "G4Transform3D.hh"
-
-BDSSamplerInfo::BDSSamplerInfo(const G4String&           nameIn,
-			       BDSSampler*               samplerIn,
-			       const G4Transform3D&      transformIn,
-			       G4double                  sPositionIn,
-			       const BDSBeamlineElement* elementIn,
-			       const G4String&           uniqueNameIn):
+BDSSamplerInfo::BDSSamplerInfo(const G4String& nameIn,
+			       BDSSamplerType  samplerTypeIn,
+			       G4int           pdgSetIDIn):
   name(nameIn),
-  sampler(samplerIn),
-  transform(transformIn),
-  transformInverse(transformIn.inverse()),
-  sPosition(sPositionIn),
-  element(elementIn),
-  uniqueName(uniqueNameIn)
-{
-  if (uniqueName.empty())
-    {uniqueName = name;}
-}
+  samplerType(samplerTypeIn),
+  pdgSetID(pdgSetIDIn)
+{;}
+
+BDSSamplerInfo::~BDSSamplerInfo()
+{;}

@@ -32,6 +32,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <xercesc/util/XMLString.hpp>
 
 #include "globals.hh"
+#include "G4String.hh"
+#include "G4Version.hh"
 
 #include <algorithm>
 #include <fstream>
@@ -261,7 +263,11 @@ void BDSGDMLPreprocessor::ProcessGDMLNode(DOMNamedNodeMap* attributeMap)
 	  if (nodeValue.substr(0,2) == "./")
 	    {
 	      G4String remainder = nodeValue.substr(2); // strip off ./
+#if G4VERSION_NUMBER > 1099
+        newNodeValue = parentDir + remainder;
+#else
 	      newNodeValue = remainder.prepend(parentDir); // prepend parent directory
+#endif
 	    }
 	  else
 	    {newNodeValue = BDS::GDMLSchemaLocation();}

@@ -2,7 +2,7 @@ precisionR: cutsregion, prodCutPhotons=1*mm,
 	    		prodCutElectrons=1.1*m,
 			prodCutPositrons=1.4*m,
 			prodCutProtons=9.4*km;
-
+print, precisionR;
 precisionR: prodCutProtons=9.4*m;
-
+print, precisionR;
 d1: drift, l=0.5*m, aper1=4*cm, region="precisionR";

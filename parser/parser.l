@@ -129,6 +129,7 @@ undulator { return UNDULATOR; }
 usercomponent { return USERCOMPONENT; }
 dump { return DUMP; }
 muoncooler { return MUONCOOLER; }
+ct { return CT; }
 
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }

@@ -13,3 +13,5 @@ lovelycrystal: crystal, material = "G4_Si",
 			spaceGroup = 227,
 			bendingAngleYAxis = 50*urad,
 			bendingAngleZAxis = 0;
+
+print, lovelycrystal;

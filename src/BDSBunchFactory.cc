@@ -53,7 +53,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 				       G4bool                       generatePrimariesOnlyIn)  
 {
   G4String distrName = G4String(beam.distrType);
-  if (distrName.contains(":")) // must be eventgeneratorfile:subtype
+  if (BDS::StrContains(distrName, ":")) // must be eventgeneratorfile:subtype
     {
       std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrName);
       distrName = ba.first; // overwrite with just first bit

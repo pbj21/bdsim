@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBLMType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -41,7 +43,7 @@ BDSBLMType BDS::DetermineBLMType(G4String blmType)
   types["cube"]     = BDSBLMType::cube;
   types["sphere"]   = BDSBLMType::sphere;
 
-  blmType.toLower();
+  blmType = BDS::LowerCase(blmType);
 
   auto result = types.find(blmType);
   if (result == types.end())

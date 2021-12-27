@@ -10,5 +10,5 @@ t1: tunnel, type="circular",
 	soilMaterial="Soil",
 	startElement="d1",
 	endElement="d1";
-
+print, t1;
 d1: drift, l=1.2*m;

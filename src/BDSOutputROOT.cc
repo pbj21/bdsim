@@ -141,7 +141,7 @@ void BDSOutputROOT::NewFile()
       // set tree branches
       theEventOutputTree->Branch((samplerName+".").c_str(),
                                  "BDSOutputROOTEventSampler",
-                                 samplerTreeLocal,32000,globals->SamplersSplitLevel());
+                                 samplerTreeLocal,32000, globals->SamplersSplitLevel());
     }
 
   // build collimator structures
@@ -154,7 +154,7 @@ void BDSOutputROOT::NewFile()
           // set the tree branches
           theEventOutputTree->Branch((collimatorName + ".").c_str(),
                                      "BDSOutputROOTEventCollimator",
-                                     collimatorLocal, 32000, 0);
+                                     collimatorLocal, 32000, globals->SamplersSplitLevel());
         }
     }
 

@@ -459,7 +459,7 @@ void Config::ParseParticleSetLine(const std::string& line)
     {throw RBDSException("Too many columns in particle set definition - check there's no extra whitespace");}
   
   std::string samplerName = results[1];
-  SetBranchToBeActivated("Event", samplerName);
+  SetBranchToBeActivated("Event.", samplerName);
   
   bool perEntry = true;
   ParsePerEntry(results[0], perEntry);

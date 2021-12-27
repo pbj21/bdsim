@@ -4,10 +4,10 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR /tmp
 
-RUN yum -y install epel-release git.x86_64 make.x86_64 \
-    gcc.x86_64 gcc-c++.x86_64 gcc-gfortran.x86_64 \
-    xerces-c-devel.x86_64 zlib-devel.x86_64 wget.x86_64 \
-    openssl-devel.x86_64
+RUN yum -y install epel-release git make \
+    gcc gcc-c++ gcc-gfortran \
+    xerces-c-devel zlib-devel wget \
+    openssl-devel
 
 # Modern compilers 
 RUN yum -y install centos-release-scl && yum -y install devtoolset-7
@@ -20,66 +20,75 @@ RUN yum -y install centos-release-scl && yum -y install devtoolset-7
 RUN yum -y install cmake3
 
 # CLHEP
-RUN wget http://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.1.3.tgz && \
-    tar -xf clhep-2.4.1.3.tgz && rm -rf clhep-2.4.1.3.tgz && \
+RUN wget https://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.5.1.tgz && \
+    tar -xf clhep-2.4.5.1.tgz && rm -rf clhep-2.4.5.1.tgz && \
     source scl_source enable devtoolset-7 && \
-    mkdir 2.4.1.3-build && cd 2.4.1.3-build && cmake3 ../2.4.1.3/CLHEP/ && \
-    make -j6 && make install && cd ../ && rm -rfv 2.4.1.3 2.4.1.3-build
+    mkdir clhep-2.4.5.1-build && cd clhep-2.4.5.1-build && cmake3 ../2.4.5.1/CLHEP/ && \
+    make -j6 && make install && cd ../ && rm -rfv 2.4.5.1 clhep-2.4.5.1-build
 
 # X11 
-RUN yum -y install xorg-x11-server-Xorg xorg-x11-xauth libX11-devel.x86_64 \
-    libXpm-devel.x86_64 libXft-devel.x86_64 libXext-devel.x86_64 libXmu-devel.x86_64 
+RUN yum -y install xorg-x11-server-Xorg xorg-x11-xauth libX11-devel \
+    libXpm-devel libXft-devel libXext-devel libXmu-devel 
 
 # OpenGL (EGL GLX egl gl glu glx opengl xmesa)
-RUN yum -y install freeglut-devel.x86_64
+RUN yum -y install freeglut-devel
 
 # Python
-RUN yum -y install python2-pip python-devel.x86_64 
+RUN yum -y install python3-pip python3
 
 # Qt5 
-RUN yum -y install qt5-qtbase-devel.x86_64 
+RUN yum -y install qt5-qtbase-devel 
 
-# ROOT (6.20 from source)
-RUN yum -y install lz4-devel.x86_64 xz.x86_64 && wget https://root.cern/download/root_v6.20.00.source.tar.gz && \
-    tar zxf root_v6.20.00.source.tar.gz && mkdir root-6.20.00-build && cd root-6.20.00-build && \
-    source scl_source enable devtoolset-7 && \
-    cmake3 ../root-6.20.00 && make -j6 && make install 
-## && cd ../ && rm -rfv root-6.20.00-build root-6.20.00
-# ROOT (6.18 from yum/epel)
-#RUN yum -y install root.x86_64 python2-root.x86_64
+# ROOT
+RUN yum -y install root python36-root
+
+# HEPMC3
+RUN yum -y install HepMC3-rootIO-devel
 
 # Geant4
-RUN wget https://github.com/Geant4/geant4/archive/v10.4.3.tar.gz && \
-    tar zxf v10.4.3.tar.gz && mkdir geant4-10.4.3-build && cd geant4-10.4.3-build && \
+RUN wget https://github.com/Geant4/geant4/archive/v10.7.3.tar.gz && \
+    tar zxf v10.7.3.tar.gz && mkdir geant4-10.7.3-build && cd geant4-10.7.3-build && \
     source scl_source enable devtoolset-7 && \
-    cmake3 ../geant4-10.4.3 -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_GDML=ON -DGEANT4_USE_OPENGL_X11=ON \
-    -DGEANT4_USE_SYSTEM_CLHEP=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_RAYTRACER_X11=ON && make -j6 && make install 
-## && cd ../ && rm -rfv geant4.10.04.p03-build geant4.10.04.p03 v10.4.3.tar.gz
+    cmake3 ../geant4-10.7.3 -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_GDML=ON -DGEANT4_USE_OPENGL_X11=ON \
+    -DGEANT4_USE_SYSTEM_CLHEP=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_RAYTRACER_X11=ON && make -j6 && make install \
+    && cd ../ && rm -rfv geant4-10.7.3-build geant4-10.7.3 v10.7.3.tar.gz && echo 'source /usr/local/bin/geant4.sh' >> ~/.bashrc
 
 # BDSIM
 RUN yum -y install bison flex
-RUN git clone https://stewartboogert@bitbucket.org/jairhul/bdsim.git && cd bdsim && git checkout develop 
-RUN source /usr/local/bin/thisroot.sh && mkdir bdsim-build && cd bdsim-build && source scl_source enable devtoolset-7 && cmake3 ../bdsim && make -j6 && make install
-## && cd ../ && rm -rfv bdsim-build bdsim 
+RUN git clone https://bitbucket.org/jairhul/bdsim.git && cd bdsim
+#RUN git clone https://bitbucket.org/jairhul/bdsim.git && cd bdsim && git checkout develop 
+RUN mkdir bdsim-build && cd bdsim-build && source scl_source enable devtoolset-7 && \
+    cmake3 ../bdsim -DUSE_HEPMC3=ON && make -j6 && make install && cd ../ && cp -r bdsim/examples bdsim-examples && \
+    rm -rfv bdsim-build bdsim && echo 'source /usr/local/bin/bdsim.sh' >> ~/.bashrc
 
 # Python
-RUN yum -y install tkinter
-RUN python -m pip install -U --force-reinstall pip
-RUN pip install numpy scipy matplotlib ipython 
+RUN yum -y install tkinter python36-pillow python36-qt5 --skip-broken
+RUN pip3 install numpy scipy matplotlib ipython
+RUN mkdir -p ~/.config/matplotlib && \
+    cp /usr/local/lib64/python3.6/site-packages/matplotlib/mpl-data/matplotlibrc ~/.config/matplotlib/. && \
+    sed -i -e 's/#backend: Agg/backend: Qt5Agg/g' ~/.config/matplotlib/matplotlibrc
 
 # Python support tools (pybdsim, pymadx, pymad8, pytransport, pyg4ometry)
-RUN git clone https://stewartboogert@bitbucket.org/jairhul/pymadx.git && \
-    cd pymadx && \
-    make develop
-
-RUN git clone https://stewartboogert@bitbucket.org/jairhul/pymad8.git && \
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN git clone https://bitbucket.org/jairhul/pymad8.git && \
     cd pymad8 && \
     make develop
 
-RUN git clone https://stewartboogert@bitbucket.org/jairhul/pytransport.git && \
+RUN git clone https://bitbucket.org/jairhul/pytransport.git && \
     cd pytransport && \
     make develop
 
-RUN git clone https://stewartboogert@bitbucket.org/jairhul/pybdsim.git && \
+RUN git clone https://bitbucket.org/jairhul/pymadx.git && \
+    cd pymadx && \
+    make develop
+
+RUN git clone https://bitbucket.org/jairhul/pybdsim.git && \
     cd pybdsim && \
     make develop
+
+RUN dbus-uuidgen > /var/lib/dbus/machine-id && \
+    mkdir -p /var/run/dbus && \
+    dbus-daemon --config-file=/usr/share/dbus-1/system.conf --print-address
+
+#RUN echo 'export LIBGL_ALWAYS_SOFTWARE=true' >> ~/.bashrc && \
+RUN echo 'export QT_GRAPHICSSYSTEM="native"' >> ~/.bashrc

@@ -18,14 +18,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSIMLink.hh"
 
+#include <csignal>
 #include <cstdlib>      // standard headers 
 #include <cstdio>
-#include <signal.h>
 
 #include "G4EventManager.hh" // Geant4 includes
 #include "G4GeometryManager.hh"
 #include "G4GeometryTolerance.hh"
-#include "G4RunManager.hh"
 #include "G4Version.hh"
 #include "G4VModularPhysicsList.hh"
 
@@ -51,6 +50,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLinkEventAction.hh"
 #include "BDSLinkPrimaryGeneratorAction.hh"
 #include "BDSLinkRunAction.hh"
+#include "BDSLinkRunManager.hh"
 #include "BDSLinkStackingAction.hh"
 #include "BDSLinkTrackingAction.hh"
 #include "BDSMaterials.hh"
@@ -124,15 +124,6 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
                           bool   protonsAndIonsOnly)
 {
   minimumKineticEnergy *= CLHEP::GeV; // units
-
-  /// Print header & program information
-  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
-  G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London"<<G4endl;
-  G4cout<<G4endl;
-  G4cout<<"        Reference: https://arxiv.org/abs/1808.10745"<<G4endl;
-  G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
-  G4cout<<G4endl;
-
   G4bool trackerDebug = false;
 
   /// Initialize executable command line options reader object
@@ -140,7 +131,7 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
   if (usualPrintOut)
     {execOptions->Print();}
   ignoreSIGINT = execOptions->IgnoreSIGINT(); // different sig catching for cmake
-  
+  execOptions->PrintCopyright();
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "DEBUG mode is on." << G4endl;
 #endif
@@ -182,7 +173,7 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
 
   /// Construct mandatory run manager (the G4 kernel) and
   /// register mandatory initialization classes.
-  runManager = new G4RunManager();
+  runManager = new BDSLinkRunManager();
 
   /// Register the geometry and parallel world construction methods with run manager.
   construction = new BDSLinkDetectorConstruction();

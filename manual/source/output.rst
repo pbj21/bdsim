@@ -64,7 +64,7 @@ to create the files (BDSIM) is unavailble.
 	  is cumbersome, inefficient and vastly inferior in the data structure.
 	  We highly encourage use of the ROOT output (`rootevent` format.). It is easy to
 	  explore the data files (see :ref:`basic-data-inspection`) and the included analysis
-	  tools (see ref:`rebdsim-analysis-tool`) and the supplied Python utilities
+	  tools (see :ref:`rebdsim-analysis-tool`) and the supplied Python utilities
 	  (see :ref:`python-utilities`, and pybdsim in particular) make the regular workflow
 	  very easy.
 

@@ -1,0 +1,5 @@
+Much of this code is directly imported from Geant4. It is not provided as part of the Geant4
+code base itself, but as part of one of the examples. The classes have been renamed so as not
+to clash in the future with any built-into-geant4 implementation. While based on the Geant4
+example (and hence the copy of the licence in each file), modifications have been made to
+improve upon it.

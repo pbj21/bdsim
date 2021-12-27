@@ -16,13 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <cstdlib>
-#include <string>
-#include <vector>
-
 #include "BDSDebug.hh"
 #include "BDSMySQLTable.hh"
 #include "BDSMySQLVariable.hh"
+
+#include "G4String.hh"
+#include "G4Version.hh"
+
+#include <cstdlib>
+#include <string>
+#include <vector>
 
 BDSMySQLTable::BDSMySQLTable (G4String aTableName)
 {
@@ -34,7 +37,8 @@ BDSMySQLTable::BDSMySQLTable (G4String aTableName)
   itsNVariables = 0;
 }
 
-void BDSMySQLTable::AddVariable(G4String aName, G4String aType){
+void BDSMySQLTable::AddVariable(G4String aName, G4String aType)
+{
   if(aName.empty())
     {return;}
     
@@ -61,10 +65,13 @@ BDSMySQLVariable* BDSMySQLTable::GetVariable(G4String aVarName)
 {
   for (G4int i=0; i<(G4int)itsVar.size(); i++)
     {
+#if G4VERSION_NUMBER > 1099
+      if (G4StrUtil::icompare(itsVar[i]->GetName(), aVarName) == 0)
+#else
       G4String::caseCompare cmpmode = G4String::ignoreCase;
-      if( (itsVar[i])->GetName().compareTo(aVarName,cmpmode)==0) {
-	return itsVar[i];
-      }
+      if( (itsVar[i])->GetName().compareTo(aVarName,cmpmode)==0)
+#endif
+	{return itsVar[i];}
     }
   return nullptr; //if does not exist return null
 }

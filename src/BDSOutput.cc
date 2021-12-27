@@ -281,7 +281,7 @@ void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
 
 void BDSOutput::FillEvent(const BDSEventInfo*                            info,
 			  const G4PrimaryVertex*                         vertex,
-			  const BDSHitsCollectionSampler*                samplerHitsPlane,
+			  const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
 			  const BDSHitsCollectionSampler*                samplerHitsCylinder,
                           const BDSHitsCollectionSamplerLink*            samplerHitsLink,
 			  const BDSHitsCollectionEnergyDeposition*       energyLoss,
@@ -314,8 +314,7 @@ void BDSOutput::FillEvent(const BDSEventInfo*                            info,
   
   if (vertex && storePrimaries)
     {FillPrimary(vertex, turnsTaken);}
-  if (samplerHitsPlane)
-    {FillSamplerHits(samplerHitsPlane, BDSOutput::HitsType::plane);}
+  FillSamplerHitsVector(samplerHitsPlane);
   if (samplerHitsCylinder)
     {FillSamplerHits(samplerHitsCylinder, BDSOutput::HitsType::cylinder);}
   if (samplerHitsLink)
@@ -565,26 +564,44 @@ void BDSOutput::CreateHistograms()
       for (const auto& nameDef : scorerHistogramDefs)
 	{
 	  const auto def = nameDef.second;
-	  
+
+      // use safe output name without any slashes in the name
+      G4int histID = -1;
+
 	  if (def.nBinsE <=1)
 	    {
-	      // use safe output name without any slashes in the name
-	      G4int histID = Create3DHistogram(def.outputName, def.outputName,
-					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
-					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
-					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);
+
+          if (def.geometryType == "box"){
+              histID = Create3DHistogram(def.outputName, def.outputName,
+                                         def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+                                         def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+                                         def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);}
+          else if (def.geometryType == "cylindrical"){
+              histID = Create3DHistogram(def.outputName, def.outputName,
+                                         def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                         def.nBinsPhi, 0, 2*M_PI,
+                                         def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m);}
+
 	      histIndices3D[def.uniqueName] = histID;
 	      histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
 	      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
 	    }
 	  else
 	    {
-	      G4int histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
-					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
-					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
-					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
-					       def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);
-	      
+
+          if (def.geometryType == "box"){
+                histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
+                                           def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+                                           def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+                                           def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                           def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);}
+          else if (def.geometryType == "cylindrical"){
+                histID = Create4DHistogram(def.outputName+"-"+def.eScale, def.outputName, def.eScale,def.eBinsEdges,
+                                           def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                           def.nBinsPhi, 0, 2*M_PI,
+                                           def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m,
+                                           def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);}
+
 	      histIndices4D[def.uniqueName] = histID;
 	      histIndexToUnits4D[histID] = def.primitiveScorerUnitValue;
 	    }
@@ -608,11 +625,11 @@ void BDSOutput::CreateHistograms()
       std::map<G4String, G4String> psFullNameToPS;
       for (const auto& scorerNameComplete : psnamesc)
         {	  
-          if (scorerNameComplete.contains("blm_"))
+          if (BDS::StrContains(scorerNameComplete, "blm_"))
             {
               for (const auto& scorerName : psnames)
                 {
-                  if (scorerNameComplete.contains("/"+scorerName)) // only match end of full name with '/'
+                  if (BDS::StrContains(scorerNameComplete, "/"+scorerName)) // only match end of full name with '/'
                     {
                       blmHistoNames.insert(scorerName);
                       psFullNameToPS[scorerNameComplete] = scorerName;
@@ -662,6 +679,31 @@ void BDSOutput::FillEventInfo(const BDSEventInfo* info)
     + ek;
 
   evtInfo->nCollimatorsInteracted = nCollimatorsInteracted;
+}
+
+void BDSOutput::FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler*>& hits)
+{
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSampler* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+					storeSamplerPolarCoords, storeSamplerIon,
+					storeSamplerRigidity, storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerTrees)
+	{sampler->FillIon();}
+    }
 }
 
 void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
@@ -1022,7 +1064,7 @@ void BDSOutput::FillScorerHits(const std::map<G4String, G4THitsMap<G4double>*>& 
 void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
 					 const G4THitsMap<G4double>* hitMap)
 {
-  if (histogramDefName.contains("blm_"))
+  if (BDS::StrContains(histogramDefName, "blm_"))
     {return FillScorerHitsIndividualBLM(histogramDefName, hitMap);}
 
   if (!(histIndices3D.find(histogramDefName) == histIndices3D.end()))

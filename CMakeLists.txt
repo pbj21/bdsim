@@ -78,6 +78,12 @@ include(cmake/CLHEP.cmake)
 # ROOT must be compiled in c++14 to be compatible with Boost
 include(cmake/ROOT.cmake)
 
+# DCMTK
+include(cmake/DCMTK.cmake)
+
+# AWAKE
+include(modules/AWAKE.cmake)
+
 # GDML (on by default)
 option( USE_GDML "Include GDML support."  ON )
 if(USE_GDML)
@@ -161,14 +167,17 @@ list(REMOVE_ITEM bdsim_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/BDSIMClass.cc)
 list(APPEND bdsim_sources ${CMAKE_CURRENT_BINARY_DIR}/src/BDSVisManager.cc)
 list(REMOVE_ITEM bdsim_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/BDSVisManager.cc)
 
-
 # Add Modules
-option(USE_AWAKE "Use AWAKE Module" OFF)
+add_subdirectory(modules)
+if (USE_DICOM)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/modules/dicom/include)
+  file(GLOB dicom_sources "${CMAKE_CURRENT_SOURCE_DIR}/modules/dicom/src/*.cc")
+  list(APPEND bdsim_sources ${dicom_sources})
+endif()
 if (USE_AWAKE)
-  add_definitions("-DUSE_AWAKE")
-  message(STATUS "AWAKE module ON")
-  add_subdirectory(modules/AWAKE)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/modules/AWAKE/include)
+  file(GLOB awake_sources "${CMAKE_CURRENT_SOURCE_DIR}/modules/AWAKE/src/*.cc")
+  list(APPEND bdsim_sources ${awake_sources})
 endif()
 
 if($ENV{VERBOSE})
@@ -179,6 +188,8 @@ endif()
 # Parser
 add_subdirectory(parser)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/parser)
+
+# TBC - don't think is needed...
 # include current directory for parser includes
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -223,6 +234,10 @@ if (USE_BOOST)
   target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
   target_link_libraries(${BDSIM_LIB_NAME} ${Boost_LIBRARIES})
 endif()
+if (USE_DICOM)
+  target_link_libraries(${BDSIM_LIB_NAME} ${DCMTK_LIBRARIES})
+  target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${DCMTK_INCLUDE_DIRS})
+endif()
 
 # link against ROOT
 target_link_libraries(${BDSIM_LIB_NAME} ${ROOT_LIBRARIES})
@@ -256,9 +271,6 @@ endif()
 # This is done because the ROOT dictionary generation needs to be done separately for each of them
 # And even if the dictionaries are the same compiling with multiple threads will result in building them simultaneously
 add_dependencies(${BDSIM_LIB_NAME} bdsimRootEvent)
-
-# material builder
-add_subdirectory(modules/nistmaterials)
 
 # Install the targets:
 set(executables bdsimExec)

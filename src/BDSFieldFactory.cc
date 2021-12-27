@@ -166,6 +166,11 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
 {
   for (const auto& definition : definitions)
     {
+      if (definition.type.empty())
+	{
+	  G4String msg = "\"type\" not specified in field definition \"" + definition.name + "\", but required.";
+	  throw BDSException(__METHOD_NAME__, msg);
+	}
       BDSFieldType    fieldType = BDS::DetermineFieldType(definition.type);
       BDSIntegratorType intType = BDS::DetermineIntegratorType(definition.integrator);
 

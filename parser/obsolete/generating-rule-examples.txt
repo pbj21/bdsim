@@ -1,0 +1,92 @@
+LN-MacBook:parser nevay$ /opt/local/bin/bison -d -o /Users/nevay/physics/reps/bdsim-sampler-partid-build/parser/parser.tab.cc parser.y -Wcounterexamples
+parser.y: warning: 5 shift/reduce conflicts [-Wconflicts-sr]
+parser.y: warning: shift/reduce conflict on token ',' [-Wcounterexamples]
+  Example: ALL • ',' sample_options
+  Shift derivation
+    sample_options
+    ↳ 232: ALL sample_options_extend
+               ↳ 229: • ',' sample_options
+  Reduce derivation
+    csample_options
+    ↳ 238: sample_options                   csample_options_extend
+           ↳ 232: ALL sample_options_extend ↳ 236: ',' csample_options
+                      ↳ 228: ε •                       ↳ 238: sample_options csample_options_extend
+                                                                             ↳ 238: ε
+parser.y: warning: shift/reduce conflict on token ',' [-Wcounterexamples]
+  First example: input CSAMPLE ',' component • ',' sample_options ';' $end
+  Shift derivation
+    $accept
+    ↳ 0: input                                                                                     $end
+         ↳ 2: input stmt                                                                       ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' sample_options
+                                                  ↳ 233: component sample_options_extend
+                                                                   ↳ 229: • ',' sample_options
+  Second example: input CSAMPLE ',' component • ',' csample_options ';' $end
+  Reduce derivation
+    $accept
+    ↳ 0: input                                                                                                                 $end
+         ↳ 2: input stmt                                                                                                   ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' csample_options
+                                                  ↳ 238: sample_options                         csample_options_extend
+                                                         ↳ 233: component sample_options_extend ↳ 236: ',' csample_options
+                                                                          ↳ 228: ε •
+parser.y: warning: shift/reduce conflict on token ',' [-Wcounterexamples]
+  Example: RANGE '=' VARIABLE • ',' sample_options
+  Shift derivation
+    sample_options
+    ↳ 230: RANGE '=' VARIABLE sample_options_extend
+                              ↳ 229: • ',' sample_options
+  Reduce derivation
+    csample_options
+    ↳ 238: sample_options                                  csample_options_extend
+           ↳ 230: RANGE '=' VARIABLE sample_options_extend ↳ 236: ',' csample_options
+                                     ↳ 228: ε •                       ↳ 238: sample_options csample_options_extend
+                                                                                            ↳ 238: ε
+parser.y: warning: shift/reduce conflict on token ',' [-Wcounterexamples]
+  First example: input CSAMPLE ',' paramassign '=' vecexpr • ',' sample_options ';' $end
+  Shift derivation
+    $accept
+    ↳ 0: input                                                                                                   $end
+         ↳ 2: input stmt                                                                                     ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' sample_options
+                                                  ↳ 234: paramassign '=' vecexpr sample_options_extend
+                                                                                 ↳ 229: • ',' sample_options
+  Second example: input CSAMPLE ',' paramassign '=' vecexpr • ',' csample_options ';' $end
+  Reduce derivation
+    $accept
+    ↳ 0: input                                                                                                                               $end
+         ↳ 2: input stmt                                                                                                                 ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' csample_options
+                                                  ↳ 238: sample_options                                       csample_options_extend
+                                                         ↳ 234: paramassign '=' vecexpr sample_options_extend ↳ 236: ',' csample_options
+                                                                                        ↳ 228: ε •
+parser.y: warning: shift/reduce conflict on token ',' [-Wcounterexamples]
+  First example: input CSAMPLE ',' RANGE '=' VARIABLE '[' NUMBER ']' • ',' sample_options ';' $end
+  Shift derivation
+    $accept
+    ↳ 0: input                                                                                                             $end
+         ↳ 2: input stmt                                                                                               ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' sample_options
+                                                  ↳ 231: RANGE '=' VARIABLE '[' NUMBER ']' sample_options_extend
+                                                                                           ↳ 229: • ',' sample_options
+  Second example: input CSAMPLE ',' RANGE '=' VARIABLE '[' NUMBER ']' • ',' csample_options ';' $end
+  Reduce derivation
+    $accept
+    ↳ 0: input                                                                                                                                         $end
+         ↳ 2: input stmt                                                                                                                           ';'
+                    ↳ 5: atomic_stmt
+                         ↳ 11: command
+                               ↳ 208: CSAMPLE ',' csample_options
+                                                  ↳ 238: sample_options                                                 csample_options_extend
+                                                         ↳ 231: RANGE '=' VARIABLE '[' NUMBER ']' sample_options_extend ↳ 236: ',' csample_options
+                                                                                                  ↳ 228: ε •

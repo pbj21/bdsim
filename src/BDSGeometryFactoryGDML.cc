@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4GDMLParser.hh"
 #include "G4LogicalVolume.hh"
+#include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
 
@@ -52,7 +53,8 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 						   G4bool                 autoColour,
 						   G4double             /*suggestedLength*/,
 						   G4double             /*suggestedHorizontalWidth*/,
-						   std::vector<G4String>* namedVacuumVolumes)
+						   std::vector<G4String>* namedVacuumVolumes,
+						   G4UserLimits*          userLimitsToAttachToAllLVs)
 {
   CleanUp();
 
@@ -94,7 +96,8 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 
   auto visesGDML = ApplyColourMapping(lvsGDML, mapping, autoColour);
 
-  ApplyUserLimits(lvsGDML, BDSGlobalConstants::Instance()->DefaultUserLimits());
+  G4UserLimits* ul = userLimitsToAttachToAllLVs ? userLimitsToAttachToAllLVs : BDSGlobalConstants::Instance()->DefaultUserLimits();
+  ApplyUserLimits(lvsGDML, ul);
   
   // make sure container is visible - Geant4 always makes the container invisible.
   G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(containerLV->GetMaterial());

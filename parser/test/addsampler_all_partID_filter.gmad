@@ -1,0 +1,11 @@
+d1: drift, l=0.5*m;
+d2: drift, l=0.5*m;
+
+b1: line=(d1,d2,d1);
+
+use, b1;
+
+! add samplers after all elements
+sample, all, partID={11,-11,12,-12};
+
+print, line;

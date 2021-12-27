@@ -1,4 +1,3 @@
-add_subdirectory(ggmad)
 add_subdirectory(Mokka)
 add_subdirectory(1_layout)
 add_subdirectory(2_transform)

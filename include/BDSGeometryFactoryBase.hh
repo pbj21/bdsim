@@ -30,7 +30,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <vector>
 
-class G4AssemblyVolume;
 class G4Colour;
 class G4LogicalVolume;
 class G4UserLimits;
@@ -58,7 +57,8 @@ public:
 				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
 				     G4double               suggestedHorizontalWidth = 0,
-				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr) = 0;
+				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr,
+				     G4UserLimits*          userLimitsToAttachToAllLVs = nullptr) = 0;
 
   /// Apply a colour mapping to a set of logical volumes.  This applies a colour from the map
   /// if the key value is found as a substring or whole part of the logical volume name. Ie

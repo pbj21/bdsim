@@ -124,17 +124,8 @@ int BDSIM::Initialise()
   if (usualPrintOut)
     {execOptions->Print();}
   ignoreSIGINT = execOptions->IgnoreSIGINT(); // different sig catching for cmake
-  
-  /// Print header & program information
-  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
-  G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London"  << G4endl;
-  G4cout<<G4endl;
-  G4cout<<"        Reference: Computer Physics Communications, 107200 (2020)" << G4endl;
-  G4cout<<"                   https://doi.org/10.1016/j.cpc.2020.107200"      << G4endl;
-  G4cout<<"                   https://arxiv.org/abs/1808.10745"               << G4endl;
-  G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
-  G4cout<<G4endl;
-  
+
+  execOptions->PrintCopyright();  
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "DEBUG mode is on." << G4endl;
 #endif

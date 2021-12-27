@@ -35,8 +35,14 @@ public:
 
   ~BDSExecOptions(){;}
 
-  /// Print out the available executable commands.
+  /// Print out the available executable commands (no exit).
   void Usage() const;
+
+  /// Print out the copyright information (no exit).
+  void PrintCopyright() const;
+
+  /// Print academic citation information.
+  void PrintCitation() const;
 
   /// Print out the commands and their set values.
   void Print() const;

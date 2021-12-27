@@ -64,7 +64,8 @@ public:
 				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
 				     G4double               suggestedHorizontalWidth = 0,
-				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr);
+				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr,
+				     G4UserLimits*          userLimitsToAttachToAllLVs = nullptr);
 
 protected:
   /// Clean up members.

@@ -243,6 +243,9 @@ protected:
   /// Build(). Putting it here makes the same G4UserLimits object available to all derived
   /// classes potentially saving creation of a duplicate object.
   virtual void BuildUserLimits();
+
+  /// Doesn't change member variables, but may change their contents.
+  virtual void AttachUserLimits() const;
   
   ///@{ Const protected member variable that may not be changed by derived classes
   const G4String   name;

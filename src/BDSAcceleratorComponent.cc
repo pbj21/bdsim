@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTunnelInfo.hh"
 #include "BDSUtilities.hh"
 
+#include "G4AssemblyVolume.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"
@@ -135,14 +136,10 @@ void BDSAcceleratorComponent::Initialise()
 void BDSAcceleratorComponent::Build()
 {
   BuildContainerLogicalVolume(); // pure virtual provided by derived class
-
-  // set user limits for container & visual attributes
+  BuildUserLimits();
+  AttachUserLimits();
   if (containerLogicalVolume)
-    {
-      BuildUserLimits();
-      containerLogicalVolume->SetUserLimits(userLimits);
-      containerLogicalVolume->SetVisAttributes(containerVisAttr);
-    }
+    {containerLogicalVolume->SetVisAttributes(containerVisAttr);}
 }
 
 void BDSAcceleratorComponent::SetField(BDSFieldInfo* fieldInfoIn)
@@ -184,6 +181,19 @@ void BDSAcceleratorComponent::BuildUserLimits()
   if (ul != defaultUL) // if it's not the default register it
     {RegisterUserLimits(ul);}
   userLimits = ul; // assign to member
+}
+
+void BDSAcceleratorComponent::AttachUserLimits() const
+{
+  if (!userLimits)
+    {return;}
+  if (containerLogicalVolume || containerAssembly)
+    {
+      if (containerIsAssembly && containerAssembly)
+        {AttachUserLimitsToAssembly(containerAssembly, userLimits);}
+      else if (containerLogicalVolume)
+        {containerLogicalVolume->SetUserLimits(userLimits);}
+    }
 }
 
 std::set<G4LogicalVolume*> BDSAcceleratorComponent::GetAcceleratorMaterialLogicalVolumes() const

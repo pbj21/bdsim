@@ -53,11 +53,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicalVolumeInfo.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSRegion.hh"
+#include "BDSSamplerInfo.hh"
 #include "BDSSamplerType.hh"
 #include "BDSScorerFactory.hh"
 #include "BDSScorerInfo.hh"
 #include "BDSScorerMeshInfo.hh"
 #include "BDSScoringMeshBox.hh"
+#include "BDSScoringMeshCylinder.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDType.hh"
@@ -86,6 +88,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VPrimitiveScorer.hh"
 #include "G4Region.hh"
 #include "G4ScoringManager.hh"
+#include "G4String.hh"
 #include "G4Transform3D.hh"
 #include "G4Version.hh"
 #include "G4VisAttributes.hh"
@@ -138,6 +141,7 @@ BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userCo
     }
 
   UpdateSamplerDiameterAndCountSamplers();
+  PrepareExtraSamplerSDs();
   CountPlacementFields();
 }
 
@@ -184,6 +188,12 @@ void BDSDetectorConstruction::UpdateSamplerDiameterAndCountSamplers()
 
   // add number of sampler placements to count of samplers
   nSamplers += (G4int)BDSParser::Instance()->GetSamplerPlacements().size();
+}
+
+void BDSDetectorConstruction::PrepareExtraSamplerSDs()
+{
+  const auto& samplerFilterIDtoPDGSet = BDSParser::Instance()->GetSamplerFilterIDToSet();
+  BDSSDManager::Instance()->ConstructSamplerSDsForParticleSets(samplerFilterIDtoPDGSet);
 }
 
 void BDSDetectorConstruction::CountPlacementFields()
@@ -348,6 +358,17 @@ void BDSDetectorConstruction::BuildBeamlines()
     }
 }
 
+BDSSamplerInfo* BDSDetectorConstruction::BuildSamplerInfo(const GMAD::Element* element)
+{
+  BDSSamplerType sType = BDS::DetermineSamplerType(element->samplerType);
+  if (sType == BDSSamplerType::none)
+    {return nullptr;}
+  BDSSamplerInfo* result = new BDSSamplerInfo(element->samplerName,
+                                              sType,
+                                              (G4int)element->samplerParticleSetID);
+  return result;
+}
+
 BDSBeamlineSet BDSDetectorConstruction::BuildBeamline(const GMAD::FastList<GMAD::Element>& beamLine,
 						      const G4String&      name,
 						      const G4Transform3D& initialTransform,
@@ -416,15 +437,16 @@ BDSBeamlineSet BDSDetectorConstruction::BuildBeamline(const GMAD::FastList<GMAD:
 									   currentArcLength);
       if(temp)
 	{
-          BDSSamplerType sType = BDS::DetermineSamplerType((*elementIt).samplerType);
+          G4bool forceNoSamplerOnThisElement = false;
           if ((!canSampleAngledFaces) && (BDS::IsFinite((*elementIt).e2)))
-            {sType = BDSSamplerType::none;}
+            {forceNoSamplerOnThisElement = true;}
           if ((!canSampleAngledFaces) && (BDS::IsFinite(nextElementInputFace)))
-            {sType = BDSSamplerType::none;}
+            {forceNoSamplerOnThisElement = true;}
           if (temp->GetType() == "dump") // don't sample after a dump as there'll be nothing
-            {sType = BDSSamplerType::none;}
+            {forceNoSamplerOnThisElement = true;}
+          BDSSamplerInfo* samplerInfo = forceNoSamplerOnThisElement ? nullptr : BuildSamplerInfo(&(*elementIt));
           BDSTiltOffset* tiltOffset = theComponentFactory->CreateTiltOffset(&(*elementIt));
-          massWorld->AddComponent(temp, tiltOffset, sType, elementIt->samplerName);
+          massWorld->AddComponent(temp, tiltOffset, samplerInfo);
 	}
     }
 
@@ -898,7 +920,7 @@ G4ThreeVector BDSDetectorConstruction::SideToLocalOffset(const GMAD::Placement& 
 {
   G4ThreeVector result = G4ThreeVector();
   G4String side = G4String(placement.side);
-  side.toLower();
+  side = BDS::LowerCase(side);
   
   // Get the iterators pointing to the first and last elements
   // that the placement lines up with.
@@ -1237,18 +1259,34 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
       // TBC - could be any beam line in future - just w.r.t. main beam line just now
       const BDSBeamline* mbl = BDSAcceleratorModel::Instance()->BeamlineMain();
       G4Transform3D placement = CreatePlacementTransform(mesh, mbl);
-      
+
+      BDSScoringMeshBox* scorerBox = nullptr;
+      BDSScoringMeshCylinder* scorerCylindrical = nullptr;
+      const BDSHistBinMapper* mapper = nullptr;
+
+      G4String geometryType = BDS::LowerCase(G4String(mesh.geometryType));
+
+      if (geometryType == "box") {
       // create a scoring box
-      BDSScoringMeshBox* scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
-      const BDSHistBinMapper* mapper = scorerBox->Mapper();
-      
+        scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
+        mapper = scorerBox->Mapper();}
+
+      else if (geometryType == "cylindrical") {
+      // create a scoring cylinder
+        scorerCylindrical = new BDSScoringMeshCylinder(meshName, meshRecipe, placement);
+        mapper = scorerCylindrical->Mapper();}
+
+      else {
+          throw BDSException(__METHOD_NAME__, "mesh geometry type \"" + geometryType + "\" is not correct. The possible options are \"box\" and \"cylindrical\"");}
+
       // add the scorer(s) to the scoring mesh
       std::vector<G4String> meshPrimitiveScorerNames; // final vector of unique mesh + ps names
       std::vector<G4double> meshPrimitiveScorerUnits;
       std::vector<G4String> scorerNames;
       std::stringstream sqss(mesh.scoreQuantity);
       G4String word;
-      while (sqss >> word) // split by white space - process word at a time
+
+        while (sqss >> word) // split by white space - process word at a time
 	{
 	  auto search = scorerRecipes.find(word);
 	  if (search == scorerRecipes.end())
@@ -1263,13 +1301,21 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
 	  G4String uniqueName = meshName + "/" + ps->GetName();
 	  meshPrimitiveScorerNames.push_back(uniqueName);
 	  meshPrimitiveScorerUnits.push_back(psUnit);
-	  scorerBox->SetPrimitiveScorer(ps); // sets the current ps but appends to list of multiple
+
+      if (geometryType == "box"){
+          scorerBox->SetPrimitiveScorer(ps);} // sets the current ps but appends to list of multiple
+      else if (geometryType == "cylindrical"){
+          scorerCylindrical->SetPrimitiveScorer(ps);}// sets the current ps but appends to list of multiple
+
 	  BDSScorerHistogramDef outputHistogram(meshRecipe, uniqueName, ps->GetName(), psUnit, *mapper);
 	  BDSAcceleratorModel::Instance()->RegisterScorerHistogramDefinition(outputHistogram);
 	  BDSAcceleratorModel::Instance()->RegisterScorerPlacement(meshName, placement);
 	}
 
-      scManager->RegisterScoringMesh(scorerBox);
+      if (geometryType == "box"){
+          scManager->RegisterScoringMesh(scorerBox);} // sets the current ps but appends to list of multiple
+      else if (geometryType == "cylindrical"){
+          scManager->RegisterScoringMesh(scorerCylindrical);}// sets the current ps but appends to list of multiple
 
       // register it with the sd manager as this is where we get all collection IDs from
       // in the end of event action. This must come from the mesh as it creates the

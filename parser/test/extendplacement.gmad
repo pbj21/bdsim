@@ -6,6 +6,7 @@ leadblock: placement, x=10*m,y=3*cm,z=12*m,
 		      axisAngle=1,
 		      geometryFile="gdml:afile.gdml";
 
-
+print, leadblock;
 ! extend the definition of the placement.
 leadblock: axisAngle = 0;
+print, leadblock;

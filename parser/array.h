@@ -83,32 +83,31 @@ namespace GMAD
     
     /// Copy STL string containers into symbols
     template<template <typename, typename> class Container>
-      void Copy(Container<std::string, std::allocator<std::string>>& cpy)
+    void Copy(Container<std::string, std::allocator<std::string>>& cpy)
     {
-      for(std::string name : cpy){
-	symbols.push_back(name);
-      }
+      for (const std::string& name : cpy)
+        {symbols.push_back(name);}
     }
 
     /// Copy STL numerical containers into data
     template<typename T, template <typename, typename> class Container>
-      void Copy(Container<T, std::allocator<T>>& cpy)
+    void Copy(Container<T, std::allocator<T>>& cpy)
     {
-      for(T value : cpy){
-	data.push_back(value);
-      }
+      for (T value : cpy)
+        {data.push_back(value);}
     }
 
     /// Copy symbols into STL string containers
     template<template <typename, typename> class Container>
-      void set_vector(Container<std::string, std::allocator<std::string>>& dst)const
+    void set_vector(Container<std::string, std::allocator<std::string>>& dst)const
     {
-      for(std::string symbol : symbols){
-	dst.push_back(symbol);
+      for (std::string symbol : symbols)
+	{
+	  dst.push_back(symbol);
 #ifdef BDSDEBUG 
-	std::cout << symbol << " ";
+	  std::cout << symbol << " ";
 #endif
-      }
+	}
 #ifdef BDSDEBUG 
       std::cout << std::endl;
 #endif
@@ -116,14 +115,15 @@ namespace GMAD
 
     /// Copy data into STL numerical containers
     template<typename T, template <typename, typename> class Container>
-      void set_vector(Container<T, std::allocator<T>>& dst)const
+    void set_vector(Container<T, std::allocator<T>>& dst)const
     {
-      for(auto value : data){
-	dst.push_back((T)value);
+      for (auto value : data)
+	{
+	  dst.push_back((T)value);
 #ifdef BDSDEBUG 
-	std::cout << (T)value << " ";
+	  std::cout << (T)value << " ";
 #endif
-      }
+	}
 #ifdef BDSDEBUG 
       std::cout << std::endl;
 #endif

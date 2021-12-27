@@ -16,22 +16,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <iostream>
-#include <ostream>
-#include <iomanip>
-
-#include "BDSMessenger.hh"
+#include "BDSAcceleratorModel.hh"
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
-#include "BDSAcceleratorModel.hh"
+#include "BDSMessenger.hh"
 #include "BDSSamplerRegistry.hh"
+#include "BDSUtilities.hh"
 
+#include "globals.hh"
 #include "G4UImanager.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithAString.hh"
 
-#include "globals.hh"
+#include <iostream>
+#include <ostream>
+#include <iomanip>
 
 BDSMessenger::BDSMessenger()
 {
@@ -125,7 +125,7 @@ void BDSMessenger::ElementNameSearch(std::string name)
   int j=0;
   for (auto i = beamline->begin(); i != beamline->end(); ++i, ++j)
     {
-      if((*i)->GetName().contains(name))
+      if(BDS::StrContains((*i)->GetName(), name))
 	{G4cout << (*i)->GetName() << G4endl;}
     }
 }
@@ -146,7 +146,7 @@ void BDSMessenger::GoToElement(const std::string& name)
     {// search the beam line for any element containing the name at all
       for (const auto& el : *beamline)
 	{
-	  if (el->GetName().contains(name))
+	  if (BDS::StrContains(el->GetName(), name))
 	    {e = el; break;}
 	}
     }
@@ -154,7 +154,7 @@ void BDSMessenger::GoToElement(const std::string& name)
   if (!e)
     {G4cout << "No component found by that name" << G4endl; return;}
   G4ThreeVector pos = e->GetReferencePositionMiddle();
-  G4cout << "goto> global position> " << pos/CLHEP::m << " m" << G4endl;
+  G4cout << "goto> " << name << " at global position> " << pos/CLHEP::m << " m" << G4endl;
   G4UImanager* UIManager = G4UImanager::GetUIpointer();
   G4String posStr = std::to_string(pos.x()) + " " + std::to_string(pos.y()) + " " + std::to_string(pos.z());
   UIManager->ApplyCommand("/vis/viewer/set/targetPoint " + posStr + " mm");
@@ -191,7 +191,7 @@ std::string BDSMessenger::BDSSamplerToString(int iSampler)
 {
   std::stringstream ss;
 
-  BDSSamplerInfo sInfo = BDSSamplerRegistry::Instance()->GetInfo(iSampler);
+  BDSSamplerPlacementRecord sInfo = BDSSamplerRegistry::Instance()->GetInfo(iSampler);
 
   ss << std::setfill('0') << std::right << std::setw(4) << iSampler << " " << std::setfill(' ')
      << std::right << std::setw(20) << sInfo.Name() << " "

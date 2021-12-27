@@ -74,8 +74,8 @@ protected:
 							 G4bool verboseThisEvent,
 							 BDSHitsCollectionEnergyDeposition* eCounterHits,
 							 BDSHitsCollectionEnergyDeposition* eCounterFullHits,
-							 BDSHitsCollectionSampler*          SampHC,
-							 G4int                              nChar = 50) const;
+							 const std::vector<BDSHitsCollectionSampler*>& allSamplerHits,
+							 G4int nChar = 50) const;
 
   /// Recursively (using this function) mark each parent trajectory as true - to be stored,
   /// and also flag the bitset for 'connect' as true.
@@ -105,6 +105,7 @@ private:
   G4int apertureCollID;           ///< Collection ID for the aperture hits.
   G4int thinThingCollID;          ///< Collection ID for the thin thing hits.
   std::map<G4String, G4int> scorerCollectionIDs; ///< Collection IDs for all scorers.
+  std::map<G4String, G4int> extraSamplerCollectionIDs; ///< Collection IDs for extra samplers.
 
   time_t startTime; ///< Time at the start of the event.
   time_t stopTime;  ///< Time at the end of the event.

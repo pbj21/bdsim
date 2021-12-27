@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSOutputType.hh"
+#include "BDSUtilities.hh"
 
-#include "globals.hh" // geant4 types  globals
+#include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -38,7 +40,7 @@ BDSOutputType BDS::DetermineOutputType(G4String outputType)
   types["none"]      = BDSOutputType::none;
   types["rootevent"] = BDSOutputType::rootevent;
 
-  outputType.toLower();
+  outputType = BDS::LowerCase(outputType);
 
   auto result = types.find(outputType);
   if (result == types.end())

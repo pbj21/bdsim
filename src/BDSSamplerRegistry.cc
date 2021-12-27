@@ -65,11 +65,11 @@ G4int BDSSamplerRegistry::RegisterSampler(const G4String&      name,
       uniqueName = name + "_" + std::to_string(existingNames[name]);
       existingNames[name]++;
     }
-  BDSSamplerInfo info = BDSSamplerInfo(name, sampler, transform, S, element, uniqueName);
+  BDSSamplerPlacementRecord info = BDSSamplerPlacementRecord(name, sampler, transform, S, element, uniqueName);
   return RegisterSampler(info);
 }
 
-G4int BDSSamplerRegistry::RegisterSampler(BDSSamplerInfo& info)
+G4int BDSSamplerRegistry::RegisterSampler(BDSSamplerPlacementRecord& info)
 {
   infos.push_back(info);
 

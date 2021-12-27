@@ -1,0 +1,15 @@
+d1: drift, l=0.5*m;
+d2: drift, l=0.5*m;
+d3: drift, l=0.2*m;
+d4: drift, l=0.1*m;
+q1: quadrupole, l=0.1*m, k1=-0.1;
+
+b1: line=(d1,d2,d1,q1,d3,d4);
+use, b1;
+
+! sample 3x instances of d1 in the beam line with a specific filter
+sample, range=d1, partID={13,-13};
+! then sample the rest with another filter
+sample, all, partID={11,-11,12,-12};
+
+print, line;

@@ -45,9 +45,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 G4double BDSBeamline::paddingLength = -1;
 
-BDSBeamline::BDSBeamline(G4ThreeVector     initialGlobalPosition,
-			 G4RotationMatrix* initialGlobalRotation,
-			 G4double          initialS):
+BDSBeamline::BDSBeamline(const G4ThreeVector& initialGlobalPosition,
+			 G4RotationMatrix*    initialGlobalRotation,
+			 G4double             initialS):
   totalChordLength(0),
   totalArcLength(0),
   totalAngle(0),
@@ -86,8 +86,8 @@ BDSBeamline::BDSBeamline(G4Transform3D initialTransform,
 
 BDSBeamline::~BDSBeamline()
 {
-  for (iterator it = begin(); it != end(); ++it)
-    {delete (*it);}
+  for (auto it : *this)
+    {delete it;}
   // special case, if empty then previousReferenceRotationEnd is not used in the first element
   if (size()==0)
     {delete previousReferenceRotationEnd;}
@@ -119,18 +119,24 @@ std::ostream& operator<< (std::ostream& out, BDSBeamline const &bl)
 
 void BDSBeamline::AddComponent(BDSAcceleratorComponent* component,
 			       BDSTiltOffset*           tiltOffset,
-			       BDSSamplerType           samplerType,
-			       G4String                 samplerName)
+			       BDSSamplerInfo*          samplerInfo)
 {
   if (!component)
-    {throw BDSException(__METHOD_NAME__, "invalid accelerator component " + samplerName);}
+    {
+      G4String samplerName = samplerInfo ? samplerInfo->name : "no_sampler_name_given";
+      throw BDSException(__METHOD_NAME__, "invalid accelerator component " + samplerName);
+    }
 
   // check the sampler name is allowed in the output
-  if (BDSOutput::InvalidSamplerName(samplerName))
+  if (samplerInfo)
     {
-      G4cerr << __METHOD_NAME__ << "invalid sampler name \"" << samplerName << "\"" << G4endl;
-      BDSOutput::PrintProtectedNames(G4cerr);
-      throw BDSException(__METHOD_NAME__, "");
+      G4String samplerName = samplerInfo->name;
+      if (BDSOutput::InvalidSamplerName(samplerName))
+	{
+	  G4cerr << __METHOD_NAME__ << "invalid sampler name \"" << samplerName << "\"" << G4endl;
+	  BDSOutput::PrintProtectedNames(G4cerr);
+	  throw BDSException(__METHOD_NAME__, "");
+	}
     }
   
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
@@ -141,19 +147,18 @@ void BDSBeamline::AddComponent(BDSAcceleratorComponent* component,
 	  if (i < sizeLine-1)
 	    {AddSingleComponent((*line)[i], tiltOffset);}
 	  else // only attach the desired sampler to the last one in the line
-	    {AddSingleComponent((*line)[i], tiltOffset, samplerType, samplerName);}
+	    {AddSingleComponent((*line)[i], tiltOffset, samplerInfo);}
 	}
     }
   else
-    {AddSingleComponent(component, tiltOffset, samplerType, samplerName);}
+    {AddSingleComponent(component, tiltOffset, samplerInfo);}
   // free memory - as once the rotations are calculated, this is no longer needed
   delete tiltOffset;
 }
 
 void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 				     BDSTiltOffset*           tiltOffset,
-				     BDSSamplerType           samplerType,
-				     G4String                 samplerName)
+				     BDSSamplerInfo*          samplerInfo)
 {
 #ifdef BDSDEBUG
   G4cout << G4endl << __METHOD_NAME__ << "adding component to beamline and calculating coordinates" << G4endl;
@@ -338,8 +343,12 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
       // to a unit z vector along the direction of the beam line before this component.
       // increase it by sampler length if we're placing a sampler there.
       G4ThreeVector pad = G4ThreeVector(0,0,paddingLength);
-      if (samplerType != BDSSamplerType::none)
+      if (samplerInfo)
+      {
+        BDSSamplerType samplerType = samplerInfo->samplerType;
+        if (samplerType != BDSSamplerType::none)
 	{pad += G4ThreeVector(0,0,BDSSamplerPlane::ChordLength());}
+      }
 
       // even if a transform has been applied that might induce a rotation, we introduce
       // the padding length along the outgoing vector of the previous component to ensure
@@ -460,8 +469,7 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 				   sPositionMiddle,
 				   sPositionEnd,
 				   tiltOffsetToStore,
-				   samplerType,
-				   samplerName,
+				   samplerInfo,
 				   (G4int)beamline.size());
 
   // calculate extents for world size determination

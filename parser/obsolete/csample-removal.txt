@@ -1,0 +1,44 @@
+
+parser.l
+csample { return CSAMPLE; }
+
+
+
+
+parser.y:
+
+CSAMPLE
+
+
+%type <str> csample_options
+
+
+
+        | CSAMPLE ',' csample_options // cylindrical sampler
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> CSAMPLE" << std::endl;
+              Parser::Instance()->add_csampler(*($3), element_count, element_type);
+              element_count = -1;
+              Parser::Instance()->ClearParams();
+            }
+        }
+
+
+
+
+csample_options_extend : /* nothing */
+                       | ',' csample_options
+
+csample_options : paramassign '=' aexpr csample_options_extend
+                  {
+                    if(ECHO_GRAMMAR) std::cout << "csample_opt ->csopt " << (*$1) << " = " << $3 << std::endl;
+                    if(execute)
+                      Parser::Instance()->SetValue<Parameters>(*($1),$3);
+                  }
+                | sample_options csample_options_extend
+                  {
+                    if(ECHO_GRAMMAR) std::cout << "csample_opt -> sopt, csopt" << std::endl;
+                    $$ = $1;
+                  }

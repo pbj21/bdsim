@@ -30,14 +30,18 @@ void ScorerMesh::clear()
 {
   name          = "";
   scoreQuantity = "";
+  geometryType  = "box";
 
   nx    = 0;
   ny    = 0;
   nz    = 0;
+  nr    = 0;
+  nphi  = 0;
   ne    = 1;
   xsize = 0;
   ysize = 0;
   zsize = 0;
+  rsize = 0;
   eLow  = 1e-12;
   eHigh = 1e4;
   eScale = "linear";
@@ -63,13 +67,17 @@ void ScorerMesh::PublishMembers()
 {
   publish("name",          &ScorerMesh::name);
   publish("scoreQuantity", &ScorerMesh::scoreQuantity);
+  publish("geometryType",  &ScorerMesh::geometryType);
   publish("nx",            &ScorerMesh::nx);
   publish("ny",            &ScorerMesh::ny);
   publish("nz",            &ScorerMesh::nz);
+  publish("nr",            &ScorerMesh::nr);
+  publish("nphi",          &ScorerMesh::nphi);
   publish("ne",            &ScorerMesh::ne);
   publish("xsize",         &ScorerMesh::xsize);
   publish("ysize",         &ScorerMesh::ysize);
   publish("zsize",         &ScorerMesh::zsize);
+  publish("rsize",         &ScorerMesh::rsize);
   publish("eLow",          &ScorerMesh::eLow);
   publish("eHigh",         &ScorerMesh::eHigh);
   publish("eScale",        &ScorerMesh::eScale);

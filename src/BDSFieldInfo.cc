@@ -193,10 +193,10 @@ void BDSFieldInfo::UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSiz
     {
       G4UserLimits* old = stepLimit;
       stepLimit = BDS::CreateUserLimits(stepLimit, maximumStepSize, 1.0);
-      if ((stepLimit != old) && (old != defaultUL))
-	{delete old;}
       if (stepLimit == old)
 	{warn = false;} // no change and warning would print out wrong number
+      if ((stepLimit != old) && (old != defaultUL))
+	{delete old;}
     }
   else
     {stepLimit = new G4UserLimits(maximumStepSize);}

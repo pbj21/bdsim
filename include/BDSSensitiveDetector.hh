@@ -39,7 +39,7 @@ class G4VHit;
 class BDSSensitiveDetector: public G4VSensitiveDetector
 {
 public:
-  BDSSensitiveDetector(G4String name);
+  BDSSensitiveDetector(const G4String& name);
   BDSSensitiveDetector() = delete;
 
   virtual ~BDSSensitiveDetector(){;}

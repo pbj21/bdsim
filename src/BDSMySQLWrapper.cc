@@ -21,8 +21,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMySQLWrapper.hh"
 #include "BDSMySQLTable.hh"
 #include "BDSMySQLVariable.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
+#include "G4Version.hh"
+
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cstdlib>
@@ -160,8 +164,12 @@ void BDSMySQLWrapper::CreateTable()
   ProceedToEndOfLine();
   table.push_back(new BDSMySQLTable(CurrentTableName));
   tableN++;
-  
-  while((!varname.contains(";")) && (!vartype.contains(";"))){
+#if G4VERSION_NUMBER > 1099
+  while(!G4StrUtil::contains(varname,";") && (!G4StrUtil::contains(vartype,";")))
+#else
+  while((!varname.contains(";")) && (!vartype.contains(";")))
+#endif
+  {
     //Get next variable, skipping blanks.
     do{
       _NEXTINPUT
@@ -170,16 +178,16 @@ void BDSMySQLWrapper::CreateTable()
 #ifdef BDSDEBUG
     G4cout << __METHOD_NAME__ << " reading varname: " << varname << G4endl;
 #endif
-    if (varname.contains(";")) return; //Semicolon indicates end of table.
+    if (BDS::StrContains(varname, ";")) {return;}
     _NEXTINPUT
       vartype=Token();
 #ifdef BDSDEBUG
     G4cout << __METHOD_NAME__ << " reading vartype: " << vartype << G4endl;
 #endif
-    if (vartype.contains(";")) return; //Semicolon indicates end of table.
-    if(vartype.contains("DOUBLE")) vartype="DOUBLE";
-    else if(vartype.contains("VARCHAR")) vartype="STRING";
-    else if(vartype.contains("INTEGER")) vartype="INTEGER";
+    if (BDS::StrContains(vartype,";")) return; //Semicolon indicates end of table.
+    if(BDS::StrContains(vartype, "DOUBLE")) vartype="DOUBLE";
+    else if(BDS::StrContains(vartype, "VARCHAR")) vartype="STRING";
+    else if(BDS::StrContains(vartype, "INTEGER")) vartype="INTEGER";
     table[tableN]->AddVariable(varname,vartype);
     ProceedToEndOfLine();
   }
@@ -229,11 +237,11 @@ void BDSMySQLWrapper::Values() {
 	G4cout << __METHOD_NAME__ << " inserting value " << Token() << G4endl;
 #endif
 	if(table[j]->GetVariable(k)->GetVarType()=="DOUBLE")
-	  table[j]->GetVariable(k)->AddValue(atof(Token().c_str())*CLHEP::mm);
+	  table[j]->GetVariable(k)->AddValue(std::atoi(Token().c_str())*CLHEP::mm);
 	else if(table[j]->GetVariable(k)->GetVarType()=="STRING")
-	  table[j]->GetVariable(k)->AddValue(Token().c_str());
+	  table[j]->GetVariable(k)->AddValue(Token());
 	else if(table[j]->GetVariable(k)->GetVarType()=="INTEGER")
-	  table[j]->GetVariable(k)->AddValue(atoi(Token().c_str()));
+	  table[j]->GetVariable(k)->AddValue(std::atoi(Token().c_str()));
       }
     }
   }

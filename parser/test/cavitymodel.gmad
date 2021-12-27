@@ -12,3 +12,5 @@ Tesla9Cell: cavitymodel,
 	    numberOfCells = 1;
 
 rf1 : rf, l=115.4*mm, gradient = 10 * MV / m, cavityModel = "Tesla9Cell", material = "Niobium";
+
+print, Tesla9Cell;

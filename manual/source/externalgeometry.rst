@@ -9,7 +9,10 @@ supported by Geant4 and the geometry extent can be automatically determined.
 
 More can be added in collaboration with the BDSIM development team - please see :ref:`feature-request`.
 
-.. warning:: The ggmad and Mokka formats are not currently developed or maintained in BDSIM.
+.. warning:: The Mokka format is not currently developed or maintained in BDSIM.
+
+.. warning:: The GGMAD format has been deprecated and removed from BDSIM as of V1.7.0 as
+	     it was not maintained and was very hard to maintain as it was old code.
 
 GDML
 ----
@@ -54,110 +57,6 @@ GDML Preparation
 
 A Python utility has been created to aid preparation, visualisation and overlap checking of
 GDML geometry. Please see :ref:`python-utilities` for `pyg4ometry`.
-
-ggmad
------
-
-.. warning:: The ggmad format is not currently developed or maintained in BDSIM.
-
-ggmad is a simple format used as wrapper to (some) Geant4 geometry classes. It can
-be used for specifying more or fewer simple geometries, such as collimators. Example::
-
-  Cons {
-  x0=0,
-  y0=0,
-  z0=375,
-  rmin1=100,
-  rmax1=500,
-  rmin2=5,
-  rmax2=500,
-  z=125,
-  material=Graphite,
-  phi0=0,
-  dphi=360,
-  temperature=1
-  }
-
-A file can contain several objects which will be placed sequentially into the volume.
-
-.. note:: The user has to make sure that there is no overlap between them.
-
-Available shapes are:
-
-Box
-^^^
-
-========== ========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-x          x-size
-y          y-size
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== ========================
-
-Cons
-^^^^
-
-========== =========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-rmin1      Inner radius at start
-rmax1      Outer radius at start
-rmin2      Inner radius at end
-rmax2      Outer radius at end
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-phi0       Angle for start of sector
-dphi       Angle swept by sector
-material   Material name
-========== =========================
-
-Tubs
-^^^^
-
-========== =========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-rmin       Inner radius
-rmax       Outer radius
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== =========================
-
-Trd
-^^^
-
-========== ============================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-x1         Half-length at wider side
-x2         Half-length at narrower side
-y1         Half-length at wider side
-y2         Half-length at narrower side
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== ============================
-
 
 Mokka
 -----

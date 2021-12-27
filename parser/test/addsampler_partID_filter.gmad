@@ -1,0 +1,15 @@
+d: drift, l=0.5*m;
+q: quadrupole, l=0.1*m;
+bol: marker;
+eol: marker;
+
+b1: line=(bol,d,d,q,d,eol);
+
+use, b1;
+
+! add sampler after all drifts
+sample, range=d, partID={11,-11,12,-12};
+sample, range=bol;
+sample, range=eol;
+
+print, line;

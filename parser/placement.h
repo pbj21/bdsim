@@ -92,21 +92,21 @@ namespace GMAD
   
   template <typename T>
   void Placement::set_value(std::string property, T value)
-    {
+  {
 #ifdef BDSDEBUG
-      std::cout << "placement> Setting value " << std::setw(25) << std::left
-		<< property << value << std::endl;
+    std::cout << "placement> Setting value " << std::setw(25) << std::left
+	      << property << value << std::endl;
 #endif
       // member method can throw runtime_error, catch and exit gracefully
-      try
-	{set(this,property,value);}
-      catch (const std::runtime_error&)
-	{
-	  std::cerr << "Error: placement> unknown option \"" << property
-		    << "\" with value " << value  << std::endl;
-	  exit(1);
-	}
-    }
+    try
+      {set(this,property,value);}
+    catch (const std::runtime_error&)
+      {
+	std::cerr << "Error: placement> unknown option \"" << property
+		  << "\" with value " << value  << std::endl;
+	exit(1);
+      }
+  }
 }
 
 #endif

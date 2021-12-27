@@ -21,9 +21,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSSamplerCustom.hh"
-#include "BDSSamplerPlane.hh"
-#include "BDSSDSampler.hh"
-#include "BDSSDManager.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Box.hh"
@@ -32,9 +29,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 G4double BDSSamplerCustom::chordLength = -1;
 
-BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
-				   const BDSApertureInfo& shape):
-  BDSSampler(nameIn)
+BDSSamplerCustom::BDSSamplerCustom(const G4String&        nameIn,
+				   const BDSApertureInfo& shape,
+                                   G4int                  filterSetIDIn):
+  BDSSampler(nameIn, filterSetIDIn)
 {
   /*
   BDSApertureFactory fac;
@@ -75,13 +73,10 @@ BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
 	break;
       }
     }
-  
 
   BDSExtent ae = shape.Extent();
   G4double  dz = 0.5*chordLength;
   SetExtent(BDSExtent(ae.XNeg(), ae.XPos(), ae.YNeg(), ae.YPos(), -dz, dz));
 
   CommonConstruction();
-
-  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 }

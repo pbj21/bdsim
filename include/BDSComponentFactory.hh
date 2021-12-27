@@ -258,6 +258,9 @@ private:
 					     G4double                 beamPipeRadius = 0);
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
+#ifdef USE_DICOM
+  BDSAcceleratorComponent* CreateCT();
+#endif
   BDSAcceleratorComponent* CreateCavityFringe(G4double                 angleIn,
 					      BDSMagnetStrength*       stIn,
 					      const G4String&          name,

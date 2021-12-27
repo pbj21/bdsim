@@ -500,6 +500,8 @@ Spectra Particle Specification
 
 Particles can be specified in several ways:
 
+.. tabularcolumns:: |p{3cm}|p{6cm}|
+
 +---------------------+-------------------------------------------------------------------------+
 | **Example**         | **Description**                                                         |
 +=====================+=========================================================================+
@@ -944,7 +946,7 @@ pybdsim. ::
   >>> d = pybdsim.Data.Load("myoutputfile.root")
   >>> eventTree = d.GetEventTree()
   >>> for event in eventTree:
-  ...     print numpy.array(event.Primary.x)
+  ...     print(numpy.array(event.Primary.x))
 
 In this example, the variable :code:`event` will have the same structure as the
 Event tree in the BDSIM output. See :ref:`basic-data-inspection` for more details

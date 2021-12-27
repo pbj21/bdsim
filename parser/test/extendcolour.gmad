@@ -1,4 +1,5 @@
 purplypurple: newcolour, red=139, green=0, blue=139, alpha=0.8;
-
+print, purplypurple;
 ! extend and change properties
 purplypurple: red=140;
+print, purplypurple;

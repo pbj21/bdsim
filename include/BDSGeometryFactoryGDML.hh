@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSGeometryExternal;
 class G4Colour;
 class G4LogicalVolume;
+class G4UserLimits;
 class G4VPhysicalVolume;
 
 /**
@@ -54,7 +55,8 @@ public:
 				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
 				     G4double               suggestedHorizontalWidth = 0,
-				     std::vector<G4String>* namedVacuumVolumes       = nullptr);
+				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
+				     G4UserLimits*          userLimitsToAttachToAllLVs = nullptr);
 
 protected:
   /// Use the GDML preprocessing scheme to prepare the preprocesseed volume names.

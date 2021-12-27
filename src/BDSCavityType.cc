@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCavityType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -40,8 +42,8 @@ BDSCavityType BDS::DetermineCavityType(G4String cavityType)
   types["elliptical"]  = BDSCavityType::elliptical;
   types["rectangular"] = BDSCavityType::rectangular;
   types["pillbox"]     = BDSCavityType::pillbox;
-  
-  cavityType.toLower();
+
+  cavityType = BDS::LowerCase(cavityType);
 
   auto result = types.find(cavityType);
   if (result == types.end())

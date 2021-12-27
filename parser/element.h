@@ -39,7 +39,8 @@ namespace GMAD
    * @author I. Agapov
    */
 
-  struct Element : public Published<Element>{
+  struct Element: public Published<Element>
+  {
     ElementType type; ///< element enum
     std::string name;
     std::string userTypeName; ///< User component element type name.
@@ -148,22 +149,18 @@ namespace GMAD
     std::string mountmaterial;
     ///@}
 
-    /// For muon cooler
-    std::string coolingDefinition;
-
     ///@{ for 3d transform and laser
     double xdir;
     double ydir;
     double zdir;
     ///@}
     double waveLength; ///< for laser wire and 3d transforms
-    
     double phi, theta, psi; ///< for 3d transforms
     double axisX, axisY, axisZ;
     bool   axisAngle;
 
     ///@{ for degrader
-    int numberWedges;
+    int    numberWedges;
     double wedgeLength;
     double degraderHeight;
     double materialThickness;
@@ -198,22 +195,30 @@ namespace GMAD
     /// minimum kinetic energy for user limits - respected on element by element basis
     double minimumKineticEnergy;
 
-    std::string samplerName; ///< name of sampler (default empty)
-    std::string samplerType; ///< element has a sampler of this type (default "none")
-    double samplerRadius; ///< radius for cylindrical sampler
+    std::string samplerName;      ///< name of sampler (default empty)
+    std::string samplerType;      ///< element has a sampler of this type (default "none")
+    double samplerRadius;         ///< radius for cylindrical sampler
+    /// ID to a map for a set of which partIDs to store for a sampler. We use an integer
+    /// to a map we keep in the parser to save memory, so we don't copy a set to every
+    /// beam line element.
+    int    samplerParticleSetID;  
     
     std::string region;      ///< region with range cuts
     std::string fieldOuter;  ///< Outer field.
     std::string fieldVacuum; ///< Vacuum field.
     std::string fieldAll;    ///< Field for everything.
     
-    std::string geometryFile; ///< for Element, file for external geometry
-    bool        autoColour;   ///< Automagically colour the external geometry.
+    std::string geometryFile;     ///< For Element. File for external geometry.
+    bool        stripOuterVolume; ///< For Element. Make it an assembly.
+    bool        autoColour;       ///< Automagically colour the external geometry.
     std::string material;
     std::string namedVacuumVolumes; ///< For imported geometry - identify vacuum volumes.
     bool        markAsCollimator;
     std::string spec;  ///< arbitrary specification to pass to beamline builder
     std::string cavityModel; ///< model for rf cavities
+
+    std::string dicomDataPath; ///< for CT, file for DICOM construction data
+    std::string dicomDataFile; ///< for CT, file for DICOM construction data
 
     /// Override colour for certain items
     std::string colour;
@@ -223,6 +228,9 @@ namespace GMAD
     std::string crystalBoth;
     double      crystalAngleYAxisLeft;
     double      crystalAngleYAxisRight;
+    
+    /// For muon cooler
+    std::string coolingDefinition;
   
     /// Whether the angle was set. Unique as we may technically have 0 angle but a finite
     /// field. This allows us to distinguish later on.
@@ -230,22 +238,25 @@ namespace GMAD
     bool   angleSet;
 
     /// in case the element is a list itself (line)
-    std::list <Element> *lst;
+    std::list<Element>* lst;
 
     /// print method
-    void print(int ident=0)const;
+    void print(int ident=0) const;
 
     /// flush method
     void flush();
 
     /// check if element is of a special type
-    bool isSpecial()const;
+    bool isSpecial() const;
     /// property lookup by name (slow method)
     /// only for properties with type int/double!
-    double property_lookup(std::string property_name)const;
+    double property_lookup(std::string property_name) const;
 
     /// set sampler info
-    void setSamplerInfo(std::string samplerType, std::string samplerName, double samplerRadius);
+    void setSamplerInfo(std::string samplerType,
+                        std::string samplerName,
+                        double samplerRadius,
+                        int samplerParticleSetIDIn = -1);
 
     ///@{ set method from Parameters structure
     void set(const Parameters& params);
@@ -266,7 +277,7 @@ namespace GMAD
 
   protected:
     /// returns 'official' member name for property
-    std::string getPublishedName(std::string name)const;
+    std::string getPublishedName(const std::string& name) const;
   };
 
   template <typename T>

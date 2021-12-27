@@ -136,7 +136,7 @@ G4bool BDSSDSampler::ProcessHits(G4Step* aStep, G4TouchableHistory* /*readOutTH*
       localDirection = globalToLocal * (HepGeom::Vector3D<G4double>)mom;
     }
 
-  const BDSSamplerInfo& info = registry->GetInfo(samplerID);
+  const BDSSamplerPlacementRecord& info = registry->GetInfo(samplerID);
   G4double s           = info.SPosition();
   G4int beamlineIndex  = info.BeamlineIndex();
   G4int    PDGtype     = track->GetDefinition()->GetPDGEncoding();

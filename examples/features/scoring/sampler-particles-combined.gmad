@@ -1,0 +1,40 @@
+d1: drift, l=0.1*m;
+c1: rcol, l=10*cm, xsize=1*cm, ysize=10*cm, material="Cu";
+
+! multiple uses of an element to test unique sampler naming
+l1: line = (d1, c1, d1, d1, d1);
+use, period=l1;
+
+! no filters used
+sample, all;
+
+! overwrite sampler for 1 element with a filter set
+sample, range=c1, partID={13,-13};
+
+! sampler placement overlapping with an element and a unique filter
+s1: samplerplacement, referenceElement="d1",
+		      referenceElementNumber=1,
+		      x=2*cm, y=-1*cm, s=3*cm,
+    		      axisAngle=1, axisY=1, angle=pi/4,
+		      aper1=10*cm,
+		      partID={11,-11,22,2212,2112};
+
+s2: samplerplacement, z=2*m, aper1=10*cm,
+    		      partID={12,-12,13,-13};
+
+! repeated use of same filter set - even in a different order it will
+! be identified internally as the same set of IDs
+s3: samplerplacement, z=2.1*m, aper1=5*cm,
+    		      partID={13,-13,12,-12};
+	
+beam, particle="e-",
+      energy=10.0*GeV,
+      distrType="userfile",
+      distrFileFormat="pdgid",
+      distrFile="varied-particles.dat",
+      Xp0=1e-3;
+
+beam, matchDistrFileLength=1;
+
+option, physicsList="all_particles";
+

@@ -113,6 +113,8 @@ A few minimal examples of beam definition are::
 Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
 be specified as described in the following sections.
 
+.. _beam-particle-type:
+
 Beam Particle Type
 ^^^^^^^^^^^^^^^^^^
 
@@ -3202,7 +3204,33 @@ e.g. ::
 	     resemble a sampler but it is just a record of the initial coordinates. It is
 	     not a sampler and cannot record other secondary particles.
 
+.. _sampler-filtering:
 
+Filtering Particles To Record
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to only record certain particles in a sampler. These are specified via their
+Particle Data Group ("PDG") integer ID number. PDG IDs are discussed here :ref:`beam-particle-type`. An
+example is: ::
+
+  sample, range=<element_name>, partID={11,12,13,14};
+
+Anti-particles must be explicitly specified: ::
+
+  sample, range=<element_name>, partID={11,-11};
+
+This can be applied to all samplers as well. ::
+
+  sample, all, partID={13,-13};
+
+Any sampler specified after this will be overwritten. ::
+
+  sample, all, partID={13,-13};
+  sample, range=partID={11,-11};
+
+Here, all samplers apart from the one attached to "d1" would record only particles
+with PDG ID 13 and -13. The sampler attached to "d1" would record only 11 and -11 PDG ID
+particles.
 
 .. _sampler-dimensions:
 	  
@@ -3244,7 +3272,7 @@ Output at an Arbitrary Plane - User Placed Sampler
 The user may place a sampler anywhere in the model with any orientation. This is called a
 `samplerplacement`. The sampler may have either a circular or rectangular (including
 square) shape and be placed with any orientation. A `samplerplacement` will record all
-particles travelling in any direction through it. A branch in the Event output will be
+particles travelling in **any direction** through it. A branch in the Event output will be
 create with the name of the `samplerplacement`. The user may define an arbitrary number of
 `samplerplacement` s.  A `samplerplacement` is defined with the following syntax::
 
@@ -3263,6 +3291,8 @@ about the unit Y axis of :math:`\pi / 4`.
 
 Shape
 *****
+
+* Default `circular`. Control the radius with :code:`aper1`.
 
 To control the sampler shape, the variable :code:`shape` should be specified. Currently,
 either `circular` or `rectangular` are accepted. The parameters `aper1` and `aper2` can
@@ -3365,6 +3395,9 @@ information from the `placements`. The full list of accepted parameters is given
 +-------------------------+--------------------------------------------------------------------+
 | aper4                   | Aperture parameter #4.                                             |
 +-------------------------+--------------------------------------------------------------------+
+| partID                  | List of integers for PDG IDs for which particles to record only.   |
++-------------------------+--------------------------------------------------------------------+
+
 
 Examples
 ********
@@ -3468,13 +3501,20 @@ example parameter and value pairs. The following parameters may be specified.
 +=========================+===============+================================================+
 | scoreQuantity           | Yes           | The name of the scorer object(s) to be used    |
 +-------------------------+---------------+------------------------------------------------+
+| geometryType            | No            | Scorer mesh geometry type (box or cylindrical) |
+|                         |               | (default box)                                  |
++-------------------------+---------------+------------------------------------------------+
 | nx                      | Yes           | Number of cells in local x dimension           |
 +-------------------------+---------------+------------------------------------------------+
 | ny                      | Yes           | Number of cells in local y dimension           |
 +-------------------------+---------------+------------------------------------------------+
 | nz                      | Yes           | Number of cells in local z dimension           |
 +-------------------------+---------------+------------------------------------------------+
-| ne                      | Yes(*)        | Number of cells in energy dimension            |
+| nr                      | Yes(*)        | Number of cells in local r                     |
++-------------------------+---------------+------------------------------------------------+
+| nphi                    | Yes(*)        | Number of cells in local phi                   |
++-------------------------+---------------+------------------------------------------------+
+| ne                      | Yes(\*\*)     | Number of cells in energy dimension            |
 +-------------------------+---------------+------------------------------------------------+
 | xsize                   | Yes           | Full width in local x dimension (m)            |
 +-------------------------+---------------+------------------------------------------------+
@@ -3482,13 +3522,15 @@ example parameter and value pairs. The following parameters may be specified.
 +-------------------------+---------------+------------------------------------------------+
 | zsize                   | Yes           | Full width in local z dimension (m)            |
 +-------------------------+---------------+------------------------------------------------+
-| eScale                  | Yes(*)        | Energy axis scoring type (linear, log, user)   |
+| rsize                   | Yes(*)        | Full width in local r dimension (m)            |
 +-------------------------+---------------+------------------------------------------------+
-| eLow                    | Yes(*)        | Low limit value for the energy axis binning    |
+| eScale                  | Yes(\*\*)     | Energy axis scoring type (linear, log, user)   |
 +-------------------------+---------------+------------------------------------------------+
-| eHigh                   | Yes(*)        | High limit value for the energy axis binning   |
+| eLow                    | Yes(\*\*)     | Low limit value for the energy axis binning    |
 +-------------------------+---------------+------------------------------------------------+
-| eBinsEdgesFilenamePath  | Yes(*)        | Path to the energy bin edges .txt file(**)     |
+| eHigh                   | Yes(\*\*)     | High limit value for the energy axis binning   |
++-------------------------+---------------+------------------------------------------------+
+| eBinsEdgesFilenamePath  | Yes(\*\*)     | Path to the energy bin edges .txt file(\*\*\*) |
 +-------------------------+---------------+------------------------------------------------+
 | referenceElement        | No            | Name of beam line element to place with        |
 |                         |               | respect to                                     |
@@ -3524,11 +3566,13 @@ example parameter and value pairs. The following parameters may be specified.
 |                         |               | scheme (default false)                         |
 +-------------------------+---------------+------------------------------------------------+
 
-.. note:: (\*) The option eScale is required when defining a scorermesh for a cellflux4d scorer.
+.. note:: (\*) Those options are required if the geometryType "cylindrical" has been chosen.
+
+.. note:: (\**) The option eScale is required when defining a scorermesh for a cellflux4d scorer.
                 If the eScale types "linear" or "log" are used, the options ne, eLow and eHigh are required.
                 If the eScale type "user" is used, the option eBinsEdgesFilenamePath is required.
 
-.. note:: (\**) Each energy bin edge value must be written on a separate line in a .txt file in GeV.
+.. note:: (\***) Each energy bin edge value must be written on a separate line in a .txt file in GeV.
                 An example can be found in :code:`bdsim/examples/features/scoring`.
 
 
@@ -3633,6 +3677,10 @@ The following are accepted scorer types.
 +---------------------------+-----------------+--------------------------------------------------+
 
 .. note:: (\*) It is possible to score the differential flux by using the scorer type cellflux4D which adds a binning along the energy axis.
+.. note:: (\*) To score quantities such as the ambient dose equivalent, the scorer type `cellfluxscaledperparticle`
+               should be used, however conversion factors must be supplied (see :ref:`scorer-conversion-factor-file`)
+               to ensure the ambient dose is calculated correctly and in the correct units.
+
 
 .. _scorer-conversion-factor-file:
 
@@ -3672,7 +3720,7 @@ Conversion factor files for :code:`cellfluxscaledperparticle` can be one of:
 * :code:`electrons.dat`
 * :code:`positrons.dat`
 
-At least 1 must be specified.  Any particles without a conversion factory are scored as 0.
+At least 1 must be specified.  Any particles without a conversion factor are scored as 0.
 
 Scoring Examples
 ^^^^^^^^^^^^^^^^
@@ -3694,7 +3742,7 @@ Example 2: ::
 
   neutronPopulation: scorer, type="population", particleName="neutron";
 
-  protonAmbient: scorer, type="ambientdose",
+  protonAmbient: scorer, type="cellfluxscaledperparticle",
 	    	         particleName="proton",
 		         minimumKineticEnergy=20*MeV,
 		         maximumKineticEnergy=1*GeV,
