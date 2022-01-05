@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "blmplacement.h"
 #include "placement.h"
+#include "query.h"
 #include "samplerplacement.h"
 #include "scorermesh.h"
 
@@ -116,12 +117,8 @@ void Placement::print()const
 }
 
 Placement::Placement(const SamplerPlacement& sp):
-  geometryFile(""),
-  sequence(""),
   sensitive(false),
-  side(""),
-  sideOffset(0),
-  fieldAll("")
+  sideOffset(0)
 {
   name      = sp.name;
   referenceElement       = sp.referenceElement;
@@ -143,11 +140,8 @@ Placement::Placement(const SamplerPlacement& sp):
 }
 
 Placement::Placement(const ScorerMesh& sm):
-  geometryFile(""),
   sensitive(false),
-  side(""),
-  sideOffset(0),
-  fieldAll("")
+  sideOffset(0)
 {
   name      = sm.name;
   sequence  = sm.sequence;
@@ -170,10 +164,7 @@ Placement::Placement(const ScorerMesh& sm):
 }
 
 Placement::Placement(const BLMPlacement& bp):
-  geometryFile(""),
-  sequence(""),
-  sensitive(false),
-  fieldAll("")
+  sensitive(false)
 {
   name      = bp.name;
   referenceElement       = bp.referenceElement;
@@ -194,4 +185,27 @@ Placement::Placement(const BLMPlacement& bp):
   sideOffset = bp.sideOffset;
   autoColour = false;
   stripOuterVolume = false;
+}
+
+Placement::Placement(const Query& qu):
+  sensitive(false),
+  sideOffset(0),
+  autoColour(false),
+  stripOuterVolume(false)
+{
+  name      = qu.name;
+  referenceElement       = qu.referenceElement;
+  referenceElementNumber = qu.referenceElementNumber;
+  s          = qu.s;
+  x          = qu.x;
+  y          = qu.y;
+  z          = qu.z;
+  phi        = qu.phi;
+  theta      = qu.theta;
+  psi        = qu.psi;
+  axisX      = qu.axisX;
+  axisY      = qu.axisY;
+  axisZ      = qu.axisZ;
+  angle      = qu.angle;
+  axisAngle  = qu.axisAngle;
 }

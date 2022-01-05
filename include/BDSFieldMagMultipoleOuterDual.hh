@@ -36,12 +36,14 @@ class BDSFieldMagMultipoleOuterDual: public BDSFieldMag
 {
 public:
   BDSFieldMagMultipoleOuterDual(G4int              orderIn,
-			       G4double           poleTipRadius,
-			       const BDSFieldMag* innerFieldIn,
-			       G4bool             kPositive,
-			       G4double           separation,
-			       G4bool             secondFieldOnLeft = true);
-
+				G4double           poleTipRadius,
+				const BDSFieldMag* innerFieldIn,
+				G4bool             kPositive,
+				G4double           brho,
+				G4double           separation,
+				G4bool             secondFieldOnLeft = true,
+				G4double           arbitraryScaling  = 1.0);
+  
   virtual ~BDSFieldMagMultipoleOuterDual();
 
   /// Access the field value.

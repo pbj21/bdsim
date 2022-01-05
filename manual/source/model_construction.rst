@@ -223,6 +223,41 @@ An example is included in `examples/features/components/scaling.gmad`.
 	  not total energy of the particle.
 
 
+Magnet Yoke Field Scaling
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As described in :ref:`yoke-multipole-field`, BDSIM uses by default an approximate magnetic
+field for the yoke or "outer" part of each magnet. This is a sum of infinite (in :math:`z`)
+current sources placed in the :math:`x, y` plane half way between each pole. This field is
+only approximate and field maps should be used if a very accurate model is desired.
+
+These fields are normalised to match the vacuum field at the pole tip, so the transition
+is smooth.
+
+However, to control this, an arbitrary scaling factor can be applied to all elements with
+a yoke field (i.e. all magnets). This can be applied individually, or as an option to all
+components. Individually specified parameters will take precedence.
+
+In both cases the parameter and option is :code:`scalingFieldOuter` and should be a numerical
+factor (e.g. 1.0 is the default).
+
+An example model is: ::
+
+  d1: drift, l=1*m;
+  q1: quadrupole, l=20*cm, k1=0.2, scalingFieldOuter=1.5;
+  q2: quadrupole, l=20*cm, k1=0.2;
+  l1: line=(d1,q1,d1,q2,d1);
+  use, l1;
+
+  beam, particle="proton", kineticEnergy=100*GeV;
+
+  option, scalingFieldOuter=2.0;
+
+Here, the "q1" element will have an arbitrary scaling factor of the 1.5 over the normal field inside
+the pole tip radius. For "q2", the default is picked up from the option with a value of 2.0.
+
+This is recommended only for systematic error studies.
+
 drift
 ^^^^^
 
@@ -966,32 +1001,39 @@ rcol
 An `rcol` defines a rectangular collimator. The aperture is rectangular and the external
 volume is square.
 
-+--------------------+-----------------------------------+----------------+---------------+
-| **Parameter**      | **Description**                   | **Default**    | **Required**  |
-+====================+===================================+================+===============+
-| `l`                | Length [m]                        | 0              | Yes           |
-+--------------------+-----------------------------------+----------------+---------------+
-| `xsize`            | Horizontal half aperture [m]      | 0              | Yes           |
-+--------------------+-----------------------------------+----------------+---------------+
-| `ysize`            | Half height of jaws [m]           | 0              | Yes           |
-+--------------------+-----------------------------------+----------------+---------------+
-| `material`         | Outer material                    | None           | Yes           |
-+--------------------+-----------------------------------+----------------+---------------+
-| `horizontalWidth`  | Outer full width [m]              | 0.5 m          | No            |
-+--------------------+-----------------------------------+----------------+---------------+
-| `xsizeOut`         | Horizontal exit half aperture [m] | `xsize` value  | No            |
-+--------------------+-----------------------------------+----------------+---------------+
-| `ysizeOut`         | Vertical exit half aperture [m]   | `ysize` value  | No            |
-+--------------------+-----------------------------------+----------------+---------------+
-| `colour`           | Name of colour desired for block  | ""             | No            |
-|                    | See :ref:`colours`.               |                |               |
-+--------------------+-----------------------------------+----------------+---------------+
+* If no `xsize` or `ysize` are provided, they are assumed to be 0 and **a solid block** is made.
+
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
+
++------------------------+-----------------------------------+----------------+---------------+
+| **Parameter**          | **Description**                   | **Default**    | **Required**  |
++========================+===================================+================+===============+
+| `l`                    | Length [m]                        | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `xsize`                | Horizontal half aperture [m]      | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `ysize`                | Half height of jaws [m]           | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `material`             | Outer material                    | None           | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `horizontalWidth`      | Outer full width [m]              | 0.5 m          | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `xsizeOut`             | Horizontal exit half aperture [m] | `xsize` value  | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `ysizeOut`             | Vertical exit half aperture [m]   | `ysize` value  | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `colour`               | Name of colour desired for block  | ""             | No            |
+|                        | See :ref:`colours`                |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `minimumKineticEnergy` | Minimum kinetic energy below      | 0              | No            |
+|                        | which to artificially kill        |                |               |
+|                        | particles in this collimator only |                |               |
++------------------------+-----------------------------------+----------------+---------------+
 
 Notes: 
 
 * `horizontalWidth` should be big enough to encompass the xsize and ysize.
-* If no `xsize` or `ysize` are provided, they are assumed to be 0 and a solid block is made.
-* The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
+* The parameter `minimumKineticEnergy` (in GeV by default) may be specified to artificially kill
   particles below this kinetic energy in the collimator. This is useful to match other simulations
   where collimators can be assumed to be infinite absorbers. If this behaviour is required, the
   user should specify an energy greater than the total beam energy.
@@ -1053,26 +1095,32 @@ The horizontal position of each jaw can be set separately with the `xsizeLeft` a
 apertures which are the distances from the centre of element to the left and right jaws respectively.
 
 
-+--------------------+------------------------------+--------------+---------------+
-| **Parameter**      | **Description**              | **Default**  | **Required**  |
-+====================+==============================+==============+===============+
-| `l`                | Length [m]                   | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `xsize`            | Horizontal half aperture [m] | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `ysize`            | Half height of jaws [m]      | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `material`         | Outer material               | None         | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `colour`           | Name of colour desired for   | ""           | No            |
-|                    | block. See :ref:`colours`.   |              |               |
-+--------------------+------------------------------+--------------+---------------+
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
+
++------------------------+-----------------------------------+----------------+---------------+
+| **Parameter**          | **Description**                   | **Default**    | **Required**  |
++========================+===================================+================+===============+
+| `l`                    | Length [m]                        | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `xsize`                | Horizontal half aperture [m]      | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `ysize`                | Half height of jaws [m]           | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `material`             | Outer material                    | None           | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `xsizeLeft`            | Left jaw aperture [m]             | 0              | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `xsizeRight`           | Right jaw aperture [m]            | 0              | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `horizontalWidth`      | Outer full width [m]              | 0.5 m          | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `colour`               | Name of colour desired for        | ""             | No            |
+|                        | block. See :ref:`colours`.        |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `minimumKineticEnergy` | Minimum kinetic energy below      | 0              | No            |
+|                        | which to artificially kill        |                |               |
+|                        | particles in this collimator only |                |               |
++------------------------+-----------------------------------+----------------+---------------+
 
 
 Notes: 
@@ -1085,9 +1133,9 @@ Notes:
   must be set to 0, with the other jaws half aperture set as appropriate.
 * If `xsize`, `xsizeLeft` and `xsizeRight` are not specified, the collimator will be constructed
   as a box with no aperture.
-* For **only one jaw**, specifying a jaw aperture which is larger than half the `horizontalWidth` value will result in
-  that jaw not being constructed. If both jaw apertures are greater than half the `horizontalWidth`,
-  no jaws will be built and BDSIM will exit.
+* For **only one jaw**, specifying a jaw aperture which is larger than half the `horizontalWidth` value
+  will result in that jaw not being constructed. If both jaw apertures are greater than
+  half the `horizontalWidth`, no jaws will be built and BDSIM will exit.
 * The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
   particles below this kinetic energy in the collimator. This is useful to match other simulations
   where collimators can be assumed to be infinite absorbers. If this behaviour is required, the

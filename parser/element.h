@@ -48,6 +48,7 @@ namespace GMAD
 
     double l; ///< length in metres
     double scaling; ///< Overall scaling of field strength.
+    double scalingFieldOuter; ///< Extra arbitrary scaling for outer field - compounded with 'scaling'.
     double ks; ///< solenoid
     // double k0; // for dipole field B or angle is used
     double k1; ///< quadrupole
@@ -236,6 +237,8 @@ namespace GMAD
     /// field. This allows us to distinguish later on.
     /// NOTE: this is not used in Params.
     bool   angleSet;
+    
+    bool   scalingFieldOuterSet;
 
     /// in case the element is a list itself (line)
     std::list<Element>* lst;

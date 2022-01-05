@@ -1,0 +1,8 @@
+include query-common.gmad;
+
+quA: query, queryMagneticField=1,
+	    outfileMagnetic="out_query_2d_bfield_points_xy.dat",
+	    pointsFile="queryPoints2D-XY.txt",
+	    overwriteExistingFiles=1;
+
+

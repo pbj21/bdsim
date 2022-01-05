@@ -1,0 +1,156 @@
+! switch back to old implementation of yoke fields
+option, useOldMultipoleOuterFields=1;
+
+sb1: sbend, l=1*m, angle=10*degrees;
+sb2: sbend, l=1*m, angle=10*degrees, scalingFieldOuter=10;
+d1: drift, l=1*m;
+q1: quadrupole, l=20*cm, k1=1.0;
+q2: quadrupole, l=20*cm, k1=1.0, scalingFieldOuter=20;
+lhcsb1: sbend, l=1*m, angle=10*degrees, magnetGeometryType="lhcleft";
+lhcsb2: sbend, l=1*m, angle=10*degrees, magnetGeometryType="lhcleft", scalingFieldOuter=10;
+lhcq1: quadrupole, l=1*cm, k1=1.0, magnetGeometryType="lhcleft";
+lhcq2: quadrupole, l=1*cm, k1=1.0, magnetGeometryType="lhcleft", scalingFieldOuter=10;
+sx1: sextupole, l=20*cm, k2=10.0;
+sx2: sextupole, l=20*cm, k2=10.0, scalingFieldOuter=10;
+
+l1: line=(d1,sb1,d1,sb2,d1,q1,d1,q2,d1,lhcsb1,d1,lhcsb2,d1,lhcq1,d1,lhcq2,d1,sx1,d1,sx2,d1);
+use, l1;
+
+! high energy beam for strong fields
+beam, particle="proton", kineticEnergy=100*GeV;
+
+option, beampipeRadius=7.5*cm;
+
+! n points
+np=101;
+
+! regular dipole
+quBendNormal: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_bend_old_normal.dat",
+		     referenceElement="d1",
+		     referenceElementNumber=0,
+		     s=60*cm,
+		     overwriteExistingFiles=1;
+
+quBendScaled: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_bend_old_scaled.dat",
+		     referenceElement="d1",
+		     referenceElementNumber=1,
+		     s=60*cm,
+		     overwriteExistingFiles=1;
+
+! regular quadrupole
+quQuadNormal: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_quad_old_normal.dat",
+		     referenceElement="q1",
+		     overwriteExistingFiles=1;
+
+quQuadScaled: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_quad_old_scaled.dat",
+		     referenceElement="q2",
+		     overwriteExistingFiles=1;
+
+! lhc dual yoke field - dipole
+quBendLHCNormal: query, nx=np, xmin=-20*cm, xmax=40*cm,
+	      	        ny=np, ymin=-30*cm, ymax=30*cm,
+		        queryMagneticField=1,
+		        outfileMagnetic="out_sfo_bend_lhc_old_normal.dat",
+		        referenceElement="d1",
+		        referenceElementNumber=4,
+		        s=60*cm,
+		        overwriteExistingFiles=1;
+
+quBendLHCScaled: query, nx=np, xmin=-20*cm, xmax=40*cm,
+	      	        ny=np, ymin=-30*cm, ymax=30*cm,
+		        queryMagneticField=1,
+		        outfileMagnetic="out_sfo_bend_lhc_old_scaled.dat",
+		        referenceElement="d1",
+		        referenceElementNumber=5,
+		        s=60*cm,
+		        overwriteExistingFiles=1;
+
+
+!lhc dual yoke field - quad
+quQuadLHCNormal: query, nx=np, xmin=-20*cm, xmax=40*cm,
+	      	        ny=np, ymin=-30*cm, ymax=30*cm,
+		        queryMagneticField=1,
+		        outfileMagnetic="out_sfo_quad_lhc_old_normal.dat",
+		        referenceElement="lhcq1",
+		        overwriteExistingFiles=1;
+
+quQuadLHCScaled: query, nx=np, xmin=-20*cm, xmax=40*cm,
+	      	        ny=np, ymin=-30*cm, ymax=30*cm,
+		        queryMagneticField=1,
+		        outfileMagnetic="out_sfo_quad_lhc_old_scaled.dat",
+		        referenceElement="lhcq2",
+		        overwriteExistingFiles=1;
+
+
+!sextupole yoke field
+quSextNormal: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_sext_old_normal.dat",
+		     referenceElement="sx1",
+		     overwriteExistingFiles=1;
+
+!sextupole yoke field - scaled
+quSextScaled: query, nx=np, xmin=-30*cm, xmax=30*cm,
+	      	     ny=np, ymin=-30*cm, ymax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_sfo_sext_old_scaled.dat",
+		     referenceElement="sx2",
+		     overwriteExistingFiles=1;
+
+
+! 1D SCANS
+
+! linear through a dipole - no scaling
+quBendNormal1D: query, nx=3*np, xmin=-30*cm, xmax=30*cm,
+		       queryMagneticField=1,
+		       outfileMagnetic="out_xscan_bend_old.dat",
+		       referenceElement="d1",
+		       referenceElementNumber=0,
+		       s=60*cm,
+		       overwriteExistingFiles=1;
+
+
+! linear through a quad - no scaling
+quQuadNormal1D: query, nx=3*np, xmin=-30*cm, xmax=30*cm,
+		       queryMagneticField=1,
+		       outfileMagnetic="out_xscan_quad_old.dat",
+		       referenceElement="q1",
+		       overwriteExistingFiles=1;
+
+
+! linear through an lhc dipole - no scaling
+quBendLHCNormal1D: query, nx=3*np, xmin=-20*cm, xmax=40*cm,
+		          queryMagneticField=1,
+		          outfileMagnetic="out_xscan_bend_lhc_old.dat",
+		          referenceElement="d1",
+		          referenceElementNumber=4,
+		          s=60*cm,
+		          overwriteExistingFiles=1;
+
+! linear through an lhc quad - no scaling
+quQuadLHCNormal1D: query, nx=3*np, xmin=-20*cm, xmax=40*cm,
+		          queryMagneticField=1,
+		          outfileMagnetic="out_xscan_quad_lhc_old.dat",
+		          referenceElement="lhcq1",
+		          overwriteExistingFiles=1;
+
+
+! linear through a sextupole - no scaling
+quSextNormal: query, nx=3*np, xmin=-30*cm, xmax=30*cm,
+		     queryMagneticField=1,
+		     outfileMagnetic="out_xscan_sext_old.dat",
+		     referenceElement="sx1",
+		     overwriteExistingFiles=1;

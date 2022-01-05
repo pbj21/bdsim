@@ -65,6 +65,8 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["cu"]          = defines["copper"];
   defines["iron"]        = c->GetColour("iron");
   defines["fe"]          = defines["iron"];
+  defines["gold"]        = c->GetColour("gold:220 176 71");
+  defines["au"]          = defines["gold"];
   defines["kapton"]      = c->GetColour("kapton");
   defines["lead"]        = c->GetColour("lead");
   defines["pb"]          = defines["lead"];

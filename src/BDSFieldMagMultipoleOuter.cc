@@ -31,12 +31,23 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
 						     G4double           poleTipRadiusIn,
 						     const BDSFieldMag* innerFieldIn,
-						     G4bool             kPositive):
+						     G4bool             kPositive,
+                                                     G4double           brho,
+                                                     G4double           arbitraryScaling):
   order(orderIn),
+  spatialLimit(1),
   normalisation(1), // we have to get field first to calculate the normalisation which uses it, so start with 1
   positiveField(kPositive),
-  poleTipRadius(poleTipRadiusIn)
+  poleNOffset(0),
+  poleTipRadius(poleTipRadiusIn),
+  maxField(1e100),
+  initialisationPhase(true)
 {
+  // index of which current to start at when summing - will in effect start us at + or - current
+  // and therefore control the sign of the field.
+  poleNOffset = brho > 0 ? 1 : 0;
+  
+  // we're assuming order > 0
   G4int nPoles = 2*order;
 
   // prepare vector of infinite wire current sources
@@ -48,12 +59,31 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
       currents.push_back(c);
     }
 
-  // query inner field - at point just outside pole tip
-  G4ThreeVector poleTipPoint = G4ThreeVector(0, poleTipRadius, 0);
-  G4double angleOffset = CLHEP::twopi/(G4double)nPoles;
-  poleTipPoint.rotateZ(0.5*angleOffset); // rotate from 0,1 to the pole position (different for each magnet).
+  // work out a radial extent close to a current source where we artificially saturate
+  // do this based on the distance between two current sources
+  G4TwoVector pointA(poleTipRadius, 0);
+  G4TwoVector pointB = pointA;
+  pointB.rotate(CLHEP::twopi / nPoles);
+  G4double interPoleDistance = (pointB - pointA).mag();
+  // arbitrary -> let's say 5% of the distance between poles for saturation
+  spatialLimit = 0.05*interPoleDistance;
+
+  // query inner field at pole tip radius
+  // choose a point to query carefully though
+  // beside a current source (and with intialisationPhase=true) the function is unbound
+  // so we choose a point halfway in between the first two current sources
+  G4double angleC1 = currents[0].phi();
+  G4double angleC2 = currents[1].phi();
+  G4double angleAvg = (angleC1 + angleC2) / 2.0;
+  G4TwoVector queryPoint;
+  queryPoint.setPolar(poleTipRadius, angleAvg);
+  G4ThreeVector poleTipPoint(queryPoint.x(), queryPoint.y(), 0);
+
   G4ThreeVector fieldAtPoleTip = innerFieldIn->GetField(poleTipPoint,/*t=*/0);
   G4double fieldAtPoleTipMag = fieldAtPoleTip.mag();
+
+  // include arbitrary scaling here so it can obey an arbitrary scaling
+  maxField = fieldAtPoleTipMag * arbitraryScaling;
 
   // we query this field object but with the normalisation initialised to 1 so it won't
   // affect the result despite using the same code
@@ -63,11 +93,13 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
   
   // normalisation
   normalisation = fieldAtPoleTipMag / rawOuterlFieldAtPoleTipMag;
+  normalisation *= arbitraryScaling;
   if (!std::isfinite(normalisation))
     {
       normalisation = 0;
       finiteStrength = false;
     }
+  initialisationPhase = false;
 }
 
 G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
@@ -84,7 +116,6 @@ G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
 
   // loop over linear sum from all infinite wire sources
   G4int pole = 1; // counter
-  const G4double spatialLimit = 6; // mm
   G4bool closeToPole = false;
   for (const auto& c : currents)
     {
@@ -104,15 +135,11 @@ G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
       if (!std::isnormal(reciprocal))
 	{reciprocal = 1.0;} // protect against bad values
       cToPosPerp = G4TwoVector(-cToPos.y(), cToPos.x());
-      G4TwoVector val = std::pow(-1, pole+1)*cToPosPerp.unit() * reciprocal;
+      G4TwoVector val = std::pow(-1, pole+poleNOffset)*cToPosPerp.unit() * reciprocal;
       if (std::isfinite(val.x()) && std::isfinite(val.y())) // tolerate bad values
 	{result += val;}
       pole++;
     }
-
-  // limit to pole tip maximum - 0.1 empircal factor to match
-  if (closeToPole)
-    {result = result.unit()*0.1;}
 
   // get sign right to match convention
   if (positiveField)
@@ -121,5 +148,12 @@ G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
   // normalisation
   result *= normalisation;
 
+  // limit to pole tip maximum
+  if (!initialisationPhase)
+    {
+      if ((result.mag() > maxField) || closeToPole)
+	{result = result.unit() * maxField;}
+    }
+  
   return G4ThreeVector(result.x(), result.y(), 0);
 }

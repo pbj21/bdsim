@@ -50,7 +50,9 @@ public:
 					   const BDSBeamPipe* beamPipe,         // beampipe
 					   G4double           containerLength,  // full length to make AccComp container
 					   const BDSMagnetOuterInfo* recipe);   // recipe for geometry
-					   
+        
+  /// Used in many places - make it a constant in the code and put here as most relevant.
+  static const G4double beamSeparation;
 private:
   /// Our own function in this class that has the yoke colour so
   /// we can reuse the code for kickers

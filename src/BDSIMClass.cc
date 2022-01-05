@@ -88,7 +88,8 @@ BDSIM::BDSIM():
   bdsBunch(nullptr),
   runManager(nullptr),
   userComponentFactory(nullptr),
-  userPhysicsList(nullptr)
+  userPhysicsList(nullptr),
+  realWorld(nullptr)
 {;}
 
 BDSIM::BDSIM(int argc, char** argv, bool usualPrintOutIn):
@@ -103,7 +104,8 @@ BDSIM::BDSIM(int argc, char** argv, bool usualPrintOutIn):
   bdsBunch(nullptr),
   runManager(nullptr),
   userComponentFactory(nullptr),
-  userPhysicsList(nullptr)
+  userPhysicsList(nullptr),
+  realWorld(nullptr)
 {
   initialisationResult = Initialise();
 }
@@ -170,7 +172,7 @@ int BDSIM::Initialise()
   runManager = new BDSRunManager();
 
   /// Register the geometry and parallel world construction methods with run manager.
-  BDSDetectorConstruction* realWorld = new BDSDetectorConstruction(userComponentFactory);
+  realWorld = new BDSDetectorConstruction(userComponentFactory);
   
   /// Here the geometry isn't actually constructed - this is called by the runManager->Initialize()
   auto parallelWorldsRequiringPhysics = BDS::ConstructAndRegisterParallelWorlds(realWorld,
@@ -421,7 +423,8 @@ void BDSIM::BeamOn(int nGenerate)
       if (!BDSGlobalConstants::Instance()->Batch())   // Interactive mode
 	{
 	  BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
-						   BDSGlobalConstants::Instance()->Geant4MacroFileName());
+						   BDSGlobalConstants::Instance()->Geant4MacroFileName(),
+						   realWorld);
 	  visManager.StartSession(argcCache, argvCache);
 	}
       else

@@ -292,6 +292,10 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
   BDSParticleDefinition* particleDefB = nullptr; // result
   G4String particleName = BDS::LowerCase(particleNameIn);
 
+  std::map<G4String, G4String> commonSubstitutions = { {"photon", "gamma"},
+						       {"electron", "e-"},
+						       {"positron", "e+"} };
+
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   if (BDS::StrContains(particleName, "ion"))
     {
@@ -310,10 +314,17 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
     }
   else
     {
+      // swap out some common name substitutions for Geant4 ones
+      auto searchName = commonSubstitutions.find(particleName);
+      if (searchName != commonSubstitutions.end())
+        {
+          G4cout << "Substituting particle name \"" << particleName << "\" for the Geant4 name: \"" << searchName->second << "\"" << G4endl;
+          particleName = searchName->second;
+        }
+
       BDS::ConstructBeamParticleG4(particleName); // enforce construction of some basic particles
       G4ParticleDefinition* particleDef = nullptr;
-      if (particleName == "photon")
-	{particleName = "gamma";} // mapping to Geant4 name
+      
       // try and see if it's an integer and therefore PDG ID, if not search by string
       try
         {

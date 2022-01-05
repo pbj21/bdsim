@@ -41,20 +41,31 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 
 #include "BDSDebug.hh"
+#include "BDSDetectorConstruction.hh"
 #include "BDSMessenger.hh"
 #include "BDSUtilities.hh"
+#include "BDSVisCommandSceneAddQueryMagneticField.hh"
 
 BDSVisManager::BDSVisManager(const G4String& visMacroFileNameIn,
-			     const G4String& geant4MacroFileNameIn):
+			     const G4String& geant4MacroFileNameIn,
+			     const BDSDetectorConstruction* realWorldIn):
   visMacroFileName(visMacroFileNameIn),
   geant4MacroFileName(geant4MacroFileNameIn)
-{;}
+{
+  visManager = new G4VisExecutive();
+  bdsMessenger = new BDSMessenger();
+  if (realWorldIn)
+    {visManager->RegisterMessenger(new BDSVisCommandSceneAddQueryMagneticField(realWorldIn));}
+}
+
+BDSVisManager::~BDSVisManager()
+{
+  delete visManager;
+  delete bdsMessenger;
+}
 
 void BDSVisManager::StartSession(int argc, char** argv)
 {
-  /// Create BDS UI messenger
-  BDSMessenger* bdsMessenger = new BDSMessenger();
-
 #ifdef G4UI_USE_TCSH
   G4UIsession* session = new G4UIterminal(new G4UItcsh);
 #else
@@ -66,7 +77,6 @@ void BDSVisManager::StartSession(int argc, char** argv)
   G4cout<< __METHOD_NAME__ << "Initializing Visualisation Manager"<<G4endl;
 #endif
   // initialize visualisation
-  G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   
   // setup trajectory colouring
@@ -138,5 +148,4 @@ void BDSVisManager::StartSession(int argc, char** argv)
   delete session2;
 #endif
   delete session;
-  delete bdsMessenger;
 }

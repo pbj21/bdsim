@@ -18,13 +18,19 @@ V1.7.0 - 2021 / XX / XX
 
 * GGMAD Geometry format is now deprecated. This was not maintained for a long time and with
   pyg4ometry and GDML we support much better geometry. The code is old and hard to maintain
-  and really needs to be rewritten.
+  and really needs to be rewritten. The functionality was broken in making BDSIM compatible
+  with all the changes to string handling in Geant4 V11.
 * New executable options :code:`--reference` and :code:`--citation` to display the citation
   in bibtex to cite BDSIM easily.
+* The default yoke fields have changed and are on average stronger (and more correct). See below.
 
 New Features
 ------------
 
+* New ability to query a 3D model for the field and export a field map.
+* New program bdsinterpolator to interpolate a field map and export it without
+  any handling by Geant4.
+* New field drawing facility in the visualiser to draw query objects.
 * Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
   to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
   This also applies to sampler placements.
@@ -33,14 +39,16 @@ New Features
   environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
   typically takes about 6Gb of space and is a great alternative to a virtual machine. An
   XWindows server is required for the visualiser. See :ref:`docker-build`.
-* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into voxelized geometries.
+* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
+  voxelized geometries.
 * New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
   :ref:`spectra-definition` for more information.
 * The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
   explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
 * Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
   logarithmic or user-defined energy axis scale (requires Boost).
-* New scorer type: cellflux4d
+* New scorer type: cellflux4d.
+* New type of scorermesh geometry: cylindrical.
 * New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
 * New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
   introduced to permit overriding the energy of the beam.
@@ -53,11 +61,21 @@ New Features
   outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
   world with the compound transforms: relative to the former outermost logical volume and also
   the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
-* New type of scorermesh geometry: cylindrical.
+* Materials are now stored for each trajectory step point (optionally) as described
+  by an integer ID.
+* New ability to arbitrarily scale the yoke fields
   
 General
 -------
 
+* The default yoke fields have been revised. The equation for the field is the same, but the
+  normalisation to the pure vacuum field at the pole-tip has been fixed and improved. This
+  leads to the removal of very high peak values close to the hypothetical current sources
+  between poles and also generally increases the average field magnitude in the yoke. This makes
+  a smooth transitino from the vacuum field to the yoke field and is more correct. Specifically,
+  the contribution from each current source is evaluated half way between each current source
+  for the purpose of normalisation. The new option :code:`useOldMultipoleOuterFields=1` is
+  available to regain the old behaviour. This will be removed in the next version beyond this one.
 * Compatibility with Geant4 V11.
 * Optional dependency on Boost libraries (at least V1.71.0) for 4D histograms.
 * The option :code:`scintYieldFactor` has no effect from Geant4 V11 onwards.
@@ -71,12 +89,20 @@ General
 * BDSGeometryComponent class refactored to permit a G4AssemblyVolume as the container
   for a piece of geometry. It's in addition to a logical volume.
 * A `dump` element may now be specified without a length and will by default be 1 mm long.
+* The visualiser command :code:`/bds/beamline/goto` now accepts an optional integer as a second
+  argument to specify the instance of a beam line element in the line to go to. i.e. if the same
+  beam line element is reused, you can select an individual one to go to.
+* Tolerate "electron", "positron" and "photon" for beam particle names and substitute in the
+  Geant4 names (e.g. "e-").
 
 Bug Fixes
 ---------
 
 * Fix extension of all parser objects (i.e. not beam line elements), which was broken. Extension
   is the access and update of a variable inside a defined object such as a field or scorer.
+* Fix lack of yoke fields for rbends.
+* Fix LHC 'other' beam pipe field which was not offset to the correct position. Mostly a fault for
+  quadrupoles where the field appeared in effect as a distorted dipole field (i.e. very off-axis quadrupole field).
 * Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
   would work with this command or variables in the input GMAD.
 * If a multipole has a zero-length, it will be converted in a thin multipole.
@@ -89,8 +115,6 @@ Bug Fixes
   was the creation of the particle and the post step was an interaction (i.e. not
   transportation). Previously, this step would not be stored breaking the indexing
   for parent step index.
-* Materials are now stored for each trajectory step point (optionally) as described
-  by an integer ID.
 * Fix double deletion bug for particle definition when using the Link version of BDSIM.
 * Fix `distrFile` not being found when used as an executable option in the case where the
   current working directory, the main input gmad file and the distribution file were all in
@@ -113,6 +137,10 @@ Bug Fixes
   the Geant4 one and throw our own, safely handled exceptions a la standard C++.
 * Fix lack of user limits for RF cavity geometry.
 * Fix maximum step length user limit for externally loaded geometry.
+* Fix missing magnet coil end pieces despite being available space when the sequence
+  is a magnet, drift, element, or the reverse.
+* Fix a bug in field map loading where a space was before the "!" character the columns
+  wouldn't be parsed correctly.
 
 Output Changes
 --------------

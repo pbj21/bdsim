@@ -25,38 +25,17 @@ information please refer to the GDML `website <http://gdml.web.cern.ch/GDML/>`_ 
 This format is widely supported and other geometry software may be able to export
 geometry in GDML format.
 
-The Geant4 GDML parser will not reload a volume if one by the same name is already
-loaded. Instead, it will use that volume.  In the case of multiple GDML files being
-used in BDSIM, this would result in incorrect geometry. BDSIM includes a preprocessor
-using the xercesc library that will make a temporary copy of any GDML files loaded and
-prepend all names with the name of the element or placement being used. The user will
-not normally notice this and the temporary files are deleted after use.
-
-The BDSIM GDML preprocessor has some limitations. We cannot support variables in values.
-In this case, the user should load a GDML file with Geant4 and re-export it. This will
-'flatten' / resolve any variables, e.g. ::
-
-  <variable name="offsetX" value="3"/>
-  <position x="offsetX+3" y="0" z="-3|/>
-
-would not work, as the *variable* "offsetX" is referred to in the *value* "x" in the position tag.
-
-.. warning:: The Geant4 GDML parser typically requires internet access for the schema.
-	     To overcome this deficiency we provide a copy of the latest GDML schema
-	     in BDSIM, which it uses. If the user specifies a path on the file system
-	     in the GDML tag (presumably to their own modified schema) this will be used.
-
-.. note:: For GDML geometry, we preprocess the input file prepending all names with the name
-	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
-	  not handle unique file names. However, in the case of very large files with many, many
-	  vertices, the preprocessing can dominate. In this case, the option `preprocessGDML`
-	  should be turned off. The loading will only work with one file in this case.
+See :ref:`geometry-gdml-preprocessing` for a relevant discussion about how BDSIM
+handles GDML files.
 
 GDML Preparation
-----------------
+^^^^^^^^^^^^^^^^
 
-A Python utility has been created to aid preparation, visualisation and overlap checking of
-GDML geometry. Please see :ref:`python-utilities` for `pyg4ometry`.
+A Python package **pyg4ometry** has been created to aid preparation, visualisation and
+overlap checking of GDML geometry. Please see :ref:`python-geometry-preparation` for more details.
+
+This package is used for many of the examples included with BDSIM and the Python scripts are
+included with the examples.
 
 Mokka
 -----
@@ -68,10 +47,12 @@ any of the Mokka files, a `#` may be used to represent a commented line. There a
 stages, which are detailed in the following sections, that are required for setting up the
 Mokka geometry:
 
-* `Describing the geometry`_
-* `Creating a geometry list`_
-* `Defining a Mokka Element`_
+* :ref:`mokka-description`
+* :ref:`mokka-list`
+* :ref:`mokka-element`
 
+.. _mokka-description:
+  
 Describing the geometry
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -366,6 +347,8 @@ equations (in the usual Geant4 way)::
 
 where v is between 0 and 2 :math:`\pi` and u between 0 and h, respectively.
 
+.. _mokka-list:
+
 Creating a geometry list
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -377,6 +360,8 @@ Mokka element. An example of a geometry list containing ’boxes.sql’ and ’c
   /directory/boxes.sql
   /directory/cones.sql
 
+.. _mokka-element:
+  
 Defining a Mokka element
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

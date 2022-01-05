@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDetectorConstruction.hh"
 #include "BDSExceptionHandler.hh"
 #include "BDSExtent.hh"
+#include "BDSFieldQuery.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 
 #include "CLHEP/Random/Random.h"
@@ -47,7 +48,17 @@ void BDSRunManager::Initialize()
 
   BDSExtent worldExtent;
   if (const auto detectorConstruction = dynamic_cast<BDSDetectorConstruction*>(userDetector))
-    {worldExtent = detectorConstruction->WorldExtent();}
+    {
+      worldExtent = detectorConstruction->WorldExtent();
+
+      /// Check for any 3D field queries of the model and carry them out
+      const auto& fieldQueries = detectorConstruction->FieldQueries();
+      if (!fieldQueries.empty())
+	{
+	  BDSFieldQuery querier;
+	  querier.QueryFields(fieldQueries);
+	}
+    }
   if (const auto primaryGeneratorAction = dynamic_cast<BDSPrimaryGeneratorAction*>(userPrimaryGeneratorAction))
     {primaryGeneratorAction->SetWorldExtent(worldExtent);}
 }

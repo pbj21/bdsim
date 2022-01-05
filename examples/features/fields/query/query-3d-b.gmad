@@ -1,0 +1,12 @@
+include query-common.gmad;
+
+! query w.r.t. an element in the beam line
+! this is the 2nd instance of q1 which will be at an angle
+quQuad: query, nx=31, xmin=-50*cm, xmax=50*cm,
+	       ny=31, ymin=-50*cm, ymax=50*cm,
+	       nz=3,  zmin=-20*cm, zmax=20*cm,
+	       queryMagneticField=1,
+	       outfileMagnetic="out_query_3d_bfield_xyz.dat",
+	       referenceElement="q1",
+	       referenceElementNumber=1,
+	       overwriteExistingFiles=1;

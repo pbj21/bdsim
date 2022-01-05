@@ -12,8 +12,7 @@ uniformfield: field, type="ebmap2d",
 		     axisX=0, axisY=0, axisZ=0, angle=0,
 		     axisAngle=0;
 
-q1: query, nDimensions = 2,
-    	   nx = 100,
+q1: query, nx = 100,
 	   ny = 200,
 	   nz = 5,
 	   nt = 10,
@@ -25,7 +24,17 @@ q1: query, nDimensions = 2,
 	   zmax = 10*cm,
 	   tmin = 0,
 	   tmax = 10*ns,
-	   outfile="test1.dat",
-	   fieldObject="uniformfield";
+	   outfileMagnetic="test1.dat",
+	   outfileElectric="test1.dat",
+	   fieldObject="uniformfield",
+	   pointsFile="lalalala",
+	   referenceElement="d1",
+	   referenceElementNumber=2,
+	   s=123, x=10*m,y=3*cm,z=12*m,
+	   phi=1,theta=2,psi=3,
+	   axisX=1, axisY=0.5, axisZ=0.01, angle=0.003,
+	   axisAngle=1,
+	   queryMagneticField=1,
+	   queryElectricField=1;
 
 print, q1;

@@ -36,11 +36,15 @@ BDSIM Visualisation Commands
 BDSIM provides some extra useful commands.
 
 * :code:`/bds/beamline/list` List all components in the beam line in the terminal.
-* :code:`/bds/beamline/goto <component pv name>` Centre the view at that name exactly. This
+* :code:`/bds/beamline/goto <component name> [instance number]` Centre the view at that name exactly. This
   will only work for items in the main beam line. Note, bends may be split into sections and
   therefore have a different name than expected - try a straight component.
 * :code:`/bds/samplers/list` List the names of all samplers in the terminal.
 * :code:`/bds/samplers/view` Issue all the right commands to make the samplers visible.
+* :code:`/bds/field/drawQuery <query object name>` Draw the vector field of a field query object.
+  ("all" can be used too) See :ref:`fields-visualisation-queries`.
+* :code:`/bds/field/listQueries` List all query objects defined in the input by name to use with the above command.
+
 
 Common Useful Commands
 ======================
@@ -61,6 +65,7 @@ session box (terminal prompt) inside the visualiser:
   roughly opposite
 * :code:`/vis/viewer/set/viewpointThetaPhi 180 0` - look along the beam line
 * :code:`/bds/beamline/goto d1` - reposition the view point at beam line element named `d1`
+* :code:`/bds/beamline/goto d1 1` - reposition the view point at beam line element named `d1` - 2nd usage (zero-counting)
 * :code:`/vis/viewer/set/projection p 75` - set the viewing style to perspective with angle 75 degrees
 * :code:`/vis/viewer/set/projection o` - set the projection to orthographic (no perspective)
 * :code:`/vis/viewer/addCutawayPlane 0 0 0 m 1 0 0` - add a cut away plane along the beam line making

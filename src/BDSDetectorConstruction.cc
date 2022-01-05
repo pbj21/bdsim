@@ -40,6 +40,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtent.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldObjects.hh"
+#include "BDSFieldQuery.hh"
+#include "BDSFieldQueryInfo.hh"
+#include "BDSFieldQueryPointsLoader.hh"
 #include "BDSGap.hh"
 #include "BDSGeometryComponent.hh"
 #include "BDSGeometryExternal.hh"
@@ -80,6 +83,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/scorermesh.h"
 
 #include "globals.hh"
+#include "G4AffineTransform.hh"
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
@@ -248,6 +252,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
   
   if (verbose || debug)
     {G4cout << __METHOD_NAME__ << "detector Construction done" << G4endl;}
+  
+  fieldQueries = BDSDetectorConstruction::PrepareFieldQueries(mainBeamLine);
 
 #ifdef BDSDEBUG
   G4cout << G4endl << __METHOD_NAME__ << "printing material table" << G4endl;
@@ -264,6 +270,8 @@ BDSDetectorConstruction::~BDSDetectorConstruction()
   for (auto i : biasObjects)
     {delete i;}
 #endif
+  for (auto q : fieldQueries)
+    {delete q;}
 }
 
 void BDSDetectorConstruction::InitialiseRegions()
@@ -683,7 +691,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
   // fields know which geometry to navigate to get local / global transforms.
   // This is the regular world used as a backup to the curvilinear world.
   BDSAuxiliaryNavigator::AttachWorldVolumeToNavigator(worldPV);
-
+  BDSFieldQuery::AttachWorldVolumeToNavigator(worldPV);
+  
   /// Give the pv info registry a heads up that these volumes don't have info (optimisation).
   BDSPhysicalVolumeInfoRegistry::Instance()->RegisterExcludedPV(worldPV);
   
@@ -857,6 +866,8 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
     }
   else if (BDS::IsFinite(placement.s))
     {// scenario 2
+      if (!beamLine)
+        {throw BDSException(__METHOD_NAME__, "no valid beam line yet placement w.r.t. a beam line.");}
       G4ThreeVector offset = G4ThreeVector();
       if (placementExtent)
 	{offset = SideToLocalOffset(placement, beamLine, *placementExtent);}
@@ -913,6 +924,13 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::BLMP
   return CreatePlacementTransform(convertedPlacement, beamLine, S, blmExtent);
 }
 
+G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Query& queryPlacement,
+                                                                const BDSBeamline* beamLine,
+                                                                G4double* S)
+{
+  GMAD::Placement convertedPlacement(queryPlacement);
+  return CreatePlacementTransform(convertedPlacement, beamLine, S);
+}
 
 G4ThreeVector BDSDetectorConstruction::SideToLocalOffset(const GMAD::Placement& placement,
 							 const BDSBeamline*     beamLine,
@@ -1266,27 +1284,29 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
 
       G4String geometryType = BDS::LowerCase(G4String(mesh.geometryType));
 
-      if (geometryType == "box") {
-      // create a scoring box
-        scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
-        mapper = scorerBox->Mapper();}
-
-      else if (geometryType == "cylindrical") {
-      // create a scoring cylinder
-        scorerCylindrical = new BDSScoringMeshCylinder(meshName, meshRecipe, placement);
-        mapper = scorerCylindrical->Mapper();}
-
-      else {
-          throw BDSException(__METHOD_NAME__, "mesh geometry type \"" + geometryType + "\" is not correct. The possible options are \"box\" and \"cylindrical\"");}
+      if (geometryType == "box")
+	{// create a scoring box
+	  scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
+	  mapper = scorerBox->Mapper();
+	}
+      else if (geometryType == "cylindrical")
+	{// create a scoring cylinder
+	  scorerCylindrical = new BDSScoringMeshCylinder(meshName, meshRecipe, placement);
+	  mapper = scorerCylindrical->Mapper();
+	}
+      else
+	{
+	  G4String msg = "mesh geometry type \"" + geometryType + "\" is not correct. The possible options are \"box\" and \"cylindrical\"";
+          throw BDSException(__METHOD_NAME__, msg);
+	}
 
       // add the scorer(s) to the scoring mesh
       std::vector<G4String> meshPrimitiveScorerNames; // final vector of unique mesh + ps names
       std::vector<G4double> meshPrimitiveScorerUnits;
       std::vector<G4String> scorerNames;
-      std::stringstream sqss(mesh.scoreQuantity);
-      G4String word;
 
-        while (sqss >> word) // split by white space - process word at a time
+      std::vector<G4String> words = BDS::GetWordsFromString(mesh.scoreQuantity);
+      for (const auto& word : words)
 	{
 	  auto search = scorerRecipes.find(word);
 	  if (search == scorerRecipes.end())
@@ -1302,24 +1322,73 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
 	  meshPrimitiveScorerNames.push_back(uniqueName);
 	  meshPrimitiveScorerUnits.push_back(psUnit);
 
-      if (geometryType == "box"){
-          scorerBox->SetPrimitiveScorer(ps);} // sets the current ps but appends to list of multiple
-      else if (geometryType == "cylindrical"){
-          scorerCylindrical->SetPrimitiveScorer(ps);}// sets the current ps but appends to list of multiple
-
+	  // sets the current ps but appends to list of multiple
+	  if (geometryType == "box")
+	    {scorerBox->SetPrimitiveScorer(ps);} 
+	  else if (geometryType == "cylindrical")
+	    {scorerCylindrical->SetPrimitiveScorer(ps);}
+	  
 	  BDSScorerHistogramDef outputHistogram(meshRecipe, uniqueName, ps->GetName(), psUnit, *mapper);
 	  BDSAcceleratorModel::Instance()->RegisterScorerHistogramDefinition(outputHistogram);
 	  BDSAcceleratorModel::Instance()->RegisterScorerPlacement(meshName, placement);
 	}
-
-      if (geometryType == "box"){
-          scManager->RegisterScoringMesh(scorerBox);} // sets the current ps but appends to list of multiple
-      else if (geometryType == "cylindrical"){
-          scManager->RegisterScoringMesh(scorerCylindrical);}// sets the current ps but appends to list of multiple
+      
+      if (geometryType == "box")
+	{scManager->RegisterScoringMesh(scorerBox);} // sets the current ps but appends to list of multiple
+      else if (geometryType == "cylindrical")
+	{scManager->RegisterScoringMesh(scorerCylindrical);}// sets the current ps but appends to list of multiple
 
       // register it with the sd manager as this is where we get all collection IDs from
       // in the end of event action. This must come from the mesh as it creates the
       // multifunctionaldetector and therefore has the complete name of the scorer collection
       BDSSDManager::Instance()->RegisterPrimitiveScorerNames(meshPrimitiveScorerNames, &meshPrimitiveScorerUnits);
     }
+}
+
+std::vector<BDSFieldQueryInfo*> BDSDetectorConstruction::PrepareFieldQueries(const BDSBeamline* mainBeamline)
+{
+  std::vector<BDSFieldQueryInfo*> result;
+  const std::vector<GMAD::Query>& parserQueries = BDSParser::Instance()->GetQuery();
+  for (const auto& def : parserQueries)
+    {
+      if (!def.queryMagneticField && !def.queryElectricField)
+	{throw BDSException(__METHOD_NAME__, "neither \"queryMagneticField\" nor \"queryElectricField\" are true (=1) - one must be turned on.");}
+
+      if (!def.pointsFile.empty())
+	{
+	  std::vector<G4String> columnNames;
+	  auto points = BDS::LoadFieldQueryPoints(G4String(def.pointsFile), &columnNames);
+	  result.emplace_back(new BDSFieldQueryInfo(G4String(def.name),
+						    G4String(def.outfileMagnetic),
+						    G4String(def.outfileElectric),
+						    G4bool(def.queryMagneticField),
+						    G4bool(def.queryElectricField),
+						    points,
+						    columnNames,
+						    G4bool(def.overwriteExistingFiles),
+						    G4String(def.fieldObject)));
+	}
+      else
+	{
+	  G4Transform3D globalTransform3D = CreatePlacementTransform(def, mainBeamline);
+	  auto rot = globalTransform3D.getRotation();
+	  rot = rot.inverse();
+	  G4AffineTransform globalTransform(rot, globalTransform3D.getTranslation());
+	  
+	  result.emplace_back(new BDSFieldQueryInfo(G4String(def.name),
+						    G4String(def.outfileMagnetic),
+						    G4String(def.outfileElectric),
+						    G4bool(def.queryMagneticField),
+						    G4bool(def.queryElectricField),
+						    {def.nx, def.xmin*CLHEP::m, def.xmax*CLHEP::m},
+						    {def.ny, def.ymin*CLHEP::m, def.ymax*CLHEP::m},
+						    {def.nz, def.zmin*CLHEP::m, def.zmax*CLHEP::m},
+						    {def.nt, def.tmin*CLHEP::ns, def.tmax*CLHEP::ns},
+						    globalTransform,
+						    G4bool(def.overwriteExistingFiles),
+						    G4String(def.fieldObject),
+                G4bool(def.printTransform)));
+	}
+    }
+  return result;
 }

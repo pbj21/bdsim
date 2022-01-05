@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 namespace GMAD
 {
   class BLMPlacement;
+  class Query;
   class SamplerPlacement;
   class ScorerMesh;
   
@@ -83,6 +84,7 @@ namespace GMAD
     Placement(const SamplerPlacement& samplerPlacement);
     Placement(const ScorerMesh&       scorerMesh);
     Placement(const BLMPlacement&     blmPlacement);
+    Placement(const Query& qu);
     /// @}
 
   private:

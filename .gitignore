@@ -10,6 +10,7 @@
 *.txt
 *.bak
 *.root
+*out_*
 
 # Temporary editor files #
 ##########################

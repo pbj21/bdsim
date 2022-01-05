@@ -1111,3 +1111,50 @@ set. See :ref:`installation-building` and :ref:`installation-environmental-varia
 .. _Geant4: http://geant4.cern.ch/
 .. _Macports: http://www.macports.org/
 .. _ROOT: http://root.cern.ch/
+
+
+Programs Included
+=================
+
+BDSIM is a program but it is accompanied by other programs for various tasks. Here is a complete
+list of all executable programs included.
+
+
+.. tabularcolumns:: |p{3cm}|p{7cm}|
+
++--------------------+-----------------------------------------------------------+
+| **Program**        | **Description**                                           |
++====================+===========================================================+
+| bdsim              | The main tool to generate Monte Carlo simulation data.    |
++--------------------+-----------------------------------------------------------+
+| rebdsim            | Analysis tool to make histograms and calcualte optics.    |
++--------------------+-----------------------------------------------------------+
+| rebdsimCombine     | Combine multiple rebdsim output files into 1 file.        |
++--------------------+-----------------------------------------------------------+
+| rebdsimHistoMerge  | Operate on a bdsim output file and average the per-event  |
+|                    | pre-made histograms only.                                 |
++--------------------+-----------------------------------------------------------+
+| rebdsimOptics      | Operate on a bdsim output file and calculate optical      |
+|                    | functions from the sampler data - the 'optics'.           |
++--------------------+-----------------------------------------------------------+
+| rebdsimOrbit       | Operate on a bdsim output file and extrac the first       |
+|                    | entry in each sampler - assuming 1 primary this is the    |
+|                    | 'orbit' of that particle.                                 |
++--------------------+-----------------------------------------------------------+
+| bdskim             | Create a copy of a bdsim output file keeping only select  |
+|                    | events according to a selection - skim the data.          |
++--------------------+-----------------------------------------------------------+
+| bdsimCombine       | Combine bdsim output files together into a bigger file.   |
++--------------------+-----------------------------------------------------------+
+| bdsinterpolator    | Load a field map and query it by inteprolation.           |
++--------------------+-----------------------------------------------------------+
+| comparator         | Utility for numerically and statistically comparing bdsim |
+|                    | and rebdsim output files for regression testing.          |
++--------------------+-----------------------------------------------------------+
+| makematerialfile   | Export 2 files with materials and elements from NIST as   |
+|                    | required by pyg4ometry.                                   |
++--------------------+-----------------------------------------------------------+
+| ptc2bdsim          | Convert a PTC inrays file to one useable by bdsim.        |
++--------------------+-----------------------------------------------------------+
+| gmad               | The parser on its own as a program - no model is built.   |
++--------------------+-----------------------------------------------------------+

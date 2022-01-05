@@ -2,9 +2,9 @@ f1: field, type="bmap1d",
                  magneticFile = "bdsim1d:1dexample.dat",
 		 magneticInterpolator = "nearest";
 
-q1: query, nDimensions=1,
-    	   nx = 200,
+q1: query, nx = 200,
 	   xmin = -60*cm,
 	   xmax = 60*cm,
-	   outfile = "1d_interpolated_nearest.dat",
+	   outfileMagnetic = "1d_interpolated_nearest.dat",
+	   overwriteExistingFiles=1,
 	   fieldObject = "f1";

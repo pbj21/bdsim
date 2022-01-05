@@ -2,8 +2,7 @@ f1: field, type="bmap3d",
                  magneticFile = "bdsim3d:3dexample_zyx.dat.gz",
 		 magneticInterpolator = "cubic";
 
-q1: query, nDimensions=3,
-    	   nx = 100,
+q1: query, nx = 100,
 	   xmin = -30*cm,
 	   xmax = 30*cm,
 	   ny = 100,
@@ -12,5 +11,6 @@ q1: query, nDimensions=3,
 	   nz = 100,
 	   zmin = -50*cm,
 	   zmax = 50*cm,
-	   outfile = "3d_interpolated_cubic_zyx.dat",
+	   outfileMagnetic = "3d_interpolated_cubic_zyx.dat",
+	   overwriteExistingFiles=1,
 	   fieldObject = "f1";

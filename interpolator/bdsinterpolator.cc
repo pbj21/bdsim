@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSIQuery.hh"
 #include "BDSException.hh"
 #include "BDSExecOptions.hh"
 #include "BDSFieldFactory.hh"
@@ -24,6 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldLoader.hh"
 #include "BDSFieldMag.hh"
 #include "BDSFieldMagInterpolated.hh"
+#include "BDSFieldQueryInfo.hh"
+#include "BDSFieldQueryRaw.hh"
+#include "BDSDetectorConstruction.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSParser.hh"
 
@@ -32,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
 
-#include "parser/query.h"
+#include <vector>
 
 int main(int argc, char** argv)
 {
@@ -57,9 +59,12 @@ int main(int argc, char** argv)
   /// Force construction of global constants
   BDSGlobalConstants::Instance();
 
-  for (const auto& q : BDSParser::Instance()->GetQuery())
+  BDSFieldQueryRaw querier;
+
+  std::vector<BDSFieldQueryInfo*> queries = BDSDetectorConstruction::PrepareFieldQueries(nullptr);
+  for (const auto& query : queries)
     {
-      BDSFieldInfo* recipe = BDSFieldFactory::Instance()->GetDefinition(G4String(q.fieldObject));
+      BDSFieldInfo* recipe = BDSFieldFactory::Instance()->GetDefinition(query->fieldObject);
 
       // We don't need to use the full interface of BDSFieldFactory to manufacture a complete
       // geant4 field - we only need the BDSFieldMag* instance.
@@ -77,9 +82,9 @@ int main(int argc, char** argv)
 	  G4cout << "No field constructed - skipping" << G4endl;
 	  continue;
 	}
-      BDSI::Query(field, q, recipe->FieldType());
+      querier.QueryFieldRaw(field, query);
     }
-
+  
   delete BDSFieldFactory::Instance();
   delete BDSFieldLoader::Instance();
   delete BDSGlobalConstants::Instance();

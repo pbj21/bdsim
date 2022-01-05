@@ -295,7 +295,7 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
       // if starts with '!' - columns
       // check all required keys have been built up ok
       // set nColumns
-      std::regex columnRow("\\s*^!"); // ignore any initial white space and look for '!'
+      std::regex columnRow("^\\s*!"); // ignore any initial white space and look for '!'
       if (std::regex_search(line, columnRow))
 	{
           // we only need to record the number of columns and which ones are

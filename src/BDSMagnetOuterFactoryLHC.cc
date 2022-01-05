@@ -49,12 +49,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4VSolid.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+
 #include <algorithm>
 #include <cmath>
 #include <set>
 #include <utility>
 #include <vector>
 
+/// Beam pipe axis separation at 1.9K
+const G4double BDSMagnetOuterFactoryLHC::beamSeparation = 194.00*CLHEP::mm;
 
 BDSMagnetOuterFactoryLHC::BDSMagnetOuterFactoryLHC(G4bool isLeftOffsetIn):
   isLeftOffset(isLeftOffsetIn)
@@ -103,11 +107,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
   // aper2 = 3.428cm / 2
   // aper3 = 4.404cm / 2
   // containerRadius -> 24.599mm for lhc beampipe with these parameters
-
+  
   // geometrical constants
   // [1] LHC design report - Chapter 7, fig 7.3
   // [2] LHC design report - Chapter 7, fig 7.1
-  G4double beamPipeAxisSeparation = 194.00*CLHEP::mm;             // at 1.9K
+  G4double beamPipeAxisSeparation = beamSeparation;
   G4double massShift              = 0.5 * beamPipeAxisSeparation; // central shift to geometry
   //G4double collarBoxHalfHeight    = 60*CLHEP::mm;                 // [1] by visual inspection
   G4double collarBoxHalfWidth     = 22*CLHEP::mm;                 // fits between outer coils
@@ -1004,7 +1008,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   // geometrical constants
   // [1] LHC design report - Chapter 7, fig 7.3
   // [2] LHC design report - Chapter 7, fig 7.1
-  G4double beamPipeAxisSeparation = 194.00*CLHEP::mm;               // at 1.9K
+  G4double beamPipeAxisSeparation = beamSeparation;
   G4double massShift              = 0.5 * beamPipeAxisSeparation;   // central shift to geometry
   //G4double collarBoxHalfHeight    = 60*CLHEP::mm;                 // [1] by visual inspection
   G4double collarBoxHalfWidth     = 22*CLHEP::mm;                   // fits between outer coils

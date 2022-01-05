@@ -22,14 +22,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 
 BDSFieldMagMultipoleOuterDual::BDSFieldMagMultipoleOuterDual(G4int              orderIn,
-							   G4double           poleTipRadiusIn,
-							   const BDSFieldMag* innerFieldIn,
-							   G4bool             kPositive,
-							   G4double           separation,
-							   G4bool             secondFieldOnLeft):
+							     G4double           poleTipRadiusIn,
+							     const BDSFieldMag* innerFieldIn,
+							     G4bool             kPositive,
+							     G4double           brho,
+							     G4double           separation,
+							     G4bool             secondFieldOnLeft,
+							     G4double           arbitraryScaling):
   fieldBase(nullptr)
 {
-  fieldBase = new BDSFieldMagMultipoleOuter(orderIn, poleTipRadiusIn, innerFieldIn, kPositive);
+  fieldBase = new BDSFieldMagMultipoleOuter(orderIn, poleTipRadiusIn, innerFieldIn,
+					    kPositive, brho, arbitraryScaling);
   G4double offsetX = secondFieldOnLeft ? -separation : separation;
   offset = G4ThreeVector(offsetX,0,0);
 }
@@ -40,7 +43,7 @@ BDSFieldMagMultipoleOuterDual::~BDSFieldMagMultipoleOuterDual()
 }
 
 G4ThreeVector BDSFieldMagMultipoleOuterDual::GetField(const G4ThreeVector& position,
-						     const G4double       t) const
+						      const G4double       t) const
 {
   G4ThreeVector aSide      = fieldBase->GetField(position, t);
   G4ThreeVector shiftedPos = position + offset;

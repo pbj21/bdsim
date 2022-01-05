@@ -151,7 +151,8 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 										  mgInfo,
 										  fieldTiltOffset,
 										  integratorSet,
-										  brho);
+										  brho,
+                                                                                  BDSComponentFactory::ScalingFieldOuter(element));
       BDSMagnet* oneBend = new BDSMagnet(BDSMagnetType::sectorbend,
 					 baseName,
 					 arcLength,
@@ -233,12 +234,13 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 							    0.5*semiAngle, 0.5*semiAngle, bpInfo,
 							    yokeOnLeft);
   BDSFieldInfo* semiOuterField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(semiStrength,
-                                                                              BDSFieldType::dipole,
-                                                                              bpInfo,
-                                                                              mgInfo,
-                                                                              fieldTiltOffset,
-                                                                              integratorSet,
-                                                                              brho);
+										  BDSFieldType::dipole,
+										  bpInfo,
+										  mgInfo,
+										  fieldTiltOffset,
+										  integratorSet,
+										  brho,
+                                                                                  BDSComponentFactory::ScalingFieldOuter(element));
   mgInfo->name = centralName;
   BDSMagnet* centralWedge = new BDSMagnet(BDSMagnetType::sectorbend,
 					  centralName,
@@ -636,7 +638,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
       BDSMagnetStrength* fringeStIn = BDS::GetFringeMagnetStrength(element, st, oneFringeAngle,
                                                                    trackingPolefaceAngleIn, trackingPolefaceAngleOut,
                                                                    fintx, true);
-      G4String fringeName            = name + "_e1_fringe";
+      G4String fringeName = name + "_e1_fringe";
 
       // element used for beam pipe materials etc - not strength, angle or length.
       BDSMagnet* startfringe = BDS::BuildDipoleFringe(element, angleIn, fringeInOutputAngle,
@@ -662,9 +664,18 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
   auto mgInfo = BDSComponentFactory::PrepareMagnetOuterInfo(elementName, element, centralInputFaceAngle, centralOutputFaceAngle, bpInfo, yokeOnLeft);
   mgInfo->name = elementName;
 
+  BDSFieldInfo* outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
+                                                                              BDSFieldType::dipole,
+                                                                              bpInfo,
+                                                                              mgInfo,
+                                                                              fieldTiltOffset,
+                                                                              integratorSet,
+                                                                              brho,
+                                                                              BDSComponentFactory::ScalingFieldOuter(element));
+
   // Here we change from the strength angle convention of +ve angle corresponds to
   // deflection in negative x, to correct 3d +ve angle corresponds to deflection in
-  // positive x. Hence angle sign flip for construction.
+  // positive x. Hence, angle sign flip for construction.
   BDSMagnet* oneBend = new BDSMagnet(BDSMagnetType::rectangularbend,
 				     elementName+"_centre",
 				     centralArcLength,
@@ -672,7 +683,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
 				     mgInfo,
 				     vacuumField,
 				     -centralAngle,
-				     nullptr);
+                                     outerField);
   
   rbendline->AddComponent(oneBend);
   
@@ -682,7 +693,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
       BDSMagnetStrength* fringeStOut = BDS::GetFringeMagnetStrength(element, st, oneFringeAngle,
                                                                     trackingPolefaceAngleIn, trackingPolefaceAngleOut,
                                                                     fintx, false);
-      G4String fringeName             = name + "_e2_fringe";
+      G4String fringeName = name + "_e2_fringe";
       
       BDSMagnet* endfringe = BDS::BuildDipoleFringe(element, fringeOutInputAngle, angleOut,
 						    fringeName,

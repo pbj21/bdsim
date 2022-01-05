@@ -37,7 +37,6 @@ namespace GMAD
   {
   public:
     std::string name;   ///< Name of object.
-    int nDimensions;    ///< Number of dimensions to query.
     int nx;             ///< Number of samples in x.
     int ny;             ///< Number of samples in y.
     int nz;             ///< Number of samples in z.
@@ -50,8 +49,37 @@ namespace GMAD
     double zmax;        ///< Z finish.
     double tmin;        ///< T start.
     double tmax;        ///< T finish.
-    std::string outfile;     ///< Output file name.
+    std::string outfileMagnetic; ///< Output file name.
+    std::string outfileElectric;
     std::string fieldObject; ///< Name of field to query.
+
+    bool queryMagneticField; ///< Whether to query the magnetic field.
+    bool queryElectricField; ///< Whether to query the electric field.
+    
+    bool overwriteExistingFiles;
+    bool printTransform;
+    
+    std::string pointsFile; ///< File with 3D points to use
+
+    // For 3d query in a real model - all the possible transform information required
+    std::string referenceElement; ///< Name of reference element w.r.t. to place to.
+    int         referenceElementNumber; ///< Index of repetition of element if there are multiple uses.
+    double s; ///< Curvilinear s position to place w.r.t..
+    double x; ///< Offset in x.
+    double y; ///< Offset in y.
+    double z; ///< Offset in z.
+    /// @{ Euler angle for rotation.
+    double phi;
+    double theta;
+    double psi;
+    /// @}
+    /// @{ Axis angle rotation.
+    double axisX;
+    double axisY;
+    double axisZ;
+    double angle;
+    /// @}
+    bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
     
     /// Constructor
     Query();

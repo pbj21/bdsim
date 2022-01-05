@@ -142,6 +142,11 @@ public:
   inline void SetElectricSubField(const G4String& efnIn) {electricSubFieldName = efnIn;}
   inline void SetUsePlacementWorldTransform(G4bool use) {usePlacementWorldTransform = use;}
 
+  /// *= for BScaling.
+  inline void CompoundBScaling(G4double extraBScalingIn) {bScaling *= extraBScalingIn;}
+  /// *= for EScaling.
+  inline void CompoundEScaling(G4double extraEScalingIn) {eScaling *= extraEScalingIn;}
+
   void SetTransform(const G4Transform3D& transformIn); ///< Set the field definition transform.
   void SetTransformBeamline(const G4Transform3D& transformIn); ///< Set the beam line transform.
 

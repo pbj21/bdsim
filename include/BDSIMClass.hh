@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSBunch;
 class BDSComponentConstructor;
 class BDSComponentFactoryUser;
+class BDSDetectorConstruction;
 class BDSOutput;
 class BDSParser;
 class BDSRunManager;
@@ -97,8 +98,9 @@ private:
   BDSOutput*     bdsOutput;
   BDSBunch*      bdsBunch;
   BDSRunManager* runManager;
-  BDSComponentFactoryUser* userComponentFactory; ///< Optional user registered compont factory.
+  BDSComponentFactoryUser* userComponentFactory; ///< Optional user registered component factory.
   G4VModularPhysicsList* userPhysicsList;        ///< Optional user registered physics list.
+  BDSDetectorConstruction* realWorld;
   /// @}
 };
 

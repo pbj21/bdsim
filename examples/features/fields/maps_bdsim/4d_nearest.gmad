@@ -2,8 +2,7 @@ f1: field, type="bmap4d",
                  magneticFile = "bdsim4d:4dexample.dat.gz",
 		 magneticInterpolator = "nearest";
 
-q1: query, nDimensions=4,
-    	   nx = 20,
+q1: query, nx = 20,
 	   xmin = -30*cm,
 	   xmax = 30*cm,
 	   ny = 30,
@@ -15,5 +14,6 @@ q1: query, nDimensions=4,
 	   nt = 50,
 	   tmin = -2*ns,
 	   tmax = 2*ns,
-	   outfile = "4d_interpolated_nearest.dat",
+	   outfileMagnetic = "4d_interpolated_nearest.dat",
+	   overwriteExistingFiles=1,
 	   fieldObject = "f1";

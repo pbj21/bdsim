@@ -1,0 +1,25 @@
+include query-common.gmad;
+
+! X and global position
+! Z=1.1m should be in centre of first quad
+quA: query, nx=51, xmin=-30*cm, xmax=30*cm,
+	    queryMagneticField=1,
+	    outfileMagnetic="out_query_1d_bfield_x.dat",
+	    z=1.1*m,
+	    overwriteExistingFiles=1;
+
+! Y and curvilinear transform
+! should also be roughly in middle of 1st quad with slight offset
+quB: query, ny=51, ymin=-30*cm, ymax=30*cm,
+	    queryMagneticField=1,
+	    outfileMagnetic="out_query_1d_bfield_y.dat",
+	    s=1.15*m, x=1*cm,
+	    overwriteExistingFiles=1;
+
+! Z and w.r.t. component along the beam line after a bend
+! also go beyond the range of the component
+quC: query, nz=51, zmin=-15*cm, zmax=15*cm,
+	    queryMagneticField=1,
+	    outfileMagnetic="out_query_1d_bfield_z.dat",
+	    referenceElement="e1",
+	    overwriteExistingFiles=1;

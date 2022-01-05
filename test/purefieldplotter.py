@@ -8,7 +8,6 @@ def PlotAll():
         Plot(filename)
 
 def Plot(filename):
-
     rdata = Load(filename)
     rpos = rdata['position']
     rval = rdata['field']
@@ -27,6 +26,12 @@ def Plot(filename):
     cmag = cmag.reshape((nx,ny))
     cx = cpos[0,:,0] # first vertical position (row), all columns, x component of vector
     cy = cpos[:,0,1]
+    # modern matplotlib's streamplot has a very strict check on the spacing
+    # of points being equal, which they're meant to be but then theres's a
+    # rounding error in the file written out by C++.
+    # regenerate it
+    cx = np.linspace(np.min(cx), np.max(cx), len(cx))
+    cy = np.linspace(np.min(cy), np.max(cy), len(cy))
     cfx = cval[:,:,0]
     cfy = cval[:,:,1]
     cfmag = np.sqrt(cfx**2 + cfy**2)
@@ -71,6 +76,8 @@ def Plot(filename):
     plt.tight_layout()
     plt.savefig(basefilename + '2.pdf')
 
+    plt.close()
+    #return cx,cy,cfx,cfy,cfmag
 
     del cdata
     del rdata
@@ -80,7 +87,7 @@ def Plot(filename):
 
 
 def Load(filename):
-    print 'Load> ',filename
+    print('Load> ',filename)
     pos = []
     val = []
     header = {}

@@ -174,5 +174,7 @@ private:
 
   /// Cache of primary generator action.
   static BDSPrimaryGeneratorAction* primaryGeneratorAction;
+  
+  G4bool useOldMultipoleOuterFields;
 };
 #endif

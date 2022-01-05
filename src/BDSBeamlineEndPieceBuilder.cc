@@ -100,7 +100,8 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 		      if (extPipe.TransverselyGreaterThan(endPieceInnerExtent))
 			{
 			  keepGoing             = false;
-			  driftsAreTooBigBefore = true;
+			  if (inspectedElementType != "element")
+			    {driftsAreTooBigBefore = true;}
 			}
 		      if (keepGoing)
 			{
@@ -196,7 +197,7 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 	    {
 	      inspectedElement = beamline->GetNext(inspectedElement);
 	      if (inspectedElement)
-		{ // there is a previous element - inspect it
+		{ // there is a next element - inspect it
 		  G4String inspectedElementType = inspectedElement->GetType();
 		  if (inspectedElementType == "drift" || inspectedElementType == "dipolefringe" || inspectedElementType == "element")
 		    {// leave keepGoing true here to keep going
@@ -208,7 +209,8 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 		      if (extPipe.TransverselyGreaterThan(endPieceInnerExtent))
 			{
 			  keepGoing            = false;
-			  driftsAreTooBigAfter = true;
+			  if (inspectedElementType != "element")
+			    {driftsAreTooBigAfter = true;}
 			}
 		      if (keepGoing)
 			{

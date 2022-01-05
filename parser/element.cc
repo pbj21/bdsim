@@ -32,13 +32,13 @@ using namespace GMAD;
 namespace
 {
   /// Helper method
-  void print(std::list<Element> l, int ident=0)
+  void print(const std::list<Element>& l, int ident=0)
   {
-    if(ident == 0)
+    if (ident == 0)
       {std::cout << "using line " << Parser::Instance()->current_line << std::endl;}
-  
-    for(std::list<Element>::iterator it=l.begin();it!=l.end();++it)
-      {(*it).print(ident);}
+
+    for (auto& el : l)
+      {el.print();}
   }
 }
 
@@ -57,6 +57,7 @@ void Element::PublishMembers()
   
   publish("l",         &Element::l);
   publish("scaling",   &Element::scaling);
+  publish("scalingFieldOuter", &Element::scalingFieldOuter);
   publish("ks",        &Element::ks);
   publish("k1",        &Element::k1);
   publish("k2",        &Element::k2);
@@ -282,24 +283,24 @@ void Element::print(int ident) const
   std::cout << name << " : " << type << std::endl;
   if (l>0.0)
     {std::cout << "l     = " << l << "m" << std::endl;}
+  if (horizontalWidth > 0)
+    {std::cout << "horizontalWidth = " << horizontalWidth << "m" << std::endl;}
   if (samplerType != "none")
     {
       std::cout << "samplerType = " << samplerType << "\n"
                 << "samplerRadius = " << samplerRadius << "\n"
                 << "samplerarticleSetID = " << samplerParticleSetID << std::endl;
     }
+  
 
   switch(type)
     {
-    case ElementType::_DRIFT:
-      {break;}
     case ElementType::_SBEND:
     case ElementType::_RBEND:
       {
 	std::cout << "B     = " << B     << std::endl
 		  << "angle = " << angle << std::endl
 		  << "k1    = " << k1    << std::endl;
-        std::cout << "Scaling = " << scaling << std::endl;
 	break;
       }
     case ElementType::_QUAD:
@@ -316,11 +317,11 @@ void Element::print(int ident) const
     case ElementType::_THINMULT:
       {
 	std::cout << " , knl={";
-  for (auto value : knl)
-    {std::cout << value;}
-  for (auto value : ksl)
-    {std::cout << value;}
+	for (auto value : knl)
+	  {std::cout << value << ", ";}
 	std::cout << "},  ksl={";
+	for (auto value : ksl)
+	  {std::cout << value << ", ";}
 	std::cout << "}" << std::endl;
 	break;
       }
@@ -336,15 +337,14 @@ void Element::print(int ident) const
     case ElementType::_ELEMENT:
       {
 	std::cout << "horizontalWidth: " << horizontalWidth << "m" << std::endl
-		  << "region:          " << region       << std::endl
 		  << "geometryFile:    " << geometryFile << std::endl
-		  << "Field object :   " << fieldAll     << std::endl;
+		  << "fieldAll:        " << fieldAll     << std::endl;
 	break;
       }
     case ElementType::_CT:
       {
 	std::cout << "dicomDataPath: " << dicomDataPath << std::endl;
-  std::cout << "dicomDataFile: " << dicomDataFile << std::endl;
+	std::cout << "dicomDataFile: " << dicomDataFile << std::endl;
 	break;
       }
     case ElementType::_AWAKESCREEN:
@@ -370,27 +370,56 @@ void Element::print(int ident) const
       }
     case ElementType::_LASER:
       {
-	std::cout << "lambda = " << waveLength << "m" << std::endl
-		  << "xSigma = " << xsize << "m" << std::endl
-		  << "ySigma = " << ysize << "m" << std::endl
-		  << "xdir = "   << xdir << std::endl
-		  << "ydir = "   << ydir << std::endl
-		  << "zdir = "   << zdir << std::endl;
+	std::cout << "lambda= " << waveLength << "m" << std::endl
+		  << "xSigma= " << xsize << "m" << std::endl
+		  << "ySigma= " << ysize << "m" << std::endl
+		  << "xdir= "   << xdir << std::endl
+		  << "ydir= "   << ydir << std::endl
+		  << "zdir= "   << zdir << std::endl;
 	break;
       }
     case ElementType::_SCREEN:
       {
-	std::cout << "angle=" << angle <<"rad" << std::endl;
+	std::cout << "angle= " << angle <<"rad" << std::endl;
 	break;
       }
     case ElementType::_TRANSFORM3D:
       {
-	std::cout << "xdir= "  << xdir    << "m" << std::endl
-		  << "ydir= "  << ydir    << "m" << std::endl
-		  << "zdir= "  << zdir    << "m" << std::endl
-		  << "phi= "   << phi   << "rad" << std::endl
+	std::cout << "xdir=  " << xdir  << "m" << std::endl
+		  << "ydir=  " << ydir  << "m" << std::endl
+		  << "zdir=  " << zdir  << "m" << std::endl
+		  << "phi=   " << phi   << "rad" << std::endl
 		  << "theta= " << theta << "rad" << std::endl
-		  << "psi= "   << psi   << "rad" << std::endl;
+		  << "psi=   " << psi   << "rad" << std::endl;
+	break;
+      }
+    default:
+      {break;}
+    }
+
+  switch (type)
+    {
+    case ElementType::_RBEND:
+    case ElementType::_SBEND:
+    case ElementType::_QUAD:
+    case ElementType::_SEXTUPOLE:
+    case ElementType::_OCTUPOLE:
+    case ElementType::_DECAPOLE:
+    case ElementType::_SOLENOID:
+    case ElementType::_MULT:
+    case ElementType::_THINMULT:
+    case ElementType::_AWAKESPECTROMETER:
+    case ElementType::_MUONSPOILER:
+    case ElementType::_HKICKER:
+    case ElementType::_VKICKER:
+    case ElementType::_KICKER:
+    case ElementType::_TKICKER:
+    case ElementType::_UNDULATOR:
+    case ElementType::_RF:
+      {
+        std::cout << "scaling = " << scaling << std::endl;
+        if (scalingFieldOuter != 1)
+          {std::cout << "scalingFieldOuter = " << scalingFieldOuter << std::endl;}
 	break;
       }
     case ElementType::_MUONCOOLER:
@@ -403,10 +432,8 @@ void Element::print(int ident) const
       {break;}
     }
   
-  if (lst != nullptr)
-    {
-      ::print(*lst,++ident);
-    }
+  if (lst)
+    {::print(*lst,++ident);}
 }
 
 void Element::flush()
@@ -417,6 +444,7 @@ void Element::flush()
   userParameters = "";
   l = 0;
   scaling = 1;
+  scalingFieldOuter = 1;
   ks = 0;
   k1 = 0;
   k2 = 0;
@@ -591,6 +619,7 @@ void Element::flush()
   coolingDefinition = "";
   
   angleSet = false;
+  scalingFieldOuterSet = false;
 
   lst = nullptr;
 }
@@ -609,7 +638,7 @@ double Element::property_lookup(std::string property_name) const
   return value;
 }
 
-void Element::set(const Parameters& params,std::string nameIn, ElementType typeIn)
+void Element::set(const Parameters& params, std::string nameIn, ElementType typeIn)
 {
   // common parameters for all elements
   type = typeIn;
@@ -619,6 +648,8 @@ void Element::set(const Parameters& params,std::string nameIn, ElementType typeI
 
   if (params.setMap.at("angle"))
     {angleSet = true;}
+  else if (params.setMap.at("scalingFieldOuter"))
+    {scalingFieldOuterSet = true;}
 }
 
 void Element::set(const Parameters& params)
