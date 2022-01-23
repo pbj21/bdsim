@@ -31,3 +31,5 @@ extracool:  coolingchannel, surroundMaterial="G4_Galactic",
 			    rfCavityMaterial = {"G4_Cu"},
 			    rfCavityRadius = {35*cm},
 			    trfCavityThickness = {5*mm};
+
+print, extracool;

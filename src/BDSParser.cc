@@ -119,7 +119,7 @@ const GMAD::CoolingChannel* BDSParser::GetCoolingChannel(const std::string& obje
     }
   else
     {
-      if (coolingChannelObjectMap->size() != coolingchannel_list.size())
+      if ((int)coolingChannelObjectMap->size() != coolingchannel_list.size())
 	{
 	  coolingChannelObjectMap->clear();
 	  for (auto& cco: coolingchannel_list)

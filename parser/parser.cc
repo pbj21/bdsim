@@ -840,6 +840,9 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   auto searchCrystal = std::find_if(crystal_list.begin(), crystal_list.end(), [&on](const Crystal& obj) {return obj.name == on;});
   if (searchCrystal != crystal_list.end())
     {searchCrystal->print(); return true;}
+  auto searchCoolingChannel = std::find_if(coolingchannel_list.begin(), coolingchannel_list.end(), [&on](const CoolingChannel& obj) {return obj.name == on;});
+  if (searchCoolingChannel != coolingchannel_list.end())
+    {searchCoolingChannel->print(); return true;}
   auto searchField = std::find_if(field_list.begin(), field_list.end(), [&on](const Field& obj) {return obj.name == on;});
   if (searchField != field_list.end())
     {searchField->print(); return true;}

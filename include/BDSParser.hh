@@ -106,7 +106,7 @@ public:
   inline std::vector<GMAD::Crystal> GetCrystals() const {return crystal_list.getVector();}
 
   /// Return coolingchannel model list.
-  inline const std::vector<GMAD::CoolingChannel>& GetCoolingChannels() const {return coolingchannel_list;}
+  inline std::vector<GMAD::CoolingChannel> GetCoolingChannels() const {return coolingchannel_list.getVector();}
   
   /// Return a cooling channel object by name. Returns nullptr if doesn't exist.
   /// Uses a map of names to objects that is cached for resuse. If doesn't exist or

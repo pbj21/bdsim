@@ -304,7 +304,7 @@ decl : VARIABLE ':' component_with_params
        if(execute) {
 	 if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : coolingchannel" << std::endl;
              Parser::Instance()->SetValue<CoolingChannel>("name", *($1));
-             Parser::Instance()->Add<CoolingChannel>();
+             Parser::Instance()->Add<CoolingChannel>(true, "coolingchannel");
          }
      }
      | VARIABLE ':' field
@@ -917,7 +917,7 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
           if(execute)
             {
               if(ECHO_GRAMMAR) std::cout << "command -> COOLINGCHANNEL" << std::endl;
-              Parser::Instance()->Add<CoolingChannel>();
+              Parser::Instance()->Add<CoolingChannel>(true, "coolingchannel");
             }
         }
         | FIELD ',' field_options // field
