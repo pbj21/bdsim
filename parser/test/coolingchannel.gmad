@@ -1,4 +1,4 @@
-extracool:  coolingchannel, surroundMaterial="G4_Galactic",
+extracool:  coolingchannel, surroundingMaterial="G4_Galactic",
 	    		    nCoils=4,
 	    		    coilInnerRadius = {0.1, 0.2, 0.3, 0.4},
 			    coilRadialThickness = {0.08, 0.08, 0.08, 0.12},
@@ -30,6 +30,6 @@ extracool:  coolingchannel, surroundMaterial="G4_Galactic",
 			    rfWindowRadius = {10*cm},
 			    rfCavityMaterial = {"G4_Cu"},
 			    rfCavityRadius = {35*cm},
-			    trfCavityThickness = {5*mm};
+			    rfCavityThickness = {5*mm};
 
 print, extracool;
