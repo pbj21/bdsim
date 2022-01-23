@@ -59,3 +59,6 @@ Change Of Year or Licence
 1. Update LICENCE.txt in bdsim root directory.
 2. From BDSIM root directory, :code:`source utils/updatelicence.sh`
 3. Manually update year in `manual/source/conf.py.in`
+4. Reset :code:`BDSEmStandardPhysicsOp4Channelling.hh` and :code:`BDSEmStandardPhysicsOp4Channelling.cc`.
+
+Then it should be safe to commit the hundreds of file changes in one.
