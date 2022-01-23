@@ -1,0 +1,5 @@
+q1: query, nx=100, ny=100;
+print, q1;
+! extend and change properties
+q1: nx=5, ny=5;
+print, q1;

@@ -27,7 +27,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Types.hh"
 #include "G4UIcommand.hh"
 #include "G4UIparameter.hh"
+#include "G4Version.hh"
 #include "G4VisManager.hh"
+
+#if G4VERSION_NUMBER < 1060
+#include "G4UImanager.hh"
+#include "G4VSceneHandler.hh"
+#endif
 
 #include <vector>
 
@@ -67,7 +73,7 @@ void BDSVisCommandSceneAddQueryMagneticField::SetNewValue(G4UIcommand*, G4String
     }
   if (newValue.empty())
     {G4cerr << "No query name specified." << G4endl; return;}
-  std::vector<G4String> queryNames = BDS::GetWordsFromString(newValue);
+  std::vector<G4String> queryNames = BDS::SplitOnWhiteSpace(newValue);
   
   std::vector<BDSFieldQueryInfo*> queries;
   
@@ -102,7 +108,25 @@ void BDSVisCommandSceneAddQueryMagneticField::SetNewValue(G4UIcommand*, G4String
   if (successful && verbosity >= G4VisManager::confirmations)
     {G4cout << "Magnetic field, if any, will be drawn in scene \"" << scene->GetName() << "\"" << G4endl;}
   else
-    {G4VisCommandsSceneAddUnsuccessful(verbosity);}
+    {
+      if (!successful && verbosity >= G4VisManager::warnings)
+        {G4cerr << "WARNING: not possible to add to the scene" << G4endl;}
+    }
 
   CheckSceneAndNotifyHandlers(scene);
 }
+
+#if G4VERSION_NUMBER < 1060
+void BDSVisCommandSceneAddQueryMagneticField::CheckSceneAndNotifyHandlers(G4Scene* scene)
+{
+  if (!scene)
+    {return;}
+  
+  G4VSceneHandler* sceneHandler = fpVisManager->GetCurrentSceneHandler();
+  if (!sceneHandler)
+    {return;}
+  
+  if (scene == sceneHandler->GetScene())
+    {G4UImanager::GetUIpointer()->ApplyCommand("/vis/scene/notifyHandlers");}
+}
+#endif

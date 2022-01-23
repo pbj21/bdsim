@@ -21,9 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSInterpolator3DLinearMag.hh"
 #include "BDSInterpolatorRoutines.hh"
 
-#include "globals.hh"
-
-#include <cmath>
+#include "G4Types.hh"
 
 BDSInterpolator3DLinearMag::BDSInterpolator3DLinearMag(BDSArray3DCoords* arrayIn):
   BDSInterpolator3D(arrayIn)
@@ -36,26 +34,8 @@ BDSFieldValue BDSInterpolator3DLinearMag::GetInterpolatedValueT(G4double x,
 								G4double y,
 								G4double z) const
 {
-  G4double xarr = array->ArrayCoordsFromX(x);
-  G4double yarr = array->ArrayCoordsFromY(y);
-  G4double zarr = array->ArrayCoordsFromZ(z);
-  
-  G4double x0 = std::floor(xarr);
-  G4double y0 = std::floor(yarr);
-  G4double z0 = std::floor(zarr);
-
   BDSFieldValue localData[2][2][2];
-
-  for (int i = 0; i < 2; i++)
-    {
-      for (int j = 0; j < 2; j++)
-	{
-	  for (int k = 0; k < 2; k++)
-	    {localData[i][j][k] = array->GetConst((G4int)x0+i, (G4int)y0+j, (G4int)z0+k);}
-	}
-    }
-
-  BDSFieldValue result = BDS::Linear3DMag(localData, xarr-x0, yarr-y0, zarr-z0);
-
-  return result;
+  G4double xFrac, yFrac, zFrac;
+  array->ExtractSection2x2x2(x, y, z, localData, xFrac, yFrac, zFrac);
+  return BDS::Linear3DMag(localData, xFrac, yFrac, zFrac);
 }

@@ -34,6 +34,7 @@ G4double BDSFieldMagDipoleOuter::transitionLengthScale = 1*CLHEP::cm;
 BDSFieldMagDipoleOuter::BDSFieldMagDipoleOuter(const BDSMagnetStrength* strength,
 					       const G4double&          poleTipRadiusIn,
                                                G4double           arbitraryScaling):
+  spatialLimit(0.05*poleTipRadiusIn),
   poleTipRadius(poleTipRadiusIn),
   normalisation(1),
   maxField(0),
@@ -69,7 +70,7 @@ G4ThreeVector BDSFieldMagDipoleOuter::GetField(const G4ThreeVector& position,
     {return G4ThreeVector();} // 0,0,0
   G4double rmag = position.mag();
 
-  if (rmag < 1) // closer than 1mm from dipole
+  if (rmag < spatialLimit) // too close to current source
     {return localField;}
 
   // calculate the field according to a magnetic dipole m at position r.

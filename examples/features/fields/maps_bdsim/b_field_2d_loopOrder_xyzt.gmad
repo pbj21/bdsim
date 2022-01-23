@@ -1,0 +1,13 @@
+f1: field, type="bmap2d", magneticFile="bdsim2d:2dexample_loopOrder_for_xz.dat", magneticInterpolator="nearest";
+
+d1: drift, l=60*cm, fieldAll="f1";
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-", kineticEnergy=3*GeV;
+
+q1: query, nx=3, xmin=-1*cm, xmax=1*cm,
+    	   nz=2, zmin=3*cm,  zmax=4*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_2d_loopOrder_xz_xyzt.dat",
+	   referenceElement="d1";

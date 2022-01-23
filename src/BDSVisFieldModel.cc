@@ -32,7 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <array>
 #include <cmath>
 #include <limits>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -82,7 +82,10 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      G4ThreeVector midPoint(xyzBE[0], xyzBE[1], xyzBE[2]);
 	      G4ThreeVector startPoint = midPoint - 0.5*arrowLength*unitB;
 	      G4ThreeVector endPoint = midPoint + 0.5*arrowLength*unitB;
-	      G4Colour arrowColour = bFieldColour.GetValue(bMag / maxFieldB);
+	      G4double normalisedValue = bMag / maxFieldB;
+	      if (!std::isfinite(normalisedValue))
+		{normalisedValue = 0.0;}
+	      G4Colour arrowColour = bFieldColour.GetValue(normalisedValue);
 	      char buf[100];
 	      sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
 	      std::string arrowName = buf;
@@ -107,7 +110,10 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      G4ThreeVector midPoint(xyzBE[0], xyzBE[1], xyzBE[2]);
 	      G4ThreeVector startPoint = midPoint - 0.5*arrowLength*unitE;
 	      G4ThreeVector endPoint = midPoint + 0.5*arrowLength*unitE;
-	      G4Colour arrowColour = eFieldColour.GetValue(eMag / maxFieldE);
+	      G4double normalisedValue = eMag / maxFieldE;
+	      if (!std::isfinite(normalisedValue))
+		{normalisedValue = 0.0;}
+	      G4Colour arrowColour = eFieldColour.GetValue(normalisedValue);
 	      char buf[100];
 	      sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
 	      std::string arrowName = buf;

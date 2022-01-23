@@ -21,8 +21,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <cmath>
 #include <ostream>
 #include <limits>
+#include <set>
+#include <vector>
 
 BDSArray1DCoords::BDSArray1DCoords(G4int            nXIn,
 				   G4double         xMinIn,
@@ -32,7 +35,50 @@ BDSArray1DCoords::BDSArray1DCoords(G4int            nXIn,
 		   xMinIn,xMaxIn,
 		   0,   1,
 		   dimensionIn)
-{;}
+{
+  std::set<BDSDimensionType> allDims = {BDSDimensionType::x,
+                                        BDSDimensionType::y,
+                                        BDSDimensionType::z,
+                                        BDSDimensionType::t};
+  allDims.erase(dimensionIn);
+  BDSDimensionType* vars[3] = {&yDimension,
+                               &zDimension,
+                               &tDimension};
+  std::vector<BDSDimensionType> unusedDims(allDims.begin(), allDims.end());
+  for (G4int i = 0; i < 3; i++)
+    {*(vars[i]) = unusedDims[i];}
+  BuildDimensionIndex();
+}
+
+void BDSArray1DCoords::ExtractSection2(G4double x,
+                                       BDSFieldValue (&localData)[2],
+                                       G4double& xFrac) const
+{
+  G4double xArrayCoords = ArrayCoordsFromX(x);
+  auto x1 = (G4int)std::floor(xArrayCoords);
+  xFrac = xArrayCoords - x1;
+  for (G4int i = 0; i < 2; i++)
+    {localData[i] = GetConst(x1+i);}
+}
+
+void BDSArray1DCoords::ExtractSection4(G4double x,
+                                       BDSFieldValue (&localData)[4],
+                                       G4double& xFrac) const
+{
+  G4double xArrayCoords = ArrayCoordsFromX(x);
+  auto x1 = (G4int)std::floor(xArrayCoords);
+  xFrac = xArrayCoords - x1;
+  for (G4int i = 0; i < 4; i++)
+    {localData[i] = GetConst(x1-1+i);}
+}
+
+BDSFieldValue BDSArray1DCoords::ExtractNearest(G4double x,
+                                               G4double /*y*/,
+                                               G4double /*z*/,
+                                               G4double /*t*/) const
+{
+  return GetConst(NearestX(x));
+}
 
 std::ostream& operator<< (std::ostream& out, BDSArray1DCoords const &a)
 {

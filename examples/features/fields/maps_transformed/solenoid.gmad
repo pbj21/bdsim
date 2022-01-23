@@ -1,0 +1,35 @@
+s1: solenoid, l=0.6*m, B=2*T, horizontalWidth=40*cm;
+l1: line=(s1);
+use, l1;
+
+beam, particle="electron", kineticEnergy=1*GeV;
+
+option, outputFormat="none";
+
+
+q1: query, nx=4, xmin=-20*cm, xmax=20*cm,
+    	   ny=1, ymin=0*cm, ymax=20*cm,
+	   nz=3, zmin=-20*cm, zmax=20*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_solenoidsheet_field.dat",
+	   referenceElement="s1";
+
+
+q2: query, nx=21, xmin=-20*cm, xmax=20*cm,
+    	   ny=1,  ymin=0*cm,   ymax=20*cm,
+	   nz=11, zmin=-30*cm, zmax=30*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_solenoidsheet_field_many.dat",
+	   referenceElement="s1";
+
+q3: query, nx = 301, xmin=-20*cm, xmax=20*cm,
+    	   queryMagneticField=1,
+	   outfileMagnetic="out_solenoidsheet_field_xscan.dat",
+	   referenceElement="s1";
+
+q4: query, nx=21, xmin=-20*cm, xmax=20*cm,
+    	   ny=5,  ymin=0*cm,    ymax=20*cm,
+	   nz=11, zmin=-30*cm, zmax=0*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="bmap_xyz_solenoid_front_upper_half.dat",
+	   referenceElement="s1";

@@ -35,11 +35,11 @@ void Query::clear()
   nz   = 1;
   nt   = 1;
   xmin = 0;
-  xmax = 1;
+  xmax = 0;
   ymin = 0;
-  ymax = 1;
+  ymax = 0;
   zmin = 0;
-  zmax = 1;
+  zmax = 0;
   tmin = 0;
   tmax = 0;
   outfileMagnetic = "";
@@ -48,7 +48,7 @@ void Query::clear()
   queryMagneticField = true;
   queryElectricField = false;
   
-  overwriteExistingFiles = false;
+  overwriteExistingFiles = true;
   printTransform = true;
 
   pointsFile = "";
@@ -67,6 +67,8 @@ void Query::clear()
   axisZ = 0;
   angle = 0;
   axisAngle = false;
+  
+  checkParameters = true;
 }
 
 void Query::PublishMembers()
@@ -110,6 +112,8 @@ void Query::PublishMembers()
   publish("axisZ",         &Query::axisZ);
   publish("angle",         &Query::angle);
   publish("axisAngle",     &Query::axisAngle);
+  
+  publish("checkParameters", &Query::checkParameters);
 }
 
 void Query::print()const

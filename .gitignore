@@ -10,6 +10,8 @@
 *.txt
 *.bak
 *.root
+interp_out*
+raw_interp_out*
 *out_*
 
 # Temporary editor files #

@@ -119,6 +119,7 @@ include(comparator_test_macros)
 include(interpolator_test_macros)
 include(rebdsim_test_macros)
 include(root_test_macros)
+include(gmad_test_macros)
 
 # rpath for libraries to work from installation correctly
 set(CMAKE_BUILD_RPATH   "${ROOT_LIBRARY_DIR}")

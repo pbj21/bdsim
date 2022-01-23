@@ -21,6 +21,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSColourScale.hh"
 
+#include "G4Types.hh"
+
+#include <array>
+#include <vector>
+
 /**
  * @brief Colour scale based on magma colour map.
  * 
@@ -52,8 +57,7 @@ public:
 private:
 
   static std::vector<std::array<G4double,3>> data;
-
-  G4int dataSize;
+  
   G4double dataStep;
 };
 

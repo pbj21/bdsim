@@ -588,7 +588,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
         {throw BDSException(__METHOD_NAME__, "conflicting options - world material option specified but material will be taken from world GDML file");}
       G4bool ac = BDSGlobalConstants::Instance()->AutoColourWorldGeometryFile();
       
-      std::vector<G4String> namedWorldVacuumVolumes = BDS::GetWordsFromString(BDSGlobalConstants::Instance()->WorldVacuumVolumeNames());
+      std::vector<G4String> namedWorldVacuumVolumes = BDS::SplitOnWhiteSpace(BDSGlobalConstants::Instance()->WorldVacuumVolumeNames());
       
       BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(worldName,
 										worldGeometryFile,
@@ -1113,7 +1113,7 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       G4String biasNamesS = blm->Bias();
       if (biasNamesS.empty())
         {continue;}
-      auto biasNamesV = BDS::GetWordsFromString(biasNamesS);
+      auto biasNamesV = BDS::SplitOnWhiteSpace(biasNamesS);
       std::list<std::string> biasNames = {biasNamesV.begin(), biasNamesV.end()};
       std::list<std::string> emptyDefaultBias;
       auto biasForBLM = BuildCrossSectionBias(biasNames, emptyDefaultBias, blm->GetName());
@@ -1124,19 +1124,19 @@ void BDSDetectorConstruction::BuildPhysicsBias()
 
   auto g = BDSGlobalConstants::Instance();
   G4String defaultBiasVacuum      = BDSParser::Instance()->GetOptions().defaultBiasVacuum;
-  auto defaultBiasVacuumVector    = BDS::GetWordsFromString(defaultBiasVacuum);
+  auto defaultBiasVacuumVector    = BDS::SplitOnWhiteSpace(defaultBiasVacuum);
   auto defaultBiasVacuumList      = std::list<std::string>(defaultBiasVacuumVector.begin(), defaultBiasVacuumVector.end());
   G4String defaultBiasMaterial    = BDSParser::Instance()->GetOptions().defaultBiasMaterial;
-  auto defaultBiasMaterialVector  = BDS::GetWordsFromString(defaultBiasMaterial);
+  auto defaultBiasMaterialVector  = BDS::SplitOnWhiteSpace(defaultBiasMaterial);
   auto defaultBiasMaterialList    = std::list<std::string>(defaultBiasMaterialVector.begin(), defaultBiasMaterialVector.end());
   G4String biasForWorldVolume     = g->BiasForWorldVolume();
-  auto biasForWorldVolumeVector   = BDS::GetWordsFromString(biasForWorldVolume);
+  auto biasForWorldVolumeVector   = BDS::SplitOnWhiteSpace(biasForWorldVolume);
   auto biasForWorldVolumeList     = std::list<std::string>(biasForWorldVolumeVector.begin(), biasForWorldVolumeVector.end());
   G4String biasForWorldContents   = g->BiasForWorldContents();
-  auto biasForWorldContentsVector = BDS::GetWordsFromString(biasForWorldContents);
+  auto biasForWorldContentsVector = BDS::SplitOnWhiteSpace(biasForWorldContents);
   auto biasForWorldContentsList   = std::list<std::string>(biasForWorldContentsVector.begin(), biasForWorldContentsVector.end());
   G4String biasForWorldVacuum     = g->BiasForWorldVacuum();
-  auto biasForWorldVacuumVector   = BDS::GetWordsFromString(biasForWorldVacuum);
+  auto biasForWorldVacuumVector   = BDS::SplitOnWhiteSpace(biasForWorldVacuum);
   auto biasForWorldVacuumList     = std::list<std::string>(biasForWorldVacuumVector.begin(), biasForWorldVacuumVector.end());
   
   G4bool useDefaultBiasVacuum    = !defaultBiasVacuum.empty();
@@ -1305,7 +1305,7 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
       std::vector<G4double> meshPrimitiveScorerUnits;
       std::vector<G4String> scorerNames;
 
-      std::vector<G4String> words = BDS::GetWordsFromString(mesh.scoreQuantity);
+      std::vector<G4String> words = BDS::SplitOnWhiteSpace(mesh.scoreQuantity);
       for (const auto& word : words)
 	{
 	  auto search = scorerRecipes.find(word);
@@ -1366,7 +1366,8 @@ std::vector<BDSFieldQueryInfo*> BDSDetectorConstruction::PrepareFieldQueries(con
 						    points,
 						    columnNames,
 						    G4bool(def.overwriteExistingFiles),
-						    G4String(def.fieldObject)));
+						    G4String(def.fieldObject),
+						    def.checkParameters));
 	}
       else
 	{
@@ -1387,7 +1388,8 @@ std::vector<BDSFieldQueryInfo*> BDSDetectorConstruction::PrepareFieldQueries(con
 						    globalTransform,
 						    G4bool(def.overwriteExistingFiles),
 						    G4String(def.fieldObject),
-                G4bool(def.printTransform)));
+						    G4bool(def.printTransform),
+						    def.checkParameters));
 	}
     }
   return result;

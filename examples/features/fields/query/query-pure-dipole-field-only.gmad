@@ -1,0 +1,7 @@
+f1: field, type="dipole", fieldParameters="field=1.2 by=1.0";
+
+q1: query, fieldObject="f1",
+	   nx=5, xmin=-10*cm, xmax=10*cm,
+    	   ny=5, ymin=-10*cm, ymax=10*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_query_pure_dipole.dat";

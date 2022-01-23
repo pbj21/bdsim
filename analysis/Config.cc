@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "SpectraParticles.hh"
 
 #include <algorithm>
+#include <cctype>  // for isspace
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -284,6 +285,11 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
     {throw RBDSException("Too few columns in histogram definition.");}
   if (results.size() > 7)
     {throw RBDSException("Too many columns in histogram definition.");}
+  
+  std::string histName  = results[2];
+  bool duplicateName = RegisterHistogramName(histName);
+  if (duplicateName)
+    {throw RBDSException("Duplicate histogram name \"" + histName + "\" - histograms must have unique names.");}
 
   bool xLog = false;
   bool yLog = false;
@@ -304,7 +310,6 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
       optionsBool["perentry"+treeNameWithoutPoint] = true;
     }
   
-  std::string histName  = results[2];
   std::string bins      = results[3];
   std::string binning   = results[4];
   std::string variable  = results[5];
@@ -771,4 +776,16 @@ void Config::ParseSetting(const std::string& line)
     }
   else
     {throw RBDSException("Invalid option line \"" + line + "\"");}
+}
+
+bool Config::RegisterHistogramName(const std::string& newHistName)
+{
+  bool existsAlready = histogramNames.count(newHistName) > 0;
+  if (existsAlready)
+    {return true;}
+  else
+    {
+      histogramNames.insert(newHistName);
+      return false;
+    }
 }

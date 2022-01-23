@@ -16,13 +16,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSFieldQueryInfo.hh"
 #include "BDSFieldQueryRaw.hh"
+#include "BDSWarning.hh"
 
 #include "G4Field.hh"
+#include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
 
-BDSFieldQueryRaw::BDSFieldQueryRaw()
+BDSFieldQueryRaw::BDSFieldQueryRaw():
+  field(nullptr)
 {;}
 
 BDSFieldQueryRaw::~BDSFieldQueryRaw()
@@ -46,4 +50,14 @@ void BDSFieldQueryRaw::GetFieldValue(const G4ThreeVector& globalXYZ,
     {return;}
   G4double position[4] = {globalXYZ.x(), globalXYZ.y(),globalXYZ.z(), tGlobal};
   field->GetFieldValue(position, fieldValue);
+}
+
+void BDSFieldQueryRaw::CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const
+{
+  if (query->fieldObject.empty())
+  {
+    G4String msg = "\"fieldObject\" variable is empty in query definition \"" + query->name;
+    msg += "\" - it must have a value";
+    BDS::Warning(msg);
+  }
 }

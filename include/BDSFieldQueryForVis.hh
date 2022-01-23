@@ -53,6 +53,16 @@ public:
   /// Calculate magnitude of 3-vector without having to construct one
   static G4double SimpleMag(G4double x, G4double y, G4double z);
   
+  /// @{ Replace with empty implementation so no file handling is done for visualisation
+  virtual void OpenFiles(const BDSFieldQueryInfo*){;}
+  virtual void WriteHeader(std::ofstream&, const BDSFieldQueryInfo*) const {;}
+  virtual void CloseFiles() {;}
+  virtual void WriteFieldValue(const G4ThreeVector&,
+                               G4double,
+                               const G4double[6]) {;}
+  virtual void PrintBAndEInfo(const BDSFieldQueryInfo*) const {;}
+  /// @}
+  
 protected:
   /// Call base class method but make a copy of the global position and fields in this class.
   virtual void GetFieldValue(const G4ThreeVector& globalXYZ,

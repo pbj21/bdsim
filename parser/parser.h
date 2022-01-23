@@ -124,13 +124,15 @@ namespace GMAD
     /// insert a sampler into beamline_list
     void add_sampler(const std::string& name, int count, ElementType type, std::string samplerType, std::list<int>* samplerPartIDListIn = nullptr);
     /// Insert global object of parser class C in Container class
-    template <class C, class Container=std::vector<C>>
+    template <class C, class Container=FastList<C>>
     void Add();
+    template <class C, class Container=FastList<C>>
+    void Add(bool unique, const std::string& className);
     /// Get global object of parser class C
     template <class C>
     C& GetGlobal();
     /// Get list for parser class C
-    template <class C, class Container=std::vector<C>>
+    template <class C, class Container=FastList<C>>
     Container& GetList();
   
     const std::set<std::set<int>>& GetSamplerFilters() const {return samplerFilters;}
@@ -140,7 +142,7 @@ namespace GMAD
     Element& find_element(const std::string& element_name);
     /// find element (const) 
     const Element& find_element(const std::string& element_name) const;
-    /// find element by pointer - nullptr if not found - searches elemnet_list
+    /// find element by pointer - nullptr if not found - searches element_list
     const Element* find_element_safe(const std::string& element_name) const;
     /// search placement_element
     const Element* find_placement_element_safe(const std::string& element_name) const;
@@ -224,34 +226,34 @@ namespace GMAD
     /// Beamline
     FastList<Element>   beamline_list;
     /// List of parser defined atoms
-    std::vector<Atom>   atom_list;
-    std::vector<NewColour> colour_list; ///< List of parser defined colours.
-    std::vector<Crystal> crystal_list;  ///< List of parser defined crystals.
-    std::vector<CoolingChannel> coolingchannel_list;
+    FastList<Atom>   atom_list;
+    FastList<NewColour> colour_list; ///< List of parser defined colours.
+    FastList<Crystal> crystal_list;  ///< List of parser defined crystals.
+    FastList<CoolingChannel> coolingchannel_list;
     /// List of parser defined fields
-    std::vector<Field>  field_list;
+    FastList<Field>  field_list;
     /// List of parser defined materials
-    std::vector<Material> material_list;
+    FastList<Material> material_list;
     /// List of parser defined query objects
-    std::vector<Query> query_list;
+    FastList<Query> query_list;
     /// List of parser defined regions
-    std::vector<Region> region_list;
+    FastList<Region> region_list;
     /// List of parser defined tunnels
-    std::vector<Tunnel> tunnel_list;
+    FastList<Tunnel> tunnel_list;
     /// List of parser defined cross section biasing objects
     FastList<PhysicsBiasing> xsecbias_list;
     /// List of parser defined placements.
-    std::vector<Placement> placement_list;
+    FastList<Placement> placement_list;
     /// List of parser defined rf cavity models
-    std::vector<CavityModel> cavitymodel_list;
+    FastList<CavityModel> cavitymodel_list;
     /// List of parser defined sampler placements.
-    std::vector<SamplerPlacement> samplerplacement_list;
-    std::vector<Scorer> scorer_list;
-    std::vector<ScorerMesh> scorermesh_list;
+    FastList<SamplerPlacement> samplerplacement_list;
+    FastList<Scorer> scorer_list;
+    FastList<ScorerMesh> scorermesh_list;
     /// List of parser defined apertures.
-    std::vector<Aperture> aperture_list;
+    FastList<Aperture> aperture_list;
     /// List of parser defined blms.
-    std::vector<BLMPlacement> blm_list;
+    FastList<BLMPlacement> blm_list;
 
   private:
     // *****************

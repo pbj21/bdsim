@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSVISCOMMANDSCENEADDQUERYMAGNETICFIELD_H
 
 #include "G4String.hh"
+#include "G4Version.hh"
 #include "G4VisCommandsScene.hh"
 
 class BDSDetectorConstruction;
@@ -43,6 +44,11 @@ public:
 private:
   const BDSDetectorConstruction* realWorld;
   G4UIcommand* command;
+
+#if G4VERSION_NUMBER < 1060
+  /// Simplified copy of G4VVisCommands::CheckSceneAndNotifyHandlers from G4 V6 and upwards.
+  void CheckSceneAndNotifyHandlers(G4Scene* scene);
+#endif
 };
 
 #endif

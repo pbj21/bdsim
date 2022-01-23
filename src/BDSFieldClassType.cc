@@ -42,6 +42,7 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
     case BDSFieldType::bmap4d:
     case BDSFieldType::mokka:
     case BDSFieldType::solenoid:
+    case BDSFieldType::solenoidsheet:
     case BDSFieldType::dipole:
     case BDSFieldType::dipole3d:
     case BDSFieldType::quadrupole:

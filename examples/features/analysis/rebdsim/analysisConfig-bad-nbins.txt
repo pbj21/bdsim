@@ -1,5 +1,5 @@
 InputFilePath					../../data/sample1.root
 OutputFileName					./ana_bad_z.root
 # Object    treeName  Histogram Name   # Bins  Binning                  Variable                      Selection
-Histogram3D Event     Primarxyz        {100}   {-0.5:0.5,-0.5:0.5,0:0}  Primary.x:Primary.y:Primary.x 1
-# binning is same number, ie minus sign missing from first number - we should complain
+Histogram3D Event     Primarxyz        {100}   {-0.5:0.5,-0.5:0.5,0:0}  Primary.x:Primary.y:Primary.z 1
+# only 1 number of bins, whereas should be 3

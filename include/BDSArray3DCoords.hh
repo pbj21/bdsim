@@ -20,7 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSARRAY3DCOORDS_H
 
 #include "BDSArray4DCoords.hh"
-#include "BDSDimensionType.hh"
 
 #include "G4Types.hh"
 
@@ -50,25 +49,33 @@ public:
 		   BDSDimensionType yDimensionIn = BDSDimensionType::y,
 		   BDSDimensionType zDimensionIn = BDSDimensionType::z);
   virtual ~BDSArray3DCoords(){;}
+  
+  /// Extract 2x2x2 points lying around coordinate x.
+  virtual void ExtractSection2x2x2(G4double x,
+                                   G4double y,
+                                   G4double z,
+                                   BDSFieldValue (&localData)[2][2][2],
+                                   G4double& xFrac,
+                                   G4double& yFrac,
+                                   G4double& zFrac) const;
+  
+  /// Extract 4x4x4 points lying around coordinate x.
+  virtual void ExtractSection4x4x4(G4double x,
+                                   G4double y,
+                                   G4double z,
+                                   BDSFieldValue (&localData)[4][4][4],
+                                   G4double& xFrac,
+                                   G4double& yFrac,
+                                   G4double& zFrac) const;
+  
+  /// Extract nearest field value from array. t ignored but required for overload.
+  virtual BDSFieldValue ExtractNearest(G4double x,
+                                       G4double y = 0,
+                                       G4double z = 0,
+                                       G4double t = 0) const;
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray3DCoords const &a);
-
-  /// Accessor for dimension that the data represents (first).
-  inline BDSDimensionType FirstDimension() const {return xDimension;}
-
-  /// Accessor for dimension that the data represents (second).
-  inline BDSDimensionType SecondDimension() const {return yDimension;}
-
-  /// Accessor for dimension that the data represents (second).
-  inline BDSDimensionType ThirdDimension() const {return zDimension;}
-
-private:
-  /// Which dimension the contained data represents spatially. Always referred to
-  /// locally as 'x' but may represent another dimension.
-  BDSDimensionType xDimension;
-  BDSDimensionType yDimension;
-  BDSDimensionType zDimension;
 };
 
 #endif

@@ -10,6 +10,10 @@ simple_fail(field-map-invalid-step            "--file=1d_cubic-bad.gamd")
 simple_fail(interpolator-dimension-mismatch-b "--file=interpolator_dimension_mimatch_b.gmad")
 simple_fail(interpolator-dimension-mismatch-e "--file=interpolator_dimension_mimatch_e.gmad")
 
+# field map loop order
+simple_testing(field-map-b-2d-loopOrder_xyzt   "--file=b_field_2d_loopOrder_xyzt.gmad --output=none" "")
+simple_testing(field-map-b-2d-loopOrder_tzyx   "--file=b_field_2d_loopOrder_tzyx.gmad --output=none" "")
+
 #interpolator tests
 interpolator_test("interpolator-1d-nearest"    "1d_nearest.gmad")
 interpolator_test("interpolator-1d-linear"     "1d_linear.gmad")

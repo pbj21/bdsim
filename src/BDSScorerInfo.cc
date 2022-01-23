@@ -86,10 +86,10 @@ BDSScorerInfo::BDSScorerInfo(const GMAD::Scorer& scorer,
       CheckParticle(particle, scorer.name);
     }
 
-  for (const auto& mi : BDS::GetWordsFromString(scorer.materialToInclude))
+  for (const auto& mi : BDS::SplitOnWhiteSpace(scorer.materialToInclude))
     {materialsToInclude.push_back(BDSMaterials::Instance()->GetMaterial(mi));}
 
-  for (const auto& me : BDS::GetWordsFromString(scorer.materialToExclude))
+  for (const auto& me : BDS::SplitOnWhiteSpace(scorer.materialToExclude))
     {materialsToExclude.push_back(BDSMaterials::Instance()->GetMaterial(me));} 
 }
 

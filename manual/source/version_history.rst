@@ -13,32 +13,39 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Multiple beam line tracking.
 * Use sampler data from a BDSIM output file as input to another BDSIM simulation.
 
-V1.7.0 - 2021 / XX / XX
+V1.7.0 - 2022 / XX / XX
 =======================
 
+* The input parser will now reject any duplicate object names (e.g. a field with the same name),
+  whereas it didn't before. In the past, multiple objects would be created ignoring their name.
+  However, after the input is loaded, BDSIM itself may look through the objects for one matching
+  a name. In this case, the one it finds may be ambiguous or unexpected. The code was revised to
+  purposively protect against this. This was always the case with beam line elements, but now it
+  is also the case with all objects defined in the parser.
 * GGMAD Geometry format is now deprecated. This was not maintained for a long time and with
   pyg4ometry and GDML we support much better geometry. The code is old and hard to maintain
   and really needs to be rewritten. The functionality was broken in making BDSIM compatible
   with all the changes to string handling in Geant4 V11.
 * New executable options :code:`--reference` and :code:`--citation` to display the citation
-  in bibtex to cite BDSIM easily.
+  in Bibtex syntax to cite BDSIM easily.
 * The default yoke fields have changed and are on average stronger (and more correct). See below.
 
 New Features
 ------------
 
+* New ability to use any "pure" field (i.e. one from equations inside BDSIM) as a field
+  and attach it to placements, or beam line geometry, as well as query it to generate
+  an external field map.
 * New ability to query a 3D model for the field and export a field map.
 * New program bdsinterpolator to interpolate a field map and export it without
   any handling by Geant4.
 * New field drawing facility in the visualiser to draw query objects.
+* Field map reflections have been introduced allowing symmetry to be exploited.
+  See :ref:`fields-transforms`.
 * Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
   to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
   This also applies to sampler placements.
-* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
-  instructions on how to run Docker. This is a container system where a complete
-  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
-  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
-  XWindows server is required for the visualiser. See :ref:`docker-build`.
+* Solenoid sheet / cylinder field has been added and is used by default on the solenoid yoke geometry.
 * A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
   voxelized geometries.
 * New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
@@ -63,7 +70,12 @@ New Features
   the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
 * Materials are now stored for each trajectory step point (optionally) as described
   by an integer ID.
-* New ability to arbitrarily scale the yoke fields
+* New ability to arbitrarily scale the yoke fields.
+* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
+  instructions on how to run Docker. This is a container system where a complete
+  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
+  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
+  XWindows server is required for the visualiser. See :ref:`docker-build`.
   
 General
 -------
@@ -72,7 +84,7 @@ General
   normalisation to the pure vacuum field at the pole-tip has been fixed and improved. This
   leads to the removal of very high peak values close to the hypothetical current sources
   between poles and also generally increases the average field magnitude in the yoke. This makes
-  a smooth transitino from the vacuum field to the yoke field and is more correct. Specifically,
+  a smooth transition from the vacuum field to the yoke field and is more correct. Specifically,
   the contribution from each current source is evaluated half way between each current source
   for the purpose of normalisation. The new option :code:`useOldMultipoleOuterFields=1` is
   available to regain the old behaviour. This will be removed in the next version beyond this one.
@@ -98,23 +110,78 @@ General
 Bug Fixes
 ---------
 
-* Fix extension of all parser objects (i.e. not beam line elements), which was broken. Extension
-  is the access and update of a variable inside a defined object such as a field or scorer.
+(topics alphabetically)
+
+**Analysis**
+
+* rebdsim will now explicitly exit if a duplicate histogram name is detected whereas it didn't before.
+
+**Fields**
+
+* Fix BDSIM-format field map loading with :code:`loopOrder> tzyx` in the header. It was not
+  loaded correctly before. Also, there are corresponding fixes in the pybdsim package.
 * Fix lack of yoke fields for rbends.
+* Fix lack of yoke fields and also orientation of fields in (thick) hkickers and vkicker magnets.
 * Fix LHC 'other' beam pipe field which was not offset to the correct position. Mostly a fault for
   quadrupoles where the field appeared in effect as a distorted dipole field (i.e. very off-axis quadrupole field).
-* Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
-  would work with this command or variables in the input GMAD.
+* Fix field interpolation manual figures. Z component was transposed.
+* Fixed example field map generation scripts to not use tar as we don't support loading
+  of tar.gz (only gzipped or uncompressed) files (historical hangover).
+* Fixed field map interpolation and plotting scripts as well as make use of improvements
+  in pybdsim.
+* Fix a bug in field map loading where a space was before the "!" character the columns
+  wouldn't be parsed correctly.
+* Fix BDSIM field map format :code:`loopOrder` documentation. The variable can be either `xyzt` or `tzyx`.
+
+**Geometry**
+  
 * If a multipole has a zero-length, it will be converted in a thin multipole.
 * Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
   with pole face rotations. Issue #306.
-* Fix a bug where a sampler before a dump wouldn't record any output.
+* Fix missing magnet coil end pieces despite being available space when the sequence
+  is a magnet, drift, element, or the reverse.
+
+
+**Output**
+
 * Fix the wrong value being stored in PrimaryFirstHist.postStepProcessType which was in fact SubType again.
 * When storing trajectories, it was possible if store transportation steps was
   purposively turned off that the first step point may not be stored. So, the pre-step
   was the creation of the particle and the post step was an interaction (i.e. not
   transportation). Previously, this step would not be stored breaking the indexing
   for parent step index.
+
+**Parser**
+
+* The input parser will now reject any duplicate object names (e.g. a field with the same name),
+  whereas it didn't before. In the past, multiple objects would be created ignoring their name.
+  However, after the input is loaded, BDSIM itself may look through the objects for one matching
+  a name. In this case, the one it finds may be ambiguous or unexpected. The code was revised to
+  purposively protect against this. This was always the case with beam line elements, but now it
+  is also the case with all objects defined in the parser.
+* Fix extension of all parser objects (i.e. not beam line elements), which was broken. Extension
+  is the access and update of a variable inside a defined object such as a field or scorer.
+* Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
+  would work with this command or variables in the input GMAD.
+
+**Sensitivity**
+
+* Fix a bug where a sampler before a dump wouldn't record any output.
+
+**Tracking**
+
+* Fix lack of user limits for RF cavity geometry.
+* Fix maximum step length user limit for externally loaded geometry.
+
+**Visualisation**
+
+* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
+  reminder, any material without a specific colour will default to a shade of grey according to
+  its density.
+* Fix visualisation of loaded GDML container volume.
+  
+**General**
+
 * Fix double deletion bug for particle definition when using the Link version of BDSIM.
 * Fix `distrFile` not being found when used as an executable option in the case where the
   current working directory, the main input gmad file and the distribution file were all in
@@ -124,23 +191,11 @@ Bug Fixes
   definition of material "ups923a".
 * "FASTCOMPONENT", "FASTTIMECONSTANT", and "YIELDRATIO" material properties for various optical
   materials have no effect when BDSIM is compiled with respect to Geant4 V11 onwards.
-* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
-  reminder, any material without a specific colour will default to a shade of grey according to
-  its density.
-* Fix field interpolation manual figures. Z component was transposed.
-* Fixed example field map generation scripts to not use tar as we don't support loading
-  of tar.gz (only gzipped or uncompressed) files (historical hangover).
-* Fixed field map interpolation and plotting scripts as well as make use of improvements
-  in pybdsim.
-* Fix visualisation of loaded GDML container volume.
 * Fix uncaught Geant4 exceptions by introducing our own exception handler to intercept
   the Geant4 one and throw our own, safely handled exceptions a la standard C++.
-* Fix lack of user limits for RF cavity geometry.
-* Fix maximum step length user limit for externally loaded geometry.
-* Fix missing magnet coil end pieces despite being available space when the sequence
-  is a magnet, drift, element, or the reverse.
-* Fix a bug in field map loading where a space was before the "!" character the columns
-  wouldn't be parsed correctly.
+
+
+
 
 Output Changes
 --------------

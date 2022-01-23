@@ -1,0 +1,3 @@
+biasDef0: xsecBias, particle="e-", proc="msc eIoni eBrem CoulombScat", xsecfact={10,10,10,10}, flag={1,1,1,1};
+biasDef0: xsecBias, particle="esdfsd";
+

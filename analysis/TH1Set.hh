@@ -29,6 +29,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class TList;
 class TPad;
 
+/**
+ * @brief TH1D but with a category axis.
+ * 
+ * @author Laurie Nevay
+ */
+
 class TH1Set: public TH1D
 {
 public:

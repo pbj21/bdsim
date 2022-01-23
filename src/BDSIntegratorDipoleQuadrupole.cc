@@ -61,7 +61,11 @@ BDSIntegratorDipoleQuadrupole::BDSIntegratorDipoleQuadrupole(BDSMagnetStrength c
   tilt(tiltIn),
   scaling((*strengthIn)["scaling"]),
   dipole(new BDSIntegratorDipoleRodrigues2(eqOfMIn, minimumRadiusOfCurvatureIn))
-{  
+{
+  if (!std::isfinite(nominalRho))
+    {nominalRho = 0;}
+  if (!std::isfinite(fieldRatio))
+    {fieldRatio = 1;}
   isScaled = scaling == 1 ? false : true;
   zeroStrength = !BDS::IsFinite((*strengthIn)["field"]);
   BDSFieldMagDipole* dipoleField = new BDSFieldMagDipole(strengthIn);
@@ -69,6 +73,8 @@ BDSIntegratorDipoleQuadrupole::BDSIntegratorDipoleQuadrupole(BDSMagnetStrength c
   delete dipoleField;
   angleForCL = fieldRatio != 1 ? nominalAngle * fieldRatio : nominalAngle;
   angleForCL /= scaling;
+  if (!std::isfinite(angleForCL))
+    {angleForCL = 0;}
 }
 
 BDSIntegratorDipoleQuadrupole::~BDSIntegratorDipoleQuadrupole()

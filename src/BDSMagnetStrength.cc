@@ -271,3 +271,8 @@ const G4double& BDSMagnetStrength::GetValue(const G4String& key) const
   else
     {return zero;}
 }
+
+G4bool BDSMagnetStrength::KeyHasBeenSet(const G4String& key) const
+{
+  return strengths.find(key) != strengths.end();
+}

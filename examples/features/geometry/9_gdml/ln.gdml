@@ -69,10 +69,10 @@
 				<position name="ln-right_pos" x="0.000000000000000" y="(t) * (0.200000000000000)" z="(t) * (4.000000000000000)" unit="mm"/>
 				<rotation name="ln-right_rot" x="0.000000000000000" y="-0.100000000000000" z="0.000000000000000" unit="rad"/>
 			</physvol>
-			<physvol name="ln-right">
+			<physvol name="ln-right2">
 				<volumeref ref="ln-assembly"/>
-				<position name="ln-right_pos" x="(t) * (-0.400000000000000)" y="(t) * (-0.200000000000000)" z="(t) * (-2.000000000000000)" unit="mm"/>
-				<rotation name="ln-right_rot" x="0.000000000000000" y="-0.100000000000000" z="-1.500000000000000" unit="rad"/>
+				<position name="ln-right2_pos" x="(t) * (-0.400000000000000)" y="(t) * (-0.200000000000000)" z="(t) * (-2.000000000000000)" unit="mm"/>
+				<rotation name="ln-right2_rot" x="0.000000000000000" y="-0.100000000000000" z="-1.500000000000000" unit="rad"/>
 			</physvol>
 		</volume>
 	</structure>

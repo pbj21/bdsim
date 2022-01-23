@@ -1,0 +1,16 @@
+blueish: newcolour, red=0, green=123, blue=255, alpha=0.05;
+box: rcol, fieldAll="f1", l=10*cm, material="air", horizontalWidth=2*m, colour="blueish";
+l1: line=(box);
+use, l1;
+
+beam, particle="e-",
+      energy=3*GeV,
+      distrType="gauss",
+      sigmaX=30*cm,
+      sigmaY=30*cm,
+      sigmaXp=1e-6,
+      sigmaYp=1e-6;
+
+option, ngenerate=1;
+
+option, outputFormat="none";

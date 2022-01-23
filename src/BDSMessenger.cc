@@ -149,7 +149,7 @@ void BDSMessenger::GoToElement(const std::string& value)
 {
   if (value.empty())
     {G4cerr << "empty string given - can't search" << G4endl; return;}
-  std::vector<G4String> words = BDS::GetWordsFromString(value);
+  std::vector<G4String> words = BDS::SplitOnWhiteSpace(value);
   G4String name = words[0];
   G4int instance = 0;
   if (words.size() > 1)

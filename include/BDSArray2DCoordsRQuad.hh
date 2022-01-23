@@ -51,7 +51,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  * This is reflected about 0,0 and can only be so given the implementation.
  *
- * Some interfaces are overloaded and some aren't as are required to be (sizeX for example).
+ * Some interfaces are overloaded and some aren't as are required to be (NX for example).
  * The ostream << writes both the raw array and the reflected version too.
  *
  * Note, by return a reference to a non-const member returnValue that may be updated by another
@@ -71,28 +71,28 @@ public:
   virtual ~BDSArray2DCoordsRQuad(){;}
 
   /// @{ Overridden from BDSArray4DCoords.
-  virtual G4bool OutsideCoords(const G4double x,
-			       const G4double y,
-			       const G4double z,
-			       const G4double t) const;
+  virtual G4bool OutsideCoords(G4double x,
+			       G4double y,
+			       G4double z,
+			       G4double t) const;
 
-  virtual G4double ArrayCoordsFromX(const G4double x) const;
-  virtual G4double ArrayCoordsFromY(const G4double y) const;
+  virtual G4double ArrayCoordsFromX(G4double x) const;
+  virtual G4double ArrayCoordsFromY(G4double y) const;
 
-  virtual G4int NearestX(const G4double x) const;
-  virtual G4int NearestY(const G4double y) const;
+  virtual G4int NearestX(G4double x) const;
+  virtual G4int NearestY(G4double y) const;
   /// @}
 
   /// @{ Overridden from BDSArray4D.
-  virtual const BDSFieldValue& GetConst(const G4int x,
-					const G4int y,
-					const G4int z = 0,
-					const G4int t = 0) const;
+  virtual const BDSFieldValue& GetConst(G4int x,
+					G4int y,
+					G4int z = 0,
+					G4int t = 0) const;
 
-  virtual G4bool Outside(const G4int x,
-			 const G4int y,
-			 const G4int z,
-			 const G4int t) const;
+  virtual G4bool Outside(G4int x,
+			 G4int y,
+			 G4int z,
+			 G4int t) const;
   /// @}
 
   /// This prints out the raw underlying data, then the reflected version as would normally

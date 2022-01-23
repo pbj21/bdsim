@@ -101,9 +101,7 @@ at caching files and it will subsequently be much faster.
 .. note:: MacOS and X11 and 3D visualisation. If using the visualiser on a Centos7 machine remotely (e.g. CERN's
 	  lxplus) over X-windows from a Mac, you may find that the whilst the visualiser window generally works,
 	  the actual visualisation itself is missing. This is because MacOS, by default, blocks OpenGL over X11.
-	  This should be re-enabled. Instructions to come, but search for Mac OpenGL over X11. A test is the simple
-	  command :code:`glxgears`, which should launch a small X-window with 3 rotating cogs. If this works, then
-	  the visualiser will too.
+	  This should be re-enabled. See :ref:`mac-xwindows`.
 
 .. _docker-build:
 	  
@@ -145,7 +143,7 @@ Some explanation of the contents of the run script. For a Mac, this reduces (rem
   DV=`ipconfig getifaddr en0`
   docker run -t -i -v `pwd`:/hostfs -e DISPLAY=$DV:0 --rm bdsim bash
 
-For docker to send an xwindow to the host operating system, it uses the IP address of the computer. The
+For docker to send an X-window to the host operating system, it uses the IP address of the computer. The
 first command gets this (on a Mac). The second command runs docker and links the display. The image is
 called "bdsim" here as per the build script, but it may also be referred to by its docker hexadecimal
 image name.
@@ -169,6 +167,7 @@ notes:
 
 * On a Mac, you may have to do :code:`xhost +` to allow X11 connections over the network.
 * On a Mac, you may have to set once :code:`defaults write org.xquartz.X11 enable_iglx -bool true`.
+* See :ref:`mac-xwindows`.
 
 
 
@@ -1092,8 +1091,13 @@ set. See :ref:`installation-building` and :ref:`installation-environmental-varia
      /usr/lib/../lib64/libxml2.so: undefined reference to `gzdirect@ZLIB_1.2.2.3'
      collect2: error: ld returned 1 exit status
 
-   This probably means that the xml library is not properly installed. The easiest option may be not to use this part of BDSIM by switching off the CMake variable USE_LCDD (in ccmake).
+   This probably means that the xml library is not properly installed. The easiest option may be not to use this part of BDSIM by switching off the CMake variable USE_GDML (in ccmake).
 
+7) The visualiser starts but there is no 3D model present (BDSIM on CVMFS).
+
+This problem is encountered when using BDSIM over X11 / XWindows such as from lxplus at CERN
+and using the CVMFS installation and using it from a Mac computer. This is due to the X-server
+not allowing OpenGL by default (the 3D bit). See :ref:`mac-xwindows` for the solution.
 
 .. rubric:: Footnotes
 
@@ -1111,6 +1115,50 @@ set. See :ref:`installation-building` and :ref:`installation-environmental-varia
 .. _Geant4: http://geant4.cern.ch/
 .. _Macports: http://www.macports.org/
 .. _ROOT: http://root.cern.ch/
+
+
+.. _mac-xwindows:
+
+XWindows With MacOS
+===================
+
+If using a Mac computer and intending to use BDSIM via SSH / X-Windows, which may include
+using BDSIM via a Docker image, it is possible the display will appear but there will be
+no model present and just a **blank white screen**. This is due to the default settings
+of XQuartz (the most common Mac X-Windows server) not allowing 3D content (specifically openGL)
+over X-Windows by default. This was done for security reasons but since we typically connect
+to a 'window' via SSH, this is irrelevant.
+
+To fix this, we must change the settings.
+
+.. note:: These settings apply only for MacOS with XQuartz.
+
+1) In a terminal, do the following: ::
+
+     defaults write org.macosforge.xquartz.X11 enable_iglx -bool true
+
+   which enables *indirect openGL over X*.
+
+2) Edit the X11 startup script to include the :code:`defaultserverargs="+iglx"`. ::
+
+     sudo emacs -nw /opt/X11/bin/startx
+
+Around line 58 we find the argument and edit it.
+
+.. figure:: figures/macx11.png
+	    :width: 100%
+	    :align: center
+
+	    Example of editing the X11 configuration in a terminal.
+
+If emacs is use, save and close with :code:`Ctrl X Ctrl S`, then :code:`Ctrl X Ctrl C`.
+
+3) Restart the mac to force a restart of X11.
+
+A test is to use the small utility program :code:`glxgears`, which when started will
+bring up a small window with 3 animated interlocking cogs that rotate.
+
+This is based on advice found at: https://www.visitusers.org/index.php?title=Re-enabling_INdirect_GLX_on_your_X_server .
 
 
 Programs Included

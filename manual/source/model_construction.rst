@@ -1319,7 +1319,11 @@ solenoid
 
 `solenoid` defines a solenoid magnet. This utilises a thick lens transfer map with a
 hard edge field profile. Fringes for the edge effects are provided by default and
-are controllable with the option `includeFringeFields`.
+are controllable with the option `includeFringeFields`. A field is supplied that is
+used in the case a particle cannot be tracked using the integrator. In this case, it
+is a perfect dipole field along the local :math:`z` axis inside the beam pipe with
+no spatial variation. Outside the beam pipe, in the *'yoke'*, a solenoidal field
+according to a cylindrical current source is constructed.
 
 =================  ============================  ==========  ===========
 Parameter          Description                   Default     Required
@@ -1333,11 +1337,28 @@ Parameter          Description                   Default     Required
 * A positive field corresponds to a field in along the direction of positive S.
 * The entrance / exit solenoid fringes are not constructed if the previous / next element is also a solenoid.
 * See `Magnet Strength Polarity`_ for polarity notes.
-* No yoke field is provided.
+
+A thin sheet cylinder is place also inside the yoke but of the same material. The
+colour is copper colour to indicate this is the shape used to calculate the solenoidal
+field for the yoke. This is of the same material so it has no effect on physics results.
+The 'current' cylinder is chosen to be :math:`0.8 \times l` and the radius is
+:math:`\frac{1}{3}` of the distance between the beam pipe radius and the outer radius.
 
 Examples: ::
 
    atlassol: solenoid, l=20*m, ks=0.004;
+
+
+Another visualisation:
+
+.. figure:: figures/solenoid2.png
+   :width: 70%
+   :align: center
+
+   A partially transparent visualiation of a solenoid showing the interior current
+   cylinder sheet - made of the same material as the yoke. The field is shown in the
+   :math:`x-z` plane.
+
 
 wirescanner
 ^^^^^^^^^^^

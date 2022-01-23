@@ -71,6 +71,11 @@ namespace GMAD
 
     std::string magneticSubField;
     std::string electricSubField;
+
+    std::string magneticReflection;
+    std::string electricReflection;
+    
+    std::string fieldParameters;
     
     /// Constructor
     Field();
@@ -82,6 +87,7 @@ namespace GMAD
     template <typename T>
     void set_value(std::string property, T value);
 
+    
   private:
     /// publish members
     void PublishMembers();

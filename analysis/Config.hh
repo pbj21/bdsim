@@ -229,6 +229,10 @@ public:
 
   /// Return a lower case copy of a string.
   std::string LowerCase(const std::string& st) const;
+  
+  /// Register a histogram name for future checking against. If it already exists, the
+  /// function returns true, else false for successful registration.
+  bool RegisterHistogramName(const std::string& newHistName);
 
   static Config* instance;
 
@@ -247,6 +251,8 @@ public:
   /// Cache of all spectra names declared to permit unique naming of histograms
   /// when there's more than one spectra per branch used.
   std::map<std::string, int> spectraNames;
+  
+  std::set<std::string> histogramNames;
 
   ClassDef(Config,1);
 };

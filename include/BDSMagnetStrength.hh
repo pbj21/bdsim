@@ -85,6 +85,9 @@ public:
 
   /// Accessor to all keys.
   static const std::vector<G4String>& AllKeys() {return keys;}
+  
+  /// Whether or not the supplied key is a valid magnet strength parameter.
+  static G4bool ValidKey(const G4String& key);
 
   /// Accessor to all units.
   static const std::map<G4String, unitsFactors>& UnitsAndFactors() {return unitsFactorsMap;}
@@ -107,6 +110,9 @@ public:
   /// Access a unit factor for a given key.
   static G4double Unit(const G4String& key);
   
+  /// Whether a key has been set.
+  G4bool KeyHasBeenSet(const G4String& key) const;
+  
   ///@{ Iterator mechanics.
   typedef StrengthMap::iterator       iterator;
   typedef StrengthMap::const_iterator const_iterator;
@@ -118,9 +124,6 @@ public:
   ///@}
   
 private:
-  /// Whether or not the supplied key is a valid magnet strength parameter.
-  static G4bool ValidKey(const G4String& key);
-
   /// Accessor similar to [] but without linear search through keys to check validity.
   /// for fast internal use.
   const G4double& GetValue(const G4String& key) const;

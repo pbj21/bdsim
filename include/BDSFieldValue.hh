@@ -23,7 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Types.hh"
 
 #ifdef FIELDDOUBLE
+#define FIELDTYPET G4double
 typedef BDSThreeVector<G4double> BDSFieldValue;
 #else
+#define FIELDTYPET G4float
 typedef BDSThreeVector<G4float>  BDSFieldValue;
 #endif

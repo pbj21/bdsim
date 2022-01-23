@@ -1,0 +1,35 @@
+hk1: hkicker, l=0.5*m, B=1.3, hStyle=1, vhRatio=1, horizontalWidth=40*cm;
+l1: line=(hk1);
+use, l1;
+
+beam, particle="proton", kineticEnergy=10*GeV;
+
+! top half of dipole in 3D
+qu1: query, nx=21, xmin=-20*cm, xmax=20*cm,
+	    ny=21, ymin=0,      ymax=20*cm,
+	    nz=5,  zmin=-25*cm, zmax=25*cm,
+	    referenceElement="hk1",
+	    queryMagneticField=1,
+	    outfileMagnetic="bmap_xyz_dipole_top_half.dat";
+
+! top right quadrant in 3D
+qu2: query, nx=21, xmin=0*cm, xmax=20*cm,
+	    ny=21, ymin=0*cm, ymax=20*cm,
+	    nz=5,  zmin=-25*cm, zmax=25*cm,
+	    referenceElement="hk1",
+	    queryMagneticField=1,
+	    outfileMagnetic="bmap_xyz_dipole_top_right_quadrant.dat";
+
+! top half of dipole in 2D
+qu3: query, nx=31, xmin=-20*cm, xmax=20*cm,
+	    ny=31, ymin=0,      ymax=20*cm,
+	    referenceElement="hk1",
+	    queryMagneticField=1,
+	    outfileMagnetic="bmap_xy_dipole_top_half.dat";
+
+! top right quadrant in 2D
+qu4: query, nx=31, xmin=0*cm, xmax=20*cm,
+	    ny=31, ymin=0*cm, ymax=20*cm,
+	    referenceElement="hk1",
+	    queryMagneticField=1,
+	    outfileMagnetic="bmap_xy_dipole_top_right_quadrant.dat";

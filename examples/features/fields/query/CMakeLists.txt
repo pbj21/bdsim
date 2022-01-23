@@ -7,3 +7,8 @@ if (USE_GDML)
   simple_testing(field-query-points-3d-b  "--file=query-points-3d.gmad --output=none"  "")
   simple_testing(field-query-points-4d-b  "--file=query-points-4d.gmad --output=none"  "")
 endif()
+
+
+interpolator_test(interp-field-pure-dipole         "query-pure-dipole-field-only.gmad"          "")
+interpolator_test(interp-field-pure-quadrupole     "query-pure-quadrupole-field-only.gmad"      "")
+interpolator_test(interp-field-pure-solenoidsheet  "query-pure-solenoidsheet-field-only.gmad"   "")

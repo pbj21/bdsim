@@ -16,7 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSFieldMagDipole.hh"
 #include "BDSFieldMagMultipoleOuter.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4RotationMatrix.hh"
@@ -35,6 +37,7 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
                                                      G4double           brho,
                                                      G4double           arbitraryScaling):
   order(orderIn),
+  phiOffset(0),
   spatialLimit(1),
   normalisation(1), // we have to get field first to calculate the normalisation which uses it, so start with 1
   positiveField(kPositive),
@@ -49,13 +52,32 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
   
   // we're assuming order > 0
   G4int nPoles = 2*order;
-
+  
+  // In the special case of a dipole, it can be inconsistent which parameter upstream
+  // gives the field direction. e.g. we can have the field vector (0,-1,0) and +ve magnitude
+  // in the "field" parameter and also "angle"=0. The parameterisation is also different from
+  // sbends to kickers and kickers have a variety of their own. Therefore, we simply follow
+  // the field direction, whatever it is. We get the nominal dipole field direction, then
+  // build our currents in a loop starting from that angular offset in the x,y plane. Note,
+  // phi = 0 is for the +x axis, and we want to start at the 12 o'clock position so a pi/2
+  // offset is introduced. This is agnostic of upstream parameterisation.
+  // This only applies for a dipole field.
+  const auto innerDipoleField = dynamic_cast<const BDSFieldMagDipole*>(innerFieldIn);
+  if (innerDipoleField)
+    {
+      poleNOffset = 0;        // for consistency no matter brho - already in inner field direction
+      positiveField = false;  // don't fiddle the sign of the field at the end
+      G4ThreeVector innerB = innerDipoleField->FieldValue();
+      G4double phiXY = innerB.phi();
+      phiOffset = phiXY - CLHEP::halfpi;
+    }
+  
   // prepare vector of infinite wire current sources
   G4TwoVector firstCurrent(poleTipRadius, 0);
   for (G4int i = 0; i < nPoles; ++i)
     {
       G4TwoVector c = firstCurrent; // copy it
-      c.rotate((G4double)i*CLHEP::twopi / nPoles); // rotate copy
+      c.rotate(phiOffset + (G4double)i*CLHEP::twopi / nPoles); // rotate copy
       currents.push_back(c);
     }
 
@@ -77,10 +99,14 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(G4int              orderIn,
   G4double angleAvg = (angleC1 + angleC2) / 2.0;
   G4TwoVector queryPoint;
   queryPoint.setPolar(poleTipRadius, angleAvg);
+  // technically we should also rotate by phiOffset here, but that's only used for a dipole
+  // and in that case it's always uniform, making no difference here, so skip it.
   G4ThreeVector poleTipPoint(queryPoint.x(), queryPoint.y(), 0);
 
   G4ThreeVector fieldAtPoleTip = innerFieldIn->GetField(poleTipPoint,/*t=*/0);
   G4double fieldAtPoleTipMag = fieldAtPoleTip.mag();
+  
+  finiteStrength = !BDS::IsFinite(fieldAtPoleTipMag) || innerFieldIn->FiniteStrength();
 
   // include arbitrary scaling here so it can obey an arbitrary scaling
   maxField = fieldAtPoleTipMag * arbitraryScaling;

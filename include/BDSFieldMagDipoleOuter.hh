@@ -55,6 +55,7 @@ public:
 				 const double         t = 0) const;
 
 private:
+  G4double      spatialLimit;   ///< Limit for getting too close to a current source.
   G4double      poleTipRadius;  ///< Used as radial limit for returning normal field.
   G4double      normalisation;  ///< Storage of the overal normalisation factor.
   G4ThreeVector localField;     ///< Nominal dipole field.

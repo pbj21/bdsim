@@ -122,7 +122,10 @@ namespace BDS
   /// Function to get the integrator type. Test for finite K1 and returns
   /// dipole or dipolequadrupole integrator as appropriate.
   BDSIntegratorType GetDipoleIntegratorType(const BDSIntegratorSet* integratorSet,
-									        const GMAD::Element*          element);
+					    const GMAD::Element*          element);
+
+  /// Return whether finite angle or field for a dipole.
+  G4bool ZeroStrengthDipole(const BDSMagnetStrength* st);
 }
 
 #endif

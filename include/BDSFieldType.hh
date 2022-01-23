@@ -44,7 +44,8 @@ struct fieldtypes_def
 	     emap1d,  emap2d,  emap3d,  emap4d,
 	     ebmap1d, ebmap2d, ebmap3d, ebmap4d,
 	     mokka,
-	     solenoid, dipole, quadrupole, dipolequadrupole, sextupole,
+	     solenoid, solenoidsheet,
+	     dipole, quadrupole, dipolequadrupole, sextupole,
 	     octupole, decapole, multipole, muonspoiler,
              skewquadrupole, skewsextupole, skewoctupole, skewdecapole,
 	     rfcavity, rf, cavityfringe,
@@ -56,12 +57,16 @@ struct fieldtypes_def
 	     skewmultipoleouterquadrupole, skewmultipoleoutersextupole,
 	     skewmultipoleouteroctupole, skewmultipoleouterdecapole,
 	     multipoleouterdipole3d,
-	     multipoleouterdipolelhc, multipoleouterquadrupolelhc, multipoleoutersextupolelhc};
+	     multipoleouterdipolelhc, multipoleouterquadrupolelhc,
+	     multipoleoutersextupolelhc
+  };
 };
 
 // NOTE - when adding a new field type:
 //  - BDSFieldClassType should also be updated
 //  - BDSIntegratorSet::Integrator() should also be updated
+
+// NOTE - also add to manual/source/dev_fields.rst -> Field Names and Parameters
 
 typedef BDSTypeSafeEnum<fieldtypes_def,int> BDSFieldType;
 

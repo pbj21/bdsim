@@ -1,0 +1,12 @@
+f1: field, type="bmap1d",
+    	   magneticFile="bdsim1d:1dexample-along-z.dat",
+	   magneticReflection="flipz",
+	   magneticInterpolator="cubic";
+
+include commonboxforfield-z.gmad;
+
+q1: query, nz = 100, zmin = -75*cm, zmax = 75*cm,
+	   outfileMagnetic = "interp_out_1d_b_flipz_cubic.dat",
+	   queryMagneticField=1,
+	   fieldObject = "f1",
+	   checkParameters=0;

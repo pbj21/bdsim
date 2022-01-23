@@ -86,16 +86,21 @@ void BDSFieldQuery::QueryField(const BDSFieldQueryInfo* query)
   
   if (!query)
     {return;} // protection - now we assume this pointer is always valid in the rest of this class
+    
+  // warn the user if a fieldObject is specified. In this context (bdsim) this has no effect
+  // derived class may change this
+  if (query->checkParameters)
+    {CheckIfFieldObjectSpecified(query);}
   
   if (query->SpecificPoints())
-  {
-    QuerySpecificPoints(query);
-    return;
-  }
+    {
+      QuerySpecificPoints(query);
+      return;
+    }
   
   G4cout << "FieldQuery> \"" << query->name << "\" with N (x,y,z,t) points: ("
          << query->xInfo.n << ", " << query->yInfo.n << ", " << query->zInfo.n << ", " << query->tInfo.n
-         << "), writing to file";
+         << ")";
   PrintBAndEInfo(query);
 
   if (query->printTransform)
@@ -171,6 +176,16 @@ void BDSFieldQuery::QueryField(const BDSFieldQueryInfo* query)
   G4cout << "FieldQuery> Complete" << G4endl;
 }
 
+void BDSFieldQuery::CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const
+{
+  if (!(query->fieldObject.empty()))
+    {
+      G4String msg = "\"fieldObject\" variable is specified in query definition \"" + query->name;
+      msg += "\" - this has no effect\nInstead use \"referenceElement\"";
+      BDS::Warning(msg);
+    }
+}
+
 void BDSFieldQuery::QuerySpecificPoints(const BDSFieldQueryInfo* query)
 {
   const std::vector<BDSFourVector<G4double>> points = query->pointsToQuery;
@@ -197,6 +212,7 @@ void BDSFieldQuery::QuerySpecificPoints(const BDSFieldQueryInfo* query)
 
 void BDSFieldQuery::PrintBAndEInfo(const BDSFieldQueryInfo* query) const
 {
+  G4cout << ", writing to file";
   if (query->queryMagnetic && query->queryElectric)
     {G4cout << "s B: \"" << query->outfileMagnetic << "\" and E: \"" << query->outfileElectric << "\"" << G4endl;}
   else if (query->queryMagnetic)

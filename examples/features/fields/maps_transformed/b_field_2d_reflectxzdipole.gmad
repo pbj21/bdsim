@@ -1,0 +1,25 @@
+f1: field, type="bmap2d",
+    	   magneticFile="bdsim2d:bmap_xy_dipole_top_half.dat.gz",
+	   magneticInterpolator="cubic",
+	   magneticReflection="reflectxzdipole";
+
+! Even though this is a 2d map in the xy plane, we can use
+! the dipole reflection about the xz plane. This would be like
+! a reflection about the y axis but also with a field flip
+
+include commonboxforfield.gmad;
+
+
+q1: query, nx = 31, xmin = -20*cm, xmax = 20*cm,
+	   ny = 31, ymin = -20*cm, ymax = 20*cm,
+	   outfileMagnetic = "out_2d_b_reflectxzdipole_cubic.dat",
+	   queryMagneticField=1,
+	   referenceElement="box";
+
+q2: query, nx = 31, xmin = -20*cm, xmax = 20*cm,
+	   ny = 31, ymin = -20*cm, ymax = 20*cm,
+	   outfileMagnetic = "interp_out_2d_b_reflectxzdipole_cubic.dat",
+	   queryMagneticField=1,
+	   fieldObject="f1",
+	   checkParameters=0;
+

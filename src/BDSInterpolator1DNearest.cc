@@ -30,7 +30,5 @@ BDSInterpolator1DNearest::~BDSInterpolator1DNearest()
 
 BDSFieldValue BDSInterpolator1DNearest::GetInterpolatedValueT(G4double x) const
 {
-  G4int xind = array->NearestX(x);
-  BDSFieldValue result = array->GetConst(xind); // here we're constructing a copy on purpose
-  return result;
+  return array->ExtractNearest(x);;
 }

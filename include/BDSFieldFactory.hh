@@ -33,7 +33,6 @@ namespace GMAD
   class Field;
 }
 
-class BDSField;
 class BDSFieldE;
 class BDSFieldInfo;
 class BDSFieldMag;
@@ -146,25 +145,29 @@ private:
   /// Create special parallel transport 'field' that applies a parallel
   /// transport along beam line.
   BDSFieldObjects* CreateParallelTransport(const BDSFieldInfo& info);
-
+  
+  /// Return the parameter "outerScaling" from strength st, but default to 1
+  G4double GetOuterScaling(const BDSMagnetStrength* st) const;
+  
   /// Private default constructor as singleton class.
   BDSFieldFactory();
 
   /// Instance - singleton pattern.
   static BDSFieldFactory* instance;
-  
-  /// Splits the G4String member variable formatAndName on the ":" character.
-  /// Whatever is before is taken as the format string and whatever is after is
-  /// taken as the file path.
-  void ParseFormatAndFilename();
-
-  /// Reset all pointers to nullptr that are temporarily used during construction
-  /// to avoid mistaken contamination between uses of the factory
-  void CleanUp();
 
   /// Prepare all required definitions that can be used dynamically.
   void PrepareFieldDefinitions(const std::vector<GMAD::Field>& definitions,
-			       const G4double defaultBRho);
+                               G4double defaultBRho);
+  
+  /// Convert the string 'value' to a double. Throw an exception including the parameterNameForError if it doesn't work.
+  G4double ConvertToDoubleWithException(const G4String& value,
+                                        const G4String& parameterNameForError) const;
+  
+  /// Fill an instance of BDSMagnetStrength with parameters as defined in a string "fieldParameters"
+  /// that is assumed to be a space-delimited set of parameter=value strings.
+  void PrepareFieldStrengthFromParameters(BDSMagnetStrength* st,
+                                          const G4String& fieldParameters,
+                                          G4double& poleTipRadius) const;
 
   /// BDSFieldInfo definitions prepare from parser vector of definitions.
   std::map<G4String, BDSFieldInfo*> parserDefinitions;

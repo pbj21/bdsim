@@ -1,0 +1,3 @@
+hydrogen: atom, A=1.01, Z=1, symbol="myH";
+print, hydrogen;
+hydrogen: atom, A=1.3;

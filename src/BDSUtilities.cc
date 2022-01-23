@@ -435,7 +435,7 @@ G4String BDS::GetParameterValueString(G4String spec, G4String name)
   return value;
 }
 
-std::vector<G4String> BDS::GetWordsFromString(const G4String& input)
+std::vector<G4String> BDS::SplitOnWhiteSpace(const G4String& input)
 {
   std::vector<G4String> result;
   if (input.empty())
@@ -534,7 +534,7 @@ G4ThreeVector BDS::RotateToReferenceFrame(G4ThreeVector faceNormal, G4double ful
   return faceNormal.transform(rm);
 }
 
-std::pair<G4String, G4String> BDS::SplitOnColon(G4String formatAndPath)
+std::pair<G4String, G4String> BDS::SplitOnColon(const G4String& formatAndPath)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << formatAndPath << G4endl;
@@ -586,7 +586,7 @@ G4double BDS::GetMemoryUsage()
     {return 0;} // failed
   else
     {
-      G4double maxMemory = r_usage.ru_maxrss;
+      G4double maxMemory = (G4double)r_usage.ru_maxrss;
 #ifdef __APPLE__
       maxMemory /= 1048*1048;
 #else
@@ -596,7 +596,8 @@ G4double BDS::GetMemoryUsage()
     }
 }
 
-std::map<G4String, G4String> BDS::GetUserParametersMap(G4String userParameters)
+std::map<G4String, G4String> BDS::GetUserParametersMap(const G4String& userParameters,
+                                                       char delimiter)
 {
   // split by white space then by colon
   std::istringstream iss(userParameters);
@@ -606,7 +607,7 @@ std::map<G4String, G4String> BDS::GetUserParametersMap(G4String userParameters)
   std::map<G4String, G4String> result;
   for (auto& pair : paramaterPairs)
     {
-      auto index = pair.find(":");
+      auto index = pair.find(delimiter);
       std::string key = pair.substr(0, index);
       std::string value = pair.substr(index+1);
       result[G4String(key)] = G4String(value);

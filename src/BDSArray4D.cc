@@ -34,37 +34,37 @@ BDSArray4D::BDSArray4D(G4int nXIn, G4int nYIn, G4int nZIn, G4int nTIn):
   data(std::vector<BDSFieldValue>(nTIn*nZIn*nYIn*nXIn))
 {;}
 
-BDSFieldValue& BDSArray4D::operator()(const G4int x,
-				      const G4int y,
-				      const G4int z,
-				      const G4int t)
+BDSFieldValue& BDSArray4D::operator()(G4int x,
+				      G4int y,
+				      G4int z,
+				      G4int t)
 {
   OutsideWarn(x,y,z,t); // keep as a warning as can't assign to invalid index
   return data[t*nZ*nY*nX + z*nY*nX + y*nX + x];
 }
 
-const BDSFieldValue& BDSArray4D::GetConst(const G4int x,
-					  const G4int y,
-					  const G4int z,
-					  const G4int t) const
+const BDSFieldValue& BDSArray4D::GetConst(G4int x,
+					  G4int y,
+					  G4int z,
+					  G4int t) const
 {
   if (Outside(x,y,z,t))
     {return defaultValue;}
   return data[t*nZ*nY*nX + z*nY*nX + y*nX + x];
 }
   
-const BDSFieldValue& BDSArray4D::operator()(const G4int x,
-					    const G4int y,
-					    const G4int z,
-					    const G4int t) const
+const BDSFieldValue& BDSArray4D::operator()(G4int x,
+					    G4int y,
+					    G4int z,
+					    G4int t) const
 {
   return GetConst(x,y,z,t);
 }
 
-G4bool BDSArray4D::Outside(const G4int x,
-			   const G4int y,
-			   const G4int z,
-			   const G4int t) const
+G4bool BDSArray4D::Outside(G4int x,
+			   G4int y,
+			   G4int z,
+			   G4int t) const
 {
   G4bool rx = x < 0 || x > nX-1;
   G4bool ry = y < 0 || y > nY-1;
@@ -73,10 +73,10 @@ G4bool BDSArray4D::Outside(const G4int x,
   return rx || ry || rz || rt;
 }
 
-void BDSArray4D::OutsideWarn(const G4int x,
-			     const G4int y,
-			     const G4int z,
-			     const G4int t) const
+void BDSArray4D::OutsideWarn(G4int x,
+			     G4int y,
+			     G4int z,
+			     G4int t) const
 {
   if (Outside(x,y,z,t))
     {

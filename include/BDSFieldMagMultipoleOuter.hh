@@ -70,6 +70,7 @@ public:
 
 private:
   const G4int       order;           ///< N-poles / 2.
+  G4double          phiOffset;       ///< Tilt in XY calculated from B vector of inner field. if B0=(0,1,0), phiOffset=0.
   G4double          spatialLimit;    ///< Radius from any current source within which the field is artificially saturated.
   G4double          normalisation;   ///< Storage of the overall normalisation factor.
   G4bool            positiveField;   ///< Sign of magnetic field.

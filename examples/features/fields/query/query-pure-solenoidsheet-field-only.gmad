@@ -1,0 +1,9 @@
+beam, particle="proton", kineticEnergy=20*GeV;
+
+f1: field, type="solenoidsheet", fieldParameters="field=1.2 length=1 poletipradius=0.1";
+
+q1: query, fieldObject="f1",
+    	   nx=31, xmin=-100*cm, xmax=100*cm,
+    	   nz=31, zmin=-200*cm, zmax=200*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_query_pure_solenoidsheet.dat";

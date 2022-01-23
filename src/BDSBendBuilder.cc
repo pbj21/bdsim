@@ -42,6 +42,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace GMAD;
 
+G4bool BDS::ZeroStrengthDipole(const BDSMagnetStrength* st)
+{
+  G4bool finiteAngle = BDS::IsFinite((*st)["angle"]);
+  G4bool finiteField = BDS::IsFinite((*st)["field"]);
+  return !(finiteAngle || finiteField);
+}
+
 BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName,
 					     const Element*          element,
 					     BDSMagnetStrength*      st,
@@ -123,19 +130,22 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
   G4int nSBends = BDS::CalculateNSBendSegments(arcLength, angle, incomingFaceAngle,
 					       outgoingFaceAngle);
   
-  // If no angle, means no strength, so even if there are pole face rotations, we don't
+  G4bool zeroStrength = BDS::ZeroStrengthDipole(st);
+  if (zeroStrength)
+    {
+      buildFringeIncoming = false;
+      buildFringeOutgoing = false;
+    }
+  
+  // If no angle, means no fringe strength, so even if there are pole face rotations, we don't
   // need the fringe elements. If there's only 1 segment we may still have a finite
   // angle and therefore finite strength and the pole face rotations will require fringe
   // elements
   if (!BDS::IsFinite(angle))
     {      
       BDSIntegratorType intType = BDS::GetDipoleIntegratorType(integratorSet, element);
-      BDSFieldInfo* vacuumField = new BDSFieldInfo(dipoleFieldType,
-						   brho,
-						   intType,
-						   st,
-						   true,
-						   fieldTiltOffset);
+      BDSFieldInfo* vacuumField = nullptr;
+      BDSFieldInfo* outerField = nullptr;
       // prepare one sbend segment
       auto bpInfo = BDSComponentFactory::PrepareBeamPipeInfo(element, -incomingFaceAngle,
 							     -outgoingFaceAngle);
@@ -144,15 +154,23 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 								-outgoingFaceAngle,
 								bpInfo,
 								yokeOnLeft);
-
-      BDSFieldInfo* outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
-										  BDSFieldType::dipole,
-										  bpInfo,
-										  mgInfo,
-										  fieldTiltOffset,
-										  integratorSet,
-										  brho,
-                                                                                  BDSComponentFactory::ScalingFieldOuter(element));
+      if (!zeroStrength)
+	{
+	  vacuumField = new BDSFieldInfo(dipoleFieldType,
+					 brho,
+					 intType,
+					 st,
+					 true,
+					 fieldTiltOffset);
+	  outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
+									BDSFieldType::dipole,
+									bpInfo,
+									mgInfo,
+									fieldTiltOffset,
+									integratorSet,
+									brho,
+									BDSComponentFactory::ScalingFieldOuter(element));
+	}
       BDSMagnet* oneBend = new BDSMagnet(BDSMagnetType::sectorbend,
 					 baseName,
 					 arcLength,
@@ -222,25 +240,29 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
   // field recipe for one segment of the sbend
   G4String centralName = baseName + "_even_ang";
   BDSIntegratorType intType = BDS::GetDipoleIntegratorType(integratorSet, element);
-  BDSFieldInfo* semiVacuumField = new BDSFieldInfo(dipoleFieldType,
-						   brho,
-						   intType,
-						   semiStrength,
-						   true,
-						   fieldTiltOffset);
-  
+  BDSFieldInfo* semiVacuumField = nullptr;
+  BDSFieldInfo* semiOuterField = nullptr;
   auto bpInfo = BDSComponentFactory::PrepareBeamPipeInfo(element, 0.5*semiAngle, 0.5*semiAngle);
   auto mgInfo = BDSComponentFactory::PrepareMagnetOuterInfo(centralName, element,
-							    0.5*semiAngle, 0.5*semiAngle, bpInfo,
-							    yokeOnLeft);
-  BDSFieldInfo* semiOuterField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(semiStrength,
-										  BDSFieldType::dipole,
-										  bpInfo,
-										  mgInfo,
-										  fieldTiltOffset,
-										  integratorSet,
-										  brho,
-                                                                                  BDSComponentFactory::ScalingFieldOuter(element));
+                                                            0.5*semiAngle, 0.5*semiAngle, bpInfo,
+                                                            yokeOnLeft);
+  if (!zeroStrength)
+    {
+      semiVacuumField = new BDSFieldInfo(dipoleFieldType,
+					 brho,
+					 intType,
+					 semiStrength,
+					 true,
+					 fieldTiltOffset);
+      semiOuterField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(semiStrength,
+									BDSFieldType::dipole,
+									bpInfo,
+									mgInfo,
+									fieldTiltOffset,
+									integratorSet,
+									brho,
+									BDSComponentFactory::ScalingFieldOuter(element));
+    }
   mgInfo->name = centralName;
   BDSMagnet* centralWedge = new BDSMagnet(BDSMagnetType::sectorbend,
 					  centralName,
@@ -253,9 +275,9 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
   
   // check magnet outer info
   auto magnetOuterInfoCheck = BDSComponentFactory::PrepareMagnetOuterInfo("checking", element,
-											                              -incomingFaceAngle,
+									  -incomingFaceAngle,
                                                                           -outgoingFaceAngle,
-											                              bpInfo, yokeOnLeft);
+									  bpInfo, yokeOnLeft);
   // minus for conversion to 3d cartesian
   G4double minimalRadius = 2*magnetOuterInfoCheck->MinimumIntersectionRadiusRequired();
   // extra pedantic check for dipoles with certain geometry types
@@ -434,8 +456,6 @@ void BDS::UpdateSegmentAngles(G4int index,
       segmentAngleIn  = 0.5*semiAngle + inputFaceAngle;
       segmentAngleOut = 0.5*semiAngle - outputFaceAngle;
     }
-
-  return;
 }
 
 BDSMagnet* BDS::BuildSingleSBend(const GMAD::Element*     element,
@@ -462,14 +482,19 @@ BDSMagnet* BDS::BuildSingleSBend(const GMAD::Element*     element,
   G4bool finiteK1 = BDS::IsFinite((*strength)["k1"]);
   BDSFieldType dipoleFieldType = finiteK1 ? BDSFieldType::dipolequadrupole : BDSFieldType::dipole;
   BDSIntegratorType intType = BDS::GetDipoleIntegratorType(integratorSet, element);
-  BDSFieldInfo* vacuumField = new BDSFieldInfo(dipoleFieldType,
-					       brho,
-					       intType,
-					       strengthCopy,
-					       true,
-					       fieldTiltOffset);
-
-  BDSFieldInfo* outerField = new BDSFieldInfo(*outerFieldIn);
+  BDSFieldInfo* vacuumField = nullptr;
+  BDSFieldInfo* outerField  = nullptr;
+  G4bool zeroStrength = BDS::ZeroStrengthDipole(strengthCopy);
+  if (!zeroStrength)
+    {
+      vacuumField = new BDSFieldInfo(dipoleFieldType,
+				     brho,
+				     intType,
+				     strengthCopy,
+				     true,
+				     fieldTiltOffset);
+      outerField = new BDSFieldInfo(*outerFieldIn);
+    }
   
   BDSMagnet* magnet = new BDSMagnet(BDSMagnetType::sectorbend,
 				    name,
@@ -508,6 +533,8 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
   // Angle here is in the 'strength' convention of +ve angle -> -ve x deflection
   const G4double       angle = (*st)["angle"];
   const G4double   arcLength = (*st)["length"];
+  
+  G4bool zeroStrength = BDS::ZeroStrengthDipole(st);
   
   G4Transform3D fieldTiltOffset = BDSComponentFactory::CreateFieldTransform(element);
 
@@ -572,7 +599,13 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
 	  e2 = angle*0.5;
 	}
     }
-
+  
+  if (zeroStrength)
+    {
+      buildFringeIncoming = false;
+      buildFringeOutgoing = false;
+    }
+  
   // used for debugging purposes to forefully try out one and not the other fringe
   //buildFringeIncoming = false;
   //buildFringeOutgoing = false;
@@ -653,26 +686,29 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
   (*st)["angle"]  = centralAngle;
 
   BDSIntegratorType intType = BDS::GetDipoleIntegratorType(integratorSet, element);
-  BDSFieldInfo* vacuumField = new BDSFieldInfo(dipoleFieldType,
-					       brho,
-					       intType,
-					       st,
-					       true,
-					       fieldTiltOffset);
-
+  BDSFieldInfo* vacuumField = nullptr;
+  BDSFieldInfo* outerField = nullptr;
   auto bpInfo = BDSComponentFactory::PrepareBeamPipeInfo(element, centralInputFaceAngle, centralOutputFaceAngle);
   auto mgInfo = BDSComponentFactory::PrepareMagnetOuterInfo(elementName, element, centralInputFaceAngle, centralOutputFaceAngle, bpInfo, yokeOnLeft);
   mgInfo->name = elementName;
-
-  BDSFieldInfo* outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
-                                                                              BDSFieldType::dipole,
-                                                                              bpInfo,
-                                                                              mgInfo,
-                                                                              fieldTiltOffset,
-                                                                              integratorSet,
-                                                                              brho,
-                                                                              BDSComponentFactory::ScalingFieldOuter(element));
-
+  if (!zeroStrength)
+    {
+      vacuumField = new BDSFieldInfo(dipoleFieldType,
+				     brho,
+				     intType,
+				     st,
+				     true,
+				     fieldTiltOffset);
+      outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
+								    BDSFieldType::dipole,
+								    bpInfo,
+								    mgInfo,
+								    fieldTiltOffset,
+								    integratorSet,
+								    brho,
+								    BDSComponentFactory::ScalingFieldOuter(element));
+    }
+  
   // Here we change from the strength angle convention of +ve angle corresponds to
   // deflection in negative x, to correct 3d +ve angle corresponds to deflection in
   // positive x. Hence, angle sign flip for construction.

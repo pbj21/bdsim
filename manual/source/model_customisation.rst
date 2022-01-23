@@ -165,6 +165,10 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 +----------------------+-----------------------------------------------------------------+
 | electricInterpolator | Which interpolator to use - see below for a full list.          |
 +----------------------+-----------------------------------------------------------------+
+| magneticReflection   | String of white-space separate relfection names to use.         |
++----------------------+-----------------------------------------------------------------+
+| electricReflection   | String of white-space separate relfection names to use.         |
++----------------------+-----------------------------------------------------------------+
 | x                    | x-offset from element it's attached to                          |
 +----------------------+-----------------------------------------------------------------+
 | y                    | y-offset from element it's attached to                          |
@@ -203,6 +207,10 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 +----------------------+-----------------------------------------------------------------+
 | magneticSubField     | Name of another field object like this one that will be used as |
 |                      | a magnetic 'sub' field that overlays this one.                  |
++----------------------+-----------------------------------------------------------------+
+| fieldParameters      | A string containing a white-space separated list of             |
+|                      | :code:`parameter=value` when using a pure field type. See       |
+|                      | :ref:`fields-pure-field-types`.                                 |
 +----------------------+-----------------------------------------------------------------+
 
 Simple example: ::
@@ -266,6 +274,135 @@ Field Types
 | ebmap4d          | 4D electric-magnetic field map   |
 +------------------+----------------------------------+
 
+.. note:: Some "pure" fields can be used also. Their names for the "type" are listed
+	  in :ref:`dev-fields-pure-field-names`.
+
+.. _fields-pure-field-types:
+   
+Pure Fields Types
+*****************
+
+"Pure" fields are ones that are described by equations in BDSIM. These are used
+for all the generic accelerator components. Note, we may use custom numerical
+integrators for tracking in accelerator components that *ignore* the field
+that is required to be there for Geant4. However, these integrators often *fall-back*
+to this field when tracking a particle in a direction they can't handle.
+
+The pure fields can be used as a field object in BDSIM. The :code:`type` in the
+field definition must be exactly one of the internal names used for the field name.
+
+* See field types here: :ref:`dev-fields-pure-field-names`.
+* No units may be used inside the :code:`fieldParameters` string.
+* Normalised field strengths are used with respect to the beam particle and design energy.
+
+Example: ::
+
+  f1: field, type="dipole",
+             fieldParameters="field=1.2, by=1.0";
+
+For a dipole field with value 1.2 T and along the unit Y axis (local). The other
+components of the unit vector associated with it will default to 0.
+
+.. _fields-transforms:
+
+Field Reflections and Transforms
+********************************
+
+It is possible to exploit symmetry in a field map and use a field map with only
+some fraction of the complete expected map. This speeds up start up time as there
+is less to load and saves memory at run-time as there is less to store in memory.
+
+Several operations are available and may be combined arbitrarily. These are specified
+in the field definition in either :code:`magneticReflection` or :code:`electricReflection`.
+
+* The reflection string must be a white-space separated list (if more than one) of
+  the below names.
+* For arrays to be reflected it is recommended that they run from 0 in that dimension
+  in a positive direction. e.g. a 1D map in :math:`z` to be reflected would ideally
+  run from :math:`z = 0 cm` to for example, :math:`z = 20 cm`, i.e. a positive value.
+  However, the code will tolerate it going in a positive direction but from a negative
+  value towards 0.
+* The values exactly on the axis of reflection come from the original field map.
+
+.. warning:: Any partial field map used for a reflection must either have its
+	     first data point on the axis of reflection or an integer number
+	     of array steps from it. e.g. A 1D array in z to be reflected
+	     runs from 0 cm to 20 cm - this OK. Another array in z runs from 1 cm
+	     to 21 cm with 5 points - this is not OK. This is because the step size
+	     is (21-1 / 5 = 4 cm). The distance from the reflection axis is 1 cm.
+	     This would cause an irregularly spaced grid which there is no provision
+	     for in BDSIM for interpolation. The tolerance for this calculation is
+	     5% of the step size. The code will proceed, but the map may be
+	     distorted at the boundaries.
+
+.. note:: It is strongly recommended to visualise a reflected  (or indeed any) field map
+	  before using it for a physics study to ensure it is correctly prepared. See
+	  :ref:`field-map-validation` and :ref:`fields-visualisation-queries`.
+
+
+.. tabularcolumns:: |p{3cm}|p{7cm}|
+	       
++-----------------------+------------------------------------------+
+| **Reflection Name**   | **Description**                          |
++=======================+==========================================+
+| flipx                 | :math:`\pm x \mapsto \mp x`              |
++-----------------------+------------------------------------------+
+| flipy                 | :math:`\pm y \mapsto \mp y`              |
++-----------------------+------------------------------------------+
+| flipz                 | :math:`\pm z \mapsto \mp z`              |
++-----------------------+------------------------------------------+
+| flipt                 | :math:`\pm t \mapsto \mp t`              |
++-----------------------+------------------------------------------+
+| reflectx              | :math:`x \mapsto |x|`                    |
++-----------------------+------------------------------------------+
+| reflecty              | :math:`y \mapsto |y|`                    |
++-----------------------+------------------------------------------+
+| reflectz              | :math:`z \mapsto |z|`                    |
++-----------------------+------------------------------------------+
+| reflectt              | :math:`t \mapsto |t|`                    |
++-----------------------+------------------------------------------+
+| reflectxydipole \*    | Reflect a positive x and y quadrant to   |
+|                       | all four quadrants with appropriate      |
+|                       | flips to make a dipolar field            |
++-----------------------+------------------------------------------+
+| reflectxzdipole \*    | Reflect a dipole field about the x-z     |
+|                       | plane but don't reflect the y component  |
+|                       | of the field to make a dipolar field     |
++-----------------------+------------------------------------------+
+| reflectyzdipole       | equivalent to `reflectx`                 |
++-----------------------+------------------------------------------+
+
+* \* See pictorial representation below
+
+Examples: ::
+
+  magneticReflection="flipx";
+  magneticReflection="flipx flipy";
+
+There are many practical examples in :code:`bdsim/examples/features/fields/maps_transformed/*.gmad`
+where the example field maps are generated by querying a standard BDSIM component. In the case
+of a dipole field, typically, a hkicker is used as the magnet is built without an angle to
+simplify things.
+
+**reflectxydipole**
+
+.. figure:: figures/reflectxydipole.jpg
+	    :width: 100%
+	    :align: center
+
+	    Original dipole field from positive x-y quadrant (*left*), reflected using
+	    :code:`reflectxydipole` (*right*). The view is with the z axis going into
+	    the page and the the coordinate system is right-handed.
+
+
+**reflectxydipole**
+
+.. figure:: figures/reflectxzdipole.jpg
+	    :width: 100%
+	    :align: center
+
+	    Original dipole field from positive y half (*left*), reflected using
+	    :code:`reflectxzdipole` (*right*). 
 
 
 Integrators
@@ -426,7 +563,7 @@ make physical sense.
 
 * Currently only sub-magnetic fields are supported.
 * The tilt or rotation of the field map (with respect to the element it is attached to) does not
-  apply to the region of applicability for the subfield. However, the field is tilted appropriately.
+  apply to the region of applicability for the sub-field. However, the field is tilted appropriately.
 * The spatial (only) offset (x,y,z) of the sub-field applies to it independently of the offset of the
   main outer field.
 * If a 2D field is used both fields apply infinitely in z in a 3D model, therefore the sub-field
@@ -468,15 +605,19 @@ in the visualiser below. The magnetic field lines were visualised using the Gean
 Field Map Visualisation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Recent versions of Geant4 (> 5) provide a mechanism in the visualiser to visualise magnetic fields. The
-following command can be used to add magnetic field lines to the visualisation. ::
+Recent versions of Geant4 (> 10.5) provide a mechanism in the visualiser to visualise
+magnetic fields. The following command can be used to add magnetic field lines to
+the visualisation. ::
 
   /vis/scene/add/magneticField 10 lightArrow
 
-This may take some time as particles are being tracked to determine the field direction. The number 10 here
-sets a density of points. If few useful arrows appear, then this number can be increased. Note, the time taken
-will go with the cube (i.e. N^3) of this number. Suggested values are 10, 30, 40. An example can be seen above
-in the :ref:`fields-sub-fields` section.
+This may take some time due to the Geant4 visualiser drawing many arrows individually. The
+number 10 here sets a density of points. If few useful arrows appear, then this number can be
+increased. Note, the time taken will go with the cube (i.e. N^3) of this number. Suggested
+values are 10, 30, 40. An example can be seen above in the :ref:`fields-sub-fields` section.
+
+Geant4 attempts to identify which volumes have fields and distribute the appoints accordingly
+in the global Cartesian frame. For a more controllable distribution, see :ref:`fields-visualisation-queries`.
 
 .. _fields-visualisation-queries:
 
@@ -488,7 +629,7 @@ A query defines a grid of points where the field is queried or found out. By def
 written to a field map file. Any of these queries can also be shown in the visualiser. This is
 controlled by the command: ::
 
-  /bds/field/drawQuery <query object name>
+  /bds/field/drawQuery <query-object-name>
 
 For a list of queries, one can do: ::
 
@@ -507,10 +648,11 @@ centre the view nicely and make a quadrupole transparent.
 * 4D queries will not work. Only up to 3D is supported.
 * The visualisation may become very slow if a large (e.g. > 100x100 in x,y) points is used.
   This is a limitation of the visualisation system. Typically, the querying of the model
-  is very quick.
+  is very quick and it is drawing the arrows that takes time.
 * Magnetic fields are drawn with the matplotlib "viridis" colour scale and electric
   fields with the "magma" colour scale.
 * Both electric and magnetic fields may be visualised as defined by the query object.
+* A query done in the visualiser will not be written to file.
 
 Field Map Preparation
 ^^^^^^^^^^^^^^^^^^^^^
@@ -518,7 +660,7 @@ Field Map Preparation
 It is not recommended to write a field map file by hand. This can create very hard to identify
 subtle problems that may lead to unintended behaviour. It is recommended to use our Python
 utility `pybdsim`. See the pybdsim manual for details on creating, converting and plotting
-field maps in Python: `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/>`_.
+field maps in Python: `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/fieldmaps.html>`_.
 
 .. note:: The order of looping over dimensions is important and must be correct otherwise, the
 	  loaded field map may not be as intended. Use of a field map should be validated.
@@ -606,7 +748,7 @@ The following parameters can be used in a query object:
 |                         | - default is False (0)                         |
 +-------------------------+------------------------------------------------+
 | overwriteExistingFiles  | Whether to overwrite existing output files     |
-|                         | - default is False (0)                         |
+|                         | - default is True (1)                          |
 +-------------------------+------------------------------------------------+
 | printTransform          | (1 or 0) whether to print out the calculated   |
 |                         | transform from the origin to the global        |
@@ -653,8 +795,8 @@ The following parameters can be used in a query object:
 	  or sampler placements - see :ref:`placements` for a full description of the possible
 	  combination of parameters for the 3 ways of specifying a transform. 
 
-* The default is to query the magnetic field only and to not overwrite files.
-* The ranges defined will be queried in global frame if no transform is specified,
+* The default is to query the magnetic field only and **to overwrite** files.
+* The ranges defined will be queried in the global frame if no transform is specified,
   otherwise they will be about the point / frame of the transform.
 * If you don't wish to query a dimension, then the number of points should be
   1, which is the default and need not be specified.
@@ -1118,9 +1260,16 @@ Magnet Geometry Parameters
 As well as the beam pipe, magnet beam line elements also have further outer geometry beyond the
 beam pipe. This geometry typically represents the magnetic poles and yoke of the magnet but there
 are several geometry types to choose from. The possible different styles are described below and
-syntax **examples** can be found in *examples/features/geometry/4_magnets/*.
+syntax **examples** can be found in *examples/features/geometry/4_magnets/*. These are:
 
-* Externally provided geometry can also be wrapped around the beam pipe (detailed below).
+* :ref:`mag-geom-none`
+* :ref:`mag-geom-cylindrical`
+* :ref:`mag-geom-polescircular`
+* :ref:`mag-geom-polessquare`
+* :ref:`mag-geom-polesfacet`
+* :ref:`mag-geom-polesfacetcrop`
+* :ref:`mag-geom-lhc`
+* :ref:`external-magnet-geometry` (e.g. a GDML file for the yoke)
 
 The magnet geometry is controlled by the following parameters.
 
@@ -1199,6 +1348,8 @@ Examples: ::
 .. note:: Should a custom selection of various magnet styles be required for your simulation, please
 	  contact us (see :ref:`feature-request`) and this can be added - it is a relatively simple process.
 
+.. _mag-geom-none:
+
 No Magnet Outer Geometry - "`none`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1209,6 +1360,8 @@ in only a beam pipe with the correct fields being provided.
 	   :width: 60%
 	   :align: center
 
+.. _mag-geom-cylindrical:
+		   
 Cylindrical - "`cylindrical`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1226,6 +1379,7 @@ therefore this geometry is best suited for the most general studies.
 .. figure:: figures/cylindrical_sextupole.png
 	    :width: 40%
 
+.. _mag-geom-polescircular:
 
 Poles Circular - "`polescircular`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1248,6 +1402,8 @@ used to create the circular aperture at the pole tips.
 	    :width: 40%
 
 
+.. _mag-geom-polessquare:
+		    
 Poles Square (Default) - "`polessquare`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1271,6 +1427,8 @@ same way as `polescircular` with regard to the beam pipe size.
 	    :width: 40%
 
 
+.. _mag-geom-polesfacet:
+		    
 Poles Faceted - "`polesfacet`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1279,6 +1437,10 @@ joins at a flat piece of yoke and not in a corner. This geometry behaves in the
 same way as `polescircular` with regards to the beam pipe size.
 
 `horizontalWidth` is the full width as shown in the figure.
+
+.. warning:: In Geant4 V11.0, the visualiser cannot handle the Boolean solids created by this
+	     geometry and the poles appear invisible. They are in-fact there, but the Geant4
+	     visualisation system cannot make the 3D meshes for the visualisation.
 
 .. figure:: figures/polesfacet_quadrupole.png
 	    :width: 40%
@@ -1292,6 +1454,8 @@ same way as `polescircular` with regards to the beam pipe size.
 .. figure:: figures/polesfacet_sextupole_3d.png
 	    :width: 40%
 
+
+.. _mag-geom-polesfacetcrop:
 
 Poles Faceted with Crop - "`polesfacetcrop`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1320,6 +1484,8 @@ double the number of poles as sides.
 	    :width: 40%
 
 
+.. _mag-geom-lhc:
+		    
 LHC Left & Right - "`lhcleft`" | "`lhcright`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1363,11 +1529,22 @@ External Magnet Geometry
 
 A geometry file may be placed around a beam pipe inside a BDSIM magnet instance. The beam pipe
 will be constructed as normal and will use the appropriate BDSIM tracking routines, but the
-yoke geometry will be loaded from the file provided. The external geometry must have a cut out
+yoke geometry will be loaded from the file provided. The external geometry **must have a cut out**
 in its container volume for the beam pipe to fit, i.e. both the beam pipe and the yoke exist
 at the same level in the geometry hierarchy (both are placed in one container for the magnet).
-The beam pipe is not placed 'inside' the yoke.
+The beam pipe is not placed 'inside' the yoke. This is shown schematically below:
 
+.. figure:: figures/magnet-hierarchy-schematic.pdf
+	    :width: 100%
+	    :align: center
+
+	    Geometrical hierarchy of a magnet. Here, a quadrupole is shown, but all magnets
+	    have the same geometrical structure even if the specific shapes are different.
+
+Therefore, if using a GDML file for the yoke of the magnet (labelled "outer" in the figure),
+care should be taken to make the outermost *container* volume, not just a box, but a box with
+a cylinder cut out of it, i.e. a Boolean solid.
+	    
 This will work for `solenoid`, `sbend`, `rbend`, `quadrupole`, `sextupole`, `octupole`,
 `decapole`, `multipole`, `muonspoiler`, `vkicker`, `hkicker` element types in BDSIM.
 

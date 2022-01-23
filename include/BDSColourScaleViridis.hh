@@ -21,6 +21,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSColourScale.hh"
 
+#include "G4Types.hh"
+
+#include <array>
+#include <vector>
+
 /**
  * @brief Colour scale based on viridis colour map.
  * 
@@ -50,10 +55,8 @@ public:
   virtual G4Colour GetValue(G4double numberFromZeroToOne) const;
 
 private:
-
   static std::vector<std::array<G4double,3>> data;
-
-  G4int dataSize;
+  
   G4double dataStep;
 };
 

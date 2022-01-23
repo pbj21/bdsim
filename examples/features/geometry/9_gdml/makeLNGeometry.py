@@ -68,7 +68,7 @@ def MakeLNGeometry(vis=True):
     # now make imprints of the assembly on the worl
     pg.geant4.PhysicalVolume([0,0.1,0], [0,0.2*t,2*t],  lnAV, "ln-left",  worldLV, reg)
     pg.geant4.PhysicalVolume([0,-0.1,0],[0,0.2*t,4*t], lnAV, "ln-right", worldLV, reg)
-    pg.geant4.PhysicalVolume([0,-0.1,-1.5],[-0.4*t,-0.2*t,-2*t], lnAV, "ln-right", worldLV, reg)
+    pg.geant4.PhysicalVolume([0,-0.1,-1.5],[-0.4*t,-0.2*t,-2*t], lnAV, "ln-right2", worldLV, reg)
     
     reg.setWorld(worldLV)
 

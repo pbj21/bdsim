@@ -1,0 +1,9 @@
+beam, particle="proton", kineticEnergy=20*GeV;
+
+f1: field, type="quadrupole", fieldParameters="k1=-0.1";
+
+q1: query, fieldObject="f1",
+    	   nx=50, xmin=-10*cm, xmax=10*cm,
+    	   ny=50, ymin=-10*cm, ymax=10*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_query_pure_quadrupole.dat";

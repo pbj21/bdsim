@@ -1,0 +1,2 @@
+precisionR: cutsregion, prodCutPhotons=1*mm;
+precisionR: cutsregion, prodCutPhotons=199*mm;

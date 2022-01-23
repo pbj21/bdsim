@@ -62,22 +62,22 @@ namespace {
 
 namespace GMAD {
   // Explicitly make the templates we need here
-  template void Parser::Add<ScorerMesh, std::vector<ScorerMesh> >();
-  template void Parser::Add<CavityModel, std::vector<CavityModel> >();
-  template void Parser::Add<BLMPlacement, std::vector<BLMPlacement> >();
-  template void Parser::Add<SamplerPlacement, std::vector<SamplerPlacement> >();
-  template void Parser::Add<Atom, std::vector<Atom> >();
-  template void Parser::Add<Field, std::vector<Field> >();
-  template void Parser::Add<Query, std::vector<Query> >();
-  template void Parser::Add<Region, std::vector<Region> >();
-  template void Parser::Add<Scorer, std::vector<Scorer> >();
-  template void Parser::Add<Tunnel, std::vector<Tunnel> >();
-  template void Parser::Add<Crystal, std::vector<Crystal> >();
-  template void Parser::Add<CoolingChannel, std::vector<CoolingChannel> >();
-  template void Parser::Add<Aperture, std::vector<Aperture> >();
-  template void Parser::Add<Material, std::vector<Material> >();
-  template void Parser::Add<NewColour, std::vector<NewColour> >();
-  template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >();
+  template void Parser::Add<ScorerMesh, FastList<ScorerMesh> >(bool unique, const std::string& className);
+  template void Parser::Add<CavityModel, FastList<CavityModel> >(bool unique, const std::string& className);
+  template void Parser::Add<BLMPlacement, FastList<BLMPlacement> >(bool unique, const std::string& className);
+  template void Parser::Add<SamplerPlacement, FastList<SamplerPlacement> >(bool unique, const std::string& className);
+  template void Parser::Add<Atom, FastList<Atom> >(bool unique, const std::string& className);
+  template void Parser::Add<Field, FastList<Field> >(bool unique, const std::string& className);
+  template void Parser::Add<Query, FastList<Query> >(bool unique, const std::string& className);
+  template void Parser::Add<Region, FastList<Region> >(bool unique, const std::string& className);
+  template void Parser::Add<Scorer, FastList<Scorer> >(bool unique, const std::string& className);
+  template void Parser::Add<Tunnel, FastList<Tunnel> >(bool unique, const std::string& className);
+  template void Parser::Add<Crystal, FastList<Crystal> >(bool unique, const std::string& className);
+  template void Parser::Add<CoolingChannel, FastList<CoolingChannel> >(bool unique, const std::string& className);
+  template void Parser::Add<Aperture, FastList<Aperture> >(bool unique, const std::string& className);
+  template void Parser::Add<Material, FastList<Material> >(bool unique, const std::string& className);
+  template void Parser::Add<NewColour, FastList<NewColour> >(bool unique, const std::string& className);
+  template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >(bool unique, const std::string& className);
 }
 
 using namespace GMAD;
@@ -780,14 +780,12 @@ void Parser::Overwrite(const std::string& objectName)
 template <class C>
 bool Parser::FindAndExtend(const std::string& objectName)
 {
-  auto& vec = GetList<C>();
-  for (auto it = vec.begin(); it!=vec.end(); ++it)
+  GMAD::FastList<C>& fl = GetList<C>();
+  auto search = fl.find(objectName);
+  if (search != fl.end())
     {
-      if ((*it).name == objectName)
-	{
-	  ExtendObject(*it);
-	  return true;
-	}
+      ExtendObject(*search);
+      return true;
     }
   return false;
 }
@@ -906,79 +904,79 @@ namespace GMAD {
   Region& Parser::GetGlobal(){return region;}
 
   template<>
-  std::vector<Region>& Parser::GetList<Region>(){return region_list;}
+  FastList<Region>& Parser::GetList<Region>(){return region_list;}
 
   template<>
   NewColour& Parser::GetGlobal(){return colour;}
 
   template<>
-  std::vector<NewColour>& Parser::GetList<NewColour>(){return colour_list;}
+  FastList<NewColour>& Parser::GetList<NewColour>(){return colour_list;}
   
   template<>
   Crystal& Parser::GetGlobal(){return crystal;}
 
   template<>
-  std::vector<Crystal>& Parser::GetList<Crystal>(){return crystal_list;}
-
+  FastList<Crystal>& Parser::GetList<Crystal>(){return crystal_list;}
+    
   template<>
   CoolingChannel& Parser::GetGlobal(){return coolingchannel;}
-
+    
   template<>
-  std::vector<CoolingChannel>& Parser::GetList<CoolingChannel>(){return coolingchannel_list;}
+  FastList<CoolingChannel>& Parser::GetList<CoolingChannel>(){return coolingchannel_list;}
   
   template<>
   Field& Parser::GetGlobal(){return field;}
 
   template<>
-  std::vector<Field>& Parser::GetList<Field>(){return field_list;}
+  FastList<Field>& Parser::GetList<Field>(){return field_list;}
 
   template<>
   Query& Parser::GetGlobal(){return query;}
   
   template<>
-  std::vector<Query>& Parser::GetList<Query>(){return query_list;}
+  FastList<Query>& Parser::GetList<Query>(){return query_list;}
   
   template<>
   Atom& Parser::GetGlobal(){return atom;}
 
   template<>
-  std::vector<Atom>& Parser::GetList<Atom>(){return atom_list;}
+  FastList<Atom>& Parser::GetList<Atom>(){return atom_list;}
 
   template<>
   Material& Parser::GetGlobal(){return material;}
 
   template<>
-  std::vector<Material>& Parser::GetList<Material>(){return material_list;}
+  FastList<Material>& Parser::GetList<Material>(){return material_list;}
 
   template<>
   Tunnel& Parser::GetGlobal(){return tunnel;}
 
   template<>
-  std::vector<Tunnel>& Parser::GetList<Tunnel>(){return tunnel_list;}
+  FastList<Tunnel>& Parser::GetList<Tunnel>(){return tunnel_list;}
 
   template<>
   CavityModel& Parser::GetGlobal(){return cavitymodel;}
 
   template<>
-  std::vector<CavityModel>& Parser::GetList<CavityModel>(){return cavitymodel_list;}
+  FastList<CavityModel>& Parser::GetList<CavityModel>(){return cavitymodel_list;}
 
   template<>
   Scorer& Parser::GetGlobal(){return scorer;}
 
   template<>
-  std::vector<Scorer>& Parser::GetList<Scorer>() {return scorer_list;}
+  FastList<Scorer>& Parser::GetList<Scorer>() {return scorer_list;}
 
   template<>
   ScorerMesh& Parser::GetGlobal(){return scorermesh;}
 
   template<>
-  std::vector<ScorerMesh>& Parser::GetList<ScorerMesh>() {return scorermesh_list;}
+  FastList<ScorerMesh>& Parser::GetList<ScorerMesh>() {return scorermesh_list;}
   
   template<>
   Placement& Parser::GetGlobal(){return placement;}
 
   template<>
-  std::vector<Placement>& Parser::GetList<Placement>(){return placement_list;}
+  FastList<Placement>& Parser::GetList<Placement>(){return placement_list;}
   
   template<>
   PhysicsBiasing& Parser::GetGlobal(){return xsecbias;}
@@ -990,19 +988,19 @@ namespace GMAD {
   SamplerPlacement& Parser::GetGlobal(){return samplerplacement;}
 
   template<>
-  std::vector<SamplerPlacement>& Parser::GetList<SamplerPlacement>() {return samplerplacement_list;}
+  FastList<SamplerPlacement>& Parser::GetList<SamplerPlacement>() {return samplerplacement_list;}
 
   template<>
   BLMPlacement& Parser::GetGlobal() {return blm;}
 
   template<>
-  std::vector<BLMPlacement>& Parser::GetList<BLMPlacement>() {return blm_list;}
+  FastList<BLMPlacement>& Parser::GetList<BLMPlacement>() {return blm_list;}
 
   template<>
   Aperture& Parser::GetGlobal() {return aperture;}
 
   template<>
-  std::vector<Aperture>& Parser::GetList<Aperture>() {return aperture_list;}
+  FastList<Aperture>& Parser::GetList<Aperture>() {return aperture_list;}
   
   template<>
   void Parser::ExtendValue(const std::string& property, double value)
@@ -1030,6 +1028,20 @@ namespace GMAD {
     GetList<C, Container>().push_back(inst);
   }
   
+  template <class C, class Container>
+  void Parser::Add(bool unique, const std::string& className)
+  {
+    // copy from global
+    C& global = GetGlobal<C>();
+    C inst(global);
+    // reset global
+    global.clear();
+#ifdef BDSDEBUG
+    inst.print();
+#endif
+    GetList<C, Container>().push_back(inst, unique, className);
+  }
+  
   /// Specialisation for Placements where we separately cache an Element. Note
   /// we can't do a partial specialisation so we have to do a full explicit one.
   /// Therefore we also have to be careful about the order we declare this because
@@ -1037,7 +1049,7 @@ namespace GMAD {
   /// because we'd get multiple symbols. Therefore, declared here, but implemented
   /// in cc file with explicit instantiation of templates we need in rest of cc file.
   template <>
-  void Parser::Add<Placement, std::vector<Placement>>()
+  void Parser::Add<Placement, FastList<Placement>>(bool unique, const std::string& className)
   {
     // copy from global
     Placement& global = GetGlobal<Placement>();
@@ -1047,7 +1059,7 @@ namespace GMAD {
 #ifdef BDSDEBUG
     inst.print();
 #endif
-    GetList<Placement, std::vector<Placement>>().push_back(inst);
+    GetList<Placement, FastList<Placement>>().push_back(inst, unique, className);
     // if an element definition is used for a placement, keep a separate copy of it
     if (!inst.bdsimElement.empty())
       {

@@ -25,6 +25,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sstream>
 
+
+/**
+ * @brief Type definition for all random engine names.
+ */
 struct randomenginetypes_def
 {
   enum type {hepjames, mixmax};

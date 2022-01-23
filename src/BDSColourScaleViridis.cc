@@ -62,8 +62,7 @@ std::vector<std::array<G4double, 3>> BDSColourScaleViridis::data = {
 
 
 BDSColourScaleViridis::BDSColourScaleViridis():
-  dataSize((G4int)data.size()),
-  dataStep(1.0 / (G4double)data.size())
+  dataStep(1.0 / (G4double)(data.size()-1))
 {;}
 
 BDSColourScaleViridis::~BDSColourScaleViridis()
@@ -72,11 +71,12 @@ BDSColourScaleViridis::~BDSColourScaleViridis()
 G4Colour BDSColourScaleViridis::GetValue(G4double numberFromZeroToOne) const
 {
   numberFromZeroToOne = std::min(numberFromZeroToOne, 1.0); // ensure <= 1
+  numberFromZeroToOne = std::max(0.0, numberFromZeroToOne); // ensure >= 0
   // (x - xMin) / xStep
   // xMin is 0 by definition
   G4double arrayCoords = numberFromZeroToOne / dataStep;
   G4int arrayIndex = (G4int) std::floor(arrayCoords);
 
-  const auto& value = data[arrayIndex];
+  const auto& value = data.at(arrayIndex);
   return G4Colour(value[0], value[1], value[2]);
 }

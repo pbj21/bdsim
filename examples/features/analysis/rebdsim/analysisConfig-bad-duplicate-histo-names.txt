@@ -1,0 +1,5 @@
+InputFilePath					../../data/sample1.root
+OutputFileName					./ana_bad_z.root
+# Object    treeName  Histogram Name   # Bins  Binning                  Variable                      Selection
+Histogram1D Event  Histo1   10  {-1:1} Primary.x  1
+Histogram1D Event  Histo1   10  {-1:1} Primary.x  1

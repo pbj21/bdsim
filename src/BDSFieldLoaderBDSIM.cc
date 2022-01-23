@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <algorithm>
+#include <array>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -143,80 +144,32 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
   unsigned long yIndex = 0;
   unsigned long zIndex = 0;
   G4bool intoData     = false;
-  G4bool dataFinished = false; // just in case there's empty stuff at the end of the file
   std::string line;
 
-  // ind of 0 will be index to default value in line data
-  G4int indX = 0, indY = 0, indZ = 0, indT = 0;
-  G4int nX   = 1, nY   = 1, nZ   = 1, nT   = 1;
-
-  // references to above indices and counters
-  // must be initialised to put in a vector
-  // set default order to xyzt
-  G4int* ind1 = &indX;
-  G4int* ind2 = &indY;
-  G4int* ind3 = &indZ;
-  G4int* ind4 = &indT;
-  G4int* n1   = &nX;
-  G4int* n2   = &nY;
-  G4int* n3   = &nZ;
-  G4int* n4   = &nT;
-
+  // Number of points in each dimension - not necessarily x,y,z,t.
+  // For example, could be xz
+  // These are always in xyzt order
+  G4int n1 = 1, n2 = 1, n3 = 1, n4 = 1;
+  
   // wrap in vectors for easy assignment
   G4String nominalOrder = "xyzt";
   
   float maximumFieldValue = 0;
   float minimumFieldValue = 0;
-  while (std::getline(file, line))
-    {// read a line only if it's not a blank one
+  // read top of the file
+  while (!intoData)
+    {
+      std::getline(file, line);
+      
       currentLineNumber++;
       // Skip a line if it's only whitespace
       if (std::all_of(line.begin(), line.end(), isspace))
 	{continue;}
-      
-      // Process a line of field data
-      // Do this first for efficiency as most of the file is this if statement
-      if (intoData)
-	{
-          if (dataFinished)
-	    {continue;} // just keep skipping lines after the appropriate amount of data is loaded
-	  
-          ProcessData(line, xIndex, yIndex, zIndex); // changes member fv
-	  
-          // Copy into array - we can always use 4d coords even for lower d arrays
-          // as they all inherit 4d.
-	      // We always use indX, indY etc as array is independent of looping here.
-	      // References to indices update them as we loop appropriately. The array
-	      // is constructed with the right dimensions and can therefore be filled in
-	      // any order.
-          (*result)(indX, indY, indZ, indT) = fv;
-          float mag = fv.mag();
-          maximumFieldValue = std::max(maximumFieldValue, mag);
-          minimumFieldValue = std::min(minimumFieldValue, mag);
-          (*ind1)++; // increment counter
-          if ((*ind1) == (*n1))
-	    {// we've completed one set of ind1.
-              (*ind1) = 0; // reset back to 0
-              (*ind2)++;   // advance ind2
-	    }
-          if ((*ind2) == (*n2))
-	    {// we've completed one set of ind2
-              (*ind2) = 0; // reset back to 0
-              (*ind3)++;   // advance ind3
-	    }
-          if ((*ind3) == (*n3))
-	    {// we've completed one set of ind3
-              (*ind3) = 0; // reset back to 0
-              (*ind4)++;   // advance ind4
-	    }
-          if ((*ind4) == (*n4))
-	    {// we've completed one set of ind4
-              (*ind4) = 0;
-              dataFinished = true;
-	    }
-	  
-          continue; // was a data line - don't now test for header info etc.
-      }
+
+      // now several checks
+      // 1) key > number
+      // 2) key > word
+      // 3) row starting '!' (column row ->then constructs data)
 
       // key definition
       // if (line.find(">") != std::string::npos)
@@ -266,32 +219,13 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 	{
 	  loopOrder = G4String(matchHeaderString[2]); // member variable
 	  
-	  // only link up indices if we have to for different ordering
-	  if (loopOrder != nominalOrder)
-	    {
-	      std::vector<G4int*> indReferences = {&indX, &indY, &indZ, &indT};
-	      std::vector<G4int*> numReferences = {&nX,   &nY,   &nZ,   &nT};
-	      std::vector<G4int**> inds         = {&ind1, &ind2, &ind3, &ind4};
-	      std::vector<G4int**> nums         = {&n1,   &n2,   &n3,   &n4};
-	      
-	      // loop over indices and link pointers to counters
-	      for (unsigned int i = 0; i < (unsigned int)loopOrder.size(); i++)
-		{
-		  std::size_t found = nominalOrder.find(loopOrder[i]);
-		  if (found != std::string::npos)
-		    {
-		      G4int foundIndex = G4int(found);
-		      // dereference point in array which gives G4int* variable outside vector
-		      (*inds[i]) = indReferences[foundIndex];
-		      (*nums[i]) = numReferences[foundIndex];
-		    }
-		  else
-		    {Terminate(functionName+"Invalid dimension specifier in loopOrder key: \"" + loopOrder + "\"");}
-		}
-	    }
-	  continue; // loopOrder -> it's not a number so don't try matching it
-	}   
-
+	  G4bool test1 = loopOrder == "xyzt";
+	  G4bool test2 = loopOrder == "tzyx";
+	  if (! (test1 || test2) )
+	    {Terminate(functionName+"loopOrder> header variable is not one of (\"xyzt\" or \"tzyx\")");}
+	  continue;
+	}
+      
       // if starts with '!' - columns
       // check all required keys have been built up ok
       // set nColumns
@@ -305,7 +239,7 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
           std::regex_search(line, match, afterExclamation);
           std::string restOfLine = match[1];
           std::string columnName;
-          std::istringstream restOfLineSS(restOfLine);
+	  std::istringstream restOfLineSS(restOfLine);
 	  std::vector<G4String> columnNames;
           while (restOfLineSS >> columnName)
 	    {
@@ -316,11 +250,10 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 		{yIndex = nColumns; continue;}
               else if (columnName.find("Fz") != std::string::npos)
 		{zIndex = nColumns; continue;}
-	      else
+              else
 		{columnNames.emplace_back(columnName);}
 	    }
           lineData.resize(nColumns + 1); // +1 for default value
-          intoData = true;
           indexOfFirstFieldValue = std::min({xIndex, yIndex, zIndex});
           
           for (const auto& key : headerMustBePositiveKeys)
@@ -339,8 +272,8 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 	      {
 		BDSDimensionType firstDim = BDS::DetermineDimensionType(columnNames[0]);
 		auto keys = dimKeyMap[firstDim];
-		nX = G4int(header[keys.number]);
-		result = new BDSArray1DCoords(nX,
+		n1 = G4int(header[keys.number]);
+		result = new BDSArray1DCoords(n1,
 					      header[keys.min] * CLHEP::cm,
 					      header[keys.max] * CLHEP::cm,
 					      firstDim);
@@ -352,9 +285,9 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 		BDSDimensionType secondDim = BDS::DetermineDimensionType(columnNames[1]);
 		auto fKeys = dimKeyMap[firstDim];
 		auto sKeys = dimKeyMap[secondDim];
-		nX = G4int(header[fKeys.number]);
-		nY = G4int(header[sKeys.number]);
-		result = new BDSArray2DCoords(nX, nY,
+		n1 = G4int(header[fKeys.number]);
+		n2 = G4int(header[sKeys.number]);
+		result = new BDSArray2DCoords(n1, n2,
 					      header[fKeys.min] * CLHEP::cm,
 					      header[fKeys.max] * CLHEP::cm,
 					      header[sKeys.min] * CLHEP::cm,
@@ -371,10 +304,10 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 		auto fKeys = dimKeyMap[firstDim];
 		auto sKeys = dimKeyMap[secondDim];
 		auto tKeys = dimKeyMap[thirdDim];
-		nX = G4int(header[fKeys.number]);
-		nY = G4int(header[sKeys.number]);
-		nZ = G4int(header[tKeys.number]);
-		result = new BDSArray3DCoords(nX, nY, nZ,
+		n1 = G4int(header[fKeys.number]);
+		n2 = G4int(header[sKeys.number]);
+		n3 = G4int(header[tKeys.number]);
+		result = new BDSArray3DCoords(n1, n2, n3,
 					      header[fKeys.min] * CLHEP::cm,
 					      header[fKeys.max] * CLHEP::cm,
 					      header[sKeys.min] * CLHEP::cm,
@@ -388,11 +321,11 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
               }
 	    case 4:
 	      {
-		nX = G4int(header["nx"]);
-		nY = G4int(header["ny"]);
-		nZ = G4int(header["nz"]);
-		nT = G4int(header["nt"]);
-		result = new BDSArray4DCoords(nX, nY, nZ, nT,
+		n1 = G4int(header["nx"]);
+		n2 = G4int(header["ny"]);
+		n3 = G4int(header["nz"]);
+		n4 = G4int(header["nt"]);
+		result = new BDSArray4DCoords(n1, n2, n3, n4,
 					      header["xmin"] * CLHEP::cm, header["xmax"] * CLHEP::cm,
 					      header["ymin"] * CLHEP::cm, header["ymax"] * CLHEP::cm,
 					      header["zmin"] * CLHEP::cm, header["zmax"] * CLHEP::cm,
@@ -400,11 +333,63 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 		break;
               }
 	    default:
-	      break;
+	      {break;}
 	    }
-	  
+          intoData = true;
           continue;
-      }
+	}
+    }
+  
+  // now only read data - two loops, one for each way of looping
+  if (loopOrder == "tzyx")
+    {
+      for (G4int i = 0; i < n1; i++)
+	{
+	  for (G4int j = 0; j < n2; j++)
+	    {
+	      for (G4int k = 0; k < n3; k++)
+		{
+		  for (G4int l = 0; l < n4; l++)
+		    {
+		      if (!std::getline(file, line))
+			{Terminate(functionName + "unexpected end to file on line number " + std::to_string(currentLineNumber));}
+		      currentLineNumber++;
+		      if (std::all_of(line.begin(), line.end(), isspace))
+			{continue;}
+		      ProcessData(line, xIndex, yIndex, zIndex); // changes member fv
+		      (*result)(i, j, k, l) = fv;
+		      float mag = fv.mag();
+		      maximumFieldValue = std::max(maximumFieldValue, mag);
+		      minimumFieldValue = std::min(minimumFieldValue, mag);
+		    }
+		}
+	    }
+	}
+    }
+  else
+    {// xyzt
+      for (G4int l = 0; l < n4; l++)
+	{
+	  for (G4int k = 0; k < n3; k++)
+	    {
+	      for (G4int j = 0; j < n2; j++)
+		{
+		  for (G4int i = 0; i < n1; i++)
+		    {
+		      if (!std::getline(file, line))
+			{Terminate(functionName + "unexpected end to file on line number " + std::to_string(currentLineNumber));}
+		      currentLineNumber++;
+		      if (std::all_of(line.begin(), line.end(), isspace))
+			{continue;}
+		      ProcessData(line, xIndex, yIndex, zIndex); // changes member fv
+		      (*result)(i, j, k, l) = fv;
+		      float mag = fv.mag();
+		      maximumFieldValue = std::max(maximumFieldValue, mag);
+		      minimumFieldValue = std::min(minimumFieldValue, mag);
+		    }
+		}
+	    }
+	}
     }
   
   file.close();

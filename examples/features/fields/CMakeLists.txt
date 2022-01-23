@@ -1,6 +1,7 @@
 add_subdirectory(field_transforms)
 add_subdirectory(maps_poisson)
 add_subdirectory(maps_bdsim)
+add_subdirectory(maps_transformed)
 add_subdirectory(low_energy_high_field)
 add_subdirectory(integrators)
 add_subdirectory(query)

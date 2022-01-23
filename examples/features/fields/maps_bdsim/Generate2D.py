@@ -33,7 +33,7 @@ def main():
     f = pybdsim.Field.Field2D(data)
     f.Write('2dexample.dat')
 
-    fd = pybdsim.Field.Field2D(data,doublePrecision=True)
+    fd = pybdsim.Field.Field2D(data, doublePrecision=True)
     fd.Write('2dexample_dp.dat')
 
     # compress the result

@@ -80,6 +80,10 @@ namespace GMAD
     double angle;
     /// @}
     bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
+  
+    /// For internal use to speed up testing - we use degenerate input for bdsim and bdsinterpolator
+    /// and want to avoid warnings that slow things down, so allow us to bypass it. Not documented.
+    bool checkParameters;
     
     /// Constructor
     Query();

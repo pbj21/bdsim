@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSFIELDINFO_H
 #define BDSFIELDINFO_H
 
+#include "BDSArrayReflectionType.hh"
 #include "BDSFieldFormat.hh"
 #include "BDSFieldType.hh"
 #include "BDSIntegratorType.hh"
@@ -122,6 +123,8 @@ public:
   inline G4String            ElectricSubFieldName()     const {return electricSubFieldName;}
   inline G4String            NameOfParserDefinition()   const {return nameOfParserDefinition;}
   inline G4bool              UsePlacementWorldTransform() const {return usePlacementWorldTransform;}
+  inline const BDSArrayReflectionTypeSet& MagneticArrayReflectionType() const {return magneticArrayReflectionTypeSet;}
+  inline const BDSArrayReflectionTypeSet& ElectricArrayReflectionType() const {return electricArrayReflectionTypeSet;}
   /// @}
   
   G4Transform3D Transform() const;         ///< Transform for the field definition only.
@@ -131,7 +134,10 @@ public:
   /// Set Transform - could be done afterwards once instance of this class is passed around.
   inline void SetFieldType(BDSFieldType fieldTypeIn) {fieldType = fieldTypeIn;}
   inline void SetIntegratorType(BDSIntegratorType typeIn) {integratorType = typeIn;}
+  inline void SetProvideGlobalTransform(G4bool provideGlobalTransformIn) {provideGlobalTransform = provideGlobalTransformIn;}
   inline void SetMagneticInterpolatorType(BDSInterpolatorType typeIn) {magneticInterpolatorType = typeIn;}
+  inline void SetMagneticArrayReflectionType(const BDSArrayReflectionTypeSet& typeIn) {magneticArrayReflectionTypeSet = typeIn;}
+  inline void SetElectricArrayReflectionType(const BDSArrayReflectionTypeSet& typeIn) {electricArrayReflectionTypeSet = typeIn;}
   inline void SetBScaling(G4double bScalingIn) {bScaling  = bScalingIn;}
   inline void SetAutoScale(G4bool autoScaleIn) {autoScale = autoScaleIn;}
   inline void SetScalingRadius(G4double poleTipRadiusIn) {poleTipRadius = poleTipRadiusIn;}
@@ -182,9 +188,11 @@ private:
   G4String                 magneticFieldFilePath;
   BDSFieldFormat           magneticFieldFormat;
   BDSInterpolatorType      magneticInterpolatorType;
+  BDSArrayReflectionTypeSet magneticArrayReflectionTypeSet;
   G4String                 electricFieldFilePath;
   BDSFieldFormat           electricFieldFormat;
   BDSInterpolatorType      electricInterpolatorType;
+  BDSArrayReflectionTypeSet electricArrayReflectionTypeSet;
   G4bool                   cacheTransforms;
   G4double                 eScaling;
   G4double                 bScaling;

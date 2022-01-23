@@ -76,7 +76,7 @@ BDSColours::BDSColours()
   colours["sextupole"]        = new G4Colour(1,     0.8,   0);     // yellow
   colours["octupole"]         = new G4Colour(0,     0.6,   0.3);   // green
   colours["decapole"]         = new G4Colour(0.3,   0.2,   0.7);   // purple
-  colours["solenoid"]         = new G4Colour(1,     0.549, 0);     // orange
+  colours["solenoid"]         = new G4Colour(1,     0.549, 0, 0.7);// orange - semi transparent to see coil
   colours["multipole"]        = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rfcavity"]         = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rf"]               = colours["rfcavity"];

@@ -21,9 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSInterpolator2DLinearMag.hh"
 #include "BDSInterpolatorRoutines.hh"
 
-#include "globals.hh"
-
-#include <cmath>
+#include "G4Types.hh"
 
 BDSInterpolator2DLinearMag::BDSInterpolator2DLinearMag(BDSArray2DCoords* arrayIn):
   BDSInterpolator2D(arrayIn)
@@ -34,20 +32,8 @@ BDSInterpolator2DLinearMag::~BDSInterpolator2DLinearMag()
 
 BDSFieldValue BDSInterpolator2DLinearMag::GetInterpolatedValueT(G4double x, G4double y) const
 {
-  G4double xarr = array->ArrayCoordsFromX(x);
-  G4double yarr = array->ArrayCoordsFromY(y);
-  
-  G4double x1 = std::floor(xarr);
-  G4double y1 = std::floor(yarr);
-
   BDSFieldValue localData[2][2];
-  for (int i = 0; i < 2; i++)
-    {
-      for (int j = 0; j < 2; j++)
-	{localData[i][j] = array->GetConst((G4int)x1+i, (G4int)y1+j);}
-    }
-  
-  BDSFieldValue result = BDS::Linear2DMag(localData, xarr-x1, yarr-y1);
-  
-  return result;
+  G4double xFrac, yFrac;
+  array->ExtractSection2x2(x, y, localData, xFrac, yFrac);
+  return BDS::Linear2DMag(localData, xFrac, yFrac);
 }

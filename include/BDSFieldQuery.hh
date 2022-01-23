@@ -65,21 +65,24 @@ protected:
                              G4double tGlobal,
                              G4double fieldValue[6]);
 
+  /// Warn the user if the fieldObject variable is use when it shouldn't be.
+  virtual void CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const;
+  
 private:
   /// Different algorithm where we query a specific list of points defined in the query info object.
   void QuerySpecificPoints(const BDSFieldQueryInfo* query);
 
   /// Print out whether B and E files are being generated and which ones.
-  void PrintBAndEInfo(const BDSFieldQueryInfo* query) const;
+  virtual void PrintBAndEInfo(const BDSFieldQueryInfo* query) const;
   
   /// Open potentially both electric and magnetic field map files.
-  void OpenFiles(const BDSFieldQueryInfo* query);
+  virtual void OpenFiles(const BDSFieldQueryInfo* query);
   
   /// Utility to write required header information.
-  void WriteHeader(std::ofstream& out, const BDSFieldQueryInfo* query) const;
+  virtual void WriteHeader(std::ofstream& out, const BDSFieldQueryInfo* query) const;
   
   /// Close any files if open.
-  void CloseFiles();
+  virtual void CloseFiles();
   
   /// Apply a transform to the coordinates. Does not apply to time.
   G4ThreeVector LocalToGlobalPoint(const G4AffineTransform& localToGlobalTransform,
@@ -93,9 +96,9 @@ private:
                               G4double localBEField[6]);
   
   /// Write an entry ta line of the output file(s). The array is assumed to be Bx,By,Bz,Ex,Ey,Ez as in Geant4.
-  void WriteFieldValue(const G4ThreeVector& xyzGlobal,
-                       G4double tGlobal,
-                       const G4double fieldValue[6]);
+  virtual void WriteFieldValue(const G4ThreeVector& xyzGlobal,
+                               G4double tGlobal,
+                               const G4double fieldValue[6]);
   
   std::ofstream oFileMagnetic;
   std::ofstream oFileElectric;

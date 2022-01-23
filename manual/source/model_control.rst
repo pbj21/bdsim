@@ -3241,7 +3241,7 @@ This can be applied to all samplers as well. ::
 Any sampler specified after this will be overwritten. ::
 
   sample, all, partID={13,-13};
-  sample, range=partID={11,-11};
+  sample, range=d1, partID={11,-11};
 
 Here, all samplers apart from the one attached to "d1" would record only particles
 with PDG ID 13 and -13. The sampler attached to "d1" would record only 11 and -11 PDG ID

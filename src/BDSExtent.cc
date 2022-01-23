@@ -149,7 +149,7 @@ std::ostream& operator<< (std::ostream& out, BDSExtent const& ext)
 {
   out << ext.extXNeg << " " << ext.extXPos << " ";
   out << ext.extYNeg << " " << ext.extYPos << " ";
-  out << ext.extZNeg << " " << ext.extZPos;
+  out << ext.extZNeg << " " << ext.extZPos << " mm";
   return out;
 }
 

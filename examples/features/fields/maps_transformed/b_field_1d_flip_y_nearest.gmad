@@ -1,0 +1,12 @@
+f1: field, type="bmap1d",
+    	   magneticFile="bdsim1d:1dexample-along-y.dat",
+	   magneticReflection="flipy",
+	   magneticInterpolator="nearest";
+
+include commonboxforfield.gmad;
+
+q1: query, ny = 100, ymin = -75*cm, ymax = 75*cm,
+	   outfileMagnetic = "interp_out_1d_b_flipy_nearest.dat",
+	   queryMagneticField=1,
+	   fieldObject = "f1",
+	   checkParameters=0;

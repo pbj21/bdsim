@@ -117,7 +117,7 @@ std::vector<BDSFourVector<G4double>> BDSFieldQueryPointsLoader<T>::Load(const G4
 		  throw BDSException(functionName, msg);
 		}
 
-	      std::vector<G4String> columnNames = BDS::GetWordsFromString(restOfLine);
+	      std::vector<G4String> columnNames = BDS::SplitOnWhiteSpace(restOfLine);
 	      for (const auto& columnName : columnNames)
 		{
 		  G4String variableName = BDS::LowerCase(columnName);
@@ -149,7 +149,7 @@ std::vector<BDSFourVector<G4double>> BDSFieldQueryPointsLoader<T>::Load(const G4
 	  continue;
 	}
 
-      std::vector<G4String> wordsInLine = BDS::GetWordsFromString(line);
+      std::vector<G4String> wordsInLine = BDS::SplitOnWhiteSpace(line);
 
       if ((G4int)wordsInLine.size() != nCoordinates)
 	{throw BDSException(functionName, "invalid number of coordinates on line " + std::to_string(lineNo));}

@@ -40,12 +40,27 @@ public:
   /// No default constructor as the array is not adjustable after construction and
   /// therefore the size must be known at construction time.
   BDSArray1DCoords() = delete;
-  
   BDSArray1DCoords(G4int            nX,
-		   G4double         xMinIn,
-		   G4double         xMaxIn,
-		   BDSDimensionType dimensionIn = BDSDimensionType::x);
+                   G4double         xMinIn,
+                   G4double         xMaxIn,
+                   BDSDimensionType dimensionIn = BDSDimensionType::x);
   virtual ~BDSArray1DCoords(){;}
+  
+  /// Extract 2 points lying around coordinate x.
+  virtual void ExtractSection2(G4double x,
+                               BDSFieldValue (&localData)[2],
+                               G4double& xFrac) const;
+  
+  /// Extract 4 points lying around coordinate x, where x will be between points 2 and 3.
+  virtual void ExtractSection4(G4double x,
+                               BDSFieldValue (&localData)[4],
+                               G4double& xFrac) const;
+  
+  /// Extract nearest field value from array. y,z,t ignored but required for overload.
+  virtual BDSFieldValue ExtractNearest(G4double x,
+                                       G4double y = 0,
+                                       G4double z = 0,
+                                       G4double t = 0) const;
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray1DCoords const &a);

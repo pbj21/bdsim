@@ -23,11 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 
 /**
- * @brief A very simple 'map' type histogram axis.
- *
- * A map of type T (e.g. integer for PDG ID) to an accumulated value which
- * is a double. The sum of the weights squared is also accumulated for error
- * estimation.
+ * @brief A simple bin definition for a histogram.
  * 
  * @author Laurie Nevay
  */
@@ -53,6 +49,15 @@ public:
   double sumOfWeightsSquared;
 };
 
+/**
+ * @brief A very simple 'map' type histogram axis.
+ *
+ * A map of type T (e.g. integer for PDG ID) to an accumulated value which
+ * is a double. The sum of the weights squared is also accumulated for error
+ * estimation.
+ * 
+ * @author Laurie Nevay
+ */
 
 class ParticleSet
 {

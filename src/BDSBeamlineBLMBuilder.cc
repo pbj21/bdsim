@@ -85,7 +85,7 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
   std::map<std::string, std::pair<std::set<G4String>, G4String> >blmScoringInfo;
   for (const auto& bp : blmPlacements)
     {
-      std::vector<G4String> scorersForThisBLM = BDS::GetWordsFromString(G4String(bp.scoreQuantity));
+      std::vector<G4String> scorersForThisBLM = BDS::SplitOnWhiteSpace(G4String(bp.scoreQuantity));
       std::set<G4String> requiredScorers;
       for (const auto& name : scorersForThisBLM)
         {

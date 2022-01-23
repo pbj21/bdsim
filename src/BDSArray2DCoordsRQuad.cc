@@ -31,10 +31,10 @@ BDSArray2DCoordsRQuad::BDSArray2DCoordsRQuad(BDSArray2DCoords* arrayIn):
   returnValue(BDSFieldValue())
 {;}
 
-G4bool BDSArray2DCoordsRQuad::OutsideCoords(const G4double x,
-					    const G4double y,
-					    const G4double z,
-					    const G4double t) const
+G4bool BDSArray2DCoordsRQuad::OutsideCoords(G4double x,
+					    G4double y,
+					    G4double z,
+					    G4double t) const
 {
   G4bool rx = x < -xMax || x > xMax;
   G4bool ry = y < -yMax || y > yMax;
@@ -43,30 +43,30 @@ G4bool BDSArray2DCoordsRQuad::OutsideCoords(const G4double x,
   return rx || ry || rz || rt;
 }
 
-G4double BDSArray2DCoordsRQuad::ArrayCoordsFromX(const G4double x) const
+G4double BDSArray2DCoordsRQuad::ArrayCoordsFromX(G4double x) const
 {
   return  (x - (xMin - xMax)) / xStep;
 }
 
-G4double BDSArray2DCoordsRQuad::ArrayCoordsFromY(const G4double y) const
+G4double BDSArray2DCoordsRQuad::ArrayCoordsFromY(G4double y) const
 {
   return (y - (yMin - yMax)) / yStep;
 }
 
-G4int BDSArray2DCoordsRQuad::NearestX(const G4double x) const
+G4int BDSArray2DCoordsRQuad::NearestX(G4double x) const
 {
   return (G4int)round(ArrayCoordsFromX(x));
 }
 
-G4int BDSArray2DCoordsRQuad::NearestY(const G4double y) const
+G4int BDSArray2DCoordsRQuad::NearestY(G4double y) const
 {
   return (G4int)round(ArrayCoordsFromY(y));
 }
 
-const BDSFieldValue& BDSArray2DCoordsRQuad::GetConst(const G4int x,
-						     const G4int y,
-						     const G4int z,
-						     const G4int t) const
+const BDSFieldValue& BDSArray2DCoordsRQuad::GetConst(G4int x,
+						     G4int y,
+						     G4int z,
+						     G4int t) const
 {
   if (Outside(x,y,z,t))
     {return defaultValue;}
@@ -137,10 +137,10 @@ const BDSFieldValue& BDSArray2DCoordsRQuad::GetConst(const G4int x,
   return returnValue;
 }
 
-G4bool BDSArray2DCoordsRQuad::Outside(const G4int x,
-				      const G4int y,
-				      const G4int z,
-				      const G4int t) const
+G4bool BDSArray2DCoordsRQuad::Outside(G4int x,
+				      G4int y,
+				      G4int z,
+				      G4int t) const
 {
   G4bool rx = x < 0 || x > 2*(nX-1);
   G4bool ry = y < 0 || y > 2*(nY-1);

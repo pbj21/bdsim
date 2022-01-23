@@ -149,8 +149,8 @@ quQuadLHCNormal1D: query, nx=3*np, xmin=-20*cm, xmax=40*cm,
 
 
 ! linear through a sextupole - no scaling
-quSextNormal: query, nx=3*np, xmin=-30*cm, xmax=30*cm,
-		     queryMagneticField=1,
-		     outfileMagnetic="out_xscan_sext_old.dat",
-		     referenceElement="sx1",
-		     overwriteExistingFiles=1;
+quSextLHCNormal: query, nx=3*np, xmin=-30*cm, xmax=30*cm,
+		        queryMagneticField=1,
+		        outfileMagnetic="out_xscan_sext_lhc_old.dat",
+		        referenceElement="sx1",
+		        overwriteExistingFiles=1;

@@ -88,9 +88,9 @@ private:
   BDSMagUsualEqRhs* eq;    ///< BDSIM's eqRhs class to give access to particle properties
   const G4double    bPrime;///< Cached magnet property, B field gradient for calculating K1
   const G4double    nominalBeta;    ///< Cached nominal relativistic beta of the nominal beam particle.
-  const G4double    nominalRho;     ///< Cached magnet property, nominal bending radius.
+  G4double          nominalRho;     ///< Cached magnet property, nominal bending radius.
   const G4double    nominalField;   ///< Cached magnet property, nominal field strength.
-  const G4double    fieldRatio;     ///< Ratio of supplied field to nominal field. Needed for over/underpowered magnets.
+  G4double          fieldRatio;     ///< Ratio of supplied field to nominal field. Needed for over/underpowered magnets.
   const G4double    nominalEnergy;  ///< Nominal beam energy
   const	G4double    nominalMass;    ///< Primary particle mass. Needed for recalculating nominal energy with scaling.
   const G4double    nominalCharge;  ///< Nominal beam charge.
