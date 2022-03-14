@@ -1,0 +1,11 @@
+d1: drift, l=1*m;
+q1f: quadrupole, l=20*cm, k1=0.1;
+q1d: quadrupole, l=20*cm, k1=-0.1;
+l1: line=(d1,q1f,d1,q1d,d1);
+use, l1;
+
+beam, particle="e-", kineticEnergy=1*GeV, distrType="sphere", S0=0.9*m;
+
+csample, all;
+
+option, ngenerate=10;

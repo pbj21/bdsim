@@ -1,0 +1,16 @@
+! load shower sample
+include bdsimsampler-lowphysics.gmad;
+
+! restore physics list
+option, physicsList="all_particles";
+
+beam, eventGeneratorMinX=-20*mm,
+      eventGeneratorMaxX=20*mm,
+      eventGeneratorMinY=-20*mm,
+      eventGeneratorMaxY=20*mm,
+      eventGeneratorMaxXp=0.1,
+      eventGeneratorMaxYp=0.1,
+      eventGeneratorMinZp=0.9,
+      eventGeneratorMinEK=1.5*GeV,
+      eventGeneratorMaxEK=1*TeV,
+      eventGeneratorParticles="111 211 -211 12 -12 proton";

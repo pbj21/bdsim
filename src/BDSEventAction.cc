@@ -36,6 +36,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDEnergyDepositionGlobal.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDSampler.hh"
+#include "BDSSDSamplerCylinder.hh"
+#include "BDSSDSamplerSphere.hh"
 #include "BDSSDTerminator.hh"
 #include "BDSSDThinThing.hh"
 #include "BDSSDVolumeExit.hh"
@@ -45,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoryFilter.hh"
 #include "BDSTrajectoryPrimary.hh"
 #include "BDSUtilities.hh"
+#include "BDSWrapperMuonSplitting.hh"
 
 #include "globals.hh"                  // geant4 types / globals
 #include "G4Event.hh"
@@ -78,6 +81,7 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   output(outputIn),
   samplerCollID_plane(-1),
   samplerCollID_cylin(-1),
+  samplerCollID_sphere(-1),
   eCounterID(-1),
   eCounterFullID(-1),
   eCounterVacuumID(-1),
@@ -132,6 +136,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "processing begin of event action" << G4endl;
 #endif
+  BDSWrapperMuonSplitting::nCallsThisEvent = 0;
   nTracks = 0;
   primaryTrajectoriesCache.clear();
   BDSStackingAction::energyKilled = 0;
@@ -188,6 +193,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       BDSSDManager* bdsSDMan = BDSSDManager::Instance();
       samplerCollID_plane      = g4SDMan->GetCollectionID(bdsSDMan->SamplerPlane()->GetName());
       samplerCollID_cylin      = g4SDMan->GetCollectionID(bdsSDMan->SamplerCylinder()->GetName());
+      samplerCollID_sphere     = g4SDMan->GetCollectionID(bdsSDMan->SamplerSphere()->GetName());
       eCounterID               = g4SDMan->GetCollectionID(bdsSDMan->EnergyDeposition()->GetName());
       eCounterFullID           = g4SDMan->GetCollectionID(bdsSDMan->EnergyDepositionFull()->GetName());
       eCounterVacuumID         = g4SDMan->GetCollectionID(bdsSDMan->EnergyDepositionVacuum()->GetName());
@@ -204,6 +210,12 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       const std::vector<G4String>& extraSamplerWithFilterNames = bdsSDMan->ExtraSamplerWithFilterNamesComplete();
       for (const auto& name : extraSamplerWithFilterNames)
         {extraSamplerCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
+      const std::vector<G4String>& extraSamplerCylinderWithFilterNames = bdsSDMan->ExtraSamplerCylinderWithFilterNamesComplete();
+      for (const auto& name : extraSamplerCylinderWithFilterNames)
+        {extraSamplerCylinderCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
+      const std::vector<G4String>& extraSamplerSphereWithFilterNames = bdsSDMan->ExtraSamplerSphereWithFilterNamesComplete();
+      for (const auto& name : extraSamplerSphereWithFilterNames)
+        {extraSamplerCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
     }
   FireLaserCompton=true;
 
@@ -219,6 +231,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 
 void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
+  //G4cout << "BDSWrapperMuonSplitting::nCallsThisEvent> " << BDSWrapperMuonSplitting::nCallsThisEvent << G4endl;
   auto flagsCache(G4cout.flags());
   // Get event number information
   G4int event_number = evt->GetEventID();
@@ -273,7 +286,26 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       for (const auto& nameIndex : extraSamplerCollectionIDs)
         {allSamplerHits.push_back(dynamic_cast<shc*>(HCE->GetHC(nameIndex.second)));}
     }
-  shc* hitsCylinder = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_cylin)) : nullptr;
+  typedef BDSHitsCollectionSamplerCylinder shcc;
+  std::vector<shcc*> allSamplerCylinderHits;
+  shcc* hitsCylinder = HCE ? dynamic_cast<shcc*>(HCE->GetHC(samplerCollID_cylin)) : nullptr;
+  if (hitsCylinder)
+    {allSamplerCylinderHits.push_back(hitsCylinder);}
+  if (HCE)
+    {
+      for (const auto& nameIndex : extraSamplerCylinderCollectionIDs)
+        {allSamplerCylinderHits.push_back(dynamic_cast<shcc*>(HCE->GetHC(nameIndex.second)));}
+    }
+  typedef BDSHitsCollectionSamplerSphere shcs;
+  std::vector<shcs*> allSamplerSphereHits;
+  shcs* hitsSphere = HCE ? dynamic_cast<shcs*>(HCE->GetHC(samplerCollID_sphere)) : nullptr;
+  if (hitsSphere)
+    {allSamplerSphereHits.push_back(hitsSphere);}
+  if (HCE)
+    {
+      for (const auto& nameIndex : extraSamplerSphereCollectionIDs)
+        {allSamplerSphereHits.push_back(dynamic_cast<shcs*>(HCE->GetHC(nameIndex.second)));}
+    }
 
   // energy deposition collections - eloss, tunnel hits
   typedef BDSHitsCollectionEnergyDeposition echc;
@@ -374,7 +406,8 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   output->FillEvent(eventInfo,
 		    evt->GetPrimaryVertex(),
                     allSamplerHits,
-		    hitsCylinder,
+		    allSamplerCylinderHits,
+		    allSamplerSphereHits,
 		    nullptr,
 		    eCounterHits,
 		    eCounterFullHits,

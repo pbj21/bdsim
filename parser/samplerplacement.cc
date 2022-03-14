@@ -28,7 +28,8 @@ SamplerPlacement::SamplerPlacement()
 
 void SamplerPlacement::clear()
 {
-  name         = "";
+  name = "";
+  samplerType = "plane";
   referenceElement = "";
   referenceElementNumber = 0;
   s     = 0;
@@ -49,6 +50,10 @@ void SamplerPlacement::clear()
   aper2 = 0;
   aper3 = 0;
   aper4 = 0;
+  startAnglePhi = 0;
+  sweepAnglePhi = -1;   // -1 to flag we should use 2pi later when we have units
+  startAngleTheta = 0;
+  sweepAngleTheta = -1; // -1 to flag we should use 2pi later when we have units
   partID.clear();
   partIDSetID = -1;
 }
@@ -56,6 +61,7 @@ void SamplerPlacement::clear()
 void SamplerPlacement::PublishMembers()
 {
   publish("name",          &SamplerPlacement::name);
+  publish("samplerType",   &SamplerPlacement::samplerType);
   publish("referenceElement", &SamplerPlacement::referenceElement);
   publish("referenceElementNumber", &SamplerPlacement::referenceElementNumber);
   publish("s",             &SamplerPlacement::s);
@@ -77,6 +83,10 @@ void SamplerPlacement::PublishMembers()
   publish("aper2",         &SamplerPlacement::aper2);
   publish("aper3",         &SamplerPlacement::aper3);
   publish("aper4",         &SamplerPlacement::aper4);
+  publish("startAnglePhi", &SamplerPlacement::startAnglePhi);
+  publish("sweepAnglePhi", &SamplerPlacement::sweepAnglePhi);
+  publish("startAngleTheta", &SamplerPlacement::startAngleTheta);
+  publish("sweepAngleTheta", &SamplerPlacement::sweepAngleTheta);
   publish("partID",        &SamplerPlacement::partID);
   // partIDSetID is for internal use only - not published
 }
@@ -85,6 +95,7 @@ void SamplerPlacement::print()const
 {
   std::cout << "SamplerPlacement: "
 	    << "name "          << name          << std::endl
+	    << "samplerType "   << samplerType   << std::endl
 	    << "referenceElement" << referenceElement << std::endl
 	    << "referenceElementNumber" << referenceElementNumber << std::endl
 	    << "s"              << s             << std::endl
@@ -105,6 +116,10 @@ void SamplerPlacement::print()const
 	    << "aper2 "         << aper2         << std::endl
 	    << "aper3 "         << aper3         << std::endl
 	    << "aper4 "         << aper4         << std::endl
+	    << "startAnglePhi " << startAnglePhi << std::endl
+	    << "sweepAnglePhi " << sweepAnglePhi << std::endl
+	    << "startAngleTheta " << startAngleTheta << std::endl
+	    << "sweepAngleTheta " << sweepAngleTheta << std::endl
 	    << "partID list {";
   for (auto v : partID)
     {std::cout << v << ", ";}

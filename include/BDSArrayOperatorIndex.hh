@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Types.hh"
 
+#include <array>
+
 /**
  * @brief Interface for modifying by reference array indices.
  *
@@ -36,7 +38,8 @@ class BDSArrayOperatorIndex
 public:
   BDSArrayOperatorIndex() = delete;
   explicit BDSArrayOperatorIndex(const G4String& nameIn = "None"):
-    name(nameIn)
+    name(nameIn),
+    operatesOn{false, false, false, false}
   {;}
   virtual ~BDSArrayOperatorIndex(){;}
   
@@ -53,6 +56,9 @@ public:
   virtual void ApplyY(G4int& /*y*/) const {;}
   virtual void ApplyZ(G4int& /*z*/) const {;}
   virtual void ApplyT(G4int& /*t*/) const {;}
+  
+  /// Return which axes this object operates on overall.
+  virtual std::array<G4bool, 4> OperatesOnXYZT() const {return operatesOn;}
   
   void Apply(G4int& x) const
   {
@@ -98,6 +104,7 @@ public:
   
 protected:
   G4String name;
+  std::array<G4bool, 4> operatesOn;
 };
 
 #endif

@@ -44,13 +44,21 @@ void usage()
 int main(int argc, char* argv[])
 {
   if (argc < 3 || argc >= 5)
-    {usage(); exit(1);}
+    {
+      usage();
+      return 1;
+    }
 
   std::string inputFileName  = std::string(argv[1]);
   std::string outputFileName = std::string(argv[2]);
   int index = 0;
-  if (argc == 4)
-    {index = std::stoi(argv[3]);}
+  try
+  {
+    if (argc == 4)
+      {index = std::stoi(argv[3]);}
+  }
+  catch (const std::exception& e)
+    {std::cerr << e.what() << std::endl; return 1;}
 
   try
     {
@@ -79,9 +87,9 @@ int main(int argc, char* argv[])
       delete evtAnalysis;
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
       
   return 0;
 }

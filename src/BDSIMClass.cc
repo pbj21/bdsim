@@ -22,9 +22,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh" //  global parameters
 
 #include <algorithm>
+#include <csignal>
 #include <cstdlib>
 #include <cstdio>
-#include <signal.h>
 
 #include "G4EventManager.hh" // Geant4 includes
 #include "G4GenericBiasingPhysics.hh"
@@ -37,6 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4TrackingManager.hh"
 #include "G4Version.hh"
 #include "G4VModularPhysicsList.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include "BDSAcceleratorModel.hh"
 #include "BDSBeamPipeFactory.hh"
@@ -61,6 +63,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParallelWorldUtilities.hh"
 #include "BDSParser.hh" // Parser
 #include "BDSParticleDefinition.hh"
+#include "BDSPhysicsMuonSplitting.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 #include "BDSRandom.hh" // for random number generator from CLHEP
@@ -241,7 +244,26 @@ int BDSIM::Initialise()
   realWorld->SetDesignParticle(designParticle);
   BDSFieldFactory::SetDesignParticle(designParticle);
   BDSGeometryFactorySQL::SetDefaultRigidity(designParticle->BRho()); // used for sql field loading
-
+  
+  // Muon splitting - optional - should be done *after* biasing to work with it
+  G4int muonSplittingFactor = BDSGlobalConstants::Instance()->MuonSplittingFactor();
+  if (muonSplittingFactor > 1)
+    {
+      G4int muonSplittingFactor2 = BDSGlobalConstants::Instance()->MuonSplittingFactor2();
+      G4double muonSplittingThresholdParentEk = BDSGlobalConstants::Instance()->MuonSplittingThresholdParentEk();
+      G4double muonSplittingThresholdParentEk2 = BDSGlobalConstants::Instance()->MuonSplittingThresholdParentEk2();
+      G4cout << "BDSPhysicsMuonSplitting -> using muon splitting wrapper -> factor of: " << muonSplittingFactor << G4endl;
+      if (muonSplittingThresholdParentEk > 0)
+        {G4cout << "BDSPhysicsMuonSplitting -> minimum parent kinetic energy: " << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;}
+      if (muonSplittingFactor2 > 1)
+        {
+          G4cout << "BDSPhysicsMuonSplitting -> factor #2: " << muonSplittingFactor2 << " for muons above "
+                 << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;
+        }
+      physList->RegisterPhysics(new BDSPhysicsMuonSplitting(muonSplittingFactor,  muonSplittingThresholdParentEk,
+                                                            muonSplittingFactor2, muonSplittingThresholdParentEk2));
+    }
+  
   BDS::RegisterSamplerPhysics(parallelWorldPhysics, physList);
   auto biasPhysics = BDS::BuildAndAttachBiasWrapper(parser->GetBiasing());
   if (biasPhysics)//could be nullptr and can't be passed to geant4 like this

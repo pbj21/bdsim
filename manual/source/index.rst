@@ -2,6 +2,15 @@
 Welcome to BDSIM's documentation!
 #################################
 
+.. figure:: figures/homepage_image.png
+	    :width: 80%
+	    :align: center
+
+BDSIM is a code to make 3D models of particle accelerators using Geant4.
+
+* https://bitbucket.org/jairhul/bdsim/
+* http://www.pp.rhul.ac.uk/twiki/bin/view/JAI/BdSim
+
 .. toctree::
    :maxdepth: 2
    :caption: User Guide

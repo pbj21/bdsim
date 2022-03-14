@@ -31,17 +31,23 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 template<>
 std::map<BDSSamplerType, std::string>* BDSSamplerType::dictionary =
   new std::map<BDSSamplerType, std::string> ({
-  {BDSSamplerType::none,     "none"},
-  {BDSSamplerType::plane,    "plane"},
-  {BDSSamplerType::cylinder, "cylinder"}
+  {BDSSamplerType::none,            "none"},
+  {BDSSamplerType::plane,           "plane"},
+  {BDSSamplerType::cylinder,        "cylinder"},
+  {BDSSamplerType::cylinderforward, "cylinderforward"},
+  {BDSSamplerType::sphere,          "sphere"},
+  {BDSSamplerType::sphereforward,   "sphereforward"}
 });
 
 BDSSamplerType BDS::DetermineSamplerType(G4String samplerType)
 {
   std::map<G4String, BDSSamplerType> types;
-  types["none"]     = BDSSamplerType::none;
-  types["plane"]    = BDSSamplerType::plane;
-  types["cylinder"] = BDSSamplerType::cylinder;
+  types["none"]            = BDSSamplerType::none;
+  types["plane"]           = BDSSamplerType::plane;
+  types["cylinder"]        = BDSSamplerType::cylinder;
+  types["cylinderforward"] = BDSSamplerType::cylinderforward;
+  types["sphere"]          = BDSSamplerType::sphere;
+  types["sphereforward"]   = BDSSamplerType::sphereforward;
 
   samplerType = BDS::LowerCase(samplerType);
 

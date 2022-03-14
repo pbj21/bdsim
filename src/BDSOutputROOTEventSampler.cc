@@ -37,9 +37,6 @@ class BDSOutputROOTParticleData;
 templateClassImp(BDSOutputROOTEventSampler)
 
 template <class U>
-BDSOutputROOTParticleData* BDSOutputROOTEventSampler<U>::particleTable = nullptr;
-
-template <class U>
 BDSOutputROOTEventSampler<U>::BDSOutputROOTEventSampler():
   samplerName("sampler")
 {

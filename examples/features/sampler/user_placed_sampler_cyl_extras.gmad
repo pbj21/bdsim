@@ -1,0 +1,3 @@
+include user_placed_sampler_cyl.gmad;
+
+option, storeSamplerAll=1;

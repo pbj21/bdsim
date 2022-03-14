@@ -22,6 +22,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4Transform3D.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+
 #include <map>
 #include <string>
 #include <utility>
@@ -51,7 +53,9 @@ G4int BDSSamplerRegistry::RegisterSampler(const G4String&      name,
 					  BDSSampler*          sampler,
 					  const G4Transform3D& transform,
 					  G4double             S,
-					  const BDSBeamlineElement* element)
+					  const BDSBeamlineElement* element,
+					  BDSSamplerType       type,
+					  G4double             radius)
 {
   samplerObjects.insert(sampler);
   G4String uniqueName = name;
@@ -65,7 +69,7 @@ G4int BDSSamplerRegistry::RegisterSampler(const G4String&      name,
       uniqueName = name + "_" + std::to_string(existingNames[name]);
       existingNames[name]++;
     }
-  BDSSamplerPlacementRecord info = BDSSamplerPlacementRecord(name, sampler, transform, S, element, uniqueName);
+  BDSSamplerPlacementRecord info = BDSSamplerPlacementRecord(name, sampler, transform, S, element, uniqueName, type, radius);
   return RegisterSampler(info);
 }
 
@@ -94,10 +98,68 @@ std::vector<G4String> BDSSamplerRegistry::GetUniqueNames() const
   return names;
 }
 
-std::vector<std::pair<G4String, G4double> > BDSSamplerRegistry::GetUniqueNamesAndSPosition() const
+std::vector<G4String> BDSSamplerRegistry::GetUniqueNamesPlane() const
+{
+  std::vector<G4String> names;
+  for (const auto& info: infos)
+    {
+      if (info.Type() == BDSSamplerType::plane)
+        {names.push_back(info.UniqueName());}
+    }
+  return names;
+}
+
+std::vector<G4String> BDSSamplerRegistry::GetUniqueNamesCylinder() const
+{
+  std::vector<G4String> names;
+  for (const auto& info: infos)
+    {
+      if (info.Type() == BDSSamplerType::cylinder || info.Type() == BDSSamplerType::cylinderforward)
+        {names.push_back(info.UniqueName());}
+    }
+  return names;
+}
+
+std::vector<G4String> BDSSamplerRegistry::GetUniqueNamesSphere() const
+{
+  std::vector<G4String> names;
+  for (const auto& info: infos)
+    {
+      if (info.Type() == BDSSamplerType::sphere || info.Type() == BDSSamplerType::sphereforward)
+        {names.push_back(info.UniqueName());}
+    }
+  return names;
+}
+
+std::map<std::string, double> BDSSamplerRegistry::GetUniqueNameToRadiusCylinder() const
+{
+  std::map<std::string, double> result;
+  for (const auto& info: infos)
+    {
+      if (info.Type() == BDSSamplerType::cylinder || info.Type() == BDSSamplerType::cylinderforward)
+        {result[static_cast<std::string>(info.UniqueName())] = info.Radius()/CLHEP::m;}
+    }
+  return result;
+}
+
+std::map<std::string, double> BDSSamplerRegistry::GetUniqueNameToRadiusSphere() const
+{
+  std::map<std::string, double> result;
+  for (const auto& info: infos)
+    {
+      if (info.Type() == BDSSamplerType::sphere || info.Type() == BDSSamplerType::sphereforward)
+        {result[static_cast<std::string>(info.UniqueName())] = info.Radius()/CLHEP::m;}
+    }
+  return result;
+}
+
+std::vector<std::pair<G4String, G4double> > BDSSamplerRegistry::GetUniquePlaneNamesAndSPosition() const
 {
   std::vector<std::pair<G4String, G4double> > result;
   for (const auto& info : infos)
-    {result.emplace_back(std::make_pair(info.UniqueName(), info.SPosition()));}
+    {
+      if (info.Type() == BDSSamplerType::sphere)
+        {result.emplace_back(std::make_pair(info.UniqueName(), info.SPosition()));}
+    }
   return result;
 }

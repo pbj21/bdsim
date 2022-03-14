@@ -67,7 +67,8 @@ namespace BDS
   void ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
                                 const std::set<std::string>& keys,
                                 G4int                        nSet,
-                                G4bool                       warnZeroParamsSet = true);
+                                G4bool                       warnZeroParamsSet = true,
+                                const G4String&              unitString = "");
 
   /// Construct the design and beam particle definitions. Even if these are the same, unique
   /// objects are created for and must be deleted elsewhere. Two pointers are passed by

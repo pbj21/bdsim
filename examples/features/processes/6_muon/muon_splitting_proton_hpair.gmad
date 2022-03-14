@@ -1,0 +1,30 @@
+
+
+
+
+!!! WARNING NOT USED - REMOVED FROM BDSIM SOURCE CODE
+
+
+
+
+d1: rcol, l=20*m, material="W", horizontalWidth=10*m;
+l1: line=(d1);
+use, l1;
+
+sample, all, partID={13,-13};
+
+beam, kineticEnergy=100*GeV;
+
+option, physicsList="ftfp_bert",
+	defaultRangeCut=1*m,
+	minimumKineticEnergy=100*MeV,
+	storeSamplerKineticEnergy=1,
+	storeSamplerPolarCoords=1,
+	seed=123,
+	printPhysicsProcesses=1;
+
+beam, particle="proton";
+
+option, muonSplittingFactor=100;
+
+

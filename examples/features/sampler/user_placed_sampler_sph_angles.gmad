@@ -1,0 +1,18 @@
+! rutherford scattering like setup
+
+t1: rcol, l=1e-6*m, material="Au";
+l1: line=(t1);
+use, l1;
+
+beam, particle="ion 4 2",
+      kineticEnergy=5*MeV;
+
+option, physicsList="em_ss ion_elastic",
+	stopSecondaries=1;
+
+
+s1: samplerplacement, aper1=60*cm, samplerType="sphere",
+    		      startAnglePhi=-pi/6, sweepAnglePhi=pi/3,
+		      startAngleTheta=pi/2-pi/8, sweepAngleTheta=pi/2+pi/4;
+
+option, worldMaterial="vacuum";

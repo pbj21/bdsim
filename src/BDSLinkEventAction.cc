@@ -42,6 +42,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 
+
 BDSLinkEventAction::BDSLinkEventAction(BDSOutput*        outputIn,
 				       BDSLinkRunAction* runActionIn,
 				       G4bool            debugIn):
@@ -129,7 +130,8 @@ void BDSLinkEventAction::EndOfEventAction(const G4Event* evt)
   output->FillEvent(nullptr,
 		    evt->GetPrimaryVertex(),
                     allSamplerHits,
-		    nullptr,
+		    std::vector<BDSHitsCollectionSamplerCylinder*>(),
+		    std::vector<BDSHitsCollectionSamplerSphere*>(),
                     samplerLink,
                     nullptr,
 		    nullptr,

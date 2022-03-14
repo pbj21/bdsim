@@ -95,11 +95,37 @@ G4String BDS::LowerCase(const G4String& str)
   return result;
 }
 
+G4String BDS::StrStrip(const G4String& str,
+                       char ch,
+                       StringStripType stripType)
+{
+  G4String result = str;
+  switch (stripType)
+    {
+#if G4VERSION_NUMBER > 1099
+    case StringStripType::leading:
+      {G4StrUtil::lstrip(result, ch);}
+    case StringStripType::trailing:
+      {G4StrUtil::rstrip(result, ch);}
+    case StringStripType::both:
+      {G4StrUtil::strip(result, ch);}
+#else
+    case StringStripType::leading:
+      {result.strip(G4String::stripType::leading, ch); break;}
+    case StringStripType::trailing:
+      {result.strip(G4String::stripType::trailing, ch); break;}
+    case StringStripType::both:
+      {result.strip(G4String::stripType::both, ch); break;}
+#endif
+    }
+  return result;
+}
+
 G4String BDS::PrepareSafeName(G4String name)
 {
   //remove white space
   name.erase(std::remove_if(name.begin(),name.end(),isspace),name.end());
-  //remove non alpha numeric characters
+  //remove non alpha-numeric characters
   std::replace_if(name.begin(),name.end(),BDS::non_alpha(),'_');
   
   return name;

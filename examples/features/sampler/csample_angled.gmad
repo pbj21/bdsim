@@ -1,0 +1,10 @@
+d1: drift, l=1*m;
+q1f: quadrupole, l=20*cm, k1=0.1;
+q1d: quadrupole, l=20*cm, k1=-0.1;
+sb1: sbend, l=2*m, angle=pi/6;
+l1: line=(d1,q1f,d1,sb1,d1,q1d,d1);
+use, l1;
+
+beam, particle="e-", kineticEnergy=1*GeV;
+
+csample, all;

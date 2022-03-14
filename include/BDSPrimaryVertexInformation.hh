@@ -39,6 +39,7 @@ class BDSParticleDefinition;
 class BDSPrimaryVertexInformation: public G4VUserPrimaryVertexInformation
 {
 public:
+  BDSPrimaryVertexInformation() = delete;
   BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
 			      const BDSParticleDefinition*       particle);
   BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
@@ -60,9 +61,6 @@ public:
   G4double mass;       ///< Mass of particle - recorded as G4Vertex doesn't take into account electrons.
   G4int    pdgID;      ///< Particle Data Group ID number.
   G4int    nElectrons; ///< Number of electrons if partially stripped ion or atom.
-
-private:
-  BDSPrimaryVertexInformation() = delete;
 };
 
 #endif

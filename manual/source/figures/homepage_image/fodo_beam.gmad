@@ -1,0 +1,22 @@
+! Wed, 19 Jan 2022 11:02:12 +0000
+! pybdsim.Builder Lattice, using pybdsim version 2.2.0 
+! BEAM DEFINITION
+
+beam,	distrType="gausstwiss",
+	kineticEnergy=1.5*GeV,
+	particle="proton",
+	alfx=-0.1,
+	alfy=0.2,
+	betx=70,
+	bety=10,
+	emitx=1e-5,
+	emity=1e-5,
+	sigmaE=0.01;
+	
+!	sigmaX=2*cm,
+!	sigmaY=0.5*cm,
+!	sigmaXp=0.1e-4,
+!	sigmaYp=1e-4;
+
+
+option, beampipeRadius=10*cm;

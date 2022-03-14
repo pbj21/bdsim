@@ -62,8 +62,8 @@ BDSArrayReflectionType BDS::DetermineArrayReflectionType(G4String arrayReflectio
   types["reflectxzdipole"]     = BDSArrayReflectionType::reflectxzdipole;
   types["reflectyzdipole"]     = BDSArrayReflectionType::reflectyzdipole;
   types["reflectxyquadrupole"] = BDSArrayReflectionType::reflectxyquadrupole;
-  
-  arrayReflectionType.toLower();
+
+  arrayReflectionType = BDS::LowerCase(arrayReflectionType);
 
   auto result = types.find(arrayReflectionType);
   if (result == types.end())
@@ -132,7 +132,6 @@ G4bool BDS::ProblemWithArrayReflectionCombination(const BDSArrayReflectionTypeSe
     }
   else
     {return false;}
-  return false;
 }
 
 std::ostream& operator<< (std::ostream &out, BDSArrayReflectionTypeSet const& t)

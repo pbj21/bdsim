@@ -33,6 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSOutputROOTEventSamplerC.hh"
+#include "BDSOutputROOTEventSamplerS.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTParticleData.hh"
 
@@ -138,12 +140,27 @@ void BDSOutputROOT::NewFile()
     {
       auto samplerTreeLocal = samplerTrees.at(i);
       auto samplerName      = samplerNames.at(i);
-      // set tree branches
       theEventOutputTree->Branch((samplerName+".").c_str(),
                                  "BDSOutputROOTEventSampler",
-                                 samplerTreeLocal,32000, globals->SamplersSplitLevel());
+                                 samplerTreeLocal, 32000, globals->SamplersSplitLevel());
     }
-
+  for (G4int i = 0; i < (G4int)samplerCTrees.size(); ++i)
+    {
+      auto samplerTreeLocal = samplerCTrees.at(i);
+      auto samplerName      = samplerCNames.at(i);
+      theEventOutputTree->Branch((samplerName+".").c_str(),
+				 "BDSOutputROOTEventSamplerC",
+				 samplerTreeLocal, 32000, globals->SamplersSplitLevel());
+    }
+  for (G4int i = 0; i < (G4int)samplerSTrees.size(); ++i)
+    {
+      auto samplerTreeLocal = samplerSTrees.at(i);
+      auto samplerName      = samplerSNames.at(i);
+      theEventOutputTree->Branch((samplerName+".").c_str(),
+				 "BDSOutputROOTEventSamplerS",
+				 samplerTreeLocal, 32000, globals->SamplersSplitLevel());
+    }
+  
   // build collimator structures
   if (CreateCollimatorOutputStructures())
     {

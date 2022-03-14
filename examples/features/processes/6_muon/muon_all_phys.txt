@@ -1,0 +1,4 @@
+Histogram1DLog  Event  AbsPionPMrp   {100} {-6:-1}  t1.rp  t1.weight*(abs(t1.partID)==211)
+Histogram1DLog  Event  AbsKaonPMrp   {100} {-6:-1}  t1.rp  t1.weight*(abs(t1.partID)==321)
+
+Histogram2D  Event  MuonXY  {100,100}  {-2:2,-2:2}  t1.y:t1.x  t1.weight*(abs(t1.partID)==13)

@@ -42,6 +42,8 @@ public:
   explicit BDSArrayOperatorIndexFlip(const std::array<G4bool,4>& xyztIn):
     BDSArrayOperatorIndexFlip()
   {
+    operatesOn = xyztIn;
+    
     for (G4int i = 0; i < 4; i++)
       {xyzt[0] = xyztIn[i] ? -1 : 1;}
   

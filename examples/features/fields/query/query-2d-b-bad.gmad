@@ -1,0 +1,12 @@
+include query-common.gmad;
+
+
+! Here we make the mistake of using xmin and xmax (from copy paste)
+! on the 2nd line for y.  This will result in ymin and ymax being 0.
+! We should warn about this if ny > 1.
+quA: query, nx=51, xmin=-30*cm, xmax=30*cm,
+     	    ny=51, xmin=-30*cm, xmax=30*cm,
+	    queryMagneticField=1,
+	    outfileMagnetic="out_query_2d_bfield_xy.dat",
+	    z=1.1*m,
+	    overwriteExistingFiles=1;

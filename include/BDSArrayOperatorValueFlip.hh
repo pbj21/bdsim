@@ -56,11 +56,10 @@ public:
   
   virtual BDSFieldValue Apply(BDSFieldValue v,
                               G4int /*xInd*/,
-                              G4int yInd = 0,
-                              G4int zInd = 0,
-                              G4int tInd = 0) const
+                              G4int /*yInd*/ = 0,
+                              G4int /*zInd*/ = 0,
+                              G4int /*tInd*/ = 0) const
   {
-    yInd = 1, zInd = 2, tInd = 4;// to retain default values and prevent compiler warnings
     return BDSFieldValue(v.x()*multiplier[0], v.y()*multiplier[1], v.z()*multiplier[2]);
   }
   

@@ -1,0 +1,4 @@
+include bdsimsampler.gmad;
+
+! only 10 events in file - force looping
+option, ngenerate=13;

@@ -42,7 +42,8 @@ ClassImp(BDSOutputROOTEventModel)
 
 BDSOutputROOTEventModel::BDSOutputROOTEventModel():
   n(0),
-  storeCollimatorInfo(false)
+  storeCollimatorInfo(false),
+  nCollimators(0)
 {
   Flush();
 }
@@ -70,8 +71,6 @@ int BDSOutputROOTEventModel::findNearestElement(const TVector3& point) const
 void BDSOutputROOTEventModel::Flush()
 {
   n = 0;
-  samplerNamesUnique.clear();
-  samplerSPosition.clear();
   componentName.clear();
   placementName.clear();
   componentType.clear();
@@ -149,12 +148,20 @@ void BDSOutputROOTEventModel::Flush()
 
   materialIDToName.clear();
   materialNameToID.clear();
+  
+  samplerNamesUnique.clear();
+  samplerSPosition.clear();
+  samplerCNamesUnique.clear();
+  samplerSNamesUnique.clear();
+  samplerCRadius.clear();
+  samplerSRadius.clear();
 }
 
 #ifndef __ROOTBUILD__
 BDSOutputROOTEventModel::BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn):
   n(0),
-  storeCollimatorInfo(storeCollimatorInfoIn)
+  storeCollimatorInfo(storeCollimatorInfoIn),
+  nCollimators(0)
 {;}
 
 TRotation BDSOutputROOTEventModel::ConvertToROOT(const G4RotationMatrix* rm) const
@@ -190,11 +197,18 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
 				   const std::map<short int, G4String>*     materialIDToNameUnique,
 				   G4bool storeTrajectory)
 {
-  for (const auto& nameSPos : BDSSamplerRegistry::Instance()->GetUniqueNamesAndSPosition())
+  auto sr = BDSSamplerRegistry::Instance();
+  for (const auto& nameSPos : sr->GetUniquePlaneNamesAndSPosition())
     {
       samplerNamesUnique.push_back(std::string(nameSPos.first) + ".");
       samplerSPosition.push_back((double) nameSPos.second / CLHEP::m);
     }
+  for (const auto& name : sr->GetUniqueNamesCylinder())
+    {samplerCNamesUnique.push_back(std::string(name) + ".");}
+  for (const auto& name : sr->GetUniqueNamesSphere())
+    {samplerSNamesUnique.push_back(std::string(name) + ".");}
+  samplerCRadius = sr->GetUniqueNameToRadiusCylinder();
+  samplerSRadius = sr->GetUniqueNameToRadiusSphere();
 
   for (const auto& name : collimatorBranchNamesIn)
     {collimatorBranchNamesUnique.push_back(std::string(name) + ".");}

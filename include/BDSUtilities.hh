@@ -64,6 +64,19 @@ namespace BDS
   /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
   G4String LowerCase(const G4String& str);
 
+  /// Because Geant4 is removing this we need to maintain it to have backwards compatibility,
+  /// sadly polluting BDSIM.
+  enum class StringStripType
+  {
+    leading,
+    trailing,
+    both
+  };
+  /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
+  G4String StrStrip(const G4String& str,
+                    char ch,
+                    StringStripType stripType = StringStripType::both);
+
   /// Remove white space and special characters in the name
   G4String PrepareSafeName(G4String name);
 

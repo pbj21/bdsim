@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Transform3D.hh"
 
+#include <array>
 #include <set>
 
 class BDSArray1DCoords;
@@ -114,8 +115,11 @@ private:
 		       BDSArrayOperatorValue*& valueOperator) const;
   
   /// Print a warning if the array info says the zero-point in array coordinates is
-  /// not within the tolerance value.
-  void ReportIfProblemWithReflection(const BDSArrayInfo& info, G4double tolerance=0.05) const;
+  /// not within the tolerance value. Only do this for dimensions where index operating
+  /// is applied as given by operatesOnXYZT.
+  void ReportIfProblemWithReflection(const BDSArrayInfo& info,
+                                     const std::array<G4bool, 4>& operatesOnXYZT,
+                                     G4double tolerance=0.05) const;
 
   /// Small utility to check the pointer is valid and if it is that it's also not empty.
   /// Returns true only if it's value and not empty.

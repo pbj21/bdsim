@@ -51,8 +51,11 @@ public:
   /// Apply a transform to the coordinates and return a copy of them transformed.
   BDSParticleCoords ApplyTransform(const G4Transform3D& transform) const;
 
-  /// Apply an offset to the spatial coordiantes only and return a copy.
+  /// Apply an offset to the spatial coordinates only and return a copy.
   BDSParticleCoords ApplyOffset(const G4ThreeVector& offset) const;
+  
+  /// Apply an offset to the spatial coordinates only - assignment.
+  void AddOffset(const G4ThreeVector& offset);
   
   /// Output stream
   friend std::ostream& operator<< (std::ostream& out, BDSParticleCoords const& p);

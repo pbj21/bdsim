@@ -27,13 +27,15 @@ Fields
 ------
 
 BDSIM provides the facility to overlay magnetic, electric, or combined electromagnetic fields
-on an element, as defined by an externally provided field map. A field map is an array of evenly
-space points in **Cartesian** coordinates that define the field as a 3-vector at that point.
+on an element, as defined either by an externally provided field map or by a 'pure' field from
+an equation already included in BDSIM. A field map is an array of evenly space points in **Cartesian**
+coordinates that define the field as a 3-vector at that point.
+
 A field can be applied to an element or a piece of geometry for:
 
-1) only the "vacuum" volume(s) ("fieldVacuum")
-2) only the "outer" volume(s) outside the vacuum (i.e. the yoke) ("fieldOuter")
-3) or one full map for the whole element. ("fieldAll")
+#) only the "vacuum" volume(s) ("fieldVacuum")
+#) only the "outer" volume(s) outside the vacuum (i.e. the yoke) ("fieldOuter")
+#) or one full map for the whole element. ("fieldAll")
 
 BDSIM allows any Geant4 integrator to be used to calculate the motion of the particle, which
 can be chosen given knowledge of the smoothness of the field or the application (default is
@@ -57,6 +59,7 @@ The field map is a 3D field map in BDSIM file format and uses cubic interpolatio
 
 
 * :code:`field` objects are described below at: :ref:`field-map-definition`.
+* Pure fields are described at: :ref:`fields-pure-field-types`.
 * Accepted file formats for a field object are described below at: :ref:`field-map-file-formats`.
 * Specific field map file descriptions are described here: :ref:`field-map-formats`.
 * Allowable different combinations of dimension are described here: :ref:`fields-different-dimensions`.
@@ -244,8 +247,8 @@ Field Types
 
 * These are not case sensitive.
 
-.. tabularcolumns:: |p{0.40\textwidth}|p{0.60\textwidth}|
-
+.. tabularcolumns:: |p{4cm}|p{6cm}|
+		    
 +------------------+----------------------------------+
 | **Type String**  | **Description**                  |
 +==================+==================================+
@@ -292,13 +295,13 @@ The pure fields can be used as a field object in BDSIM. The :code:`type` in the
 field definition must be exactly one of the internal names used for the field name.
 
 * See field types here: :ref:`dev-fields-pure-field-names`.
-* No units may be used inside the :code:`fieldParameters` string.
+* No units or commas may be used inside the :code:`fieldParameters` string.
+* The :code:`fieldParameters` string should have parameter=value pairs white-space separated.
 * Normalised field strengths are used with respect to the beam particle and design energy.
 
 Example: ::
 
-  f1: field, type="dipole",
-             fieldParameters="field=1.2, by=1.0";
+  f1: field, type="dipole", fieldParameters="field=1.2 by=1.0";
 
 For a dipole field with value 1.2 T and along the unit Y axis (local). The other
 components of the unit vector associated with it will default to 0.
@@ -508,9 +511,9 @@ is automatically chosen based on the number of dimensions in the field map type.
 File Formats
 ^^^^^^^^^^^^
 
-.. tabularcolumns:: |p{0.40\textwidth}|p{0.60\textwidth}|
-
 .. note:: BDSIM field maps by default have units :math:`cm,s`.
+
+.. tabularcolumns:: |p{3cm}|p{6cm}|
 
 +------------------+--------------------------------------------+
 | **Format**       | **Description**                            |
@@ -647,8 +650,8 @@ centre the view nicely and make a quadrupole transparent.
 * It may be required to make volumes partially transparent to see the field arrows.
 * 4D queries will not work. Only up to 3D is supported.
 * The visualisation may become very slow if a large (e.g. > 100x100 in x,y) points is used.
-  This is a limitation of the visualisation system. Typically, the querying of the model
-  is very quick and it is drawing the arrows that takes time.
+  This is a limitation of the visualisation system in Geant4. Typically, the querying of
+  the model is very quick and it is drawing the arrows that takes time.
 * Magnetic fields are drawn with the matplotlib "viridis" colour scale and electric
   fields with the "magma" colour scale.
 * Both electric and magnetic fields may be visualised as defined by the query object.
@@ -706,7 +709,7 @@ or: ::
 
 The following parameters can be used in a query object:
 
-.. tabularcolumns:: |p{3cm}|p{7cm}|
+.. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +-------------------------+------------------------------------------------+
 | **Parameter**           | **Description**                                |
@@ -798,6 +801,9 @@ The following parameters can be used in a query object:
 * The default is to query the magnetic field only and **to overwrite** files.
 * The ranges defined will be queried in the global frame if no transform is specified,
   otherwise they will be about the point / frame of the transform.
+* In the case where a reference element is used, the frame includes the offset of that
+  element, so the x,y = 0,0 point is the same as the element even if that is offset
+  from the reference axis of the accelerator.
 * If you don't wish to query a dimension, then the number of points should be
   1, which is the default and need not be specified.
 * Units are **m** and **ns** by default, the same as BDSIM.
@@ -1078,6 +1084,7 @@ elements, mass fractions, temperature and state.
 * clay
 * clayousMarl
 * concrete
+* copperdiamond
 * cu_2k (G4_Cu at 2K)
 * cu_4k (G4_Cu at 4K)
 * dy061
@@ -1088,6 +1095,9 @@ elements, mass fractions, temperature and state.
 * graphite
 * graphitefoam
 * hy906
+* inermet170
+* inermet176
+* inermet180
 * invar
 * kapton
 * lanex
@@ -1101,6 +1111,7 @@ elements, mass fractions, temperature and state.
 * liquidhelium
 * marl
 * medex
+* molybdenumcarbide (also "mogr")
 * mild_steel
 * n-bk7
 * nb_87k
@@ -1209,6 +1220,8 @@ The required parameters and their meaning are given in the following table.
 	  but can of course can be controlled with :code:`vacuumMaterial`. So you could create
 	  a magnet with air and no beam pipe.
 .. note:: The default beam pipe material is "stainlessSteel".
+
+.. tabularcolumns:: |p{3cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|
 
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
 | Aperture Model    | # of         | `aper1`           | `aper2`         | `aper3`        | `aper4`          |
@@ -1811,7 +1824,7 @@ file. See :ref:`externally-provided-geometry` for more details.
 * See also :ref:`physics-bias-importance-sampling` for usage of this.
 * The world **material** will be taken from the GDML file and the option :code:`worldMaterial`
   will be ignored. If the option :code:`worldMaterial` is specified as well as
-  :code:`worldGeometryFile`, BDSIM will exit.
+  :code:`worldGeometryFile`, BDSIM will issue a warning but proceed.
 * The option :code:`autoColourWorldGeometryFile` can be used (default true) to colour
   the supplied geometry by density. See :ref:`automatic-colours` for details.
 * The option :code:`biasForWorldContents` may be used to attach a bias object to the

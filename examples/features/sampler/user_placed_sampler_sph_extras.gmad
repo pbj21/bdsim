@@ -1,0 +1,3 @@
+include user_placed_sampler_sph.gmad;
+
+option, storeSampleAll=1;

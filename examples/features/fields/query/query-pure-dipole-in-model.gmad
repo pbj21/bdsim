@@ -1,7 +1,7 @@
 include query-common.gmad;
 
 f2: field, type="dipole",
-           fieldParameters="field=1.2, by=1.0";
+           fieldParameters="field=1.2 by=1.0";
 
 e2: element, l=100*mm, geometryFile="gdml:abox.gdml", fieldAll="f2";
 l2: line=(d1,e2,d1);
@@ -32,14 +32,14 @@ quC: query, nx=51, xmin=-30*cm, xmax=30*cm,
      	    ny=51, ymin=-30*cm, ymax=30*cm,
 	    queryMagneticField=1,
 	    outfileMagnetic="out_query_1d_bfield_xy_element.dat",
-	    referenceElement="e1",
+	    referenceElement="e2",
 	    overwriteExistingFiles=1;
 
 ! XZ
-! s=2.8m should be half way through the bend
+! s=1.05m should be half way through the e2 element
 quD: query, nx=51, xmin=-30*cm, xmax=30*cm,
 	    nz=51, zmin=-30*cm, zmax=30*cm,
 	    queryMagneticField=1,
 	    outfileMagnetic="out_query_2d_bfield_xz.dat",
-	    s=2.8*m,
+	    s=1.05*m,
 	    overwriteExistingFiles=1;

@@ -19,7 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPSCellFlux4D.hh"
 #include "BDSHistBinMapper.hh"
 
+#ifdef USE_BOOST
 #include <boost/variant.hpp>
+#endif
 
 #include <iostream>
 

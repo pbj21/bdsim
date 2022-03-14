@@ -202,7 +202,7 @@ void BDSMaterials::DefineMetals()
 	      {"C", "Mn", "Si", "Fe"},
 	      std::list<double>{0.002, 0.005, 0.0015, 0.99150});
   
-  // Pure tungsten is not typically used, but instead instead as part of "heavy
+  // Pure tungsten is not typically used, but instead part of "heavy
   // alloy."  I think "heavy" in the sense that the tungsten makes up almost
   // all of the composition, and tungsten is a very dense metal.
   AddMaterial("tungsten_heavy_alloy",
@@ -210,6 +210,27 @@ void BDSMaterials::DefineMetals()
 	      kStateSolid, 87, 1,
       {"W", "Ni", "Fe"},
 	      std::list<double>{0.97, 0.02, 0.01});
+  
+  // For HL-LHC Collimation - Inermet170
+  AddMaterial("inermet170",
+              17.0,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.90, 0.05, 0.05});
+  
+  // For HL-LHC Collimation - Inermet176
+  AddMaterial("inermet176",
+              17.6,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.925, 0.0375, 0.0375});
+  
+  // For HL-LHC Collimation - Inermet180
+  AddMaterial("inermet180",
+              18.0,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.95, 0.025, 0.025});
 }
 
 void BDSMaterials::DefineSuperconductors()
@@ -779,6 +800,22 @@ void BDSMaterials::DefineLHCComponents()
 	      kStateSolid, 4, 1,
 	      {"nbti_87k","cu_4k"},
 	      std::list<double>{1.0/5.4, 4.4/5.4});
+  
+  // For HL-LHC Collimation - Copper Diamond - TBC - component fractions
+  AddMaterial("copperdiamond",
+              5.3,
+              kStateSolid, 300, 1,
+              {"Cu", "C"},
+              std::list<double>{0.32, 0.68});
+  AddExistingMaterialAlias("copperdiamond", "cucd");
+  
+  // For HL-LHC Collimation - Copper Diamond
+  AddMaterial("molybdenumcarbide",
+              8.9,
+              kStateSolid, 300, 1,
+              {"Mo", "C"},
+              std::list<int>{1, 1});
+  AddExistingMaterialAlias("molybdenumcarbide", "mogr");
 }
 
 void BDSMaterials::DefineLiquids()
@@ -981,7 +1018,7 @@ void BDSMaterials::AddMaterial(G4String name,
       G4cout << "BDSMaterials::AddMaterial: " << *sIter << G4endl;
 #endif
       G4Element* element = CheckElement(*sIter);
-      if(element)
+      if (element)
 	{tmpMaterial->AddElement(element, (*dIter));}
       else
 	{tmpMaterial->AddMaterial(GetMaterial(*sIter), (*dIter));}

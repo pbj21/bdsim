@@ -1,0 +1,24 @@
+! Wed, 19 Jan 2022 11:02:12 +0000
+! pybdsim.Builder Lattice, using pybdsim version 2.2.0 
+! LATTICE SEQUENCE DEFINITION
+
+l0: line = (fodo_0_qfa, fodo_0_d00, fodo_0_d01, fodo_0_d02,
+	fodo_0_d03, fodo_0_d04, fodo_0_d05, fodo_0_d06, fodo_0_d07,
+	fodo_0_d08, fodo_0_d09, fodo_0_qd, fodo_0_d00, fodo_0_d01, fodo_0_d02,
+	fodo_0_d03, fodo_0_d04, fodo_0_d05, fodo_0_d06, fodo_0_d07,
+	sa, fodo_0_d09, fodo_0_qfb, fodo_1_qfa, fodo_1_d00,
+	fodo_1_d01, fodo_1_d02, fodo_1_d03, fodo_1_d04, fodo_1_d05,
+	fodo_1_d06, fodo_1_d07, fodo_1_d08, fodo_1_d09, fodo_1_qd, fodo_1_d00,
+	fodo_1_d01, fodo_1_d02, fodo_1_d03, fodo_1_d04, fodo_1_d05,
+	tch, de, fodo_1_d07, sb, fodo_1_d09, fodo_1_qfb, fodo_0_d00, oa, fodo_0_d00);
+lattice: line = (l0);
+use, period=lattice;
+
+
+
+l2: line = (lhcb1, fodo_0_d06, fodo_0_d07,
+	sa, fodo_0_d09, fodo_0_qfb, fodo_1_qfa, fodo_1_d00,
+	fodo_1_d01, fodo_1_d02, fodo_1_d03, fodo_1_d04, fodo_1_d05,
+	fodo_1_d06, fodo_1_d07, fodo_1_d08, fodo_1_d09, fodo_1_qd, fodo_1_d00,
+	fodo_1_d01, fodo_1_d02, fodo_1_d03, fodo_1_d04, fodo_1_d05,
+	tch, de, fodo_1_d07, sb, fodo_1_d09, fodo_1_qfb, fodo_0_d00, oa, fodo_0_d00);

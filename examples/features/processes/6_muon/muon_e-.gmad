@@ -1,7 +1,2 @@
-include muon_components.gmad;
-include muon_sequence.gmad;
-include muon_options.gmad;
-include muon_beam_e-.gmad;
-
-sample, all;
-
+include muon_common.gmad;
+beam,  particle="e-";

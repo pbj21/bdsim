@@ -39,7 +39,7 @@ class BDSHitEnergyDeposition;
 class BDSHitCollimator: public G4VHit
 {
 public:
-  BDSHitCollimator();
+  BDSHitCollimator() = delete;
   BDSHitCollimator(const BDSBeamline*   beamlineIn,
 		   G4int                collimatorIndexIn,
 		   const G4ThreeVector& preStepPositionIn,

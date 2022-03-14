@@ -42,6 +42,8 @@ class BDSOutputROOTEventModel;
 class BDSOutputROOTEventOptions;
 class BDSOutputROOTEventRunInfo;
 template<class T> class BDSOutputROOTEventSampler;
+class BDSOutputROOTEventSamplerC;
+class BDSOutputROOTEventSamplerS;
 class BDSOutputROOTEventTrajectory;
 class BDSOutputROOTParticleData;
 class G4Material;
@@ -144,6 +146,10 @@ protected:
   std::vector<BDSOutputROOTEventSampler<float>*> samplerTrees;
 #endif
   std::vector<std::string> samplerNames; ///< Sampler names to use.
+  std::vector<BDSOutputROOTEventSamplerC*> samplerCTrees;
+  std::vector<BDSOutputROOTEventSamplerS*> samplerSTrees;
+  std::vector<std::string> samplerCNames;
+  std::vector<std::string> samplerSNames;
   
   BDSOutputROOTEventRunInfo*    runInfo;            ///< Run information.
   BDSOutputROOTEventHistograms* runHistos;          ///< Run level histograms

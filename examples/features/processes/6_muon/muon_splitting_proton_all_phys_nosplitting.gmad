@@ -1,0 +1,3 @@
+include muon_splitting_proton_all_phys.gmad;
+
+option, muonSplittingFactor=1;

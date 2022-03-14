@@ -38,6 +38,8 @@ class BDSLinkRegistry;
 class BDSMultiSensitiveDetectorOrdered;
 class BDSSDFilterPDGIDSet;
 class BDSSDSampler;
+class BDSSDSamplerCylinder;
+class BDSSDSamplerSphere;
 class BDSSDTerminator;
 class BDSSDThinThing;
 class BDSSDVolumeExit;
@@ -84,7 +86,10 @@ public:
   inline BDSSDSampler* SamplerPlane() const {return samplerPlane;}
 
   /// SD for samplers (cylinder type).
-  inline BDSSDSampler* SamplerCylinder() const {return samplerCylinder;}
+  inline BDSSDSamplerCylinder* SamplerCylinder() const {return samplerCylinder;}
+  
+  /// SD for samplers (sphere type).
+  inline BDSSDSamplerSphere* SamplerSphere() const {return samplerSphere;}
 
   /// SD for link samplers.
   inline BDSSDSamplerLink* SamplerLink() const {return samplerLink;}
@@ -171,8 +176,20 @@ public:
   /// Access a vector of names of extra samplers so we can identify the hits collections.
   inline const std::vector<G4String>& ExtraSamplerWithFilterNamesComplete() const {return extraSamplerWithFilterNamesComplete;}
   
+  /// Access a vector of names of extra samplers so we can identify the hits collections.
+  inline const std::vector<G4String>& ExtraSamplerCylinderWithFilterNamesComplete() const {return extraSamplerCylinderWithFilterNamesComplete;}
+  
+  /// Access a vector of names of extra samplers so we can identify the hits collections.
+  inline const std::vector<G4String>& ExtraSamplerSphereWithFilterNamesComplete() const {return extraSamplerSphereWithFilterNamesComplete;}
+  
   /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
   BDSSDSampler* SamplerPlaneWithFilter(G4int ID) const;
+  
+  /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
+  BDSSDSamplerCylinder* SamplerCylinderWithFilter(G4int ID) const;
+  
+  /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
+  BDSSDSamplerSphere* SamplerSphereWithFilter(G4int ID) const;
   
 private:
   /// Private default constructor for singleton.
@@ -182,7 +199,8 @@ private:
 
   /// @{ SD instance.
   BDSSDSampler*                samplerPlane;
-  BDSSDSampler*                samplerCylinder;
+  BDSSDSamplerCylinder*        samplerCylinder;
+  BDSSDSamplerSphere*          samplerSphere;
   BDSSDSamplerLink*            samplerLink;
   BDSSDTerminator*             terminator;
   BDSSDEnergyDeposition*       energyDeposition;
@@ -216,8 +234,12 @@ private:
   std::map<G4String, G4double> primitiveScorerNameToUnit;
   
   std::map<G4int, BDSSDSampler*> extraSamplersWithFilters;
+  std::map<G4int, BDSSDSamplerCylinder*> extraSamplerCylindersWithFilters;
+  std::map<G4int, BDSSDSamplerSphere*> extraSamplerSpheresWithFilters;
   std::map<G4int, BDSSDFilterPDGIDSet*> extraSamplerFilters;
   std::vector<G4String> extraSamplerWithFilterNamesComplete;
+  std::vector<G4String> extraSamplerCylinderWithFilterNamesComplete;
+  std::vector<G4String> extraSamplerSphereWithFilterNamesComplete;
 
   /// @{ Cache of global constant option.
   G4bool   storeCollimatorHitsAll;

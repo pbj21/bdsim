@@ -183,6 +183,10 @@ public:
   inline G4bool   BeamPipeIsInfiniteAbsorber() const {return G4bool(options.beamPipeIsInfiniteAbsorber);}
   inline G4bool   CollimatorsAreInfiniteAbsorbers() const {return G4bool(options.collimatorsAreInfiniteAbsorbers);}
   inline G4bool   TunnelIsInfiniteAbsorber() const {return G4bool  (options.tunnelIsInfiniteAbsorber);}
+  inline G4int    MuonSplittingFactor()      const {return G4int   (options.muonSplittingFactor);}
+  inline G4double MuonSplittingThresholdParentEk() const {return G4double(options.muonSplittingThresholdParentEk * CLHEP::GeV);}
+  inline G4int    MuonSplittingFactor2()      const {return G4int   (options.muonSplittingFactor2);}
+  inline G4double MuonSplittingThresholdParentEk2() const {return G4double(options.muonSplittingThresholdParentEk2) * CLHEP::GeV;}
   inline G4String BiasForWorldVolume()       const {return G4String(options.biasForWorldVolume);}
   inline G4String BiasForWorldContents()     const {return G4String(options.biasForWorldContents);}
   inline G4String BiasForWorldVacuum()       const {return G4String(options.biasForWorldVacuum);}
@@ -330,6 +334,7 @@ public:
   inline G4bool   TeleporterFullTransform()  const {return G4bool  (options.teleporterFullTransform);}
   inline G4double DEThresholdForScattering() const {return G4double(options.dEThresholdForScattering)*CLHEP::GeV;}
   inline G4String PTCOneTurnMapFileName()    const {return G4String (options.ptcOneTurnMapFileName);}
+  inline G4double BackupStepperMomLimit()    const {return G4double(options.backupStepperMomLimit)*CLHEP::rad;}
 
   /// @{ options that require some implementation.
   G4bool StoreTrajectoryTransportationSteps() const;

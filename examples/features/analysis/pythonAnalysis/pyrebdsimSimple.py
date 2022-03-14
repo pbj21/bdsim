@@ -9,11 +9,11 @@ The same as pyrebdsim.py but without comments and minimal code.
 def AnalyseFile(filename, outfilename):
     d = pybdsim.Data.Load(filename)
     
-    h = ROOT.TH1D("BaseEventDuration",
-                  "BaseEvent Durations",
+    h = ROOT.TH1D("EventDurationBASE",
+                  "Event Durations",
                   50, 0, 10) # 50 bins from 0 to 10
 
-    accH = ROOT.HistogramAccumulator(h,str(h.GetName()).strip('Base'),str(h.GetTitle()).strip('Base'))
+    accH = ROOT.HistogramAccumulator(h,str(h.GetName())[:-4],str(h.GetTitle()))
 
     eventTree = d.GetEventTree()
     for event in eventTree:

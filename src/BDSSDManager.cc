@@ -31,6 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDFilterPrimary.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDSampler.hh"
+#include "BDSSDSamplerCylinder.hh"
+#include "BDSSDSamplerSphere.hh"
 #include "BDSSDSamplerLink.hh"
 #include "BDSSDThinThing.hh"
 #include "BDSSDType.hh"
@@ -134,13 +136,14 @@ BDSSDManager::BDSSDManager()
   
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   
-  // Sampler plane
   samplerPlane = new BDSSDSampler("plane");
   SDMan->AddNewDetector(samplerPlane);
-
-  // Sampler cylindrical
-  samplerCylinder = new BDSSDSampler("cylinder");
+  
+  samplerCylinder = new BDSSDSamplerCylinder("cylinder");
   SDMan->AddNewDetector(samplerCylinder);
+  
+  samplerSphere = new BDSSDSamplerSphere("sphere");
+  SDMan->AddNewDetector(samplerSphere);
 
   samplerLink = new BDSSDSamplerLink("link");
   SDMan->AddNewDetector(samplerLink);
@@ -210,16 +213,16 @@ BDSSDManager::BDSSDManager()
   collimatorCompleteSD->AddSD(collimatorSD);
   // set up a filter for the collimator sensitive detector - always store primary hits
   G4VSDFilter* filter = nullptr;
-  G4bool applyColliatorHitsKEFilter = collimatorHitsMinimumKE > 0;
-  if (storeCollimatorHitsAll && applyColliatorHitsKEFilter)
+  G4bool applyCollimatorHitsKEFilter = collimatorHitsMinimumKE > 0;
+  if (storeCollimatorHitsAll && applyCollimatorHitsKEFilter)
     {filter = filters["coll_min_ke"];}
   else if (storeCollimatorHitsAll)
     {filter = nullptr;} // no filter -> store all
-  else if (storeCollimatorHitsIons && applyColliatorHitsKEFilter) // primaries plus ion fragments
+  else if (storeCollimatorHitsIons && applyCollimatorHitsKEFilter) // primaries plus ion fragments
     {filter = filters["primary_or_ion_coll_min_ke"];}
   else if (storeCollimatorHitsIons)
     {filter = filters["primary_or_ion"];}
-  else if (applyColliatorHitsKEFilter)
+  else if (applyCollimatorHitsKEFilter)
     {filter = filters["primary_coll_min_ke"];} // primaries + KE filter
   else
     {filter = filters["primary"];} // just primaries
@@ -409,7 +412,11 @@ void BDSSDManager::SetLinkRegistry(BDSLinkRegistry* registry)
 void BDSSDManager::ConstructSamplerSDsForParticleSets(const std::map<int, std::set<int>>& samplerFilterIDtoPDGSetIn)
 {
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
-  
+
+  // we construct one of each sampler type per filter set as we don't know
+  // from the parser how they'll be used. very small overhead.
+
+  // plane sampler SDs
   for (const auto& IDAndSet : samplerFilterIDtoPDGSetIn)
     {
       G4String samplerName = "plane_with_PDG_set_" + std::to_string(IDAndSet.first);
@@ -421,10 +428,44 @@ void BDSSDManager::ConstructSamplerSDsForParticleSets(const std::map<int, std::s
       extraSamplerFilters[(G4int)IDAndSet.first] = filter; // keep a map of them for deleting later
       SDMan->AddNewDetector(aSampler);
     }
+  // cylindrical sampler SDs
+  for (const auto& IDAndSet : samplerFilterIDtoPDGSetIn)
+    {
+      G4String samplerName = "cylinder_with_PDG_set_" + std::to_string(IDAndSet.first);
+      auto aSampler = new BDSSDSamplerCylinder(samplerName);
+      extraSamplerCylinderWithFilterNamesComplete.emplace_back(samplerName);
+      // filter already exists - reuse
+      aSampler->SetFilter(extraSamplerFilters[(G4int)IDAndSet.first] );
+      extraSamplerCylindersWithFilters[(G4int)IDAndSet.first] = aSampler;
+      SDMan->AddNewDetector(aSampler);
+    }
+  // spherical sampler SDs
+  for (const auto& IDAndSet : samplerFilterIDtoPDGSetIn)
+    {
+      G4String samplerName = "sphere_with_PDG_set_" + std::to_string(IDAndSet.first);
+      auto aSampler = new BDSSDSamplerSphere(samplerName);
+      extraSamplerSphereWithFilterNamesComplete.emplace_back(samplerName);
+      // filter already exists - reuse
+      aSampler->SetFilter(extraSamplerFilters[(G4int)IDAndSet.first] );
+      extraSamplerSpheresWithFilters[(G4int)IDAndSet.first] = aSampler;
+      SDMan->AddNewDetector(aSampler);
+    }
 }
 
 BDSSDSampler* BDSSDManager::SamplerPlaneWithFilter(G4int ID) const
 {
   auto search = extraSamplersWithFilters.find(ID);
   return search != extraSamplersWithFilters.end() ? search->second : nullptr;
+}
+
+BDSSDSamplerCylinder* BDSSDManager::SamplerCylinderWithFilter(G4int ID) const
+{
+  auto search = extraSamplerCylindersWithFilters.find(ID);
+  return search != extraSamplerCylindersWithFilters.end() ? search->second : nullptr;
+}
+
+BDSSDSamplerSphere* BDSSDManager::SamplerSphereWithFilter(G4int ID) const
+{
+  auto search = extraSamplerSpheresWithFilters.find(ID);
+  return search != extraSamplerSpheresWithFilters.end() ? search->second : nullptr;
 }

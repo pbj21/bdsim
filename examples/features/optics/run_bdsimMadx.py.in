@@ -60,7 +60,7 @@ def Main():
     options,args = parser.parse_args()
 
     if args:
-        print "ERROR when parsing, leftover arguments", args
+        print("ERROR when parsing, leftover arguments", args)
         raise SystemExit
     
     if options.clean:    

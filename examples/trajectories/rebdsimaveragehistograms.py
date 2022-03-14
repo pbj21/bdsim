@@ -17,15 +17,15 @@ def Analyse(filename, outputfilename):
         # y dimension of histogram: 50 bins in X from -1 to 1 m
         # note the histogram has no concept of units - it's purely just a
         # number so we need to choose ranges appropriately
-        h = ROOT.TH2D("Origin_ZX_"+ps, "Origin of "+ps, 50, 0, 10, 50, -0.5, 0.5)
+        h = ROOT.TH2D("Origin_ZX_"+ps+"BASE", "Origin of "+ps, 50, 0, 10, 50, -0.5, 0.5)
         baseHistograms[p] = h
 
     # make accumulators that calculate a rolling average for each histogram
     accumulators = {}
     for p,hist in baseHistograms.items():
-        title = hist.GetTitle()
-        name  = hist.GetName()
-        accumulators[p] = ROOT.HistogramAccumulator(hist, 2, name, title)
+        # note we must have a different name for the resultant accumulated histogram, so we strip
+        # off the 'BASE' suffix we added (knowingly) to the base histogram
+        accumulators[p] = ROOT.HistogramAccumulator(hist, hist.GetName().strip("BASE"), hist.GetTitle())
 
     eventTree = d.GetEventTree()
     # using this python syntax for name in thing, ROOT will make the variable

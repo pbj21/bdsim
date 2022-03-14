@@ -1,0 +1,21 @@
+beam, particle              = "e-",
+      energy                = 1.0*GeV,
+      distrType             = "halosigma",
+      betx                  = 9.701136465,
+      bety                  = 46.95602673,
+      alfx                  = -0.5542165316,
+      alfy                  = 2.310858304,
+      emitx                 = 5e-9,
+      emity                 = 4e-9,
+      haloNSigmaXInner      = 3.0,
+      haloNSigmaXOuter      = 30,
+      haloNSigmaYInner      = 3.,
+      haloNSigmaYOuter      = 20;
+
+
+
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

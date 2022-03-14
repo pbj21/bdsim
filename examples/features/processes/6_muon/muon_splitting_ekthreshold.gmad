@@ -1,0 +1,19 @@
+t1: rcol, l=2*m, material="Cu";
+l1: line=(t1);
+use, l1;
+
+!sample, all, partID={12,-12,13,-13,14,-14};
+sample, all, partID={12,-12,13,-13,14,-14};
+
+option, physicsList="g4FTFP_BERT",
+	geant4PhysicsMacroFileName="emextraphysics.mac",
+	minimumKineticEnergy=10*GeV,
+	defaultRangeCut=10*cm,
+	elossHistoBinWidth=5*cm;
+
+option, storeSamplerPolarCoords=1;
+
+beam, particle="proton", kineticEnergy=500*GeV;
+
+option, muonSplittingFactor=10,
+	muonSplittingThresholdParentEk=50*GeV;

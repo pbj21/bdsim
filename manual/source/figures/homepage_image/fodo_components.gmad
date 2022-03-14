@@ -1,0 +1,53 @@
+! Wed, 19 Jan 2022 11:02:12 +0000
+! pybdsim.Builder Lattice, using pybdsim version 2.2.0 
+! COMPONENT DEFINITION
+
+!st = 1.85185185;
+st = 1.95;
+
+fodo_0_qfa: quadrupole, k1=st, l=0.15;
+fodo_0_d00: drift, l=0.15;
+fodo_0_d01: drift, l=0.15;
+fodo_0_d02: drift, l=0.15;
+fodo_0_d03: drift, l=0.15;
+fodo_0_d04: drift, l=0.15;
+fodo_0_d05: drift, l=0.15;
+fodo_0_d06: drift, l=0.15;
+fodo_0_d07: drift, l=0.15;
+fodo_0_d08: drift, l=0.15;
+fodo_0_d09: drift, l=0.15;
+fodo_0_qd: quadrupole, k1=-st, l=0.3;
+fodo_0_qfb: quadrupole, k1=st, l=0.15;
+fodo_1_qfa: quadrupole, k1=st, l=0.15;
+fodo_1_d00: drift, l=0.15;
+fodo_1_d01: drift, l=0.15;
+fodo_1_d02: drift, l=0.15;
+fodo_1_d03: drift, l=0.15;
+fodo_1_d04: drift, l=0.15;
+fodo_1_d05: drift, l=0.15;
+fodo_1_d06: drift, l=0.15;
+fodo_1_d07: drift, l=0.15;
+fodo_1_d08: drift, l=0.15;
+fodo_1_d09: drift, l=0.15;
+fodo_1_qd: quadrupole, k1=-st, l=0.3;
+fodo_1_qfb: quadrupole, k1=st, l=0.15;
+
+
+sa: sextupole, l=0.15*m, k2=10, magnetGeometryType="polesfacetcrop", horizontalWidth=40*cm;
+sb: sextupole, l=0.15*m, k2=-10, magnetGeometryType="polesfacetcrop", horizontalWidth=40*cm;
+
+lcol = 0.02;
+ld = 0.15 - lcol;
+tch: jcol, l=lcol, material="Graphite", xsize=1*cm, horizontalWidth=15*cm;
+de: drift, l=ld;
+oa: octupole, l=0.1*m, k3=1, magnetGeometryType="polesfacetcrop", horizontalWidth=38*cm;
+
+lhcb1: sbend, angle=0, B=8*T, l=2*m, magnetGeometryType="lhcleft", aper1=2.54*cm;
+
+
+q1: query, nx=15, ny=15,
+    	   xmin=-25*cm, xmax=25*cm,
+	   ymin=-25*cm, ymax=25*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="q1.dat",
+	   referenceElement="fodo_1_qfb";

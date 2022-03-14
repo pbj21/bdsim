@@ -17,23 +17,27 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSSamplerPlacementRecord.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4Transform3D.hh"
 
 BDSSamplerPlacementRecord::BDSSamplerPlacementRecord(const G4String&           nameIn,
                                                      BDSSampler*               samplerIn,
                                                      const G4Transform3D&      transformIn,
                                                      G4double                  sPositionIn,
                                                      const BDSBeamlineElement* elementIn,
-                                                     const G4String&           uniqueNameIn):
+                                                     const G4String&           uniqueNameIn,
+                                                     BDSSamplerType            typeIn,
+                                                     G4double                  radiusIn):
   name(nameIn),
   sampler(samplerIn),
   transform(transformIn),
   transformInverse(transformIn.inverse()),
   sPosition(sPositionIn),
   element(elementIn),
-  uniqueName(uniqueNameIn)
+  uniqueName(uniqueNameIn),
+  type(typeIn),
+  radius(radiusIn)
 {
   if (uniqueName.empty())
     {uniqueName = name;}

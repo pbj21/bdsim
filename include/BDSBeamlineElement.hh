@@ -155,6 +155,10 @@ public:
   inline void SetReferencePositionEnd(G4ThreeVector     newReferencePositionEnd);
   inline void SetReferenceRotationEnd(G4RotationMatrix* newReferenceRotatonEnd);
   ///@}
+  
+  /// Delete the previous sampler placement transform owned by this object and
+  /// create a new one based on this input object.
+  void UpdateSamplerPlacementTransform(const G4Transform3D& tranfsormIn);
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSBeamlineElement const &element);

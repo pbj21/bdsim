@@ -217,20 +217,21 @@ G4int BDS::NBeamParametersSet(const GMAD::Beam&            beamDefinition,
 void BDS::ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
                                    const std::set<std::string>& keys,
                                    G4int                        nSet,
-                                   G4bool                       warnZeroParamsSet)
+                                   G4bool                       warnZeroParamsSet,
+                                   const G4String&              unitString)
 {
   if (nSet > 1)
     {
       G4cerr << "Beam> More than one parameter set - there should only be one" << G4endl;
       for (const auto& k : keys)
-        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " GeV" << G4endl;}
+        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " " << unitString << G4endl;}
       throw BDSException(__METHOD_NAME__, "conflicting parameters set");
     }
   else if (nSet == 0 && warnZeroParamsSet)
     {
       G4cerr << "Beam> One of the following required to be set" << G4endl;
       for (const auto &k : keys)
-        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " GeV" << G4endl;}
+        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " " << unitString << G4endl;}
       throw BDSException(__METHOD_NAME__, "insufficient parameters set");
     }
 }

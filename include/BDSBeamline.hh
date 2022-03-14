@@ -130,7 +130,7 @@ public:
 
   /// Get the transform to the centre of the ith placement of element by name.  Uses
   /// GetElement(). Exits if no such element found.
-  G4Transform3D GetTransformForElement(G4String acceleratorComponentName, G4int i = 0) const;
+  G4Transform3D GetTransformForElement(const G4String& acceleratorComponentName, G4int i = 0) const;
   
   /// Get the total length of the beamline - the sum of the chord length of each element
   inline G4double     GetTotalChordLength() const {return totalChordLength;}

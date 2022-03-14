@@ -12,14 +12,15 @@ def AnalyseFile(filename, outfilename):
     # explicitly specify the data type in the numpy array as 'd' for double
     # for compatibility with root
     logBins = np.logspace(-3,1,50,dtype='d')
-    hl = ROOT.TH1D("BaseEventDurationLog",
-                   "BaseEvent Durations",
+    hl = ROOT.TH1D("EventDurationLogBASE",
+                   "Event Durations",
                    len(logBins)-1,# one less bin than n bin edges
                    logBins)
 
     # we now wrap our histograms in an 'accumulator' which
     # builds the mean histogram across events
-    accHL = ROOT.HistogramAccumulator(hl,str(hl.GetName()).strip('Base'),str(hl.GetTitle()).strip('Base'))
+    # only the first argument, the object name, must be unique
+    accH = ROOT.HistogramAccumulator(h,str(h.GetName())[:-4],str(h.GetTitle()))
     # top tip - name the accumulators something different to avoid confusion
 
     eventTree = d.GetEventTree()

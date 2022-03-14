@@ -1,6 +1,7 @@
 ! define every parameter to check them all.
-minidetector: samplerplacement, referenceElement="d1",
-	      			referenceElementNumber=2,
+minidetector: samplerplacement, samplerType="plane",
+                		referenceElement="d1",
+	      	    		referenceElementNumber=2,
 				s=123, x=10*m,y=3*cm,z=12*m,
 				phi=1,theta=2,psi=3,
 				axisX=1, axisY=0.5, axisZ=0.01, angle=0.003,
@@ -8,6 +9,10 @@ minidetector: samplerplacement, referenceElement="d1",
 				apertureModel="ap1",
 				shape="rectangular",
 				aper1=1*cm, aper2=2*cm, aper3=3*cm, aper4=4*cm,
-				partID={11,-11,13,-13};
+				partID={11,-11,13,-13},
+				startAnglePhi=0,
+				sweepAnglePhi=1,
+				startAngleTheta=0,
+				sweepAngleTheta=1;
 
 print, minidetector;

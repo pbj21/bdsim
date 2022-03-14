@@ -18,8 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSSAMPLERPLACEMENTRECORD_H
 #define BDSSAMPLERPLACEMENTRECORD_H
-
 #include "BDSBeamlineElement.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -53,7 +53,9 @@ public:
                             const G4Transform3D&      transformIn,
                             G4double                  sPositionIn  = -1000,
                             const BDSBeamlineElement* elementIn    = nullptr,
-                            const G4String&           uniqueNameIn = "");
+                            const G4String&           uniqueNameIn = "",
+                            BDSSamplerType            typeIn       = BDSSamplerType::plane,
+                            G4double                  radiusIn     = 0);
 
   ~BDSSamplerPlacementRecord(){;}
 
@@ -66,30 +68,20 @@ public:
   inline G4double      SPosition()        const {return sPosition;}
   inline const BDSBeamlineElement* Element() const {return element;}
   inline G4int         BeamlineIndex()    const;
+  inline BDSSamplerType Type()            const {return type;}
+  inline G4double      Radius()           const {return radius;}
   /// @}
   
 private:
-  /// The name of the sampler
-  G4String name;
-  
-  /// The sampler instance that this information pertains to.
-  BDSSampler* sampler;
-
-  /// The transform the sampler was placed with.
-  G4Transform3D transform;
-
-  /// The calculated inverse of the transform the sampler was placed with.
-  G4Transform3D transformInverse;
-
-  /// The curvilinear S position of this sampler.
-  G4double      sPosition;
-
-  /// The beam line element to which this sampler pertains (if any).
-  const BDSBeamlineElement* element;
-
-  /// The name of the sampler but suffixed with a number - guaranteed to be unique.
-  G4String uniqueName;
-
+  G4String name;                  ///< The name of the sampler
+  BDSSampler* sampler;            ///< The sampler instance that this information pertains to.
+  G4Transform3D transform;        ///< The transform the sampler was placed with.
+  G4Transform3D transformInverse; ///< The calculated inverse of the transform the sampler was placed with.
+  G4double      sPosition;        ///< The curvilinear S position of this sampler.
+  const BDSBeamlineElement* element; ///< The beam line element to which this sampler pertains (if any).
+  G4String uniqueName; ///< The name of the sampler but suffixed with a number - guaranteed to be unique.
+  BDSSamplerType type;
+  G4double radius;
 };
 
 G4int BDSSamplerPlacementRecord::BeamlineIndex() const

@@ -37,6 +37,7 @@ namespace GMAD
   {
   public:
     std::string name;         ///< Name of this samplerplacement.
+    std::string samplerType;  ///< Plane, Cylinder, Sphere.
     std::string referenceElement; ///< Name of reference element w.r.t. to place to.
     int         referenceElementNumber; ///< Index of repetition of element if there are multiple uses.
     double s; ///< Curvilinear s position to place w.r.t..
@@ -62,6 +63,11 @@ namespace GMAD
     double aper2;
     double aper3;
     double aper4;
+    
+    double startAnglePhi;
+    double sweepAnglePhi;
+    double startAngleTheta;
+    double sweepAngleTheta;
     
     // This should be std::list<int> but the parser only supports double for numerical types in a list.
     /// List of PDG IDs of which particles to record for - default is empty, so all particles.

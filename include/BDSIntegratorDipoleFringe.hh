@@ -133,6 +133,10 @@ protected:
 
   G4bool isEntrance; ///< store if fringe is entrance or exit
 
+  /// Fractional momentum limit above which the thin matrix fringe kick accuracy becomes questionable, so
+  /// advance with the dipolerodrigues2 stepper to ensure correct dipole tracking length is applied
+  G4double backupStepperMomLimit;
+
 private:
   /// Private default constructor to enforce use of supplied constructor
   BDSIntegratorDipoleFringe() = delete;

@@ -37,6 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSOutputROOTEventSamplerC.hh"
+#include "BDSOutputROOTEventSamplerS.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTParticleData.hh"
 #include "BDSHitSampler.hh"
@@ -135,6 +137,10 @@ BDSOutputStructures::~BDSOutputStructures()
   delete runInfo;
   for (auto sampler : samplerTrees)
     {delete sampler;}
+  for (auto sampler : samplerCTrees)
+    {delete sampler;}
+  for (auto sampler : samplerSTrees)
+    {delete sampler;}
   for (auto collimator : collimators)
     {delete collimator;}
   delete primary;
@@ -201,6 +207,7 @@ void BDSOutputStructures::InitialiseSamplers()
 {
   if (!localSamplersInitialised)
     {
+      const auto sNames = BDSSamplerRegistry::Instance()->GetUniqueNamesPlane();
 #ifdef USE_SIXTRACKLINK
       // TODO hardcoded because of sixtrack dynamic buildup
       // Sixtrack does lazy initialisation for collimators in link to Geant4 so we don't know
@@ -211,10 +218,12 @@ void BDSOutputStructures::InitialiseSamplers()
       // the sixtrack interface should be rewritten so we know at construction time how many will
       // be built.
       samplerTrees.reserve(300);
+#else
+      samplerTrees.reserve(sNames.size());
 #endif
       localSamplersInitialised = true;
-      for (const auto& samplerName : BDSSamplerRegistry::Instance()->GetUniqueNames())
-        {// create sampler structure
+      for (const auto& samplerName : sNames)
+        {
 #ifndef __ROOTDOUBLE__
 	  BDSOutputROOTEventSampler<float>*  res = new BDSOutputROOTEventSampler<float>(samplerName);
 #else
@@ -222,6 +231,20 @@ void BDSOutputStructures::InitialiseSamplers()
 #endif
 	  samplerTrees.push_back(res);
 	  samplerNames.push_back(samplerName);
+        }
+      const auto scNames = BDSSamplerRegistry::Instance()->GetUniqueNamesCylinder();
+      samplerCTrees.reserve(scNames.size());
+      for (const auto& samplerName : scNames)
+        {
+	  samplerCTrees.emplace_back(new BDSOutputROOTEventSamplerC(samplerName));
+	  samplerCNames.emplace_back(samplerName);
+        }
+      const auto ssNames = BDSSamplerRegistry::Instance()->GetUniqueNamesSphere();
+      samplerSTrees.reserve(ssNames.size());
+      for (const auto& samplerName : ssNames)
+        {
+	  samplerSTrees.emplace_back(new BDSOutputROOTEventSamplerS(samplerName));
+	  samplerSNames.emplace_back(samplerName);
         }
     }
 }
@@ -289,6 +312,7 @@ G4int BDSOutputStructures::UpdateSamplerStructures()
 	  samplerNames.push_back(samplerName);
 	}
     }
+  /// TBC - does not do cylinder or spheres
   return result;
 }
 
@@ -360,6 +384,10 @@ void BDSOutputStructures::ClearStructuresEventLevel()
 {
   primary->Flush();
   for (auto sampler : samplerTrees)
+    {sampler->Flush();}
+  for (auto sampler : samplerCTrees)
+    {sampler->Flush();}
+  for (auto sampler : samplerSTrees)
     {sampler->Flush();}
   for (auto collimator : collimators)
     {collimator->Flush();}

@@ -42,20 +42,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSPrimaryVertexInformationV: public G4VUserPrimaryVertexInformation
 {
 public:
-  BDSPrimaryVertexInformationV(std::vector<BDSPrimaryVertexInformation>& verticesIn):
+  BDSPrimaryVertexInformationV() = delete;
+  explicit BDSPrimaryVertexInformationV(std::vector<BDSPrimaryVertexInformation>& verticesIn):
     vertices(verticesIn)
   {;}
   virtual ~BDSPrimaryVertexInformationV(){;}
 
   /// Required implementation by virtual base class.
-  virtual void Print() const {return;}
+  virtual void Print() const {;}
 
   std::vector<BDSPrimaryVertexInformation> vertices; ///< Full set of coordinates.
 
   inline G4int NVertices() const {return (G4int)vertices.size();}
-
-private:
-  BDSPrimaryVertexInformationV() = delete;
 };
 
 #endif

@@ -37,6 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <exception>
 #include <iostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -45,7 +46,7 @@ int main(int argc, char* argv[])
   if (argc < 3)
     {
       std::cout << "usage: rebdsimCombine result.root file1.root file2.root ..." << std::endl;
-      exit(1);
+      return 1;
     }
 
   // build input file list
@@ -60,15 +61,19 @@ int main(int argc, char* argv[])
         {std::cout << "Glob with * did not match any files" << std::endl;}
       else
         {std::cout << "Only one input file provided \"" << inputFiles[0] << "\" - no point." << std::endl;}
-      exit(1);
+      return 1;
     }
+  
+  std::set<std::string> inputFilesSet = {inputFiles.begin(), inputFiles.end()};
+  if (inputFiles.size() > inputFilesSet.size())
+    {std::cout << "Warning: at least 1 duplicate name in list of files provided to combine." << std::endl;}
 
   std::string outputFile = std::string(argv[1]);
   if (outputFile.find('*') != std::string::npos)
     {
       std::cerr << "First argument for output file \"" << outputFile << "\" contains an *." << std::endl;
       std::cerr << "Should only be a singular file - check order of arguments." << std::endl;
-      exit(1);
+      return 1;
     }
   
   // output file must be opened before histograms are created because root does
@@ -99,9 +104,9 @@ int main(int argc, char* argv[])
   try
     {histMap = new HistogramMap(f, output);} // map out first file
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   
   // copy the model tree over if it exists - expect the name to be ModelTree
   TTree* oldModelTree = dynamic_cast<TTree*>(f->Get("ModelTree"));
@@ -122,6 +127,7 @@ int main(int argc, char* argv[])
 
   unsigned long long int nOriginalEvents = 0;
   
+  std::cout << "Combination of " << inputFiles.size() << " files beginning" << std::endl;
   // loop over files and accumulate
   for (const auto& file : inputFiles)
     {

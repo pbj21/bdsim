@@ -9,6 +9,7 @@ Developer Documentation
    dev_contributing
    dev_testing
    dev_styleguide
+   dev_documentation_build
    dev_release
    dev_programlayout
    dev_buildsystem

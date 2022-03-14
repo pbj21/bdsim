@@ -113,7 +113,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
 
   std::set<std::string> keysDesign = {"sigmaE", "sigmaEk", "sigmaP"};
   G4int nSetDesign = BDS::NBeamParametersSet(beam, keysDesign);
-  BDS::ConflictingParametersSet(beam, keysDesign, nSetDesign, false);// warn only if too many set
+  BDS::ConflictingParametersSet(beam, keysDesign, nSetDesign, false, "GeV");// warn only if too many set
   if (finiteSigmaE)
     {
       sigmaP = (1./std::pow(beamParticle->Beta(),2)) * sigmaE; // dE/E = (beta^2) dP/P

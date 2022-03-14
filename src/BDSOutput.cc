@@ -30,6 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSHitEnergyDeposition.hh"
 #include "BDSHitEnergyDepositionGlobal.hh"
 #include "BDSHitSampler.hh"
+#include "BDSHitSamplerCylinder.hh"
+#include "BDSHitSamplerSphere.hh"
 #include "BDSHitSamplerLink.hh"
 #include "BDSOutput.hh"
 #include "BDSOutputROOTEventAperture.hh"
@@ -46,6 +48,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSOutputROOTEventSamplerC.hh"
+#include "BDSOutputROOTEventSamplerS.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTParticleData.hh"
 #include "BDSParticleDefinition.hh"
@@ -251,6 +255,9 @@ void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
 		    turnsTaken);
       primaryGlobal->Fill(vertexInfoBDSV);
     }
+  auto nextLinkedVertex = vertex->GetNext();
+  if (nextLinkedVertex)
+    {FillPrimary(nextLinkedVertex, turnsTaken);}
 }
 
 void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
@@ -282,7 +289,8 @@ void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
 void BDSOutput::FillEvent(const BDSEventInfo*                            info,
 			  const G4PrimaryVertex*                         vertex,
 			  const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
-			  const BDSHitsCollectionSampler*                samplerHitsCylinder,
+                          const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
+                          const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
                           const BDSHitsCollectionSamplerLink*            samplerHitsLink,
 			  const BDSHitsCollectionEnergyDeposition*       energyLoss,
 			  const BDSHitsCollectionEnergyDeposition*       energyLossFull,
@@ -315,8 +323,8 @@ void BDSOutput::FillEvent(const BDSEventInfo*                            info,
   if (vertex && storePrimaries)
     {FillPrimary(vertex, turnsTaken);}
   FillSamplerHitsVector(samplerHitsPlane);
-  if (samplerHitsCylinder)
-    {FillSamplerHits(samplerHitsCylinder, BDSOutput::HitsType::cylinder);}
+  FillSamplerCylinderHitsVector(samplerHitsCylinder);
+  FillSamplerSphereHitsVector(samplerHitsSphere);
   if (samplerHitsLink)
     {FillSamplerHitsLink(samplerHitsLink);}
   if (energyLoss)
@@ -706,25 +714,68 @@ void BDSOutput::FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler
     }
 }
 
-void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
-				const BDSOutput::HitsType)
+void BDSOutput::FillSamplerCylinderHitsVector(const std::vector<BDSHitsCollectionSamplerCylinder*>& hits)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << hits->entries() << std::endl;
-#endif
-  // Here, we don't switch on the type of the hits as the samplers are all
-  // prepared and stored in one vector in the sampler registry.  The output
-  // structures are based on this and cylinder output is no different from
-  // plane output and indices will match.
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSamplerCylinder* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  samplerCTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+					 storeSamplerIon, storeSamplerRigidity,
+					 storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerCTrees)
+	{sampler->FillIon();}
+    }
+}
 
-  // TODO - cylinder output will have all the same z and S, which is wrong!
+void BDSOutput::FillSamplerSphereHitsVector(const std::vector<BDSHitsCollectionSamplerSphere*>& hits)
+{
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSamplerSphere* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  samplerSTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+					 storeSamplerIon, storeSamplerRigidity,
+					 storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerSTrees)
+	{sampler->FillIon();}
+    }
+}
+
+
+void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits)
+{
   if (!(hits->entries() > 0))
     {return;}
   for (int i = 0; i < (int)hits->entries(); i++)
     {
       const BDSHitSampler* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;
-      samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge, storeSamplerPolarCoords, storeSamplerIon, storeSamplerRigidity, storeSamplerKineticEnergy);
+      samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+				    storeSamplerPolarCoords, storeSamplerIon,
+				    storeSamplerRigidity, storeSamplerKineticEnergy);
     }
 
   // extra information
@@ -737,10 +788,10 @@ void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
 
 void BDSOutput::FillSamplerHitsLink(const BDSHitsCollectionSamplerLink* hits)
 {
-  G4int nHits = hits->entries();
+  G4int nHits = (G4int)hits->entries();
   if (nHits == 0) // integer so ok to compare
     {return;}
-  for (int i = 0; i < (int)hits->entries(); i++)
+  for (G4int i = 0; i < nHits; i++)
     {
       const BDSHitSamplerLink* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;

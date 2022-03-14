@@ -23,7 +23,9 @@ BDSSamplerInfo::BDSSamplerInfo(const G4String& nameIn,
 			       G4int           pdgSetIDIn):
   name(nameIn),
   samplerType(samplerTypeIn),
-  pdgSetID(pdgSetIDIn)
+  pdgSetID(pdgSetIDIn),
+  startElement(nullptr),
+  finishElement(nullptr)
 {;}
 
 BDSSamplerInfo::~BDSSamplerInfo()

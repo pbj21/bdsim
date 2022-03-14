@@ -339,6 +339,10 @@ void Options::PublishMembers()
   publish("beamPipeIsInfiniteAbsorber",  &Options::beamPipeIsInfiniteAbsorber);
   publish("collimatorsAreInfiniteAbsorbers", &Options::collimatorsAreInfiniteAbsorbers);
   publish("tunnelIsInfiniteAbsorber",        &Options::tunnelIsInfiniteAbsorber);
+  publish("muonSplittingFactor",             &Options::muonSplittingFactor);
+  publish("muonSplittingThresholdParentEk",  &Options::muonSplittingThresholdParentEk);
+  publish("muonSplittingFactor2",            &Options::muonSplittingFactor2);
+  publish("muonSplittingThresholdParentEk2", &Options::muonSplittingThresholdParentEk2);
   
   // bias options
   publish("defaultBiasVacuum",   &Options::defaultBiasVacuum);
@@ -370,6 +374,7 @@ void Options::PublishMembers()
   publish("nominalMatrixRelativeMomCut", &Options::nominalMatrixRelativeMomCut);
   publish("teleporterFullTransform",  &Options::teleporterFullTransform);
   publish("dEThresholdForScattering", &Options::dEThresholdForScattering);
+  publish("backupStepperMomLimit",    &Options::backupStepperMomLimit);
 
   // hit generation
   publish("sensitiveOuter",              &Options::sensitiveOuter);

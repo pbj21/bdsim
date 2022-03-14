@@ -100,6 +100,10 @@ protected:
   /// zero strength elements and then a drift routine is used before anything else.
   G4bool zeroStrength;
 
+  /// Cache of fractional unit momentum limit above which the matrix routines in the derived integrators
+  /// revert to a backup integrator to ensure tracking validity.
+  G4double backupStepperMomLimit;
+
 private:
   /// Private default constructor to force use of specific constructor
   BDSIntegratorMag() = delete;

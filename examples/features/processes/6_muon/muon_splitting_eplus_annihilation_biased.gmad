@@ -1,0 +1,8 @@
+include muon_splitting_eplus_annihilation.gmad;
+
+
+ePlusAnnihiBias: xsecBias, particle="e+", process="AnnihiToMuPair", xsecfact={1e4}, flag={2};
+
+option, defaultBiasMaterial="ePlusAnnihiBias";
+
+option, ngenerate=5;

@@ -1,7 +1,7 @@
 if (USE_GDML)
   simple_testing(external-world                 "--file=1_gdml_external_world.gmad --output=none"           ${OVERLAP_CHECK})
   simple_fail(external-world-fail               "--file=2_gdml_external_world_fail.gmad --output=none")
-  simple_fail(external-world-material-fail      "--file=3_gdml_external_world_material_fail.gmad --output=none")
+  simple_testing(external-world-material-fail   "--file=3_gdml_external_world_material_fail.gmad --output=none" "")
   simple_testing(physics-biasing-world-volume   "--file=4_bias_world_volume.gmad --output=none"             "")
   simple_testing(phyiscs-biasing-world-contents "--file=5_bias_world_contents.gmad --output=none"           "")
   simple_testing(phyiscs-biasing-world-vacuum   "--file=6_bias_world_vacuum.gmad --output=none"             "")

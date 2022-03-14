@@ -1,0 +1,35 @@
+biasDef1: xsecBias, particle="pi+", proc="Decay", xsecfact={10000}, flag={2};
+
+! define these all uniquely so we really build unique objects
+! test that only 1 bias object is built but attached to many volumes.
+d1: drift, l=1*m, biasVacuum="biasDef1";
+d2: drift, l=1*m, biasVacuum="biasDef1";
+d3: drift, l=1*m, biasVacuum="biasDef1";
+d4: drift, l=1*m, biasVacuum="biasDef1";
+d5: drift, l=1*m, biasVacuum="biasDef1";
+d6: drift, l=1*m, biasVacuum="biasDef1";
+d7: drift, l=1*m, biasVacuum="biasDef1";
+d8: drift, l=1*m, biasVacuum="biasDef1";
+d9: drift, l=1*m, biasVacuum="biasDef1";
+d10: drift, l=1*m, biasVacuum="biasDef1";
+
+
+l1: line = (d1,d2,d3,d4,d5,d6,d7,d8,d9,d10);
+use, period = l1;
+
+option, ngenerate = 10;
+
+! flips between x=5cm (missing the pipe) and 0
+! a 1tev pion will not decay in 10m typically
+! but with biasing it will
+! if the 1 unique bias combination object is successfully attached
+! to multiple unique volume, then we will see decay along the full
+! 10m and not just d1
+beam,  particle = "pi+",
+       energy = 1000*GeV,
+       distrType="userfile",
+       distrFile="flippingx.dat",
+       distrFileFormat="x[cm]";
+
+option, physicsList="decay",
+	worldMaterial="vacuum";

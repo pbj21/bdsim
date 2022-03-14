@@ -1,0 +1,21 @@
+d1: drift, l=10*cm;
+
+q1: quadrupole, l=20*cm, k1=0.2, offsetX=10*cm;
+
+l1: line=(d1,q1,d1);
+use, l1;
+
+beam, particle="e-", kineticEnergy=1*GeV;
+
+
+q1: query, nx=30, xmin=-50*cm, xmax=50*cm,
+	   ny=30, ymin=-50*cm, ymax=50*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_query_2d_offset_quad.dat",
+	   referenceElement="q1";
+
+q2: query, nx=30, xmin=-5*cm, xmax=5*cm,
+	   ny=30, ymin=-5*cm, ymax=5*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_query_2d_offset_quad_centre.dat",
+	   referenceElement="q1";

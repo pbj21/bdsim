@@ -10,6 +10,7 @@ add_test(NAME analysis-optics-emittance-on-fly     COMMAND rebdsimOpticsExec ../
 add_test(NAME analysis-optics-emittance-on-the-fly COMMAND rebdsimOpticsExec ../../data/fodo.root opticsEOF.root --emittanceOnTheFly)
 add_test(NAME analysis-optics-wrong-argument       COMMAND rebdsimOpticsExec ../../data/fodo.root opticsEOF.root --bananas)
 set_tests_properties(analysis-optics-wrong-argument PROPERTIES WILL_FAIL 1)
+add_test(NAME analysis-optics-emittance-on-fly-default-output COMMAND rebdsimOpticsExec ../../data/fodo.root --emittanceOnTheFly)
 
 rebdsim_orbit_test(analysis-orbit ../../data/fodo.root orbit.root 3)
 

@@ -55,6 +55,9 @@ namespace BDS
 
   /// Inspect a G4CutTubs.
   std::pair<BDSExtent, BDSExtent> InspectCutTubs(const G4VSolid* solidIn);
+  
+  /// Inspect a G4EllipticalTube.
+  std::pair<BDSExtent, BDSExtent> InspectEllipticalTube(const G4VSolid* solidIn);
 }
 
 #endif

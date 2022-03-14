@@ -38,6 +38,7 @@ BDSIntegratorMag::BDSIntegratorMag(G4Mag_EqRhs* eqOfMIn,
   distChordPrivate(0)
 {
   backupStepper = new G4ClassicalRK4(eqOfMIn, nVariablesIn);
+  backupStepperMomLimit = BDSGlobalConstants::Instance()->BackupStepperMomLimit();
 
   if (thinElementLength < 0)
     {thinElementLength = BDSGlobalConstants::Instance()->ThinElementLength();}

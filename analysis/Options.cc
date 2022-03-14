@@ -45,10 +45,10 @@ void Options::SetBranchAddress(TTree *t,
 			       const RBDS::VectorString* branchesToTurnOn)
 {
   // turn off all branches by default.
-  t->SetBranchStatus("*", 0);
+  t->SetBranchStatus("*", false);
 
   if (allBranchesOn)
-    {t->SetBranchStatus("*", 1);}
+    {t->SetBranchStatus("*", true);}
   else if (branchesToTurnOn)
     {
       for (auto name : *branchesToTurnOn)
@@ -56,7 +56,7 @@ void Options::SetBranchAddress(TTree *t,
 	  std::string nameStar = name + ".*"; // necessary because of the splitting
 	  if (debug)
 	    {std::cout << "Turning on branch \"" << nameStar << "\"" << std::endl;}
-	  t->SetBranchStatus(nameStar.c_str(), 1);
+	  t->SetBranchStatus(nameStar.c_str(), true);
 	}
     }
   

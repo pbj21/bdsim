@@ -1,0 +1,4 @@
+include muon_splitting_piplus_decay.gmad;
+
+option, muonSplittingFactor=1;
+

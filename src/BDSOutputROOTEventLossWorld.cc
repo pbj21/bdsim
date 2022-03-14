@@ -37,18 +37,18 @@ BDSOutputROOTEventLossWorld::~BDSOutputROOTEventLossWorld()
 void BDSOutputROOTEventLossWorld::Fill(const BDSHitEnergyDepositionGlobal* hit)
 {
   n++;
-  totalEnergy.push_back( (float &&) (hit->totalEnergy / CLHEP::GeV));
-  preStepKineticEnergy.push_back( (float &&) (hit->preStepKineticEnergy / CLHEP::GeV));
-  postStepKineticEnergy.push_back( (float &&) (hit->postStepKineticEnergy / CLHEP::GeV));
-  stepLength.push_back( (float &&) (hit->stepLength / CLHEP::m));
-  X.push_back( (float &&) (hit->X / CLHEP::m));
-  Y.push_back( (float &&) (hit->Y / CLHEP::m));
-  Z.push_back( (float &&) (hit->Z / CLHEP::m));
-  T.push_back( (float &&) (hit->T / CLHEP::ns));
+  totalEnergy.push_back( (float) (hit->totalEnergy / CLHEP::GeV));
+  preStepKineticEnergy.push_back( (float) (hit->preStepKineticEnergy / CLHEP::GeV));
+  postStepKineticEnergy.push_back( (float) (hit->postStepKineticEnergy / CLHEP::GeV));
+  stepLength.push_back( (float) (hit->stepLength / CLHEP::m));
+  X.push_back( (float) (hit->X / CLHEP::m));
+  Y.push_back( (float) (hit->Y / CLHEP::m));
+  Z.push_back( (float) (hit->Z / CLHEP::m));
+  T.push_back( (float) (hit->T / CLHEP::ns));
   partID.push_back(hit->pdgID);
   trackID.push_back(hit->trackID);
   parentID.push_back(hit->parentID);
-  weight.push_back(hit->weight);
+  weight.push_back((float)hit->weight);
   turn.push_back(hit->turnsTaken);
 }
 #endif

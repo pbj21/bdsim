@@ -45,6 +45,7 @@ class TChain;
 class DataLoader
 {
 public:
+  DataLoader() = default;
   DataLoader(const std::string& fileName,
 	     bool        debugIn           = false,
 	     bool        processSamplersIn = true,
@@ -99,8 +100,6 @@ public:
   /// @}
 
 private:
-  DataLoader();
-  
   bool debug;
   bool processSamplers;
   bool allBranchesOn;
@@ -119,7 +118,11 @@ private:
   std::vector<std::string> treeNames;
   std::vector<std::string> branchNames;  // non-sampler branch names
   std::vector<std::string> samplerNames; // sampler branch names
+  std::vector<std::string> samplerCNames;
+  std::vector<std::string> samplerSNames;
   std::vector<std::string> allSamplerNames; // used to know what branches are samplers
+  std::vector<std::string> allCSamplerNames;
+  std::vector<std::string> allSSamplerNames;
   std::vector<std::string> collimatorNames;
 
   TChain* heaChain;

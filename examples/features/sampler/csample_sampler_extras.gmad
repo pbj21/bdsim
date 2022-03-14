@@ -1,0 +1,3 @@
+include csample.gmad;
+
+option, storeSamplerAll=1;

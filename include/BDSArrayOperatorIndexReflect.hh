@@ -49,6 +49,7 @@ public:
                                         const BDSArrayInfo& arrayInfo):
     BDSArrayOperatorIndexReflect()
   {
+    operatesOn = xyztIn;
     xyzt = xyztIn;
     G4String newName = "Reflect(";
     for (const auto& v : xyzt)

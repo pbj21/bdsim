@@ -53,7 +53,10 @@ public:
 protected:
   /// Common construction tasks such as creating a logical volume from the solid
   /// and visualisation options.
-  void CommonConstruction();
+  virtual void CommonConstruction();
+  
+  /// Attach sensitive detector to containerLogicalVolume.
+  virtual void SetSensitivity();
   
   const G4String name;
   const G4int    filterSetID;

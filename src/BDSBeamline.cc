@@ -37,6 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
 
+#include "CLHEP/Vector/AxisAngle.h"
+
 #include <algorithm>
 #include <iterator>
 #include <ostream>
@@ -141,13 +143,59 @@ void BDSBeamline::AddComponent(BDSAcceleratorComponent* component,
   
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {
+      // in the case a single component has become a line, when we have a cylindrical
+      // sample we should flag that it should cover the full 'line', however with a plane
+      // one it is only attached to the last element.
+      BDSBeamlineElement* first = nullptr;
+      BDSBeamlineElement* last  = nullptr;
       G4int sizeLine = (G4int)line->size();
       for (G4int i = 0; i < sizeLine; ++i)
 	{
 	  if (i < sizeLine-1)
-	    {AddSingleComponent((*line)[i], tiltOffset);}
-	  else // only attach the desired sampler to the last one in the line
-	    {AddSingleComponent((*line)[i], tiltOffset, samplerInfo);}
+	    {
+	      AddSingleComponent((*line)[i], tiltOffset);
+        if (i == 0)
+          {first = back();}
+	    }
+	  else 
+	    {// only attach the desired sampler to the last one in the line
+	      AddSingleComponent((*line)[i], tiltOffset, samplerInfo);
+	      last = back();
+	    }
+	}
+      if (samplerInfo) // could be nullptr
+	{
+	  if (samplerInfo->samplerType == BDSSamplerType::cylinder) // only a cylinder or plane can be attached to an element
+	    {// cache the range it should cover as a cylinder
+	      last->GetSamplerInfo()->startElement = first;
+	      last->GetSamplerInfo()->finishElement = last;
+	      // calculate the mid (i.e. mean) position and rotation
+	      G4ThreeVector midRefPosition = (last->GetReferencePositionEnd() + first->GetReferencePositionStart()) / 2.0;
+	      G4ThreeVector aaMidAxis;
+	      G4double aaMidAngle;
+	      auto aaStart = first->GetReferenceRotationStart()->axisAngle();
+	      auto aaFinish = last->GetReferenceRotationEnd()->axisAngle();
+	      // careful of identity rotations in AA form (axis=(0,0,1),angle=0) as our average of these would be wrong
+	      if (first->GetReferenceRotationStart()->isIdentity())
+		{
+		  aaMidAxis = aaFinish.axis();
+		  aaMidAngle = 0.5 * aaFinish.delta();
+		}
+	      else if (last->GetReferenceRotationEnd()->isIdentity())
+		{
+		  aaMidAxis = aaStart.axis();
+		  aaMidAngle = 0.5 * aaStart.delta();
+		}
+	      else
+		{
+		  aaMidAxis = (aaFinish.axis() + aaStart.axis()) / 2.0;
+		  aaMidAngle = (aaFinish.delta() + aaStart.delta()) / 2.0;
+		}
+	      auto aaCSampler = CLHEP::HepAxisAngle(aaMidAxis, aaMidAngle);
+	      G4RotationMatrix rmCSampler = G4RotationMatrix(aaCSampler);
+	      G4Transform3D trCSampler(rmCSampler, midRefPosition);
+	      last->UpdateSamplerPlacementTransform(trCSampler);
+	    }
 	}
     }
   else
@@ -486,11 +534,6 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 
   // reset flag for transform since we've now added a component
   transformHasJustBeenApplied = false;
-
-#ifdef BDSDEBUG
-  G4cout << *element;
-  G4cout << __METHOD_NAME__ << "component added" << G4endl;
-#endif
 }
 
 void BDSBeamline::ApplyTransform3D(BDSTransform3D* component)
@@ -556,12 +599,12 @@ G4Transform3D BDSBeamline::GetGlobalEuclideanTransform(G4double s, G4double x, G
 						       G4int* indexOfFoundElement) const
 {
   // check if s is in the range of the beamline
-  if (s-previousSPositionEnd > totalArcLength) // need to offset start S position 
+  G4double sStart = at(0)->GetSPositionStart();
+  if (s-sStart > totalArcLength) // need to offset start S position
     {
-      G4cout << __METHOD_NAME__
-	     << "s position " << s/CLHEP::m << " m is beyond length of accelerator ("
-	     << totalArcLength/CLHEP::m << " m)" << G4endl;
-      G4cout << "Returning identify transform" << G4endl;
+      G4String msg = "s position " + std::to_string(s/CLHEP::m) + " m is beyond length of accelerator (";
+      msg += std::to_string(totalArcLength/CLHEP::m) + " m)\nReturning identify transform";
+      BDS::Warning(__METHOD_NAME__, msg);
       return G4Transform3D();
     }
 
@@ -578,8 +621,8 @@ G4Transform3D BDSBeamline::GetGlobalEuclideanTransform(G4double s, G4double x, G
   // G4double dy = 0; // currently magnets can only bend in local x so avoid extra calculation
 
   // difference from centre of element to point in local coords)
-  // difference in s from centre, normalised to arcLengh and scaled to chordLength
-  // as s is really arc length but we must place effectively in chord length coordinates
+  // difference in s from centre, normalised to arcLength and scaled to chordLength
+  // as s is really arc length, but we must place effectively in chord length coordinates
   const BDSAcceleratorComponent* component = element->GetAcceleratorComponent();
   G4double arcLength   = component->GetArcLength();
   G4double chordLength = component->GetChordLength();
@@ -626,7 +669,7 @@ const BDSBeamlineElement* BDSBeamline::GetElementFromGlobalS(G4double S,
 {
   // find element that s position belongs to
   auto lower = std::lower_bound(sEnd.begin(), sEnd.end(), S);
-  G4int index = lower - sEnd.begin(); // subtract iterators to get index
+  G4int index = G4int(lower - sEnd.begin()); // subtract iterators to get index
   if (indexOfFoundElement)
     {*indexOfFoundElement = index;}
   return beamline.at(index);
@@ -646,7 +689,7 @@ const BDSBeamlineElement* BDSBeamline::GetPrevious(const BDSBeamlineElement* ele
   auto result = find(beamline.begin(), beamline.end(), element);
   if (result != beamline.end())
     {// found
-      return GetPrevious(result - beamline.begin());
+      return GetPrevious(G4int(result - beamline.begin()));
     }
   else
     {return nullptr;}
@@ -666,7 +709,7 @@ const BDSBeamlineElement* BDSBeamline::GetNext(const BDSBeamlineElement* element
   auto result = find(beamline.begin(), beamline.end(), element);
   if (result != beamline.end())
     {// found
-      return GetNext(result - beamline.begin());
+      return GetNext(G4int(result - beamline.begin()));
     }
   else
     {return nullptr;}
@@ -683,7 +726,7 @@ const BDSBeamlineElement* BDSBeamline::GetNext(G4int index) const
 void BDSBeamline::RegisterElement(BDSBeamlineElement* element)
 {
   // check if base name already registered (can be single component placed multiple times)
-  std::map<G4String, BDSBeamlineElement*>::iterator search = components.find(element->GetName());
+  const auto search = components.find(element->GetName());
   if (search == components.end())
     {// not registered
       components[element->GetPlacementName()] = element;
@@ -728,7 +771,7 @@ const BDSBeamlineElement* BDSBeamline::GetElement(G4String acceleratorComponentN
     {return search->second;}
 }
 
-G4Transform3D BDSBeamline::GetTransformForElement(G4String acceleratorComponentName,
+G4Transform3D BDSBeamline::GetTransformForElement(const G4String& acceleratorComponentName,
 						  G4int    i) const
 {
   const BDSBeamlineElement* result = GetElement(acceleratorComponentName, i);

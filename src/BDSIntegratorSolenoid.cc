@@ -87,8 +87,8 @@ void BDSIntegratorSolenoid::Stepper(const G4double yIn[],
   G4double zp0 = localMomUnit.z();
 
   // only proceed with thick matrix if particle is paraxial
-  // judged by forward momentum > 0.9 and |transverse| < 0.1
-  if (zp0 < 0.9 || std::abs(xp0) > 0.1 || std::abs(yp0) > 0.1)
+  // judged by forward momentum > 1-limit and |transverse| < limit (default limit=0.1)
+  if (zp0 < (1.0-backupStepperMomLimit) || std::abs(xp0) > backupStepperMomLimit || std::abs(yp0) > backupStepperMomLimit)
     {
       backupStepper->Stepper(yIn, dydx, h, yOut, yErr);
       SetDistChord(backupStepper->DistChord());

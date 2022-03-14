@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPrimaryGeneratorAction.hh"
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPTCOneTurnMap.hh"
+#include "BDSROOTSamplerReader.hh"
 #include "BDSRandom.hh"
 #include "BDSUtilities.hh"
 
@@ -55,12 +56,15 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
   eventOffset(0),
   ionPrimary(bunchIn->BeamParticleIsAnIon()),
   useEventGeneratorFile(false),
+  useSamplerLoader(false),
   ionCached(false),
   oneTurnMap(nullptr)
 #ifdef USE_HEPMC3
   ,
   hepMC3Reader(nullptr)
 #endif
+  ,
+  samplerReader(nullptr)
 {
   particleGun  = new G4ParticleGun(1); // 1-particle gun
 
@@ -81,6 +85,9 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
 
   BDSBunchType egf = BDSBunchType::eventgeneratorfile;
   useEventGeneratorFile = BDS::StrContains(G4String(beam.distrType), egf.ToString());
+  BDSBunchType samp = BDSBunchType::bdsimsampler;
+  useSamplerLoader = BDS::StrContains(beam.distrType, samp.ToString());
+  
   if (useEventGeneratorFile)
     {
 #ifdef USE_HEPMC3
@@ -98,6 +105,16 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
       throw BDSException(__METHOD_NAME__, "event generator file being used but BDSIM not compiled with HEPMC3");
 #endif
     }
+  else if (useSamplerLoader)
+  {
+    if (beam.distrFile.empty())
+    {throw BDSException(__METHOD_NAME__, "no distrFile specified for event generator beam distribution.");}
+    G4String filename = BDS::GetFullPath(beam.distrFile, false, beam.distrFileFromExecOptions);
+    BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
+    if (!beg)
+    {throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
+    samplerReader = new BDSROOTSamplerReader(beam.distrType, filename, beg, beam.eventGeneratorWarnSkippedParticles);
+  }
 }
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
@@ -107,6 +124,7 @@ BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
 #ifdef USE_HEPMC3
   delete hepMC3Reader;
 #endif
+  delete samplerReader;
 }
 
 void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
@@ -141,6 +159,11 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       return; // don't need any further steps
     }
 #endif
+  if (useSamplerLoader)
+  {
+    samplerReader->GeneratePrimaryVertex(anEvent);
+    return; // don't need any further steps
+  }
 
   // update particle definition in the special case of an ion - can only be done here
   // and not before due to Geant4 ion information availability only at run time

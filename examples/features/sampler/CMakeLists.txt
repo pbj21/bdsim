@@ -1,0 +1,28 @@
+simple_testing(sampler-csample                              "--file=csample.gmad"                "")
+simple_testing(sampler-csample-angled-component             "--file=csample_angled.gmad"         "")
+simple_testing(sampler-csample-sampler-extras               "--file=csample_sampler_extras.gmad" "")
+
+simple_testing(sampler-placement                            "--file=user_placed_sampler.gmad"                    "")
+simple_testing(sampler-placement-far                        "--file=user_placed_sampler_far.gmad"                "")
+simple_testing(sampler-placement-rectangular                "--file=user_placed_sampler_rectangular.gmad"        "")
+simple_testing(sampler-placement-by-aperture                "--file=user_placed_sampler_ap_model.gmad"           "")
+simple_testing(sampler-placement-cylindrical                "--file=user_placed_sampler_cyl.gmad"                "")
+simple_testing(sampler-placement-cylindrical-angles         "--file=user_placed_sampler_cyl_angles.gmad"         "")
+simple_testing(sampler-placement-cylindrical-forward        "--file=user_placed_sampler_cyl_forward.gmad"        "")
+simple_testing(sampler-placement-cylindrical-forward-angles "--file=user_placed_sampler_cyl_forward.gmad"        "")
+simple_testing(sampler-placement-spherical                  "--file=user_placed_sampler_sph.gmad"                "")
+simple_testing(sampler-placement-spherical-angles           "--file=user_placed_sampler_sph_angles.gmad"         "")
+simple_testing(sampler-placement-spherical-forward          "--file=user_placed_sampler_sph_forward.gmad"        "")
+simple_testing(sampler-placement-spherical-forward-angles   "--file=user_placed_sampler_sph_forward.gmad"        "")
+simple_testing(sampler-placement-spherical-extras           "--file=user_placed_sampler_sph_extras.gmad"         "")
+
+simple_testing(sampler-particles            "--file=sampler-particles.gmad"           "")
+simple_testing(sampler-particles-all        "--file=sampler-particles-all.gmad"       "")
+simple_testing(sampler-particles-combined   "--file=sampler-particles-combined.gmad"  "")
+simple_testing(sampler-placement-particles  "--file=sampler-placement-particles.gmad" "")
+
+
+simple_fail(io-user-sampler-bad-shape    "--file=user_placed_sampler_bad_shape.gmad"   "")
+simple_fail(io-user-sampler-bad-name     "--file=user_placed_sampler_bad_name.gmad"    "")
+simple_testing(io-user-sampler-degenerate-name  "--file=user_placed_sampler_conflicting_name.gmad" "")
+simple_testing(io-minimal-data-plus-bits "--file=minimal_data_plus_bits.gmad"          "")

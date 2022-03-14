@@ -1,6 +1,11 @@
-option, prodCutPhotons   = 10*m,
-	prodCutElectrons = 10*m,
-	prodCutPositrons = 10*m,
+DRI1 : drift, l = 5*m;
+COL1 : rcol, l=0.01*m, material="G4_Ti";
+muon_line: line=(DRI1,COL1,DRI1);
+use, period=muon_line;
+
+sample, all;
+
+option, defaultRangeCut = 10*m,
 	ngenerate=10,
         physicsList="em em_extra decay hadronic_elastic QGSP_BERT muon";
 
@@ -10,3 +15,5 @@ muannibias: xsecBias, particle="e+", process="AnnihiToMuPair", xsecfact={1e8}, f
 mueebias: xsecBias, particle="e+", process="ee2hadr", xsecfact={1e8}, flag={2};
 
 option, defaultBiasMaterial="muannibias mueebias";
+
+beam, kineticEnergy = 1.5*TeV;

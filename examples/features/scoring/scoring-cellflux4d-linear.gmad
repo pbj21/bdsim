@@ -10,13 +10,13 @@ use, period=lattice;
 option,	physicsList="em",
         samplersSplitLevel=1,
         seed=123,
-	    ngenerate=20;
+	ngenerate=20;
 
 
-neutron_capture_4D: scorer, type="cellflux4d",
-                         particleName="proton";
+neutron_capture_4D: scorer, type="cellflux4d", particleName="proton";
 
-meshAir_4D_linear: scorermesh, nx=1, ny=1, nz=1, ne= 10, xsize=1*m, ysize=1*m, zsize=1*m, eScale="linear",
-                     eLow=1e-3*GeV,eHigh=1*GeV,
-                    scoreQuantity="neutron_capture_4D",
-                     x=0*m, y=0*m, z=1.75*m;
+meshAir_4D_linear: scorermesh, nx=1, ny=1, nz=1, ne=10,
+		   	       xsize=1*m, ysize=1*m, zsize=1*m, eScale="linear",
+                    	       eLow=1e-3*GeV,eHigh=1*GeV,
+                    	       scoreQuantity="neutron_capture_4D",
+                     	       x=0*m, y=0*m, z=1.75*m;

@@ -29,6 +29,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventLossWorld.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSOutputROOTEventSamplerC.hh"
+#include "BDSOutputROOTEventSamplerS.hh"
 
 #include <set>
 #include <vector>
@@ -77,6 +79,10 @@ Event::~Event()
   delete Info;
   delete ApertureImpacts;
   for (auto s : Samplers)
+    {delete s;}
+  for (auto s : SamplersC)
+    {delete s;}
+  for (auto s : SamplersS)
     {delete s;}
   for (auto c : collimators)
     {delete c;}
@@ -147,10 +153,17 @@ BDSOutputROOTEventSampler<double>* Event::GetSampler(int index)
 BDSOutputROOTEventSampler<float>* Event::GetSampler(int index)
 #endif
 {
-  if (index >= (int) Samplers.size())
-    {return nullptr;}
-  else
-    {return Samplers[index];}
+  return index >= (int) Samplers.size() ? nullptr : Samplers[index];
+}
+
+BDSOutputROOTEventSamplerC* Event::GetSamplerC(int index)
+{
+  return index >= (int) SamplersC.size() ? nullptr : SamplersC[index];
+}
+
+BDSOutputROOTEventSamplerS* Event::GetSamplerS(int index)
+{
+  return index >= (int) SamplersS.size() ? nullptr : SamplersS[index];
 }
 
 BDSOutputROOTEventCollimator* Event::GetCollimator(const std::string& name)
@@ -182,7 +195,9 @@ void Event::SetBranchAddress(TTree* t,
 			     const RBDS::VectorString* samplerNamesIn,
 			     bool                      allBranchesOn,
 			     const RBDS::VectorString* branchesToTurnOn,
-			     const RBDS::VectorString* collimatorNamesIn)
+			     const RBDS::VectorString* collimatorNamesIn,
+           const RBDS::VectorString* samplerCNamesIn,
+           const RBDS::VectorString* samplerSNamesIn)
 {
   if (debug)
     {std::cout << "Event::SetBranchAddress" << std::endl;}
@@ -350,6 +365,42 @@ void Event::SetBranchAddress(TTree* t,
 	    {std::cout << "Event::SetBranchAddress> " << (*samplerNamesIn)[i] << " " << Samplers[i] << std::endl;}
 	}
     }
+  
+  if (processSamplers || samplerCNamesIn)
+    {
+      unsigned int nrSamplers = samplerCNamesIn->size();
+      SamplersC.resize(nrSamplers); // reserve and nominally instantiate instances.
+      for (unsigned int i=0; i < nrSamplers; ++i)
+	{
+	  const auto sampName = (*samplerCNamesIn)[i];
+	  SamplersC[i] = new BDSOutputROOTEventSamplerC(sampName);
+	  samplerCNames.push_back(sampName);  // cache the name in a vector
+	  samplerCMap[sampName] = SamplersC[i];// cache the sampler in a map
+	  
+	  t->SetBranchAddress(sampName.c_str(), &SamplersC[i]);
+	  t->SetBranchStatus((sampName+"*").c_str(), true);
+	  if (debug)
+	    {std::cout << "Event::SetBranchAddress> " << (*samplerCNamesIn)[i] << " " << SamplersC[i] << std::endl;}
+	}
+    }
+  
+  if (processSamplers || samplerSNamesIn)
+    {
+      unsigned int nrSamplers = samplerSNamesIn->size();
+      SamplersS.resize(nrSamplers); // reserve and nominally instantiate instances.
+      for (unsigned int i=0; i < nrSamplers; ++i)
+	{
+	  const auto sampName = (*samplerSNamesIn)[i];
+	  SamplersS[i] = new BDSOutputROOTEventSamplerS(sampName);
+	  samplerSNames.push_back(sampName);  // cache the name in a vector
+	  samplerSMap[sampName] = SamplersS[i];// cache the sampler in a map
+	  
+	  t->SetBranchAddress(sampName.c_str(), &SamplersC[i]);
+	  t->SetBranchStatus((sampName+"*").c_str(), true);
+	  if (debug)
+	    {std::cout << "Event::SetBranchAddress> " << (*samplerSNamesIn)[i] << " " << SamplersS[i] << std::endl;}
+	}
+    }
 }
 
 void Event::RelinkSamplers()
@@ -443,6 +494,12 @@ void Event::Fill(Event* other)
 
   for (unsigned long i = 0; i < Samplers.size(); i++)
     {Samplers[i]->Fill(other->Samplers[i]);}
+  
+  for (unsigned long i = 0; i < SamplersC.size(); i++)
+    {SamplersC[i]->Fill(other->SamplersC[i]);}
+  
+  for (unsigned long i = 0; i < SamplersS.size(); i++)
+    {SamplersS[i]->Fill(other->SamplersS[i]);}
 
   for (unsigned long i = 0; i < collimators.size(); i++)
     {collimators[i]->Fill(other->collimators[i]);}
@@ -473,6 +530,10 @@ void Event::Flush()
 void Event::FlushSamplers()
 {
   for (auto s : Samplers)
+    {s->Flush();}
+  for (auto s : SamplersC)
+    {s->Flush();}
+  for (auto s : SamplersS)
     {s->Flush();}
 }
 

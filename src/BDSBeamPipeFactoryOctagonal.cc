@@ -51,22 +51,19 @@ BDS::FourPoints BDSBeamPipeFactoryOctagonal::ExpandOctagon(G4double aper1,
     G4double distance)
 {
   // All calculations done in top right quandrant
-  // The angle w.r.t. the x axis for the angled part of the octagon
-  G4double alpha = std::atan2(std::abs(aper2-aper4), std::abs(aper1-aper3));
-  // resolve components of the beam pipe thickness (t) in each dimension
-  G4double xt = distance * std::sin(alpha);
-  G4double yt = distance * std::cos(alpha);
-
-  // Calculate the deltas to the point inbetween that results in the thickness
-  // of each side being exactly "distance" greater than the originals
-  G4double xr = distance - xt;
-  G4double dy = xr * std::tan(alpha);
-  G4double dx = xt - (distance - yt)*std::tan(alpha);
-
+  G4TwoVector p1 = G4TwoVector(aper3, aper2);
+  G4TwoVector p1Unit = p1.unit();
+  G4TwoVector p1New = distance*p1Unit;
+  
+  G4TwoVector p2 = G4TwoVector(aper1, aper4);
+  G4TwoVector p2Unit = p2.unit();
+  G4TwoVector p2New = distance*p2Unit;
+  
   G4double a1 = aper1 + distance;
   G4double a2 = aper2 + distance;
-  G4double a3 = aper3 + dx;
-  G4double a4 = aper4 + dy;
+  G4double a3 = aper3 + p1New.x();
+  G4double a4 = aper4 + p2New.y();
+  
   BDS::FourPoints result = {a1,a2,a3,a4};
   return result;
 }

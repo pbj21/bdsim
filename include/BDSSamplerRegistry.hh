@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSSamplerPlacementRecord.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -83,10 +84,12 @@ public:
   /// local transformation. S is global s position with unphysical
   /// default of -1m.
   G4int RegisterSampler(const G4String&      name,
-			BDSSampler*          sampler,
-			const G4Transform3D& transform = G4Transform3D(),
-			G4double             S         = -1000,
-			const BDSBeamlineElement* element   = nullptr);
+                        BDSSampler*          sampler,
+                        const G4Transform3D& transform   = G4Transform3D(),
+                        G4double             S            = -1000,
+                        const BDSBeamlineElement* element = nullptr,
+                        BDSSamplerType            type    = BDSSamplerType::plane,
+                        G4double                  radius  = 0);
 
   G4int RegisterSampler(BDSSamplerPlacementRecord& info);
 
@@ -116,9 +119,17 @@ public:
 
   /// Access all the unique names at once
   std::vector<G4String> GetUniqueNames() const;
+  std::vector<G4String> GetUniqueNamesPlane() const;
+  std::vector<G4String> GetUniqueNamesCylinder() const;
+  std::vector<G4String> GetUniqueNamesSphere() const;
+  
+  /// @{ For output in standard C++ types. Also in m for units.
+  std::map<std::string, double> GetUniqueNameToRadiusCylinder() const;
+  std::map<std::string, double> GetUniqueNameToRadiusSphere() const;
+  /// @}
   
   /// Access all the unique names and their corresponding s position at once.
-  std::vector<std::pair<G4String, G4double> > GetUniqueNamesAndSPosition() const;
+  std::vector<std::pair<G4String, G4double> > GetUniquePlaneNamesAndSPosition() const;
 
   /// Get number of registered samplers
   inline G4int NumberOfExistingSamplers() const;

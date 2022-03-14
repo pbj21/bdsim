@@ -1,0 +1,3 @@
+Histogram1D  Event  UnBiased  {10}  {0:10}  PrimaryFirstHit.S   Primary.x>0.01
+Histogram1D  Event  Biased    {10}  {0:10}  PrimaryFirstHit.S   Primary.x<0.01
+Histogram1D  Event  BiasedW   {10}  {0:10}  PrimaryFirstHit.S   PrimaryFirstHit.weight*(Primary.x<0.01)

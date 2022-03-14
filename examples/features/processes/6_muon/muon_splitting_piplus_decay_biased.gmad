@@ -1,0 +1,30 @@
+d1: rcol, l=20*m, material="W", horizontalWidth=10*m;
+l1: line=(d1);
+use, l1;
+
+sample, all;
+
+beam, kineticEnergy=1*TeV;
+
+!	geant4PhysicsMacroFileName="emextraphysics.mac",
+
+option, physicsList="decay",
+	minimumKineticEnergy=10*GeV,
+	defaultRangeCut=1*m;
+
+
+beam, particle="pi+";
+
+
+piPlusDecayBias: xsecBias, particle="pi+", process="Decay", xsecfact={1e4}, flag={2};
+
+option, defaultBiasMaterial="piPlusDecayBias";
+
+option, seed=123;
+
+option, printPhysicsProcesses=1;
+
+option, muonSplittingFactor=100;
+
+
+option, storeSamplerKineticEnergy=1;

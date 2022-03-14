@@ -65,7 +65,7 @@ const BDSHistBinMapper* BDSScoringMeshBox::Mapper() const
   if (!sizeIsSet)
     {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" size not set but queried");}
   if (!mapper)
-    {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" mapper has mysteriously disapeared");}
+    {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" mapper has mysteriously disappeared");}
   return mapper;
 }
 

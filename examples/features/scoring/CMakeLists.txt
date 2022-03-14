@@ -16,12 +16,6 @@ simple_testing(scoring-filter-material-include-multiple  "--file=scoring-filter-
 simple_testing(scoring-filter-world                      "--file=scoring-filter-world.gmad"                     "")
 simple_testing(scoring-filter-primary                    "--file=scoring-filter-primary.gmad"                   "")
 
-simple_testing(sampler-particles            "--file=sampler-particles.gmad"           "")
-simple_testing(sampler-particles-all        "--file=sampler-particles-all.gmad"       "")
-simple_testing(sampler-placement-particles  "--file=sampler-placement-particles.gmad" "")
-simple_testing(sampler-particles-combined   "--file=sampler-particles-combined.gmad"  "")
-
-
 simple_fail(scoring-noconversionfilepath "--file=scoring-cellfluxscaledperparticle-nodir.gmad")
 
 if (USE_BOOST)

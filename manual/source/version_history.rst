@@ -30,6 +30,7 @@ V1.7.0 - 2022 / XX / XX
   in Bibtex syntax to cite BDSIM easily.
 * The default yoke fields have changed and are on average stronger (and more correct). See below.
 
+
 New Features
 ------------
 
@@ -45,6 +46,11 @@ New Features
 * Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
   to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
   This also applies to sampler placements.
+* New **spherical** and **cylindrical** samplers.  See :ref:`sampler-types-and-shapes`.
+* The :code:`csample` command now works correctly and has been reimplemented for all beamline
+  components.
+* A sampler in a BDSIM ROOT output file can now be used as an input beam distribution for
+  another simulation.  See :ref:`bunch-bdsimsampler`.
 * Solenoid sheet / cylinder field has been added and is used by default on the solenoid yoke geometry.
 * A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
   voxelized geometries.
@@ -62,7 +68,9 @@ New Features
 * New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
   command line. Useful when BDSIM is executed from a different directory from the main GMAD input
   file and with a relatively complex model.
-* rebdsim will now default to "intputfilename" + "_ana.root" if no outputfile name is specified.
+* rebdsim will now default to <inputfilename>_ana.root if no outputfile name is specified.
+* Similarly, rebdsimHistoMerge will default to <inputfilename>_histos.root; rebdsimOptics to
+  <intputfilename>_optics.root and bdskim to <inputfilename>_skimmed.root.
 * "linearmag" experimental interpolation.
 * When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
   outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
@@ -76,10 +84,24 @@ New Features
   environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
   typically takes about 6Gb of space and is a great alternative to a virtual machine. An
   XWindows server is required for the visualiser. See :ref:`docker-build`.
-  
+* New materials (Inermet170, Inermet176, Inermet180, Copper-Diamond, MoGr).
+* New bunch distribution type `halosigma` that samples a flat halo distribution
+  flat in terms of sigma. This is useful for re-weighting distributions based on
+  the particle's distance from the core in terms of sigma.
+* New muon-splitting biasing scheme.
+* Ability to inspect G4EllipticalTube for extents as a container volume of imported GDML geometry
+  as required for NA62.
+* Nicer visualisation colours for charged particles. Green for neutrals is by default now at
+  20% opacity as there are usually so many gammas.
+
+
 General
 -------
 
+* When using the minimum kinetic energy option, tracks are now stopped in the stacking action
+  rather than being allowed to be tracked for a single step. This should vastly improve the
+  speed of some events with large numbers of tracks.
+* The minimum kinetic energy option is printed out if used now as it is important.
 * The default yoke fields have been revised. The equation for the field is the same, but the
   normalisation to the pure vacuum field at the pole-tip has been fixed and improved. This
   leads to the removal of very high peak values close to the hypothetical current sources
@@ -106,6 +128,7 @@ General
   beam line element is reused, you can select an individual one to go to.
 * Tolerate "electron", "positron" and "photon" for beam particle names and substitute in the
   Geant4 names (e.g. "e-").
+* Print out extent of loaded world when using an external geometry file.
 
 Bug Fixes
 ---------
@@ -115,6 +138,25 @@ Bug Fixes
 **Analysis**
 
 * rebdsim will now explicitly exit if a duplicate histogram name is detected whereas it didn't before.
+* Fix warning when using sampler data in analysis in Python: ::
+
+    input_line_154:2:36: warning: instantiation of variable 'BDSOutputROOTEventSampler<float>::particleTable' required here, but no
+      definition is available [-Wundefined-var-template]
+    BDSOutputROOTEventSampler<float>::particleTable;
+                                   ^
+    .../bdsim-develop-install/bin/../include/bdsim/BDSOutputROOTEventSampler.hh:135:37: note: forward declaration of template entity is here
+    static BDSOutputROOTParticleData* particleTable;
+                                    ^
+    input_line_154:2:36: note: add an explicit instantiation declaration to suppress this warning if
+    'BDSOutputROOTEventSampler<float>::particleTable' is explicitly instantiated in another
+    translation unit
+    BDSOutputROOTEventSampler<float>::particleTable;
+
+**Biasing**
+
+* Fixed huge amount of print out for bias objects attached to a whole beam line. Now, bias
+  objects are only constructed internally for a unique combination of biases from the input.
+  Less print out and (marginally) lower memory usage.
 
 **Fields**
 
@@ -140,6 +182,7 @@ Bug Fixes
   with pole face rotations. Issue #306.
 * Fix missing magnet coil end pieces despite being available space when the sequence
   is a magnet, drift, element, or the reverse.
+* Fix overlaps with various parameter combinations for an octagonal beam / aperture shape.
 
 
 **Output**
@@ -170,6 +213,9 @@ Bug Fixes
 
 **Tracking**
 
+* When using the minimum kinetic energy option, tracks are now stopped in the stacking action
+  rather than being allowed to be tracked for a single step. This should vastly improve the
+  speed of some events with large numbers of tracks.
 * Fix lack of user limits for RF cavity geometry.
 * Fix maximum step length user limit for externally loaded geometry.
 
@@ -243,6 +289,10 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventSampler         | N           | 5               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerC        | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerS        | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectory      | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectoryPoint | Y           | 5               | 6               |
@@ -271,7 +321,7 @@ New Features
 * New executable option :code:`--version` for the bdsim executable that returns the version number.
 * New skimming tool called :code:`bdskim` is included for skimming raw data. See :ref:`bdskim-tool`.
 * New combination tool called :code:`bdsimCombine` is included to merge raw data files
-  and skimmed data files alike. See :ref:`bdsimCombine-tool`.
+  and skimmed data files alike. See :ref:`bdsim-combine-tool`.
 * New ability to choose random number generator. Previously, BDSIM always used CLHEP's HepJamesRandom
   class. In more recent versions of Geant4, CLHEP's MixMax class is now the default. For now, BDSIM
   still uses HepJamesRandom as the default, but the user can select MixMax with the option :code:`randomEngine`.
@@ -586,8 +636,8 @@ V1.5.1 - 2020 / 12 / 21
 Hotfix for tapered elliptical collimators (`ecol`). The apertures would differ at the few percent
 level due to the calculation of the obscure parameterisation of the solid used in Geant4.
 
-V1.5 - 2020 / 12 / 16
-=====================
+V1.5.0 - 2020 / 12 / 16
+=======================
 
 Build System
 ------------
@@ -848,8 +898,8 @@ Utilities
 * pymad8 v1.6.0
 * pytransport v1.4.0
 
-V1.4 - 2020 / 06 / 08
-=====================
+V1.4.0 - 2020 / 06 / 08
+=======================
 
 Expected Changes To Results
 ---------------------------

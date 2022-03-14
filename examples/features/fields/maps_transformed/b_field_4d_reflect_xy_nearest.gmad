@@ -1,0 +1,22 @@
+f1: field, type="bmap2d",
+    	   magneticFile="bdsim4d:4dexample.dat.gz",
+	   magneticInterpolator="cubic",
+	   magneticReflection="reflectx reflecty";
+
+include commonboxforfield.gmad;
+
+q1: query, nx = 31, xmin = -20*cm, xmax = 20*cm,
+	   ny = 31, ymin = -20*cm, ymax = 20*cm,
+	   nt = 5,  tmin = -20*ns, tmax = 20*ns,
+	   outfileMagnetic = "out_4d_b_reflect_xy_nearest.dat",
+	   queryMagneticField=1,
+	   referenceElement="box";
+
+q2: query, nx = 31, xmin = -20*cm, xmax = 20*cm,
+	   ny = 31, ymin = -20*cm, ymax = 20*cm,
+	   nt = 5,  tmin = -20*ns, tmax = 20*ns,
+	   outfileMagnetic = "interp_out_4d_b_reflect_xy_nearest.dat",
+	   queryMagneticField=1,
+	   fieldObject="f1",
+	   checkParameters=0;
+

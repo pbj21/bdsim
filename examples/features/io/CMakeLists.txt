@@ -1,19 +1,8 @@
 # rootevent output
 add_subdirectory(1_rootevent)
 
-# no output
-set(TESTING_ARGS --output=none)
-simple_testing(io-none "--file=sm.gmad" "")
-
+simple_testing(io-none "--file=sm.gmad --output=none" "")
 simple_testing(io-store-trajectories     "--file=1_storeTrajectories.gmad"             "")
-simple_testing(io-user-sampler           "--file=user_placed_sampler.gmad"             "")
-simple_testing(io-user-sampler-far       "--file=user_placed_sampler_far.gmad"         "")
-simple_testing(io-user-sampler-rect      "--file=user_placed_sampler_rectangular.gmad" "")
-simple_testing(io-user-sampler-ap        "--file=user_placed_sampler_ap_model.gmad"    "")
-simple_fail(io-user-sampler-bad-shape    "--file=user_placed_sampler_bad_shape.gmad"   "")
-simple_fail(io-user-sampler-bad-name     "--file=user_placed_sampler_bad_name.gmad"    "")
-simple_testing(io-user-sampler-degenerate-name  "--file=user_placed_sampler_conflicting_name.gmad" "")
-simple_testing(io-minimal-data-plus-bits "--file=minimal_data_plus_bits.gmad"          "")
 
 
 # checks - tests that should fail

@@ -56,7 +56,7 @@ With the default output format :code:`rootevent`, data is written to a ROOT file
 is preferred as it lends itself nicely to particle physics information as it's space
 efficient (compressed binary), and can store and load complex custom structures. ROOT files
 generally can always be read at a later date with ROOT even if the original software used
-to create the files (BDSIM) is unavailble.
+to create the files (BDSIM) is unavailable.
 
 .. note:: **ASCII Data** - In the past BDSIM had ASCII output as well as some functionality in
 	  the pybdsim Python utility to deal with this. This has been deprecated and removed
@@ -657,116 +657,120 @@ One entry in the model tree represents one beam line.
 
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
-+--------------------+--------------------------+--------------------------------------------------------------+
-| **Variable Name**  | **Type**                 | **Description**                                              |
-+====================+==========================+==============================================================+
-| samplerNamesUnique | std::vector<std::string> | The unique names of each of the samplers.  These             |
-|                    |                          | are identical to the names of the sampler branches           |
-|                    |                          | found in the Event tree.                                     |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| componentName      | std::vector<std::string> | The beamline component names                                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| placementName      | std::vector<std::string> | Unique name for each placement                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| componentType      | std::vector<std::string> | Beamline component type; "drift", "sbend", etc.              |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| length             | std::vector<float>       | Component length (m)                                         |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| staPos             | std::vector<TVector3>    | Global coordinates of start of beamline element (m)          |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| midPos             | std::vector<TVector3>    | Global coordinates of middle of beamline element (m)         |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| endPos             | std::vector<TVector3>    | Global coordinates of end of beamline element (m)            |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| staRot             | std::vector<TRotation>   | Global rotation for the start of this beamline element       |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| midRot             | std::vector<TRotation>   | Global rotation for the middle of this beamline element      |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| endRot             | std::vector<TRotation>   | Global rotation for the end of this beamline element         |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| staRefPos          | std::vector<TVector3>    | Global coordinates for the start of the beamline elements    |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| midRefPos          | std::vector<TVector3>    | Global coordinates for the middle of the beamline elements   |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| endRefPos          | std::vector<TVector3>    | Global coordinates for the start of the beamline elements    |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| staRefRot          | std::vector<TRotation>   | Global rotation matrix for start of the beamline elements    |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| midRefRot          | std::vector<TRotation>   | Global rotation matrix for middle of the beamline elements   |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| endRefRot          | std::vector<TRotation>   | Global rotation matrix for middle of the beamline elements   |
-|                    |                          | along the reference trajectory and without any tilt          |
-|                    |                          | or rotation from the component                               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| tilt               | std::vector<float>       | Rotation in radians of the element when placed with respect  |
-|                    |                          | to the curvilinear frame                                     |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| offsetX            | std::vector<float>       | Offset in metres of the element when placed with respect to  |
-|                    |                          | the curvilinear frame - horizontal                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| offsetY            | std::vector<float>       | Offset in metres of the element when placed with respect to  |
-|                    |                          | the curvilinear frame - verical                              |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| staS               | std::vector<float>       | S-position of start of start of element (m)                  |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| midS               | std::vector<float>       | S-position of start of middle of element (m)                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| endS               | std::vector<float>       | S-position of start of end of element (m)                    |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeType       | std::vector<std::string> | Aperture type; "circular", "lhc", etc.                       |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper1      | std::vector<double>      | Aperture aper1 (m)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper2      | std::vector<double>      | Aperture aper2 (m)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper3      | std::vector<double>      | Aperture aper3 (m)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper4      | std::vector<double>      | Aperture aper4 (m)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| material           | std::vector<std::string> | Main material associated with an element. For a drift, this  |
-|                    |                          | is the beam pipe material; for a magnet, the yoke            |
-|                    |                          | material; a collimator, the main material.                   |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| k1 - k12           | std::vector<float>       | Normalised magnet strength associated with element           |
-|                    |                          | (1st - 12th order)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| k12 - k122         | std::vector<float>       | Normalised skew magnet strength associated with element      |
-|                    |                          | (1st - 12th order)                                           |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| ks                 | std::vector<float>       | Normalised solenoid strength                                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| hkick              | std::vector<float>       | Fractional momentum kick in horizontal direction             |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| vkick              | std::vector<float>       | Fractional momentum kick in vertical direction               |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| bField             | std::vector<float>       | Magnetic field magnitude (T)                                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| eField             | std::vector<float>       | Electric field magnitude (MV)                                |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| e1                 | std::vector<float>       | Input pole face angle (note sbend / rbend convention) (rad)  |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| e2                 | std::vector<float>       | Output pole face angle (rad)                                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| hgap               | std::vector<float>       | Half-gap of pole tips for dipoles (m)                        |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| fint               | std::vector<float>       | Fringe-field integral                                        |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| fintx              | std::vector<float>       | Fringe-field integral for exit pole face                     |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| fintk2             | std::vector<float>       | 2nd fringe-field integral                                    |
-+--------------------+--------------------------+--------------------------------------------------------------+
-| fintxk2            | std::vector<float>       | 2nd fringe-field integral for exit pole face                 |
-+--------------------+--------------------------+--------------------------------------------------------------+
++---------------------+--------------------------+--------------------------------------------------------------+
+| **Variable Name**   | **Type**                 | **Description**                                              |
++=====================+==========================+==============================================================+
+| samplerNamesUnique  | std::vector<std::string> | The unique names of each of the plane samplers.  These       |
+|                     |                          | are identical to the names of the sampler branches           |
+|                     |                          | found in the Event tree.                                     |
++---------------------+--------------------------+--------------------------------------------------------------+
+| samplerCNamesUnique | std::vector<std::string> | The unique names of each of the cylindrical samplers.        |
++---------------------+--------------------------+--------------------------------------------------------------+
+| samplerSNamesUnique | std::vector<std::string> | The unique names of each of the spherical samplers.          |
++---------------------+--------------------------+--------------------------------------------------------------+
+| componentName       | std::vector<std::string> | The beamline component names                                 |
++---------------------+--------------------------+--------------------------------------------------------------+
+| placementName       | std::vector<std::string> | Unique name for each placement                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| componentType       | std::vector<std::string> | Beamline component type; "drift", "sbend", etc.              |
++---------------------+--------------------------+--------------------------------------------------------------+
+| length              | std::vector<float>       | Component length (m)                                         |
++---------------------+--------------------------+--------------------------------------------------------------+
+| staPos              | std::vector<TVector3>    | Global coordinates of start of beamline element (m)          |
++---------------------+--------------------------+--------------------------------------------------------------+
+| midPos              | std::vector<TVector3>    | Global coordinates of middle of beamline element (m)         |
++---------------------+--------------------------+--------------------------------------------------------------+
+| endPos              | std::vector<TVector3>    | Global coordinates of end of beamline element (m)            |
++---------------------+--------------------------+--------------------------------------------------------------+
+| staRot              | std::vector<TRotation>   | Global rotation for the start of this beamline element       |
++---------------------+--------------------------+--------------------------------------------------------------+
+| midRot              | std::vector<TRotation>   | Global rotation for the middle of this beamline element      |
++---------------------+--------------------------+--------------------------------------------------------------+
+| endRot              | std::vector<TRotation>   | Global rotation for the end of this beamline element         |
++---------------------+--------------------------+--------------------------------------------------------------+
+| staRefPos           | std::vector<TVector3>    | Global coordinates for the start of the beamline elements    |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| midRefPos           | std::vector<TVector3>    | Global coordinates for the middle of the beamline elements   |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| endRefPos           | std::vector<TVector3>    | Global coordinates for the start of the beamline elements    |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| staRefRot           | std::vector<TRotation>   | Global rotation matrix for start of the beamline elements    |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| midRefRot           | std::vector<TRotation>   | Global rotation matrix for middle of the beamline elements   |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| endRefRot           | std::vector<TRotation>   | Global rotation matrix for middle of the beamline elements   |
+|                     |                          | along the reference trajectory and without any tilt          |
+|                     |                          | or rotation from the component                               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| tilt                | std::vector<float>       | Rotation in radians of the element when placed with respect  |
+|                     |                          | to the curvilinear frame                                     |
++---------------------+--------------------------+--------------------------------------------------------------+
+| offsetX             | std::vector<float>       | Offset in metres of the element when placed with respect to  |
+|                     |                          | the curvilinear frame - horizontal                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| offsetY             | std::vector<float>       | Offset in metres of the element when placed with respect to  |
+|                     |                          | the curvilinear frame - verical                              |
++---------------------+--------------------------+--------------------------------------------------------------+
+| staS                | std::vector<float>       | S-position of start of start of element (m)                  |
++---------------------+--------------------------+--------------------------------------------------------------+
+| midS                | std::vector<float>       | S-position of start of middle of element (m)                 |
++---------------------+--------------------------+--------------------------------------------------------------+
+| endS                | std::vector<float>       | S-position of start of end of element (m)                    |
++---------------------+--------------------------+--------------------------------------------------------------+
+| beamPipeType        | std::vector<std::string> | Aperture type; "circular", "lhc", etc.                       |
++---------------------+--------------------------+--------------------------------------------------------------+
+| beamPipeAper1       | std::vector<double>      | Aperture aper1 (m)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| beamPipeAper2       | std::vector<double>      | Aperture aper2 (m)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| beamPipeAper3       | std::vector<double>      | Aperture aper3 (m)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| beamPipeAper4       | std::vector<double>      | Aperture aper4 (m)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| material            | std::vector<std::string> | Main material associated with an element. For a drift, this  |
+|                     |                          | is the beam pipe material; for a magnet, the yoke            |
+|                     |                          | material; a collimator, the main material.                   |
++---------------------+--------------------------+--------------------------------------------------------------+
+| k1 - k12            | std::vector<float>       | Normalised magnet strength associated with element           |
+|                     |                          | (1st - 12th order)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| k12 - k122          | std::vector<float>       | Normalised skew magnet strength associated with element      |
+|                     |                          | (1st - 12th order)                                           |
++---------------------+--------------------------+--------------------------------------------------------------+
+| ks                  | std::vector<float>       | Normalised solenoid strength                                 |
++---------------------+--------------------------+--------------------------------------------------------------+
+| hkick               | std::vector<float>       | Fractional momentum kick in horizontal direction             |
++---------------------+--------------------------+--------------------------------------------------------------+
+| vkick               | std::vector<float>       | Fractional momentum kick in vertical direction               |
++---------------------+--------------------------+--------------------------------------------------------------+
+| bField              | std::vector<float>       | Magnetic field magnitude (T)                                 |
++---------------------+--------------------------+--------------------------------------------------------------+
+| eField              | std::vector<float>       | Electric field magnitude (MV)                                |
++---------------------+--------------------------+--------------------------------------------------------------+
+| e1                  | std::vector<float>       | Input pole face angle (note sbend / rbend convention) (rad)  |
++---------------------+--------------------------+--------------------------------------------------------------+
+| e2                  | std::vector<float>       | Output pole face angle (rad)                                 |
++---------------------+--------------------------+--------------------------------------------------------------+
+| hgap                | std::vector<float>       | Half-gap of pole tips for dipoles (m)                        |
++---------------------+--------------------------+--------------------------------------------------------------+
+| fint                | std::vector<float>       | Fringe-field integral                                        |
++---------------------+--------------------------+--------------------------------------------------------------+
+| fintx               | std::vector<float>       | Fringe-field integral for exit pole face                     |
++---------------------+--------------------------+--------------------------------------------------------------+
+| fintk2              | std::vector<float>       | 2nd fringe-field integral                                    |
++---------------------+--------------------------+--------------------------------------------------------------+
+| fintxk2             | std::vector<float>       | 2nd fringe-field integral for exit pole face                 |
++---------------------+--------------------------+--------------------------------------------------------------+
 
 Optional collimator information also store in the model.
 
@@ -792,6 +796,8 @@ Optional collimator information also store in the model.
 
 Information stored about any scoring meshes used.
 
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
+
 +------------------------+----------------------------------+------------------------------------------------------+
 | **Variable Name**      | **Type**                         | **Description**                                      |
 +========================+==================================+======================================================+
@@ -804,6 +810,8 @@ Information stored about any scoring meshes used.
 
 Information stored about materials for trajectory storage.
 
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
+
 +------------------------+----------------------------------+------------------------------------------------------+
 | **Variable Name**      | **Type**                         | **Description**                                      |
 +========================+==================================+======================================================+
@@ -811,6 +819,21 @@ Information stored about materials for trajectory storage.
 |                        |                                  | its real name as defined in the input / code.        |
 +------------------------+----------------------------------+------------------------------------------------------+
 | materialNameToID       | std::map<std::string, short int> | The same map but the other way around.               |
++------------------------+----------------------------------+------------------------------------------------------+
+
+
+Constant information stored about any cylindrical or spherical samplers.
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
+
++------------------------+----------------------------------+------------------------------------------------------+
+| **Variable Name**      | **Type**                         | **Description**                                      |
++========================+==================================+======================================================+
+| samplerCRadius         | std::map<std::string, double>    | A map of cylindrical sampler unique name to its      |
+|                        |                                  | radius in m.                                         |
++------------------------+----------------------------------+------------------------------------------------------+
+| samplerSRadius         | std::map<std::string, double>    | A map of spherical sampler unique name to its        |
+|                        |                                  | radius in m.                                         |
 +------------------------+----------------------------------+------------------------------------------------------+
 
 
@@ -930,6 +953,18 @@ different value per-event run in BDSIM.
 |                           |                                  | record of all particles that passed through the  |
 |                           |                                  | sampler during the event. Note: this includes    |
 |                           |                                  | both primary and secondary particles.            |
++---------------------------+----------------------------------+--------------------------------------------------+
+| xxxxx                     | BDSOutputROOTEventSamplerC       | A dynamically generated branch created per       |
+|                           |                                  | cylindrical sampler (here named 'xxxxx') that    |
+|                           |                                  | contains a record of all particles that passed   |
+|                           |                                  | through the cylindrical sampler during the       |
+|                           |                                  | event.                                           |
++---------------------------+----------------------------------+--------------------------------------------------+
+| xxxxx                     | BDSOutputROOTEventSamplerS       | A dynamically generated branch created per       |
+|                           |                                  | spherical sampler (here named 'xxxxx') that      |
+|                           |                                  | contains a record of all particles that passed   |
+|                           |                                  | through the spherical sampler during the         |
+|                           |                                  | event.                                           |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | COLL_xxxx (\*\*)          | BDSOutputROOTEventCollimator     | A dynamically generated branch created per       |
 |                           |                                  | collimator when the :code:`storeCollimatorInfo`  |
@@ -1505,6 +1540,144 @@ doubles the output file size.
 	     reason, one should refrain from putting a sampler at the beginning of a beam line to avoid
 	     confusion. The primary output records all primary coordinates before they enter the tracking
 	     in the geometry, so it always contains all primary particles.
+
+	     
+BDSOutputROOTEventSamplerC
+**************************
+
+Hits for the **cylindrical** sampler structure. Very similar to BDSOutputROOTEventSampler, but
+in cylindrical coordinates. This class is not templated for float / double as we
+won't use it for optical comparison. Therefore, only float precision is provided.
+
+
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
++--------------------+--------------------+--------------------------------------------------------------------------+
+|  **Variable**      | **Type**           |  **Description**                                                         |
++====================+====================+==========================================================================+
+| n                  | int                | The number in this event in this sampler                                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| totalEnergy        | std::vector<float> | Vector of the total energy (GeV) of each hit in this sampler             |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| z                  | std::vector<float> | Vector of the z-coordinate of each hit (m)                               |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| phi                | std::vector<float> | Vector of the phi-coordinate of each hit (rad)                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| rp                 | std::vector<float> | Vector of the r component of the unit momentum vector                    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| zp                 | std::vector<float> | Vector of the z component of the unit momentum vector                    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| phip               | std::vector<float> | Vector of the phi angle between the momentum vector and the surface      |
+|                    |                    | normal vector (rad)                                                      |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| p                  | std::vector<float> | Vector of the momentum (magnitude) of the particle (GeV)                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| T                  | std::vector<float> | Vector of the time-of-flight of the particle (ns)                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| weight             | std::vector<float> | Vector of the associated weights of the hits                             |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| partID             | std::vector<int>   | Vector of the PDG ID for the particle of each hit                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| parentID           | std::vector<int>   | Vector of the trackID of the progenitor of the particle that hit         |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| trackID            | std::vector<int>   | Vector of the trackID of the particle that hit                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| modelID            | int                | The index to the BDSIM model of which element the sampler belonged to    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| turnNumber         | std::vector<int>   | Vector of the turn number of the particle that hit                       |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| S                  | T                  | S-position of the hit (m)                                                |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| charge (\*)        | std::vector<int>   | Vector of the PDG charge of the particle for each hit                    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| kineticEnergy (\*) | std::vector<float> | Vector of the kinetic energy of the particle for each hit (GeV)          |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| mass (\*)          | std::vector<float> | Vector of the PDG mass of the particle for each hit (GeV)                |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| rigidity (\*)      | std::vector<float> | Vector of the rigidity of the particle for each hit (Tm)                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| isIon (\*)         | std::vector<bool>  | Vector of whether the particle is an ion or not                          |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| ionA (\*)          | std::vector<int>   | Vector of the atomic mass number. 0 for non-nuclei.                      |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| ionZ (\*)          | std::vector<int>   | Vector of the atomic number. 0 for non-nuclei.                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| nElectrons(\*)     | std::vector<int>   | Number of bound electrons if an ion. 0 otherwise.                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+
+.. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). If these
+	  parameters are desired, please use the appropriate options to turn their storage on.
+	  See :ref:`bdsim-options-output` for more details.
+
+BDSOutputROOTEventSamplerS
+**************************
+
+Hits for the **spherical** sampler structure. Very similar to BDSOutputROOTEventSampler, but
+in spherical coordinates. This class is not templated for float / double as we
+won't use it for optical comparison. Therefore, only float precision is provided.
+
+
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
++--------------------+--------------------+--------------------------------------------------------------------------+
+|  **Variable**      | **Type**           |  **Description**                                                         |
++====================+====================+==========================================================================+
+| n                  | int                | The number in this event in this sampler                                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| totalEnergy        | std::vector<float> | Vector of the total energy (GeV) of each hit in this sampler             |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| theta              | std::vector<float> | Vector of the theta-coordinate of each hit (rad)                         |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| phi                | std::vector<float> | Vector of the phi-coordinate of each hit (rad)                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| rp                 | std::vector<float> | Vector of the r component of the unit momentum vector                    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| thetap             | std::vector<float> | Vector of the theta angle between the momentum vector at the surface     |
+|                    |                    | of the sphere and the radial vector (rad)                                |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| phip               | std::vector<float> | Vector of the phi angle between the momentum vector at the surface of    |
+|                    |                    | the sphere and the radial vector (rad)                                   |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| p                  | std::vector<float> | Vector of the momentum (magnitude) of the particle (GeV)                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| T                  | std::vector<float> | Vector of the time-of-flight of the particle (ns)                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| weight             | std::vector<float> | Vector of the associated weights of the hits                             |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| partID             | std::vector<int>   | Vector of the PDG ID for the particle of each hit                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| parentID           | std::vector<int>   | Vector of the trackID of the progenitor of the particle that hit         |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| trackID            | std::vector<int>   | Vector of the trackID of the particle that hit                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| modelID            | int                | The index to the BDSIM model of which element the sampler belonged to    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| turnNumber         | std::vector<int>   | Vector of the turn number of the particle that hit                       |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| S                  | T                  | S-position of the hit (m)                                                |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| charge (\*)        | std::vector<int>   | Vector of the PDG charge of the particle for each hit                    |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| kineticEnergy (\*) | std::vector<float> | Vector of the kinetic energy of the particle for each hit (GeV)          |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| mass (\*)          | std::vector<float> | Vector of the PDG mass of the particle for each hit (GeV)                |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| rigidity (\*)      | std::vector<float> | Vector of the rigidity of the particle for each hit (Tm)                 |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| isIon (\*)         | std::vector<bool>  | Vector of whether the particle is an ion or not                          |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| ionA (\*)          | std::vector<int>   | Vector of the atomic mass number. 0 for non-nuclei.                      |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| ionZ (\*)          | std::vector<int>   | Vector of the atomic number. 0 for non-nuclei.                           |
++--------------------+--------------------+--------------------------------------------------------------------------+
+| nElectrons(\*)     | std::vector<int>   | Number of bound electrons if an ion. 0 otherwise.                        |
++--------------------+--------------------+--------------------------------------------------------------------------+
+
+.. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). If these
+	  parameters are desired, please use the appropriate options to turn their storage on.
+	  See :ref:`bdsim-options-output` for more details.
+
+
 
 BDSOutputROOTEventCoords
 ************************

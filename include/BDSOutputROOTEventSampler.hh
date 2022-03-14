@@ -137,4 +137,8 @@ public:
   ClassDef(BDSOutputROOTEventSampler,5);
 };
 
+// This unusually has to be in the header because it's a templated static member, so we need
+// the compiler to generate the intialisation for the ones required.
+template <class U> BDSOutputROOTParticleData* BDSOutputROOTEventSampler<U>::particleTable = nullptr;
+
 #endif

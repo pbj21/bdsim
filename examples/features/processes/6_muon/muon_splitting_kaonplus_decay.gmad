@@ -1,0 +1,21 @@
+d1: rcol, l=20*m, material="W", horizontalWidth=10*m;
+l1: line=(d1);
+use, l1;
+
+sample, all;
+
+beam, kineticEnergy=100*MeV;
+
+option, physicsList="decay",
+	defaultRangeCut=1*m,
+	storeSamplerKineticEnergy=1,
+	storeSamplerPolarCoords=1,
+	seed=123,
+	printPhysicsProcesses=1;
+
+beam, particle="kaon+";
+
+option, muonSplittingFactor=100;
+
+
+option, ngenerate=100;

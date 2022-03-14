@@ -85,14 +85,20 @@ void BDSBOptrMultiParticleChangeCrossSection::SetBias(const G4String& biasObject
       }
     }
   // important feedback for the user
-  G4cout << "Biasing process \"" << process << "\" for particle \"" << particleName << "\" by factor " << dBias;
+  G4cout << "Bias> Biasing process \"" << process << "\" for particle \"" << particleName << "\" by factor " << dBias;
   G4cout << ", for " << flagString << " particles" << G4endl;
   
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
   if (!particle)
-    {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" no found");}
+    {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found");}
   
-  fBOptrForParticle[particle]->SetBias(process,dBias,iPrimary);
+  try
+    {fBOptrForParticle[particle]->SetBias(process,dBias,iPrimary);}
+  catch (BDSException& e)
+    {
+      e.AppendToMessage("in bias definition \"" + biasObjectName + "\"");
+      throw e;
+    }
 }
 
 G4VBiasingOperation* BDSBOptrMultiParticleChangeCrossSection::ProposeOccurenceBiasingOperation(const G4Track* track,

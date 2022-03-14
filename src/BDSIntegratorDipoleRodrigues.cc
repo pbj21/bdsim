@@ -85,8 +85,9 @@ void BDSIntegratorDipoleRodrigues::AdvanceHelix(const G4double yIn[],
   G4ThreeVector localMom            = localPosMom.PostStepPoint();
   G4ThreeVector localMomUnit        = localMom.unit();
 
-  // check for paraxial approximation:
-  if (localMomUnit.z() < 0.9)
+  // only proceed with stepping if particle is paraxial
+  // judged by forward momentum > 1-limit (default limit=0.1)
+  if (localMomUnit.z() < (1.0 - backupStepperMomLimit))
     {// use a classical Runge Kutta stepper here
       backupStepper->Stepper(yIn, dydx, h, yOut, yErr);
       SetDistChord(backupStepper->DistChord());

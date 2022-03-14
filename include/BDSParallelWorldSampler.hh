@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSPARALLELWORLDSAMPER_H
 
 #include "BDSBeamPipeType.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh"
 #include "G4String.hh"
@@ -31,7 +32,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class G4VisAttributes;
 class G4VPhysicalVolume;
 class BDSBeamlineElement;
+class BDSSampler;
 class BDSSamplerPlane;
+namespace GMAD
+{
+  class SamplerPlacement;
+}
 
 /**
  * @brief A parallel world for sampler planes.
@@ -60,6 +66,21 @@ public:
 	     G4double                  samplerRadius);
 
 private:
+  /// Utility function to reduce code.
+  void ErrorNonPositive(G4double value,
+                        const G4String& variableName,
+                        const G4String& objectName) const;
+  
+  /// Construct the geometry for a sampler. Update 'radius' by reference if applicable.
+  BDSSampler* BuildSampler(const GMAD::SamplerPlacement& samplerPlacement,
+                           BDSSamplerType st,
+                           G4double& radius) const;
+  
+  /// Compound the rotation of the placement transform for sphereforward and
+  /// cylinderforward types of sampler only to orientate them along the beam line direction.
+  void AdjustTransform(G4Transform3D& trans,
+                       BDSSamplerType st) const;
+  
   /// Cache of the placements to clean up at the end.
   std::vector<G4VPhysicalVolume*> placements;
   

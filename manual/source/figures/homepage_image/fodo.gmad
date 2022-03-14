@@ -1,0 +1,15 @@
+! Wed, 19 Jan 2022 11:02:12 +0000
+! pybdsim.Builder Lattice, using pybdsim version 2.2.0 
+! Number of Elements:	26
+! Total length:		7.2000000000000055m
+
+include fodo_components.gmad;
+include fodo_sequence.gmad;
+include fodo_beam.gmad;
+
+
+sample, all;
+
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=1*cm;

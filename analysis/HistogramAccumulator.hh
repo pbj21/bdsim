@@ -94,6 +94,9 @@ public:
   /// Permit the number of recorded entries to be incremented with zero values,
   /// ie just increment n.
   inline void AddNEmptyEntries(unsigned long i){n += i;}
+  
+  /// Access currently accumulated number of entries.
+  inline unsigned long N() const {return n;}
 
 protected:
   /// Accumulate a single value into the online mean and variance histograms.

@@ -45,19 +45,22 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char *argv[])
 {
   // check input
-  if (argc != 3)
+  if (argc < 2 || argc > 3)
     {
-      std::cout << "usage: rebdsim <dataFile> <outputFile>" << std::endl;
+      std::cout << "usage: rebdsim <datafile> (<outputFile>)" << std::endl;
       std::cout << " <datafile> - root file to operate on" << std::endl;
       std::cout << " <outputfile> - output file name for analysis" << std::endl;
-      exit(1);
+      std::cout << " <outputfile> is optional - default is <datafile>_histos.root" << std::endl;
+      return 1;
     }
   
   std::string inputFilePath = std::string(argv[1]);
-  std::string outputFileName = std::string(argv[2]);
+  std::string outputFileName;
+  if (argc == 3) // optional
+    {outputFileName = std::string(argv[2]);}
 
   // Setup config
-  Config* config = Config::Instance("", inputFilePath, outputFileName);
+  Config* config = Config::Instance("", inputFilePath, outputFileName, "_histos");
   
   bool allBranches = config->AllBranchesToBeActivated();
   const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
@@ -74,9 +77,9 @@ int main(int argc, char *argv[])
 			  config->GetOptionBool("backwardscompatible"));
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   
   BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
 						  dl->GetBeamTree(),
@@ -94,7 +97,7 @@ int main(int argc, char *argv[])
 				      config->GetOptionBool("emittanceonthefly"));
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   
   RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
 						 dl->GetRunTree(),
@@ -149,9 +152,9 @@ int main(int argc, char *argv[])
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; return 1;}
   delete dl;
   for (auto analysis : analyses)
     {delete analysis;}

@@ -83,9 +83,9 @@ int main(int argc, char *argv[])
       config = Config::Instance();
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
   
   bool allBranches = config->AllBranchesToBeActivated();
   const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
 			  config->GetOptionBool("backwardscompatible"));
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
 
   auto filenames = dl->GetFileNames();
   HeaderAnalysis* ha = new HeaderAnalysis(filenames,
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 				      (long int) config->GetOptionNumber("eventend"));
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
   RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
 						 dl->GetRunTree(),
 						 config->PerEntryRun(),
@@ -190,9 +190,9 @@ int main(int argc, char *argv[])
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
   catch (const RBDSException& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
   catch (const std::exception& error)
-    {std::cerr << error.what(); exit(1);}
+    {std::cerr << error.what() << std::endl; exit(1);}
 
   delete dl;
   for (auto analysis : analyses)

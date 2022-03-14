@@ -1,0 +1,91 @@
+#
+# Camera and lights commands
+/vis/viewer/set/viewpointVector 0.349212 0.0812238 0.933517
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection perspective 30 deg
+/vis/viewer/zoomTo 3.77878
+/vis/viewer/scaleTo 1 1 1
+/vis/viewer/set/targetPoint -0.559017 -0.262984 4.35278 m  
+# Note that if you have not set a target point, the vis system sets
+# a target point based on the scene - plus any panning and dollying -
+# so don't be alarmed by strange coordinates here.
+/vis/viewer/dollyTo 0 fm 
+/vis/viewer/set/lightsMove object
+/vis/viewer/set/lightsVector 1 1 1
+/vis/viewer/set/rotationStyle constrainUpDirection
+/vis/viewer/set/background 1 1 1 1
+/vis/viewer/set/defaultColour 0.9 0.9 0.9 1
+/vis/viewer/set/defaultTextColour 0 0 1 1
+#
+# Drawing style commands
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenEdge false
+/vis/viewer/set/auxiliaryEdge false
+/vis/viewer/set/hiddenMarker false
+/vis/viewer/set/globalLineWidthScale 1
+/vis/viewer/set/globalMarkerScale 1
+/vis/viewer/set/numberOfCloudPoints 10000
+#
+# Scene-modifying commands
+/vis/viewer/set/culling global true
+/vis/viewer/set/culling invisible true
+/vis/viewer/set/culling density false
+/vis/viewer/set/culling coveredDaughters false
+/vis/viewer/colourByDensity 0 g/cm3
+/vis/viewer/set/sectionPlane off
+/vis/viewer/set/cutawayMode union
+/vis/viewer/clearCutawayPlanes
+/vis/viewer/addCutawayPlane 40.8867 -0 2.15193 cm -0.95 0 -0.05
+/vis/viewer/set/explodeFactor 1 0 0 0 fm 
+/vis/viewer/set/lineSegmentsPerCircle 24
+#
+# Touchable commands
+/vis/viewer/clearVisAttributesModifiers
+/vis/set/touchable World 0 fodo_0_qfa_0_pv 0 fodo_0_qfa_beampipe_pv 0 fodo_0_qfa_bp_beampipe_pipe_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_beampipe_pv 0 fodo_1_qfb_bp_beampipe_pipe_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_0_left_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_0_right_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_1_left_pv 1
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_1_right_pv 1
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_2_left_pv 2
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_2_right_pv 2
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_3_left_pv 3
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_coil_3_right_pv 3
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_0_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_1_pv 1
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_2_pv 2
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_3_pv 3
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_yoke_pv 0
+/vis/touchable/set/visibility true
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_0_pv 0
+/vis/touchable/set/colour 0.819608 0.0980392 0.0980392 0.14902
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_1_pv 1
+/vis/touchable/set/colour 0.819608 0.0980392 0.0980392 0.188235
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_2_pv 2
+/vis/touchable/set/colour 0.819608 0.0980392 0.0980392 0.0705882
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_pole_3_pv 3
+/vis/touchable/set/colour 0.819608 0.0980392 0.0980392 0.141176
+/vis/set/touchable World 0 fodo_1_qfb_0_pv 0 fodo_1_qfb_outer_pv 0 fodo_1_qfb_outer_yoke_pv 0
+/vis/touchable/set/colour 0.819608 0.0980392 0.0980392 0.309804
+#
+# Time window commands
+/vis/viewer/set/timeWindow/startTime -1e+100 ns 
+/vis/viewer/set/timeWindow/endTime 1e+100 ns 
+/vis/viewer/set/timeWindow/fadeFactor 0
+/vis/viewer/set/timeWindow/displayHeadTime false
+/vis/viewer/set/timeWindow/displayLightFront false
+

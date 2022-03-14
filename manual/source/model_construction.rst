@@ -94,6 +94,22 @@ calculated and constructed when using the :code:`--circular` executable option.
 Although the teleporter may not be required in a well-formed model that closes, the minimum
 gap of :math:`0.2 \mu m` is required for the terminator.
 
+Magnet Strength Polarity
+------------------------
+
+.. note:: BDSIM strictly follows the MAD-X definition of magnet strength parameter
+	  `k` - a **positive** `k` corresponds to **horizontal focussing** for a
+	  **positively** charged particle. This therefore indicates a positive `k`
+	  corresponds to horizontal defocussing for a negatively charged particle.
+	  However, MAD-X treats all particles as positively charged for tracking purposes.
+
+.. warning:: BDSIM currently treats k absolutely, so to convert a MAD-X lattice for
+	     negatively particles, the MAD-X k values must be multiplied by -1. The
+	     pybdsim converter provides an option called `flipmagnets` for this
+	     purpose. This may be revised in future releases depending on changes
+	     to MAD-X.
+
+
 .. _lattice-elements:
 
 Beamline Elements
@@ -168,21 +184,6 @@ An element can also be defined by copying an existing element ::
   d2: d1, l=2*m;
 
 Element `d2` is a drift with the properties of `d1` and a length of 2 metres. Note that if `d1` is changed again, `d2` will **not** change.
-
-Magnet Strength Polarity
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note:: BDSIM strictly follows the MAD-X definition of magnet strength parameter
-	  `k` - a **positive** `k` corresponds to **horizontal focussing** for a
-	  **positively** charged particle. This therefore indicates a positive `k`
-	  corresponds to horizontal defocussing for a negatively charged particle.
-	  However, MAD-X treats all particles as positively charged for tracking purposes.
-
-.. warning:: BDSIM currently treats k absolutely, so to convert a MAD-X lattice for
-	     negatively particles, the MAD-X k values must be multiplied by -1. The
-	     pybdsim converter provides an option called `flipmagnets` for this
-	     purpose. This may be revised in future releases depending on changes
-	     to MAD-X.
 
 
 Component Strength Scaling
@@ -1233,10 +1234,16 @@ a beam pipe in the middle. There is no magnetic field in the beam pipe.
 =================  ============================  ==========  ===========
 Parameter          Description                   Default     Required
 `l`                Length [m]                    0           Yes
-`B`                Magnetic field [T]            0           Yes
+`B`                Magnetic field [T]            0           No
 `material`         Outer material                Iron        No
 `horizontalWidth`  Outer full width [m]          global      No
 =================  ============================  ==========  ===========
+
+Notes:
+
+* The :ref:`aperture-parameters` may also be specified.
+* No field is constructed if B is the default 0.
+
 
 shield
 ^^^^^^

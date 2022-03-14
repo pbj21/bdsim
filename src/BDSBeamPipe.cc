@@ -50,12 +50,12 @@ BDSBeamPipe::~BDSBeamPipe()
 std::set<G4LogicalVolume*> BDSBeamPipe::GetVolumesForField() const
 {
   std::set<G4LogicalVolume*> result = GetAllLogicalVolumes(); // from base class
-  // We avoid setting the field on a tight fitting container volume to avoid strong
+  // We avoid setting the field on a tight-fitting container volume to avoid strong
   // field in small gaps. However, in the case of only a container volume, we should
   // return that - for when there's no beam pipe geometry.
    if (result.size() > 1)
     {result.erase(GetContainerLogicalVolume());}
-   else if (!BDS::IsFinite(result.size()))
+   else if (!BDS::IsFinite((G4double)result.size()))
      {result = {GetContainerLogicalVolume()};}
 
   return result;

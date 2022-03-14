@@ -1,0 +1,5 @@
+/physics_lists/em/GammaToMuons true
+/physics_lists/em/PositronToMuons true
+/physics_lists/em/PositronToHadrons true
+/physics_lists/em/MuonNuclear true
+/physics_lists/em/GammaNuclear true

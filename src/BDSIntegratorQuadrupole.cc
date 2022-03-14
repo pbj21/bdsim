@@ -92,8 +92,8 @@ void BDSIntegratorQuadrupole::Stepper(const G4double yIn[],
   G4double zp  = localMomUnit.z();
 
   // only proceed with thick matrix if particle is paraxial
-  // judged by forward momentum > 0.9 and |transverse| < 0.1
-  if (zp < 0.9 || std::abs(xp) > 0.1 || std::abs(yp) > 0.1)
+  // judged by forward momentum > 1-limit and |transverse| < limit (default limit=0.1)
+  if (zp < (1.0-backupStepperMomLimit) || std::abs(xp) > backupStepperMomLimit || std::abs(yp) > backupStepperMomLimit)
     {
       backupStepper->Stepper(yIn, dydx, h, yOut, yErr);
       SetDistChord(backupStepper->DistChord());

@@ -211,8 +211,14 @@ void DataLoader::BuildEventBranchNameList()
   modTemporary->SetBranchAddress(mt);
   mt->GetEntry(0);
   allSamplerNames = modTemporary->SamplerNames();
+  allCSamplerNames = modTemporary->SamplerCNames();
+  allSSamplerNames = modTemporary->SamplerSNames();
   if (processSamplers)
-    {samplerNames = allSamplerNames;} // copy sampler names out
+    { // copy sampler names out
+      samplerNames = allSamplerNames;
+      samplerCNames = allCSamplerNames;
+      samplerSNames = allSSamplerNames;
+    }
   // collimator names was only added in data version 4 - can leave as empty vector
   if (dataVersion > 3)
     {collimatorNames = modTemporary->CollimatorNames();}
@@ -227,6 +233,10 @@ void DataLoader::BuildEventBranchNameList()
 	{std::cout << "DataLoader::BuildEventBranchNameList> Non-sampler : " << n << std::endl;}
       for (const auto& n : samplerNames)
 	{std::cout << "DataLoader::BuildEventBranchNameList> Sampler     : " << n << std::endl;}
+      for (const auto& n : samplerCNames)
+	{std::cout << "DataLoader::BuildEventBranchNameList> SamplerC    : " << n << std::endl;}
+      for (const auto& n : samplerSNames)
+        {std::cout << "DataLoader::BuildEventBranchNameList> SamplerS    : " << n << std::endl;}
       for (const auto& n : collimatorNames)
 	{std::cout << "DataLoader::BuildEventBranchNameList> Collimator  : " << n << std::endl;}
     }
@@ -267,10 +277,14 @@ void DataLoader::SetBranchAddress(bool allOn,
 	for (const auto& bName : *evtBranches)
       {
         if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
-          {samplerNames.push_back(bName + ".");}
+          {samplerNames.push_back(bName + "."); continue;}
+        if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
+          {samplerCNames.push_back(bName + "."); continue;}
+        if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
+          {samplerSNames.push_back(bName + "."); continue;}
       }
     }
-  evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames);
+  evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames, &samplerCNames, &samplerSNames);
 
   const RBDS::VectorString* runBranches = nullptr;
   if (bToTurnOn)

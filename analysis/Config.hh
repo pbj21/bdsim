@@ -76,7 +76,8 @@ public:
   /// Singleton accessor
   static Config* Instance(const std::string& fileName = "",
 			  const std::string& inputFilePath = "",
-			  const std::string& outputFileName = "");
+			  const std::string& outputFileName = "",
+			  const std::string& defaultOutputFileSuffix = "_ana");
 
   void ParseInputFile();
 
@@ -145,11 +146,13 @@ public:
   Config() = delete;
   /// Constructor used when merging only.
   Config(const std::string& inputFilePathIn,
-	 const std::string& outputFileNameIn);
+	 const std::string& outputFileNameIn,
+         const std::string& defaultOutputFileSuffix = "_ana");
   /// Desired constructor, also private for singleton pattern.
   Config(const std::string& fileNameIn,
 	 const std::string& inputFilePathIn,
-	 const std::string& outputFileNameIn);
+	 const std::string& outputFileNameIn,
+	 const std::string& defaultOutputFileSuffix);
 
   /// Set defaults in member maps for all options so that the keys can
   /// always be accessed.

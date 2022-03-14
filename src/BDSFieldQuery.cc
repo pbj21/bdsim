@@ -114,24 +114,29 @@ void BDSFieldQuery::QueryField(const BDSFieldQueryInfo* query)
   G4double xStep   = (query->xInfo.max - query->xInfo.min) / nStepsX;
   if (std::isnan(xStep))
     {xStep = 1.0;}
+  CheckNStepsAndRange(query->xInfo, "x", query->name);
   
   G4double yMin    = query->yInfo.min;
   G4double nStepsY = query->yInfo.n == 1 ? 1 : (G4double)query->yInfo.n-1;
   G4double yStep   = (query->yInfo.max - query->yInfo.min) / nStepsY;
   if (std::isnan(yStep))
     {yStep = 1.0;}
+  CheckNStepsAndRange(query->yInfo, "y", query->name);
   
   G4double zMin    = query->zInfo.min;
   G4double nStepsZ = query->zInfo.n == 1 ? 1 : (G4double)query->zInfo.n-1;
   G4double zStep   = (query->zInfo.max - query->zInfo.min) / nStepsZ;
   if (std::isnan(zStep))
     {zStep = 1.0;}
+  CheckNStepsAndRange(query->zInfo, "z", query->name);
   
   G4double tMin    = query->tInfo.min;
   G4double nStepsT = query->yInfo.n == 1 ? 1 : (G4double)query->tInfo.n-1;
   G4double tStep   = (query->tInfo.max - query->tInfo.min) / nStepsT;
   if (std::isnan(tStep))
     {tStep = 1.0;}
+  CheckNStepsAndRange(query->tInfo, "t", query->name);
+  
   G4ThreeVector xyzGlobal = G4ThreeVector();
   const G4AffineTransform& localToGlobalTransform = query->globalTransform;
   G4AffineTransform globalToLocalTransform = localToGlobalTransform.Inverse();
@@ -174,6 +179,19 @@ void BDSFieldQuery::QueryField(const BDSFieldQueryInfo* query)
   
   CloseFiles();
   G4cout << "FieldQuery> Complete" << G4endl;
+}
+
+void BDSFieldQuery::CheckNStepsAndRange(const BDSFieldQueryInfo::QueryDimensionInfo& dimensionInfo,
+                                        const G4String& dimensionName,
+                                        const G4String& queryName) const
+{
+  if (dimensionInfo.n > 1 && (!BDS::IsFinite(std::abs(dimensionInfo.max - dimensionInfo.min))))
+    {
+      const G4String& d = dimensionName;
+      G4String msg = "Problem in query \"" + queryName + "\": n"+d+" > 1, but |"+d;
+      msg += "max - "+d+"min| = 0 -> cannot take more than 1 step in 0 range.";
+      throw BDSException(__METHOD_NAME__, msg);
+    }
 }
 
 void BDSFieldQuery::CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const

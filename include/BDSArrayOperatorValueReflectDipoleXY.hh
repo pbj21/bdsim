@@ -61,10 +61,9 @@ public:
   virtual BDSFieldValue Apply(BDSFieldValue v,
                               G4int xInd,
                               G4int yInd = 0,
-                              G4int zInd = 0,
-                              G4int tInd = 0) const
+                              G4int /*zInd*/ = 0,
+                              G4int /*tInd*/ = 0) const
   {
-    zInd = 3; tInd = 4;// to retain default values and prevent compiler warnings
     // only top left or bottom right quadrant need the x-component flipped
     if ( (xInd < 0 && yInd >= 0) || (xInd >= 0 && yInd < 0) )
       {v[0] *= -1.0;}

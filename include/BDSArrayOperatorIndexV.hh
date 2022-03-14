@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4Types.hh"
 
+#include <array>
 #include <vector>
 
 /**
@@ -42,7 +43,14 @@ public:
   }
   
   /// Append an operator to the vector.
-  void push_back(BDSArrayOperatorIndex* operatorIn) {operators.push_back(operatorIn);}
+  void push_back(BDSArrayOperatorIndex* operatorIn)
+  {
+    operators.push_back(operatorIn);
+    // update base class record of what this oeprates on
+    const std::array<G4bool, 4> ops = operatorIn->OperatesOnXYZT();
+    for (G4int i = 0; i < (G4int)ops.size(); i++)
+      {operatesOn[i] = operatesOn[i] || ops[i];}
+  }
   
   /// Supply a name of this operator for feedback to the user in print out.
   virtual G4String Name() const
@@ -95,7 +103,6 @@ public:
   }
 
   std::vector<BDSArrayOperatorIndex*> operators;
-  
 };
 
 #endif

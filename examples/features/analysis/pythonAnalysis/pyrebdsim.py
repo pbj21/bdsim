@@ -12,13 +12,15 @@ def AnalyseFile(filename, outfilename):
     # define a histogram
     # we prefix these with 'Base' as we'll use them as a base for
     # mean histograms in an 'accumulator'
-    h = ROOT.TH1D("BaseEventDuration",
-                  "BaseEvent Durations",
+    h = ROOT.TH1D("EventDurationBASE",
+                  "Event Durations",
                   50, 0, 10) # 50 bins from 0 to 10
 
     # we now wrap our histograms in an 'accumulator' which
     # builds the mean histogram across events
-    accH = ROOT.HistogramAccumulator(h,str(h.GetName()).strip('Base'),str(h.GetTitle()).strip('Base'))
+    # [:-4] to strip off the last 4 characters - ie "BASE"
+    # only the first argument, the object name, must be unique
+    accH = ROOT.HistogramAccumulator(h,str(h.GetName())[:-4],str(h.GetTitle()))
     # top tip - name the accumulators something different to avoid confusion
 
     eventTree = d.GetEventTree()

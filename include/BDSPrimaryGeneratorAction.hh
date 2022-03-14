@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSBunch;
 class BDSOutputLoader;
 class BDSPTCOneTurnMap;
+class BDSROOTSamplerReader;
 class G4Event;
 class G4ParticleGun;
 
@@ -71,6 +72,7 @@ private:
   G4bool   useASCIISeedState;     ///< Whether to use the ascii seed state each time.
   G4bool   ionPrimary;            ///< The primary particle will be an ion.
   G4bool   useEventGeneratorFile; ///< Whether to use event generator file.
+  G4bool   useSamplerLoader;      ///< Whether to use a sampler loader.
   
   /// World extent that particle coordinates are checked against to ensure they're inside it.
   BDSExtent worldExtent;
@@ -86,6 +88,7 @@ private:
   /// Event generator file loader.
   BDSHepMC3Reader* hepMC3Reader;
 #endif
+  BDSROOTSamplerReader* samplerReader;
 };
 
 #endif

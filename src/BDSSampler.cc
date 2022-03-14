@@ -40,7 +40,11 @@ void BDSSampler::CommonConstruction()
 					       GetName() + "_lv");
   
   containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());
+  SetSensitivity();
+}
 
+void BDSSampler::SetSensitivity()
+{
   auto sdMan = BDSSDManager::Instance();
   BDSSDSampler* sd = filterSetID > -1 ? sdMan->SamplerPlaneWithFilter(filterSetID) : sdMan->SamplerPlane();
   containerLogicalVolume->SetSensitiveDetector(sd);

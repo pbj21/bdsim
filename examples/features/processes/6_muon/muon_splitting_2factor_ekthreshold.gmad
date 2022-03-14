@@ -1,0 +1,25 @@
+t1: rcol, l=2*m, material="Cu";
+l1: line=(t1);
+use, l1;
+
+!sample, all, partID={12,-12,13,-13,14,-14};
+sample, all, partID={12,-12,13,-13,14,-14};
+
+option, physicsList="g4FTFP_BERT",
+	geant4PhysicsMacroFileName="emextraphysics.mac",
+	minimumKineticEnergy=10*GeV,
+	defaultRangeCut=10*cm,
+	elossHistoBinWidth=5*cm;
+
+option, storeSamplerPolarCoords=1;
+
+beam, particle="proton", kineticEnergy=500*GeV;
+
+! we could choose 10x : 50 GeV and 30x : 150 GeV for physics
+! reasons but we choose different factors so the test efficiently
+! covers the linear interpolation code
+option, muonSplittingFactor=5,
+	muonSplittingThresholdParentEk=10*GeV,
+	muonSplittingFactor=30,
+	muonSplittingThresholdParentEk=150*GeV;
+	

@@ -238,11 +238,14 @@ void BDSGlobalConstants::InitDefaultUserLimits()
       G4cout << __METHOD_NAME__ << "Setting maximum tracking time to " << maxTime << " ns" << G4endl;
       defaultUserLimits->SetUserMaxTime(maxTime);
     }
+  G4double minEK = MinimumKineticEnergy();
   defaultUserLimits->SetMaxAllowedStep(MaxStepLength());
   defaultUserLimits->SetUserMaxTrackLength(MaxTrackLength());
-  defaultUserLimits->SetUserMinEkine(MinimumKineticEnergy());
+  defaultUserLimits->SetUserMinEkine(minEK);
   defaultUserLimits->SetUserMinRange(MinimumRange());
-
+  if (minEK > 0)
+    {G4cout << __METHOD_NAME__ << "Default minimum kinetic energy for model: " << minEK/CLHEP::GeV << " GeV" << G4endl;}
+  
   BDSFieldInfo::defaultUL = defaultUserLimits; // update static member for field definitions
 
   defaultUserLimitsTunnel = new G4UserLimits(*defaultUserLimits);

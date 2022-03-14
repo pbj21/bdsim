@@ -1,7 +1,0 @@
-!sample, range=SOTL;
-!sample, range=DRI1;
-!sample, range=COL1;
-!sample, range=DRI2;
-!sample, range=EOTL;
-sample, all;
-

@@ -593,7 +593,6 @@ void BDSFieldLoader::CreateOperators(const BDSArrayReflectionTypeSet* reflection
     }
   
   auto arrayInfo = BDSArrayInfo(existingArray);
-  ReportIfProblemWithReflection(arrayInfo);
   
   std::vector<BDSArrayOperatorIndex*> indexOperators;
   std::vector<BDSArrayOperatorValue*> valueOperators;
@@ -707,17 +706,20 @@ void BDSFieldLoader::CreateOperators(const BDSArrayReflectionTypeSet* reflection
       valueOperator = valueOperators[0];
     }
   
+  ReportIfProblemWithReflection(arrayInfo, indexOperator->OperatesOnXYZT());
+  
   G4cout << "Array ( index | value ) operator: (" << indexOperator->Name() << " | " << valueOperator->Name() << ")" << G4endl;
 }
 
 void BDSFieldLoader::ReportIfProblemWithReflection(const BDSArrayInfo& info,
+                                                   const std::array<G4bool, 4>& operatesOnXYZT,
                                                    G4double tolerance) const
 {
   G4String suffix[4] = {"st", "nd", "rd", "th"};
   for (G4int i = 0; i < 4; i++)
     {
       G4double integerPart = 0;
-      if (std::modf(std::abs(info.zeroPoint[i]), &integerPart) > tolerance)
+      if ( (std::modf(std::abs(info.zeroPoint[i]), &integerPart) > tolerance) && operatesOnXYZT[i])
 	{
 	  G4String msg = "Array reflection will not work as intended as the axis zero point is not an integer number of \n";
 	  msg += "array steps from 0 in the " + std::to_string(i + 1) + suffix[i];

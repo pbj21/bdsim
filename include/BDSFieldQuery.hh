@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDQUERY_H
 #define BDSFIELDQUERY_H
+#include "BDSFieldQueryInfo.hh"
 
 #include "G4AffineTransform.hh"
 #include "G4ThreeVector.hh"
@@ -29,7 +30,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class G4Navigator;
 class G4VPhysicalVolume;
 
-class BDSFieldQueryInfo;
 
 /**
  *  @brief Class for querying the Geant4 model for field at any point.
@@ -69,6 +69,11 @@ protected:
   virtual void CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const;
   
 private:
+  /// Throw an exception if the number of steps is >1 and the difference between max and min is 0.
+  void CheckNStepsAndRange(const BDSFieldQueryInfo::QueryDimensionInfo& dimensionInfo,
+                           const G4String& dimensionName,
+                           const G4String& queryName) const;
+  
   /// Different algorithm where we query a specific list of points defined in the query info object.
   void QuerySpecificPoints(const BDSFieldQueryInfo* query);
 

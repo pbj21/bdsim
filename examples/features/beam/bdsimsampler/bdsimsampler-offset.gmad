@@ -1,0 +1,3 @@
+include bdsimsampler.gmad;
+
+beam, S0=1.5*m;
