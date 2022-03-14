@@ -152,7 +152,8 @@ void BDSColours::DefineColour(const G4String& name,
 			      G4double red,
 			      G4double green,
 			      G4double blue,
-			      G4double alpha)
+			      G4double alpha,
+                              G4bool   normaliseTo255)
 {
   if (colours.find(name) != colours.end())
     {
@@ -166,7 +167,11 @@ void BDSColours::DefineColour(const G4String& name,
   BDS::EnsureInLimits(green,0,255);
   BDS::EnsureInLimits(blue,0,255);
   BDS::EnsureInLimits(alpha,0,1);
-  G4Colour* newColour = new G4Colour(red/255.,green/255.,blue/255.,alpha);
+  G4Colour* newColour;
+  if (normaliseTo255)
+    {newColour = new G4Colour(red/255.,green/255.,blue/255.,alpha);}
+  else
+    {newColour = new G4Colour(red, green, blue, alpha);}
   colours[name] = newColour;
 }
 
@@ -193,7 +198,8 @@ void BDSColours::Print()
     }
 }
 
-G4Colour* BDSColours::GetColour(const G4String& type)
+G4Colour* BDSColours::GetColour(const G4String& type,
+                                G4bool normaliseTo255)
 {
   G4String colourName = type;
   G4bool   canDefine  = false;
@@ -219,7 +225,7 @@ G4Colour* BDSColours::GetColour(const G4String& type)
       ss >> r >> g >> b;
       if (ss.rdbuf()->in_avail() != 0)
 	{ss >> a;}
-      DefineColour(colourName,r,g,b,a);
+      DefineColour(colourName, r, g, b, a, normaliseTo255);
       return colours[colourName];
     }
   else

@@ -125,6 +125,10 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "Making unique SD " << combinedName << G4endl;
 #endif
+      // If the sensitive detector with a unique combination of scorers is constructed already, skip
+      if (sensitiveDetectors.count(combinedName) > 0)
+	{continue;}
+
       G4MultiFunctionalDetector* sd = new G4MultiFunctionalDetector("blm_"+combinedName);
       for (const auto& name : ssAndCombinedName.second.first)
 	{

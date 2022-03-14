@@ -177,6 +177,7 @@ private:
   void IonEMDissociation();
   void IonINCLXX();
   void LaserWire();
+  void Radioactivation();
   void Muon();
   void NeutronTrackingCut();
   void Optical();

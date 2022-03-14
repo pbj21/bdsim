@@ -34,6 +34,31 @@ V1.7.0 - 2022 / XX / XX
 New Features
 ------------
 
+(topics alphabetically)
+
+**Analysis**
+
+* New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
+  :ref:`spectra-definition` for more information.
+* rebdsim will now default to <inputfilename>_ana.root if no outputfile name is specified.
+* Similarly, rebdsimHistoMerge will default to <inputfilename>_histos.root; rebdsimOptics to
+  <intputfilename>_optics.root and bdskim to <inputfilename>_skimmed.root.
+
+**Beam**
+
+* The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
+  explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
+* New bunch distribution type `halosigma` that samples a flat halo distribution
+  flat in terms of sigma. This is useful for re-weighting distributions based on
+  the particle's distance from the core in terms of sigma.
+
+**Components**
+
+* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
+  voxelized geometries.
+
+**Fields**
+
 * New ability to use any "pure" field (i.e. one from equations inside BDSIM) as a field
   and attach it to placements, or beam line geometry, as well as query it to generate
   an external field map.
@@ -43,6 +68,44 @@ New Features
 * New field drawing facility in the visualiser to draw query objects.
 * Field map reflections have been introduced allowing symmetry to be exploited.
   See :ref:`fields-transforms`.
+* "linearmag" experimental interpolation.
+* New ability to arbitrarily scale the yoke fields.
+  
+**General**
+
+* New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
+* New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
+  introduced to permit overriding the energy of the beam.
+* New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
+  command line. Useful when BDSIM is executed from a different directory from the main GMAD input
+  file and with a relatively complex model.
+* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
+  instructions on how to run Docker. This is a container system where a complete
+  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
+  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
+  XWindows server is required for the visualiser. See :ref:`docker-build`.
+* New materials (Inermet170, Inermet176, Inermet180, Copper-Diamond, MoGr).
+* Nicer visualisation colours for charged particles. Green for neutrals is by default now at
+  20% opacity as there are usually so many gammas.
+
+**Geometry**
+
+* When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
+  outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
+  world with the compound transforms: relative to the former outermost logical volume and also
+  the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
+* Ability to inspect G4EllipticalTube for extents as a container volume of imported GDML geometry
+  as required for NA62.
+* Ability to read GDML auxiliary information for the tag "colour" to provide colour information
+  in the GDML file.
+
+**Physics**
+
+* New muon-splitting biasing scheme.
+* New radioactivation physics list.
+
+**Sensitivity & Output**
+
 * Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
   to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
   This also applies to sampler placements.
@@ -52,51 +115,16 @@ New Features
 * A sampler in a BDSIM ROOT output file can now be used as an input beam distribution for
   another simulation.  See :ref:`bunch-bdsimsampler`.
 * Solenoid sheet / cylinder field has been added and is used by default on the solenoid yoke geometry.
-* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
-  voxelized geometries.
-* New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
-  :ref:`spectra-definition` for more information.
-* The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
-  explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
 * Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
   logarithmic or user-defined energy axis scale (requires Boost).
 * New scorer type: cellflux4d.
 * New type of scorermesh geometry: cylindrical.
-* New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
-* New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
-  introduced to permit overriding the energy of the beam.
-* New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
-  command line. Useful when BDSIM is executed from a different directory from the main GMAD input
-  file and with a relatively complex model.
-* rebdsim will now default to <inputfilename>_ana.root if no outputfile name is specified.
-* Similarly, rebdsimHistoMerge will default to <inputfilename>_histos.root; rebdsimOptics to
-  <intputfilename>_optics.root and bdskim to <inputfilename>_skimmed.root.
-* "linearmag" experimental interpolation.
-* When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
-  outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
-  world with the compound transforms: relative to the former outermost logical volume and also
-  the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
 * Materials are now stored for each trajectory step point (optionally) as described
   by an integer ID.
-* New ability to arbitrarily scale the yoke fields.
-* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
-  instructions on how to run Docker. This is a container system where a complete
-  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
-  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
-  XWindows server is required for the visualiser. See :ref:`docker-build`.
-* New materials (Inermet170, Inermet176, Inermet180, Copper-Diamond, MoGr).
-* New bunch distribution type `halosigma` that samples a flat halo distribution
-  flat in terms of sigma. This is useful for re-weighting distributions based on
-  the particle's distance from the core in terms of sigma.
-* New muon-splitting biasing scheme.
-* Ability to inspect G4EllipticalTube for extents as a container volume of imported GDML geometry
-  as required for NA62.
-* Nicer visualisation colours for charged particles. Green for neutrals is by default now at
-  20% opacity as there are usually so many gammas.
 
 
-General
--------
+General Updates
+---------------
 
 * When using the minimum kinetic energy option, tracks are now stopped in the stacking action
   rather than being allowed to be tracked for a single step. This should vastly improve the
@@ -129,6 +157,7 @@ General
 * Tolerate "electron", "positron" and "photon" for beam particle names and substitute in the
   Geant4 names (e.g. "e-").
 * Print out extent of loaded world when using an external geometry file.
+* **EMD** physics has a minimum applicable kinetic energy of 1 MeV to prevent crashes in Geant4.
 
 Bug Fixes
 ---------

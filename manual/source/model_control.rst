@@ -1666,6 +1666,8 @@ Examples: ::
 | qgsp_bic_hp                  | Similar to `QGSP_BIC`, but with the high precision neutron package.    |
 |                              | This is provided by `G4HadronPhysicsQGSP_BIC_HP`.                      |
 +------------------------------+------------------------------------------------------------------------+
+| radioactivation              | Use G4Radioactivation process. Atomic de-excitation disabled for now.  |
++------------------------------+------------------------------------------------------------------------+
 | shielding                    | `G4HadronPhysicsShielding`. Inelastic hadron physics suitable for      |
 |                              | shielding applications.                                                |
 +------------------------------+------------------------------------------------------------------------+

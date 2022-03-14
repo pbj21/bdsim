@@ -37,14 +37,16 @@ public:
   ~BDSColours();
 
   /// Get colour from name
-  G4Colour* GetColour(const G4String& type);
+  G4Colour* GetColour(const G4String& type,
+                      G4bool   normaliseTo255 = true);
 
   /// Define a new colour.
   void DefineColour(const G4String& name,
 		    G4double red,
 		    G4double green,
 		    G4double blue,
-		    G4double alpha = 1);
+		    G4double alpha = 1,
+		    G4bool   normaliseTo255 = true);
 
   /// Print out a full list of colours using Sphinx rst table syntax. Looks
   /// nice and easy to regenerate table for the manual.

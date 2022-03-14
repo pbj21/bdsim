@@ -37,6 +37,22 @@ overlap checking of GDML geometry. Please see :ref:`python-geometry-preparation`
 This package is used for many of the examples included with BDSIM and the Python scripts are
 included with the examples.
 
+GDML Colours
+^^^^^^^^^^^^
+
+BDSIM can read auxiliary information tags in GDML attached to logical volumes. The following
+information is optionally interpreted if available in the :code:`<volume>` tag:  ::
+
+  <auxiliary auxtype="colour" auxvalue="0.39215686274509803 0.5490196078431373 0.596078431372549 1"/>
+
+The :code:`auxvalue` should be a white-space separated list of 4 values from 0 to 1 for
+RGBA values.
+
+An example can be found in :code:`examples/features/geometry/9_gdml/14_gdml_colours.gmad`.
+
+.. note:: This is not a Geant4 standard and is custom information the user must supply in their
+	  GDML file and therefore it is only convention we agree on for the tag and the contents.
+
 Mokka
 -----
 

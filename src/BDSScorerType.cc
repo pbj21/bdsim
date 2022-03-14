@@ -31,18 +31,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 template<>
 std::map<BDSScorerType, std::string>* BDSScorerType::dictionary =
         new std::map<BDSScorerType, std::string> ({
-	    {BDSScorerType::cellcharge,      "cellcharge"},
-	    {BDSScorerType::cellcharge3d,    "cellcharge3d"},
-	    {BDSScorerType::depositeddose,   "depositeddose"},
-	    {BDSScorerType::depositeddose3d, "depositeddose3d"},
-	    {BDSScorerType::depositedenergy, "depositedenergy"},
-	    {BDSScorerType::depositedenergy, "depositedenergy3d"},
-	    {BDSScorerType::population,      "population"},
-	    {BDSScorerType::population3d,    "population3d"},
-	    {BDSScorerType::cellflux,        "cellflux"},
-	    {BDSScorerType::cellflux3d,      "cellflux3d"},
-	    {BDSScorerType::cellfluxscaled,  "cellfluxscaled"},
-	    {BDSScorerType::cellfluxscaled3d,"cellfluxscaled3d"},
+	    {BDSScorerType::cellcharge,         "cellcharge"},
+	    {BDSScorerType::cellcharge3d,       "cellcharge3d"},
+	    {BDSScorerType::depositeddose,      "depositeddose"},
+	    {BDSScorerType::depositeddose3d,    "depositeddose3d"},
+	    {BDSScorerType::depositedenergy,    "depositedenergy"},
+	    {BDSScorerType::depositedenergyblm, "depositedenergyblm"},
+	    {BDSScorerType::depositedenergy,    "depositedenergy3d"},
+	    {BDSScorerType::population,         "population"},
+	    {BDSScorerType::population3d,       "population3d"},
+	    {BDSScorerType::populationscaled,   "populationscaled"},
+	    {BDSScorerType::cellflux,           "cellflux"},
+	    {BDSScorerType::cellflux3d,         "cellflux3d"},
+	    {BDSScorerType::cellfluxscaled,     "cellfluxscaled"},
+	    {BDSScorerType::cellfluxscaled3d,   "cellfluxscaled3d"},
 	    {BDSScorerType::cellfluxscaledperparticle,   "cellfluxscaledperparticle"},
 	    {BDSScorerType::cellfluxscaledperparticle3d, "cellfluxscaledperparticle3d"},
 	    {BDSScorerType::cellflux4d,"cellflux4d"}
@@ -51,18 +53,20 @@ std::map<BDSScorerType, std::string>* BDSScorerType::dictionary =
 BDSScorerType BDS::DetermineScorerType(G4String scorerType)
 {
   std::map<G4String, BDSScorerType> types;
-  types["cellcharge"]        = BDSScorerType::cellcharge;
-  types["cellcharge3d"]      = BDSScorerType::cellcharge3d;
-  types["depositeddose"]     = BDSScorerType::depositeddose;
-  types["depositeddose3d"]   = BDSScorerType::depositeddose3d;
-  types["depositedenergy"]   = BDSScorerType::depositedenergy;
-  types["depositedenergy3d"] = BDSScorerType::depositedenergy3d;
-  types["population"]        = BDSScorerType::population;
-  types["population3d"]      = BDSScorerType::population3d;
-  types["cellflux"]          = BDSScorerType::cellflux;
-  types["cellflux3d"]        = BDSScorerType::cellflux3d;
-  types["cellfluxscaled"]    = BDSScorerType::cellfluxscaled;
-  types["cellfluxscaled3d"]  = BDSScorerType::cellfluxscaled3d;
+  types["cellcharge"]         = BDSScorerType::cellcharge;
+  types["cellcharge3d"]       = BDSScorerType::cellcharge3d;
+  types["depositeddose"]      = BDSScorerType::depositeddose;
+  types["depositeddose3d"]    = BDSScorerType::depositeddose3d;
+  types["depositedenergy"]    = BDSScorerType::depositedenergy;
+  types["depostiedenergyblm"] = BDSScorerType::depositedenergyblm;
+  types["depositedenergy3d"]  = BDSScorerType::depositedenergy3d;
+  types["population"]         = BDSScorerType::population;
+  types["population3d"]       = BDSScorerType::population3d;
+  types["populationscaled"]   = BDSScorerType::populationscaled;
+  types["cellflux"]           = BDSScorerType::cellflux;
+  types["cellflux3d"]         = BDSScorerType::cellflux3d;
+  types["cellfluxscaled"]     = BDSScorerType::cellfluxscaled;
+  types["cellfluxscaled3d"]   = BDSScorerType::cellfluxscaled3d;
   types["cellfluxscaledperparticle"]   = BDSScorerType::cellfluxscaledperparticle;
   types["cellfluxscaledperparticle3d"] = BDSScorerType::cellfluxscaledperparticle3d;
   types["cellflux4d"] = BDSScorerType::cellflux4d;
