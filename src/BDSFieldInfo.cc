@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSArrayReflectionType.hh"
 #include "BDSFieldInfo.hh"
+#include "BDSFieldInfoExtra.hh"
 #include "BDSFieldType.hh"
 #include "BDSIntegratorType.hh"
 #include "BDSInterpolatorType.hh"
@@ -66,6 +67,7 @@ BDSFieldInfo::BDSFieldInfo():
   electricSubFieldName(""),
   usePlacementWorldTransform(false),
   transformBeamline(nullptr),
+  extraInfo(nullptr),
   nameOfParserDefinition("")
 {;}
 
@@ -120,6 +122,7 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   electricSubFieldName(electricSubFieldNameIn),
   usePlacementWorldTransform(false),
   transformBeamline(nullptr),
+  extraInfo(nullptr),
   nameOfParserDefinition("")
 {
   if (transformIn != G4Transform3D::Identity)
@@ -137,6 +140,7 @@ BDSFieldInfo::~BDSFieldInfo()
   delete transform;
   delete stepLimit;
   delete transformBeamline;
+  delete extraInfo;
 }
 
 BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
@@ -167,6 +171,7 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   electricSubFieldName(other.electricSubFieldName),
   usePlacementWorldTransform(other.usePlacementWorldTransform),
   transformBeamline(nullptr),
+  extraInfo(nullptr),
   nameOfParserDefinition(other.nameOfParserDefinition)
 {
   if (other.transform)
@@ -184,6 +189,9 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
 
   if (other.transformBeamline)
     {transformBeamline = new G4Transform3D(*other.transformBeamline);}
+
+  if (other.extraInfo)
+    {extraInfo = other.extraInfo->Clone();}
 }
 
 void BDSFieldInfo::SetUserLimits(G4UserLimits* userLimitsIn)
@@ -251,6 +259,7 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
       G4double maxStep = info.stepLimit->GetMaxAllowedStep(t);
       out << "Step limit:        " << maxStep << G4endl;
     }
+  out << "extra info " << (info.extraInfo ? "present" : "not present") << G4endl;
   return out;
 }
 

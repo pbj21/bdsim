@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 
+class BDSFieldInfoExtra;
 class BDSMagnetStrength;
 class G4UserLimits;
 
@@ -125,6 +126,7 @@ public:
   inline G4bool              UsePlacementWorldTransform() const {return usePlacementWorldTransform;}
   inline const BDSArrayReflectionTypeSet& MagneticArrayReflectionType() const {return magneticArrayReflectionTypeSet;}
   inline const BDSArrayReflectionTypeSet& ElectricArrayReflectionType() const {return electricArrayReflectionTypeSet;}
+  inline BDSFieldInfoExtra*  ExtraInfo()                const {return extraInfo;}
   /// @}
   
   G4Transform3D Transform() const;         ///< Transform for the field definition only.
@@ -160,6 +162,9 @@ public:
   void SetUserLimits(G4UserLimits* userLimitsIn);
   
   void SetNameOfParserDefinition(const G4String& nameIn) {nameOfParserDefinition = nameIn;}
+
+  /// Set the additional 'extra' info member.
+  void SetExtraInfo(BDSFieldInfoExtra* extraInfoIn) {extraInfo = extraInfoIn;}
   
   /// Update the user limits object (stepLimit) to the minimum of the current and supplied maximum
   /// step size. Mutable, so can be called on const object.
@@ -209,6 +214,7 @@ private:
   G4bool                   usePlacementWorldTransform;
   /// Transform from curvilinear frame to this field - ie beam line bit only.
   G4Transform3D*           transformBeamline;
+  BDSFieldInfoExtra*       extraInfo;
 
   G4String nameOfParserDefinition;
   
