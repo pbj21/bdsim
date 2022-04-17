@@ -398,8 +398,8 @@ std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCoils(const std::vector<
   squares.reserve(coilInfos.size());
   for (auto& info : coilInfos)
   {
-    squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.lengthZ,
-                                          info.offsetZ+0.5*info.lengthZ,
+    squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.fullLengthZ,
+                                          info.offsetZ+0.5*info.fullLengthZ,
                                           info.innerRadius,
                                           info.innerRadius+info.radialThickness});
   }

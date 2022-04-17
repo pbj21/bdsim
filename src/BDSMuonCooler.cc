@@ -137,7 +137,7 @@ void BDSMuonCooler::BuildCoils()
       auto coilSolid = new G4Tubs(baseName + "_solid",
 				  info.innerRadius,
 				  info.innerRadius + info.radialThickness,
-				  0.5*info.lengthZ,
+				  0.5*info.fullLengthZ,
 				  0,
 				  CLHEP::twopi);
       RegisterSolid(coilSolid);

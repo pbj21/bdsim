@@ -32,7 +32,7 @@ namespace BDS
   {
     G4double innerRadius;
     G4double radialThickness;
-    G4double lengthZ;
+    G4double fullLengthZ;
     G4double currentDensity;
     G4double offsetZ;
     G4Material* material;
