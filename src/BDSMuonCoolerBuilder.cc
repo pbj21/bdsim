@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSMuonCooler.hh"
 #include "BDSMuonCoolerBuilder.hh"
+#include "BDSMuonCoolerStructs.hh"
 #include "BDSParser.hh"
 
 #include "parser/coolingchannel.h"

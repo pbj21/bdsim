@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSMUONCOOLER_H
 #define BDSMUONCOOLER_H
 #include "BDSAcceleratorComponent.hh"
+#include "BDSMuonCoolerStructs.hh"
 
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
@@ -29,46 +30,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSBeamPipeInfo;
 class BSDFieldInfo;
 class G4Material;
-
-namespace BDS
-{
-  struct MuonCoolerCoilInfo
-  {
-    G4double innerRadius;
-    G4double radialThickness;
-    G4double lengthZ;
-    G4double currentDensity;
-    G4double offsetZ;
-    G4Material* material;
-  };
-
-  struct MuonCoolerCavityInfo
-  {
-    G4double    offsetZ;
-    G4double    lengthZ;
-    G4Material* vacuumMaterial;
-    G4double    windowThickness;
-    G4Material* windowMaterial;
-    G4double    windowRadius;
-    G4Material* cavityMaterial;
-    G4double    cavityRadius;
-    G4double    cavityThickness;
-    BDSFieldInfo* fieldRecipe;
-  };
-
-  struct MuonCoolerAbsorberInfo
-  {
-    G4String absorberType;
-    G4double cylinderLength;
-    G4double cylinderRadius;
-    G4double wedgeOpeningAngle;
-    G4double wedgeHeight;
-    G4double wedgeRotationAngle;
-    G4ThreeVector placement;
-    G4double wedgeApexToBase;
-    G4Material* material;
-  };
-}
 
 /**
  * @brief A muon cooling module.
