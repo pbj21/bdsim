@@ -20,6 +20,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSFieldInfo.hh"
+#include "BDSFieldInfoExtra.hh"
+#include "BDSFieldType.hh"
+#include "BDSIntegratorType.hh"
 #include "BDSMaterials.hh"
 #include "BDSMuonCooler.hh"
 #include "BDSMuonCoolerBuilder.hh"
@@ -44,7 +47,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 
-BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
+BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element,
+                                    G4double designRigidity)
 {
   // retrieve definition from parser
   const GMAD::CoolingChannel* definition = BDSParser::Instance()->GetCoolingChannel(element->coolingDefinition);
@@ -56,7 +60,6 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
 
   // build recipes for coils
   std::vector<BDS::MuonCoolerCoilInfo> coilInfos = BDS::BuildMuonCoolerCoilInfos(definition);
-
   // check potential overlaps
   // boundary squares in 2D - keep them to reuse for various checks
   std::vector<BDS::SquareCheck> coilSquares = BDS::MuonCoolerSquaresFromCoils(coilInfos);
@@ -90,7 +93,13 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element)
                                               elementRadius);
 
   // build combined field recipe
-  BDSFieldInfo* outerFieldRecipe = nullptr;
+  BDSFieldInfo* outerFieldRecipe = BDS::BuildMuonCoolerFieldRecipe(definition->name,
+                                                     designRigidity,
+                                                     definition->integrator,
+                                                     definition->magneticFieldModel,
+                                                     definition->electricFieldModel,
+                                                     coilInfos,
+                                                     cavityInfos);
 
   auto beamPipeInfo = BDSComponentFactory::PrepareBeamPipeInfo(element);
 
@@ -477,4 +486,23 @@ void BDS::MuonParamsToMaterials(const G4String&               definitionName,
 	  materials[i] = material;
 	}
     }
+}
+
+BDSFieldInfo* BDS::BuildMuonCoolerFieldRecipe(const G4String& definitionName,
+                                              G4double designRigidity,
+                                              const G4String& integrator,
+                                              const G4String& magneticFieldModel,
+                                              const G4String& electricFieldModel,
+                                              const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos,
+                                              const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfos)
+{
+  BDSIntegratorType it = BDS::DetermineIntegratorType(integrator);
+  BDSFieldType mt = BDS::DetermineFieldType(magneticFieldModel);
+  BDSFieldType et = BDS::DetermineFieldType(electricFieldModel);
+  auto ei = new BDSFieldInfoExtraMuonCooler(mt, et, coilInfos, cavityInfos);
+  
+  auto result = new BDSFieldInfo(BDSFieldType::muoncooler, designRigidity, it);
+  result->SetNameOfParserDefinition(definitionName);
+  result->SetExtraInfo(ei);
+  return result;
 }

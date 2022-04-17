@@ -1447,7 +1447,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateMuonCooler()
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-  auto result = BDS::BuildMuonCooler(element);
+  auto result = BDS::BuildMuonCooler(element, brho);
   return result;
 }
 

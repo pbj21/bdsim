@@ -39,7 +39,8 @@ namespace BDS
   /// all the relevant parameters from the parser definition. This also
   /// handles units from the parser to Geant4. Materials are upgraded
   /// from strings to real materials as well as some other information refined.
-  BDSMuonCooler* BuildMuonCooler(const GMAD::Element* element);
+  BDSMuonCooler* BuildMuonCooler(const GMAD::Element* element,
+                                 G4double designRigidity);
   
   /// Loop over parser definition variables and construct a set of infos. Tolerate
   /// if some variables are single-valued with the intention that these are therefore
@@ -73,7 +74,7 @@ namespace BDS
                                              G4double elementRadius);
   
   /**
-   *  @brief A very simple struct to permit checking un-rotated square overlaps.
+   *  @brief A very simple struct to permit checking un-rotated (i.e. axis-aligned) square overlaps.
    *  @author Laurie Nevay
    */
   struct SquareCheck
@@ -112,6 +113,14 @@ namespace BDS
 			     const std::list<std::string>& materialNames,
 			     G4int                         nExpectedParams,
 			     std::vector<G4Material*>&     materials);
+  
+  BDSFieldInfo* BuildMuonCoolerFieldRecipe(const G4String& definitionName,
+                                           G4double        designRigidity,
+                                           const G4String& integrator,
+                                           const G4String& magneticFieldModel,
+                                           const G4String& electricFieldModel,
+                                           const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos,
+                                           const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfos);
 }
 
 #endif
