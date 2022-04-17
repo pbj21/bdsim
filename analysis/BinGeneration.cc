@@ -17,9 +17,12 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BinGeneration.hh"
+#include "RBDSException.hh"
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <string>
 #include <vector>
 
 std::vector<double> RBDS::LogSpace(double start,
@@ -28,6 +31,11 @@ std::vector<double> RBDS::LogSpace(double start,
 				   double base,
 				   bool   includeLastPoint)
 {
+  if (start <= std::numeric_limits<double>::min_exponent10 + 1)
+    {throw RBDSException("Lower limit of log binning (" + std::to_string(start) + ") is too low to represent as a double in C++");}
+  if (stop >= std::numeric_limits<double>::max_exponent10 - 1)
+    {throw RBDSException("Upper limit of log binning (" + std::to_string(stop) + ") is too high to represent as a double in C++");}
+  
   double realStart = std::pow(base, start);
   double realBase  = std::pow(base, (stop-start)/nBins);
 

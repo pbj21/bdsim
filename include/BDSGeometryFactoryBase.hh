@@ -68,7 +68,8 @@ public:
   /// precedence order.
   virtual std::set<G4VisAttributes*> ApplyColourMapping(std::set<G4LogicalVolume*>&    lvs,
 							std::map<G4String, G4Colour*>* mapping,
-							G4bool autoColour);
+							G4bool                         autoColour,
+                                                        const G4String&                preprocessPrefix = "");
 
   /// Attach a set of user limits to every logical volume supplied.
   virtual void ApplyUserLimits(const std::set<G4LogicalVolume*>& lvsIn,

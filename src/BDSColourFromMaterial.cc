@@ -90,7 +90,8 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   generalDensity = new G4PhysicsFreeVector(densities, values);
 }
 
-G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material)
+G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material,
+                                           const G4String& prefixToStripFromName)
 {
   G4String materialName = material->GetName();
   materialName = BDS::LowerCase(materialName);
@@ -100,6 +101,9 @@ G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material)
   size_t pos = materialName.find(toErase);
   if (pos != std::string::npos)
     {materialName.erase(pos, toErase.length());}
+  
+  if (!prefixToStripFromName.empty())
+    {materialName.erase(0, prefixToStripFromName.size());}
 
   auto search = defines.find(materialName);
   if (search != defines.end())

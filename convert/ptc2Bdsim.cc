@@ -43,13 +43,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char *argv[])
 {
   // check input
-  if (argc != 5 )
+  if (argc < 5 || argc > 6)
     {
       std::cout << "usage: ptc2bdsim <ptcOutput> <outputFile> <particleName> <nominalMomentum>" << std::endl;
       std::cout << " <ptcOutput>    - output file of PTC (Tfs format)" << std::endl;
       std::cout << " <outputFile>   - desired output file name for BDSIM format file" << std::endl;
       std::cout << " <particleName> - one of e- e+ proton" << std::endl;
       std::cout << " <nominalMomentum> - nominal momentum of the beam in GeV" << std::endl;
+      std::cout << " <samplersSplitLevel> - (optional) ROOT split-level of sampler branches, must be non-negative integer" << std::endl;
       exit(1);
     }
   
@@ -57,6 +58,23 @@ int main(int argc, char *argv[])
   std::string outputFileName = std::string(argv[2]);
   std::string particleName   = std::string(argv[3]);
   std::string nomMom         = std::string(argv[4]);
+
+  int sampSplitLevel = 0;
+  if (argc == 6)
+    {
+      std::string ss = argv[5];
+      // check argument is a number. Decimal points and minus signs should be caught here
+      // so this should also catch non-numeric & negative values
+      for (std::string::size_type i = 0; i < ss.size(); i++)
+        {
+          if (ss[i] < '0' || ss[i] > '9')
+            {
+              std::cout << "optional argument samplersSplitLevel isn't a non-negative integer" << std::endl;
+              exit(1);
+            }
+        }
+      sampSplitLevel = std::stoi(ss);
+    }
 
   double nominalMomentum = std::stod(nomMom);
   double mass  = 0;
@@ -139,7 +157,7 @@ int main(int argc, char *argv[])
       outputSampler->samplerName = sampName;
       eventOutputTree->Branch((sampName+".").c_str(),
 			      "BDSOutputROOTEventSampler",
-			      outputSampler,32000,0);
+			      outputSampler,32000,sampSplitLevel);
       localSamplers.push_back(outputSampler);
     }
 
@@ -167,7 +185,7 @@ int main(int argc, char *argv[])
 	  double p = nominalMomentum*(1. + data.pt);
 	  double E = std::sqrt(std::pow(p,2) + std::pow(mass,2));
 	  lSampler->energy.push_back(E);
-	  
+	  lSampler->p.push_back(p);
 	  lSampler->x.push_back(data.x);
 	  lSampler->y.push_back(data.y);
 	  lSampler->z = 0;                   // local z always 0

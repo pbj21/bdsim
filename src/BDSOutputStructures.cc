@@ -207,7 +207,8 @@ void BDSOutputStructures::InitialiseSamplers()
 {
   if (!localSamplersInitialised)
     {
-      const auto sNames = BDSSamplerRegistry::Instance()->GetUniqueNamesPlane();
+      auto samplerRegistry = BDSSamplerRegistry::Instance();
+      const auto sNames = samplerRegistry->GetUniqueNamesPlane();
 #ifdef USE_SIXTRACKLINK
       // TODO hardcoded because of sixtrack dynamic buildup
       // Sixtrack does lazy initialisation for collimators in link to Geant4 so we don't know
@@ -232,20 +233,36 @@ void BDSOutputStructures::InitialiseSamplers()
 	  samplerTrees.push_back(res);
 	  samplerNames.push_back(samplerName);
         }
-      const auto scNames = BDSSamplerRegistry::Instance()->GetUniqueNamesCylinder();
+      const auto planeIDs = samplerRegistry->GetSamplerIDsPlane();
+      G4int i = 0;
+      for (const auto& ID : planeIDs)
+	{samplerIDToIndexPlane[ID] = i; i++;}
+      
+      // cylindrical samplers
+      const auto scNames = samplerRegistry->GetUniqueNamesCylinder();
       samplerCTrees.reserve(scNames.size());
       for (const auto& samplerName : scNames)
         {
 	  samplerCTrees.emplace_back(new BDSOutputROOTEventSamplerC(samplerName));
 	  samplerCNames.emplace_back(samplerName);
         }
-      const auto ssNames = BDSSamplerRegistry::Instance()->GetUniqueNamesSphere();
+      const auto cylinderIDs = samplerRegistry->GetSamplerIDsCylinder();
+      i = 0;
+      for (const auto& ID : cylinderIDs)
+	{samplerIDToIndexCylinder[ID] = i; i++;}
+      
+      // spherical samplers
+      const auto ssNames = samplerRegistry->GetUniqueNamesSphere();
       samplerSTrees.reserve(ssNames.size());
       for (const auto& samplerName : ssNames)
         {
 	  samplerSTrees.emplace_back(new BDSOutputROOTEventSamplerS(samplerName));
 	  samplerSNames.emplace_back(samplerName);
         }
+      const auto sphereIDs = samplerRegistry->GetSamplerIDsSphere();
+      i = 0;
+      for (const auto& ID : sphereIDs)
+	{samplerIDToIndexSphere[ID] = i; i++;}
     }
 }
 

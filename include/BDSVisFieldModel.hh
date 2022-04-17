@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSFieldQueryInfo;
 class G4Field;
+class G4VisAttributes;
 
 class BDSVisFieldModel: public G4VModel
 {
@@ -53,6 +54,11 @@ private:
   G4double QIL(const BDSFieldQueryInfo::QueryDimensionInfo& qi) const;
   
   const std::vector<BDSFieldQueryInfo*> queries;
+  
+  /// @{ The vis attributes for a zero-field marker.
+  G4VisAttributes* pointVisB;
+  G4VisAttributes* pointVisE;
+  /// @}
 };
 
 #endif

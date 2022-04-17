@@ -158,6 +158,8 @@ General Updates
   Geant4 names (e.g. "e-").
 * Print out extent of loaded world when using an external geometry file.
 * **EMD** physics has a minimum applicable kinetic energy of 1 MeV to prevent crashes in Geant4.
+* Optional executable argument added to ptc2bdsim to control ROOT split-level of sampler branches. Same
+  functionality as the BDSIM option :code:`samplersSplitLevel`.
 
 Bug Fixes
 ---------
@@ -203,6 +205,10 @@ Bug Fixes
 * Fix a bug in field map loading where a space was before the "!" character the columns
   wouldn't be parsed correctly.
 * Fix BDSIM field map format :code:`loopOrder` documentation. The variable can be either `xyzt` or `tzyx`.
+* The quadrupole field in an sbend or rbend with a k1 value specified was a factor of 1e6 too
+  low due to the placement of units. The integrator for tracking (which ignores the field) was
+  correct and still is, but the back up field used for non-paraxial particles had the wrong
+  effective k1.
 
 **Geometry**
   
@@ -212,7 +218,8 @@ Bug Fixes
 * Fix missing magnet coil end pieces despite being available space when the sequence
   is a magnet, drift, element, or the reverse.
 * Fix overlaps with various parameter combinations for an octagonal beam / aperture shape.
-
+* Fixed issued where sections of an angled dipole were shorter than their containers, resulting in visual gaps
+  in the geometry.
 
 **Output**
 
@@ -247,12 +254,18 @@ Bug Fixes
   speed of some events with large numbers of tracks.
 * Fix lack of user limits for RF cavity geometry.
 * Fix maximum step length user limit for externally loaded geometry.
+* Fix logic of building thin dipole fringe elements when using non-matrix integrator sets. As the
+  rotated poleface geometry will be constructed in such circumstances, the thin integrated pole face kick
+  is now not be applied as well. If finite fringe field quantities are specified, the thin elements will be built
+  but will only apply the fringe kicks and not the pole face effects. If using a non-matrix integrator set
+  and the option :code:`buildPoleFaceGeometry` is specified as false, thin pole face kicks will be applied.
+
 
 **Visualisation**
 
 * GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
   reminder, any material without a specific colour will default to a shade of grey according to
-  its density.
+  its density. The auto-colouring is also fixed when preprocessing is used (the default).
 * Fix visualisation of loaded GDML container volume.
   
 **General**

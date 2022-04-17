@@ -74,6 +74,7 @@ private:
   std::vector<std::array<G4double, 9>> values;
   G4double maxFieldB;
   G4double maxFieldE;
+  G4bool drawZeroValuePoints;
 };
 
 #endif

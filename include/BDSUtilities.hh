@@ -271,6 +271,20 @@ namespace BDS
   inline G4bool EndsWith(const std::string& expression,
 			 const std::string& suffix) {return expression.size() >= suffix.size() &&
       expression.compare(expression.size() - suffix.size(), suffix.size(), suffix) == 0;}
+
+  /// Calculate safe length of an angled volume so it fills the length of its container.
+  G4double CalculateSafeAngledVolumeLength(G4double angleIn,
+                                           G4double angleOut,
+                                           G4double length,
+                                           G4double containerWidth,
+                                           G4double containerHeight=0);
+
+  /// Overloaded method to process G4ThreeVectors instead of angles.
+  G4double CalculateSafeAngledVolumeLength(G4ThreeVector inputfaceIn,
+                                           G4ThreeVector outputfaceIn,
+                                           G4double length,
+                                           G4double containerWidth,
+                                           G4double containerHeight=0);
 }
 
 #endif

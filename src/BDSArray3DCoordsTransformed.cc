@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArrayOperatorValue.hh"
 #include "BDSFieldValue.hh"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
@@ -58,9 +59,9 @@ void BDSArray3DCoordsTransformed::ExtractSection2x2x2(G4double x,
   yFrac = yArrayCoords - y1;
   zFrac = zArrayCoords - z1;
   
-  G4int indexArrX[2] = {x1, x1+1};
-  G4int indexArrY[2] = {y1, y1+1};
-  G4int indexArrZ[2] = {z1, z1+1};
+  std::array<G4int, 2> indexArrX = {x1, x1+1};
+  std::array<G4int, 2> indexArrY = {y1, y1+1};
+  std::array<G4int, 2> indexArrZ = {z1, z1+1};
   G4int indexOriginalX, indexOriginalY, indexOriginalZ, indexTransformedX, indexTransformedY, indexTransformedZ;
   for (G4int i = 0; i < 2; i++)
     {
@@ -100,9 +101,9 @@ void BDSArray3DCoordsTransformed::ExtractSection4x4x4(G4double x,
   yFrac = yArrayCoords - y1;
   zFrac = zArrayCoords - z1;
   
-  G4int indexArrX[4] = {x1-1, x1, x1+1, x1+2};
-  G4int indexArrY[4] = {y1-1, y1, y1+1, y1+2};
-  G4int indexArrZ[4] = {z1-1, z1, z1+1, z1+2};
+  std::array<G4int, 4> indexArrX = {x1-1, x1, x1+1, x1+2};
+  std::array<G4int, 4> indexArrY = {y1-1, y1, y1+1, y1+2};
+  std::array<G4int, 4> indexArrZ = {z1-1, z1, z1+1, z1+2};
   G4int indexOriginalX, indexOriginalY, indexOriginalZ, indexTransformedX, indexTransformedY, indexTransformedZ;
   for (G4int i = 0; i < 4; i++)
     {

@@ -36,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArrayOperatorValueReflect.hh"
 #include "BDSArrayOperatorValueReflectDipoleXY.hh"
 #include "BDSArrayOperatorValueReflectDipoleY.hh"
+#include "BDSArrayOperatorValueReflectSolenoidZ.hh"
 #include "BDSArrayOperatorValueV.hh"
 #include "BDSArrayReflectionType.hh"
 #include "BDSDebug.hh"
@@ -675,6 +676,12 @@ void BDSFieldLoader::CreateOperators(const BDSArrayReflectionTypeSet* reflection
     {
       indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({true, false, false, false}, arrayInfo));
       valueOperators.emplace_back(new BDSArrayOperatorValueReflect({true, false,  false, false}, arrayInfo));
+      break;
+    }
+  case BDSArrayReflectionType::reflectzsolenoid:
+    {
+      indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({false, false, true,  false}, arrayInfo));
+      valueOperators.emplace_back(new BDSArrayOperatorValueReflectSolenoidZ());
       break;
     }
 	case BDSArrayReflectionType::reflectxyquadrupole:

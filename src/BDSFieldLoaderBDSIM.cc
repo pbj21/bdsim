@@ -166,6 +166,13 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
       if (std::all_of(line.begin(), line.end(), isspace))
 	{continue;}
 
+      if (currentLineNumber > 100) // !intoData is always true as we're inside this while loop
+        {
+          G4String msg = functionName+"did not encounter column specification line starting with '!' in the first 100 lines\n";
+          msg += "This does not appear to be a BDSIM-format field map.";
+          Terminate(msg);
+        }
+      
       // now several checks
       // 1) key > number
       // 2) key > word

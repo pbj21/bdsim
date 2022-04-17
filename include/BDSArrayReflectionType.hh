@@ -40,6 +40,7 @@ struct arrayreflectiontypes_def
              reflectxydipole,
              reflectxzdipole,
              reflectyzdipole,
+             reflectzsolenoid,
              reflectxyquadrupole};
 };
 

@@ -1534,7 +1534,7 @@ Examples: ::
 |                              | alone will not give an accurate representation of the distribution     |
 |                              | after a crystal as EM physics is required. Multiple scattering should  |
 |                              | not be used in combination with this however to achieve the correct    |
-|                              | results.                                                               |
+|                              | results. Only available for Geant4 V10.4 onwards.                      |
 +------------------------------+------------------------------------------------------------------------+
 | cherenkov                    | Provides Cherenkov radiation for all charged particles. Issued by the  |
 |                              | BDSIM physics builder `BDSPhysicsCherenkov` that provides the process  |
@@ -1667,6 +1667,7 @@ Examples: ::
 |                              | This is provided by `G4HadronPhysicsQGSP_BIC_HP`.                      |
 +------------------------------+------------------------------------------------------------------------+
 | radioactivation              | Use G4Radioactivation process. Atomic de-excitation disabled for now.  |
+|                              | Only available for Geant4 V10.4 onwards.                               |
 +------------------------------+------------------------------------------------------------------------+
 | shielding                    | `G4HadronPhysicsShielding`. Inelastic hadron physics suitable for      |
 |                              | shielding applications.                                                |
@@ -2589,7 +2590,7 @@ described in :ref:`tunnel-geometry`.
 |                                  | this behaviour.                                       |
 +----------------------------------+-------------------------------------------------------+
 | thinElementLength                | The length of all thinmultipoles and dipole           |
-|                                  | fringefields in a lattice (default 1e-6) [m]          |
+|                                  | fringefields in a lattice (default 1e-7) [m]          |
 +----------------------------------+-------------------------------------------------------+
 | tunnelIsInfiniteAbsorber         | Whether all particles entering the tunnel material    |
 |                                  | should be killed or not (default = false)             |
@@ -3522,6 +3523,11 @@ should only be used with understanding.
 |                                   | check Zp < (1-limit), and often (Xp > limit) & (Yp > limit).       |
 |                                   | Changing this limit will affect tracking of large angle particles. |
 +-----------------------------------+--------------------------------------------------------------------+
+| buildPoleFaceGeometry             | Default = true. Build bending magnet pole face geometry when using |
+|                                   | the geant4 integrator sets. This option doesn't affect the         |
+|                                   | behaviour of matrix integrator sets where angled face geometry is  |
+|                                   | never constructed.                                                 |
++-----------------------------------+--------------------------------------------------------------------+
 
 .. _sampler-output:
 
@@ -3710,14 +3716,16 @@ Particle Data Group ("PDG") integer ID number. PDG IDs are discussed here :ref:`
 example is: ::
 
   sample, range=<element_name>, partID={11,12,13,14};
+  csample, range=<element_name>, partID={11,12,13,14};
 
 Anti-particles must be explicitly specified: ::
 
   sample, range=<element_name>, partID={11,-11};
 
-This can be applied to all samplers as well. ::
+This can be applied to all samplers as well (csample alternative shown). ::
 
   sample, all, partID={13,-13};
+  csample, all, partID={13,-13};
 
 Any sampler specified after this will be overwritten. ::
 
@@ -3751,8 +3759,8 @@ The user may place a sampler anywhere in the model with any orientation. This is
 `samplerplacement`. The sampler may have the following forms:
 
 * A **plane** sampler (circular or rectangular shape)
-* A **sphere** sampler
 * A **cylinder** sampler
+* A **sphere** sampler
 
 A `samplerplacement` will record all particles travelling in **any direction** through it.
 A branch in the Event output will be created with the name of the `samplerplacement`. The

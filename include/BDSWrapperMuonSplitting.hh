@@ -28,20 +28,44 @@ class G4Track;
 class G4VParticleChange;
 class G4VProcess;
 
+/**
+ * @brief Wrapper process to produce more muons by resampling the process.
+ *
+ * Wrap a process. If that process post-step do-it particle change produces a
+ * muon, then resample it until we get the desired number of muons. Keep only the
+ * new muons. Put together the original secondaries (that are not muons) with the
+ * now N muons and weight each muon by w_i * 1/N.
+ *
+ * Possibility of 2 splitting factors at threshold energies with linear interpolation
+ * of the splitting factor in between (rounded to the nearest integer). The splitting
+ * ramps up from 0.8x the 1st threshold in kinetic energy. This is a crude linear way
+ * to compensate for a possibly exponential in spectra as we don't know the original
+ * function.
+ *
+ * Optional flag for excluding weight = 1 incoming particles for the case of heavy
+ * cross-section biasing used separately to this class (e.g. decay).
+ *
+ * @author Laurie Nevay
+ */
+
 class BDSWrapperMuonSplitting: public BDSWrapperProcess
 {
 public:
   BDSWrapperMuonSplitting() = delete;
   BDSWrapperMuonSplitting(G4VProcess* originalProcess,
-                          G4int splittingFactorIn,
-                          G4double splittingThresholdEKIn = 0,
-                          G4int splittingFactor2In = 1,
-                          G4double splittingThresholdEK2In = 0);
+                          G4int    splittingFactorIn,
+                          G4double splittingThresholdEKIn  = 0,
+                          G4int    splittingFactor2In      = 1,
+                          G4double splittingThresholdEK2In = 0,
+                          G4bool   excludeWeight1Particles = false,
+                          G4double muonSplittingExclusionWeightIn = 1e99);
   virtual ~BDSWrapperMuonSplitting();
   
+  /// Do the splitting operation.
   virtual G4VParticleChange* PostStepDoIt(const G4Track& track,
-					  const G4Step& step);
+                                          const G4Step& step);
   
+  /// Counter for understanding occurence.
   static G4int nCallsThisEvent;
   
 private:
@@ -49,6 +73,8 @@ private:
   G4double splittingThresholdEK;
   G4int splittingFactor2;
   G4double splittingThresholdEK2;
+  G4bool excludeWeight1Particles;
+  G4double muonSplittingExclusionWeight;
   BDSPhysicsVectorLinear* splitting;
 };
 

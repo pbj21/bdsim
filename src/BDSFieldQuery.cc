@@ -185,13 +185,16 @@ void BDSFieldQuery::CheckNStepsAndRange(const BDSFieldQueryInfo::QueryDimensionI
                                         const G4String& dimensionName,
                                         const G4String& queryName) const
 {
-  if (dimensionInfo.n > 1 && (!BDS::IsFinite(std::abs(dimensionInfo.max - dimensionInfo.min))))
+  const G4String& d = dimensionName;
+  G4bool nonZeroRange = BDS::IsFinite(std::abs(dimensionInfo.max - dimensionInfo.min));
+  if (dimensionInfo.n > 1 && !nonZeroRange)
     {
-      const G4String& d = dimensionName;
       G4String msg = "Problem in query \"" + queryName + "\": n"+d+" > 1, but |"+d;
       msg += "max - "+d+"min| = 0 -> cannot take more than 1 step in 0 range.";
       throw BDSException(__METHOD_NAME__, msg);
     }
+  if (dimensionInfo.n == 1 && nonZeroRange)
+    {BDS::Warning("Only 1 point to query in \"" + queryName + "\" over a non-zero range - check n"+d);}
 }
 
 void BDSFieldQuery::CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) const

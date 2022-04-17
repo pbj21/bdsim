@@ -1,4 +1,4 @@
-/* 
+/*
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
 University of London 2001 - 2022.
 
@@ -282,7 +282,7 @@ void Options::PublishMembers()
   publish("coilWidthFraction",    &Options::coilWidthFraction);
   publish("coilHeightFraction",   &Options::coilHeightFraction);
   publish("ignoreLocalMagnetGeometry", &Options::ignoreLocalMagnetGeometry);
-
+  publish("buildPoleFaceGeometry", &Options::buildPoleFaceGeometry);
   publish("preprocessGDML",       &Options::preprocessGDML);
   publish("preprocessGDMLSchema", &Options::preprocessGDMLSchema);
   
@@ -343,6 +343,8 @@ void Options::PublishMembers()
   publish("muonSplittingThresholdParentEk",  &Options::muonSplittingThresholdParentEk);
   publish("muonSplittingFactor2",            &Options::muonSplittingFactor2);
   publish("muonSplittingThresholdParentEk2", &Options::muonSplittingThresholdParentEk2);
+  publish("muonSplittingExcludeWeight1Particles", &Options::muonSplittingExcludeWeight1Particles);
+  publish("muonSplittingExclusionWeight",    &Options::muonSplittingExclusionWeight);
   
   // bias options
   publish("defaultBiasVacuum",   &Options::defaultBiasVacuum);

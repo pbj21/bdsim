@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 #include <limits>
@@ -41,9 +42,9 @@ BDSArray1DCoords::BDSArray1DCoords(G4int            nXIn,
                                         BDSDimensionType::z,
                                         BDSDimensionType::t};
   allDims.erase(dimensionIn);
-  BDSDimensionType* vars[3] = {&yDimension,
-                               &zDimension,
-                               &tDimension};
+  std::array<BDSDimensionType*, 3> vars = {&yDimension,
+                                           &zDimension,
+                                           &tDimension};
   std::vector<BDSDimensionType> unusedDims(allDims.begin(), allDims.end());
   for (G4int i = 0; i < 3; i++)
     {*(vars[i]) = unusedDims[i];}

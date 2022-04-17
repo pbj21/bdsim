@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VProcess.hh"
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 G4int BDSWrapperMuonSplitting::nCallsThisEvent = 0;
@@ -34,12 +35,16 @@ BDSWrapperMuonSplitting::BDSWrapperMuonSplitting(G4VProcess* originalProcess,
                                                  G4int splittingFactorIn,
                                                  G4double splittingThresholdEKIn,
                                                  G4int splittingFactor2In,
-                                                 G4double splittingThresholdEK2In):
+                                                 G4double splittingThresholdEK2In,
+                                                 G4bool excludeWeight1ParticlesIn,
+                                                 G4double muonSplittingExclusionWeightIn):
   BDSWrapperProcess("MuonSplittingWrapper"),
   splittingFactor(splittingFactorIn),
   splittingThresholdEK(splittingThresholdEKIn),
   splittingFactor2(splittingFactor2In),
   splittingThresholdEK2(splittingThresholdEK2In),
+  excludeWeight1Particles(excludeWeight1ParticlesIn),
+  muonSplittingExclusionWeight(muonSplittingExclusionWeightIn),
   splitting(nullptr)
 {
   RegisterProcess(originalProcess);
@@ -81,17 +86,19 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
   if (nSecondaries == 0)
     {return particleChange;}
   
+  // if weight == 1
+  if (excludeWeight1Particles && std::abs(track.GetWeight() - 1.0) > std::numeric_limits<double>::epsilon())
+    {return particleChange;}
+  
+  if (track.GetWeight() > muonSplittingExclusionWeight)
+    {return particleChange;}
+  
   G4bool muonPresent = false;
   std::vector<G4int> secondaryPDGIDs;
-  std::vector<G4int> secondaryMuonIndices;
   for (G4int i = 0; i < nSecondaries; i++)
     {
       G4int secondaryPDGID = particleChange->GetSecondary(i)->GetDefinition()->GetPDGEncoding();
-      if (std::abs(secondaryPDGID) == 13)
-        {// it's a muon
-          muonPresent = true;
-          secondaryMuonIndices.push_back(i);
-        }
+      muonPresent = std::abs(secondaryPDGID) == 13 || muonPresent;
     }
   if (!muonPresent)
     {return particleChange;}
@@ -99,7 +106,7 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
   // we keep hold of the tracks and manage their memory
   std::vector<G4Track*> originalSecondaries;
   std::vector<G4Track*> originalMuons;
-  for (G4int i = 0; i < particleChange->GetNumberOfSecondaries(); i++)
+  for (G4int i = 0; i < nSecondaries; i++)
     {
       G4Track* secondary = particleChange->GetSecondary(i);
       if (std::abs(secondary->GetDefinition()->GetPDGEncoding()) != 13)
@@ -108,7 +115,7 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
 	{originalMuons.push_back(secondary);}
     }
   
-  G4int nOriginalSecondaries = particleChange->GetNumberOfSecondaries();
+  G4int nOriginalSecondaries = nSecondaries;
   
   particleChange->Clear(); // doesn't delete the secondaries
   
@@ -155,7 +162,9 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
       return particleChange;
     }
     
+  // the original muon(s) count as 1 even if there are 2 of them as it's 1x call to the process
   G4double weightFactor = 1.0 / (static_cast<G4double>(nSuccessfulMuonSplits) + 1.0);
+  // put in the original secondaries with an unmodified weight
   for (auto aSecondary : originalSecondaries)
     {particleChange->AddSecondary(aSecondary);}
   for (auto originalMuon : originalMuons)

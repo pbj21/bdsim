@@ -3,3 +3,4 @@ simple_testing(bunch-bdsimsampler-offset         "--file=bdsimsampler-offset.gma
 simple_testing(bunch-bdsimsampler-lowphysics     "--file=bdsimsampler-lowphysics.gmad"  "")
 simple_testing(bunch-bdsimsampler-filtered       "--file=bdsimsampler-filtered.gmad"    "")
 simple_testing(bunch-bdsimsampler-loop           "--file=bdsimsampler-loop.gmad"        "")
+simple_fail(bunch-bdsimsampler-no-particles   "--file=bdsimsampler-no-particles.gmad" "")

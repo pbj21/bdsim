@@ -154,6 +154,7 @@ public:
   inline G4double HorizontalWidth()          const {return G4double(options.horizontalWidth)*CLHEP::m;}
   inline G4bool   IgnoreLocalAperture()      const {return G4bool  (options.ignoreLocalAperture);}
   inline G4bool   IgnoreLocalMagnetGeometry()const {return G4bool  (options.ignoreLocalMagnetGeometry);}
+  inline G4bool   BuildPoleFaceGeometry()    const {return G4bool  (options.buildPoleFaceGeometry);}
   inline G4String OuterMaterialName()        const {return G4String(options.outerMaterialName);}
   inline G4bool   DontSplitSBends()          const {return G4bool  (options.dontSplitSBends);}
   inline G4bool   BuildTunnel()              const {return G4bool  (options.buildTunnel);}
@@ -187,6 +188,8 @@ public:
   inline G4double MuonSplittingThresholdParentEk() const {return G4double(options.muonSplittingThresholdParentEk * CLHEP::GeV);}
   inline G4int    MuonSplittingFactor2()      const {return G4int   (options.muonSplittingFactor2);}
   inline G4double MuonSplittingThresholdParentEk2() const {return G4double(options.muonSplittingThresholdParentEk2) * CLHEP::GeV;}
+  inline G4bool   MuonSplittingExcludeWeight1Particles() const {return G4bool(options.muonSplittingExcludeWeight1Particles);}
+  inline G4double MuonSplittingExclusionWeight() const {return G4double(options.muonSplittingExclusionWeight);}
   inline G4String BiasForWorldVolume()       const {return G4String(options.biasForWorldVolume);}
   inline G4String BiasForWorldContents()     const {return G4String(options.biasForWorldContents);}
   inline G4String BiasForWorldVacuum()       const {return G4String(options.biasForWorldVacuum);}

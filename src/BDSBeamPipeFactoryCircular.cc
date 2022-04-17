@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryCircular.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSExtent.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"                      // geant4 globals / types
 #include "G4CutTubs.hh"
@@ -137,6 +138,9 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
 							   G4ThreeVector outputfaceIn,
 							   G4double&     containerRadius)
 {
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, aper1In);
+
   // build the solids
   vacuumSolid   = new G4CutTubs(nameIn + "_vacuum_solid",      // name
 				0,                             // inner radius
@@ -153,7 +157,7 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
   G4VSolid* inner = new G4CutTubs(nameIn + "_pipe_inner_solid",  // name
 				  0,                             // inner radius
 				  aper1In + lengthSafetyLarge,   // outer radius
-				  lengthIn,                      // half length - long!
+				  angledVolumeLength,            // long length!
 				  0,                             // rotation start angle
 				  CLHEP::twopi,                  // rotation finish angle
 				  inputfaceIn,                   // input face normal

@@ -128,6 +128,10 @@ public:
   std::map<std::string, double> GetUniqueNameToRadiusSphere() const;
   /// @}
   
+  inline std::vector<G4int> GetSamplerIDsPlane() const    {return samplerIDsPerType.at(BDSSamplerType::plane);}
+  inline std::vector<G4int> GetSamplerIDsCylinder() const {return samplerIDsPerType.at(BDSSamplerType::cylinder);}
+  inline std::vector<G4int> GetSamplerIDsSphere() const   {return samplerIDsPerType.at(BDSSamplerType::sphere);}
+  
   /// Access all the unique names and their corresponding s position at once.
   std::vector<std::pair<G4String, G4double> > GetUniquePlaneNamesAndSPosition() const;
 
@@ -155,6 +159,10 @@ private:
 
   /// Cache of unique sampler objects for memory management.
   std::set<BDSSampler*> samplerObjects;
+  
+  /// Map to reduce 'forward' sampler types to simple sampler types for keeping a record of IDs.
+  std::map<BDSSamplerType, BDSSamplerType> samplerTypeToCategory;
+  std::map<BDSSamplerType, std::vector<G4int>> samplerIDsPerType;
 };
 
 inline G4String BDSSamplerRegistry::GetName(G4int index) const

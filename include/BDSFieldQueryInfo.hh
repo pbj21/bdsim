@@ -63,7 +63,8 @@ public:
                     G4bool overwriteExistingFilesIn = false,
                     const G4String& fieldObjectIn = "",
                     G4bool printTransformIn = false,
-                    G4bool checkParametersIn = true);
+                    G4bool checkParametersIn = true,
+                    G4bool drawZeroValuePointsIn = true);
 
   /// Alternative constructor with list of exact points to query.
   BDSFieldQueryInfo(const G4String& nameIn,
@@ -75,7 +76,8 @@ public:
 		    const std::vector<G4String>& pointsColumnNamesIn,
 		    G4bool overwriteExistingFilesIn = false,
 		    const G4String& fieldObjectIn = "",
-        G4bool checkParametersIn = true);
+        G4bool checkParametersIn = true,
+        G4bool drawZeroValuePointsIn = true);
   ~BDSFieldQueryInfo();
   
   G4String name;
@@ -99,6 +101,8 @@ public:
   G4String fieldObject; ///< Optional for use in interpolator.
   
   G4bool checkParameters; ///< For internal testing use only.
+  
+  G4bool drawZeroValuePoints;
   
   /// Whether to query a specific set of points.
   G4bool SpecificPoints() const {return !pointsToQuery.empty();}

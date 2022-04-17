@@ -39,12 +39,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSPhysicsMuonSplitting::BDSPhysicsMuonSplitting(G4int splittingFactorIn,
                                                  G4double splittingThresholdEKIn,
                                                  G4int splittingFactor2In,
-                                                 G4double splittingThresholdEK2In):
+                                                 G4double splittingThresholdEK2In,
+                                                 G4bool excludeWeight1ParticlesIn,
+                                                 G4double muonSplittingExclusionWeightIn):
   G4VPhysicsConstructor("BDSPhysicsMuonSplitting"),
   splittingFactor(splittingFactorIn),
   splittingThresholdEK(splittingThresholdEKIn),
   splittingFactor2(splittingFactor2In),
-  splittingThresholdEK2(splittingThresholdEK2In)
+  splittingThresholdEK2(splittingThresholdEK2In),
+  excludeWeight1Particles(excludeWeight1ParticlesIn),
+  muonSplittingExclusionWeight(muonSplittingExclusionWeightIn)
 {
   if (splittingFactorIn < 1)
     {throw BDSException(__METHOD_NAME__, "the splitting factor must be an integer 1 or greater.");}
@@ -75,6 +79,9 @@ void BDSPhysicsMuonSplitting::ConstructProcess()
 {
   if (Activated())
     {return;}
+  
+  if (excludeWeight1Particles)
+    {G4cout << "Bias> muon splitting> excluding weight=1 parents from splitting." << G4endl;}
 
   // "hPairProduction" includes "MuPairProduction" but this is in fact nothing to do with producing
   // muons. It's for producing e+e- pairs by modelling the interaction of high energy muons. This
@@ -122,15 +129,17 @@ void BDSPhysicsMuonSplitting::ConstructProcess()
 	  if (processNamesToLookFor.count(processName) == 0)
 	    {continue;}
 	  
-	  auto wrappedProcess = new BDSWrapperMuonSplitting(process, splittingFactor, splittingThresholdEK, splittingFactor2, splittingThresholdEK2);
+	  auto wrappedProcess = new BDSWrapperMuonSplitting(process, splittingFactor, splittingThresholdEK,
+                                                      splittingFactor2, splittingThresholdEK2, excludeWeight1Particles,
+                                                      muonSplittingExclusionWeight);
 	  pManager->RemoveProcess(process);
 	  ph->RegisterProcess(wrappedProcess, particle);
-	  G4cout << "Bias> muon splitting > wrapping \"" << process->GetProcessName()
+	  G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
            << "\" for particle \"" << particle->GetParticleName() << "\": x" << splittingFactor
            << " for parent Ek > " << splittingThresholdEK / CLHEP::GeV << " GeV" << G4endl;
 	  if (splittingFactor2 > 1)
 	    {
-	      G4cout << "Bias> muon splitting > wrapping \"" << process->GetProcessName()
+	      G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
 		     << "\" for particle \"" << particle->GetParticleName() << "\": (2nd band) x" << splittingFactor2
 		     << " for parent Ek > " << splittingThresholdEK2 / CLHEP::GeV << " GeV" << G4endl;
 	    }

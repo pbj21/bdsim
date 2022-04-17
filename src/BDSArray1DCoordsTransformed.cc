@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
@@ -50,7 +51,7 @@ void BDSArray1DCoordsTransformed::ExtractSection2(G4double x,
   auto x1 = (G4int)std::floor(xArrayCoords);
   
   xFrac = xArrayCoords - x1;
-  G4int indexArr[2] = {x1, x1+1};
+  std::array<G4int, 2> indexArr = {x1, x1+1};
   G4int indexOriginal, indexTransformed;
   for (G4int i = 0; i < 2; i++)
     {
@@ -70,7 +71,7 @@ void BDSArray1DCoordsTransformed::ExtractSection4(G4double x,
   auto x1 = (G4int)std::floor(xArrayCoords);
   xFrac = xArrayCoords - x1;
   
-  G4int indexArr[4] = {x1-1, x1, x1+1, x1+2};
+  std::array<G4int, 4> indexArr = {x1-1, x1, x1+1, x1+2};
   G4int indexOriginal, indexTransformed;
   for (G4int i = 0; i < 4; i++)
     {

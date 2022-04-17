@@ -150,6 +150,9 @@ protected:
   std::vector<BDSOutputROOTEventSamplerS*> samplerSTrees;
   std::vector<std::string> samplerCNames;
   std::vector<std::string> samplerSNames;
+  std::map<G4int, G4int> samplerIDToIndexPlane;
+  std::map<G4int, G4int> samplerIDToIndexCylinder;
+  std::map<G4int, G4int> samplerIDToIndexSphere;
   
   BDSOutputROOTEventRunInfo*    runInfo;            ///< Run information.
   BDSOutputROOTEventHistograms* runHistos;          ///< Run level histograms

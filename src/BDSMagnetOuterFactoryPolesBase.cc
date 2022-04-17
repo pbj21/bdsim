@@ -937,20 +937,8 @@ void BDSMagnetOuterFactoryPolesBase::DipoleCalculations(G4bool    hStyle,
   // outer container full length -> length - 2*ls
   // full magnet container full length -> container length
   // if we have angled faces, make square faced solids longer for intersection.
-  if (BDS::IsFinite(angleIn) || BDS::IsFinite(angleOut))
-    {
-      // In the case of angled faces, calculate a length so that the straight solids
-      // used in intersection are long enough to reach the edges of the angled faces.
-      // Could simply do 2x length, but for short dipole sections with strongly angled
-      // faces this doesn't work. Calculate extent along z for each angled face. This
-      // is called the 'safe' length -> sLength
-      G4double hypotenuse = std::hypot(yokeWidth, yokeHalfHeight);
-      G4double dzIn  = std::tan(std::abs(angleIn))  * 1.2*hypotenuse; // 20% over estimation for safety
-      G4double dzOut = std::tan(std::abs(angleOut)) * 1.2*hypotenuse;
-      // take the longest of different estimations (2x and 1.5x + dZs)
-      sLength = std::max(2*length, 1.5*length + dzIn + dzOut);
-      containerSLength = sLength;
-    }
+  sLength = BDS::CalculateSafeAngledVolumeLength(angleIn, angleOut, length, yokeWidth, yokeHalfHeight);
+  containerSLength = sLength;
 
   intersectionRadius = std::hypot(0.5*poleWidth + yokeOverHang, poleHalfGap + poleHeight);
   // if finite thickness yoke (independent of overall size)

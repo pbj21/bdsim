@@ -31,7 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSFieldQueryForVis::BDSFieldQueryForVis():
   maxFieldB(0),
-  maxFieldE(0)
+  maxFieldE(0),
+  drawZeroValuePoints(false)
 {;}
 
 BDSFieldQueryForVis::~BDSFieldQueryForVis()
@@ -49,6 +50,7 @@ void BDSFieldQueryForVis::QueryField(const BDSFieldQueryInfo* query)
 {
   G4int totalNPoints = query->xInfo.n * query->yInfo.n * query->zInfo.n * query->tInfo.n;
   values.reserve(totalNPoints);
+  drawZeroValuePoints = query->drawZeroValuePoints;
   BDSFieldQuery::QueryField(query);
 }
 
@@ -62,7 +64,7 @@ void BDSFieldQueryForVis::GetFieldValue(const G4ThreeVector& globalXYZ,
   G4double eFieldMag = SimpleMag(fieldValue[3], fieldValue[4], fieldValue[5]);
   maxFieldB = std::max(maxFieldB, bFieldMag);
   maxFieldE = std::max(maxFieldE, eFieldMag);
-  if ( (bFieldMag == 0) && (eFieldMag == 0) )
+  if ( (bFieldMag == 0) && (eFieldMag == 0) && !drawZeroValuePoints)
     {return;} // don't store 0 field points - we don't need to retain the structure or complete array shape
   values.emplace_back( std::array<G4double, 9>({globalXYZ.x(), globalXYZ.y(), globalXYZ.z(),
                                                 fieldValue[0], fieldValue[1], fieldValue[2],

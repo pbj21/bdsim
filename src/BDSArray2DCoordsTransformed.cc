@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArrayOperatorValue.hh"
 #include "BDSFieldValue.hh"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
@@ -54,8 +55,8 @@ void BDSArray2DCoordsTransformed::ExtractSection2x2(G4double x,
   xFrac = xArrayCoords - x1;
   yFrac = yArrayCoords - y1;
   
-  G4int indexArrX[2] = {x1, x1+1};
-  G4int indexArrY[2] = {y1, y1+1};
+  std::array<G4int, 2> indexArrX = {x1, x1+1};
+  std::array<G4int, 2> indexArrY = {y1, y1+1};
   G4int indexOriginalX, indexOriginalY, indexTransformedX, indexTransformedY;
   for (G4int i = 0; i < 2; i++)
     {
@@ -85,8 +86,8 @@ void BDSArray2DCoordsTransformed::ExtractSection4x4(G4double x,
   xFrac = xArrayCoords - x1;
   yFrac = yArrayCoords - y1;
   
-  G4int indexArrX[4] = {x1-1, x1, x1+1, x1+2};
-  G4int indexArrY[4] = {y1-1, y1, y1+1, y1+2};
+  std::array<G4int, 4> indexArrX = {x1-1, x1, x1+1, x1+2};
+  std::array<G4int, 4> indexArrY = {y1-1, y1, y1+1, y1+2};
   G4int indexOriginalX, indexOriginalY, indexTransformedX, indexTransformedY;
   for (G4int i = 0; i < 4; i++)
     {

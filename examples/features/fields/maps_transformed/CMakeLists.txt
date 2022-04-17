@@ -38,6 +38,7 @@ simple_testing(field-map-transform-2d-b-reflectxydipole "--file=b_field_2d_refle
 simple_testing(field-map-transform-2d-b-reflectxzdipole "--file=b_field_2d_reflectxzdipole.gmad" "")
 simple_testing(field-map-transform-3d-b-reflectxzdipole "--file=b_field_3d_reflectxzdipole.gmad" "")
 simple_testing(field-map-transform-3d-b-reflectyzdipole "--file=b_field_3d_reflectyzdipole.gmad" "")
+simple_testing(field-map-transform-3d-b-reflectzsolenoid "--file=b_field_3d_reflect_zsolenoid.gmad" "")
 
 
 interpolator_test(interpolator-1d-transform-b-flipx-nearest  "b_field_1d_flip_x_nearest.gmad")

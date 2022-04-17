@@ -701,9 +701,10 @@ void BDSOutput::FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler
 	{
 	  const BDSHitSampler* hit = (*hc)[i];
 	  G4int samplerID = hit->samplerID;
-	  samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-					storeSamplerPolarCoords, storeSamplerIon,
-					storeSamplerRigidity, storeSamplerKineticEnergy);
+	  G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
+	  samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						 storeSamplerPolarCoords, storeSamplerIon,
+						 storeSamplerRigidity, storeSamplerKineticEnergy);
 	}
     }
   // extra information - do only once at the end
@@ -726,9 +727,10 @@ void BDSOutput::FillSamplerCylinderHitsVector(const std::vector<BDSHitsCollectio
 	{
 	  const BDSHitSamplerCylinder* hit = (*hc)[i];
 	  G4int samplerID = hit->samplerID;
-	  samplerCTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-					 storeSamplerIon, storeSamplerRigidity,
-					 storeSamplerKineticEnergy);
+	  G4int samplerVectorIndex = samplerIDToIndexCylinder[samplerID];
+	  samplerCTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						  storeSamplerIon, storeSamplerRigidity,
+						  storeSamplerKineticEnergy);
 	}
     }
   // extra information - do only once at the end
@@ -751,9 +753,10 @@ void BDSOutput::FillSamplerSphereHitsVector(const std::vector<BDSHitsCollectionS
 	{
 	  const BDSHitSamplerSphere* hit = (*hc)[i];
 	  G4int samplerID = hit->samplerID;
-	  samplerSTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-					 storeSamplerIon, storeSamplerRigidity,
-					 storeSamplerKineticEnergy);
+	  G4int samplerVectorIndex = samplerIDToIndexSphere[samplerID];
+	  samplerSTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						  storeSamplerIon, storeSamplerRigidity,
+						  storeSamplerKineticEnergy);
 	}
     }
   // extra information - do only once at the end
@@ -773,9 +776,10 @@ void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits)
     {
       const BDSHitSampler* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;
-      samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-				    storeSamplerPolarCoords, storeSamplerIon,
-				    storeSamplerRigidity, storeSamplerKineticEnergy);
+      G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
+      samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+					     storeSamplerPolarCoords, storeSamplerIon,
+					     storeSamplerRigidity, storeSamplerKineticEnergy);
     }
 
   // extra information

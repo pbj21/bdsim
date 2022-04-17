@@ -48,7 +48,7 @@ BDSIntegratorDipoleQuadrupole::BDSIntegratorDipoleQuadrupole(BDSMagnetStrength c
   BDSIntegratorMag(eqOfMIn, 6),
   nominalBRho(brhoIn),
   eq(static_cast<BDSMagUsualEqRhs*>(eqOfM)),
-  bPrime(std::abs(brhoIn) * (*strengthIn)["k1"]),
+  bPrime(std::abs(brhoIn) * (*strengthIn)["k1"] / CLHEP::m2),
   nominalBeta((*strengthIn)["beta0"]),
   nominalRho((*strengthIn)["length"]/(*strengthIn)["angle"]),
   nominalField((*strengthIn)["field"]),

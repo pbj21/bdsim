@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "G4Version.hh"
+#if G4VERSION_NUMBER > 1039
 #include "BDSPhysicsRadioactivation.hh"
 
 #include "G4GenericIon.hh"
@@ -68,3 +70,5 @@ void BDSPhysicsRadioactivation::ConstructProcess()
 
   SetActivated();
 }
+
+#endif

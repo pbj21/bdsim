@@ -164,8 +164,12 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
 						  G4ThreeVector inputFace,
 						  G4ThreeVector outputFace)
 {
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  // extra factor 2 to be safe
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputFace, outputFace, length*2, intersectionRadius);
+
   // create straight solids that are a bit long
-  CreateSolids(name + "_straight", length, true);
+  CreateSolids(name + "_straight", angledVolumeLength, true);
 
   // now intersect them with one G4CutTubs to get the angled faces
   G4double zHalfLength          = length*0.5 - lengthSafety;

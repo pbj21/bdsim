@@ -47,7 +47,8 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
 								      std::map<G4String, G4Colour*>* mapping,
-								      G4bool                         autoColour)
+								      G4bool                         autoColour,
+								      const G4String&                prefixToStripFromName)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
@@ -99,7 +100,7 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G
           const G4VisAttributes* existingVis = lv->GetVisAttributes();
           if (!existingVis)
             {
-              G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(lv->GetMaterial());
+              G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(lv->GetMaterial(), prefixToStripFromName);
               G4VisAttributes* vis = new G4VisAttributes(*c);
               vis->SetVisibility(true);
               visAttributes.insert(vis);

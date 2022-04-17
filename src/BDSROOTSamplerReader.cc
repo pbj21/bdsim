@@ -55,7 +55,8 @@ BDSROOTSamplerReader::BDSROOTSamplerReader(const G4String& distrType,
   bunch(bunchIn),
   removeUnstableWithoutDecay(removeUnstableWithoutDecayIn),
   warnAboutSkippedParticles(warnAboutSkippedParticlesIn),
-  worldSolid(nullptr)
+  worldSolid(nullptr),
+  anyParticlesFoundAtAll(false)
 {
   std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrType); // before:after
   samplerName = ba.second;
@@ -86,7 +87,11 @@ void BDSROOTSamplerReader::GeneratePrimaryVertex(G4Event* anEvent)
 	}
       ReadSingleEvent(currentFileEventIndex);
       nParticles = (G4int)currentVertices.size();
+      if (nParticles > 0)
+        {anyParticlesFoundAtAll = true;}
       currentFileEventIndex++;
+      if ((nParticles < 1) && (currentFileEventIndex > nEventsInFile) && !anyParticlesFoundAtAll)
+        {throw BDSException(__METHOD_NAME__, "no events in file provide any suitable particles from the sampler "+samplerName);}
     }
   for (auto* v : currentVertices)
     {anEvent->AddPrimaryVertex(v);}

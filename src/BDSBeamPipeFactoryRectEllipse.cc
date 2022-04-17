@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSExtent.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4Box.hh"
@@ -231,6 +232,9 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 							      G4ThreeVector inputfaceIn,
 							      G4ThreeVector outputfaceIn)
 {
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, aper1In);
+
   // build the solids
   // we can get the rectangular ellipse as in the straight case with the intersection of
   // an elliptical tube (always solid) and then we can use another intersection solid
@@ -239,12 +243,12 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
   G4VSolid* vacCylSolid = new G4EllipticalTube(nameIn + "_vacuum_ellipsoid",// name
 					       aper3In,                     // horizontal semi-axis
 					       aper4In,                     // vertical semi-axis
-					       1.5*lengthIn); // z full width (long for unambiguous intersection)
+					       angledVolumeLength);         // long length for unambiguous intersection
   //vacuum box solid (rectangular cross-section)
   G4VSolid* vacRectSolid = new G4Box(nameIn + "_vacuum_box", // name
 				     aper1In,                // x half width
 				     aper2In,                // y half width
-				     lengthIn); // z full width (long for unambiguous intersection)
+				     angledVolumeLength);    // long length for unambiguous intersection
   //intersection of both of these gives the desired shape
   G4VSolid* longVacuumSolid = new G4IntersectionSolid(nameIn + "_vacuum_long_solid", // name
 						      vacCylSolid,                   // solid 1
@@ -281,12 +285,12 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
   G4VSolid* bpInnerCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid", // name
 						   aper3In + lengthSafetyLarge,      // horizontal semi-axis
 						   aper4In + lengthSafetyLarge,      // vertical semi-axis
-						   1.5*lengthIn); // length big for unambiguous subtraction (but < outerlength)
+                           angledVolumeLength); // length big for unambiguous subtraction (but < outerlength)
   //beampipe inner edge box solid (rectangular cross-section)
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box",  // name
 					 aper1In + lengthSafetyLarge, // x half width
 					 aper2In + lengthSafetyLarge, // y half width
-					 1.7*lengthIn); // z long for unambiguous intersection
+					 angledVolumeLength);         // long length for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
@@ -303,7 +307,7 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
   G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
 					 aper1In + extraWidth,       // x half width
 					 aper2In + extraWidth,       // y half width
-					 1.1*lengthIn); // z full width (long for unambiguous intersection)
+					 angledVolumeLength);        // long length for unambiguous intersection
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
 						   bpOuterRectSolid);            // solid 2
@@ -329,7 +333,7 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
   G4VSolid* contCylSolid = new G4EllipticalTube(nameIn + "_vacuum_ellipsoid",             // name
 						aper3In + extraWidth + lengthSafetyLarge, // horizontal semi-axis
 						aper4In + extraWidth + lengthSafetyLarge, // vertical semi-axis
-						lengthIn*1.1);                            // length
+						angledVolumeLength);                      // length
   // length both long and different from next solid for unamibiguous intersection
   
   //vacuum box solid (rectangular cross-section)

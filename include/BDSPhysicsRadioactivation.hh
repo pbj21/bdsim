@@ -19,6 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSRADIOACTIVATIONPHYSICS_H
 #define BDSRADIOACTIVATIONPHYSICS_H
 
+#include "G4Version.hh"
+#if G4VERSION_NUMBER > 1039
+
 #include "BDSSingleUse.hh"
 
 #include "G4Types.hh"
@@ -47,4 +50,6 @@ public:
 protected:
   G4bool atomicRearrangement;
 };
+#endif
+
 #endif

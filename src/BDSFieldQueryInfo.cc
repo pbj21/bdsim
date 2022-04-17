@@ -31,7 +31,8 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
                                      G4bool overwriteExistingFilesIn,
                                      const G4String& fieldObjectIn,
                                      G4bool printTransformIn,
-                                     G4bool checkParametersIn):
+                                     G4bool checkParametersIn,
+                                     G4bool drawZeroValuePointsIn):
   name(nameIn),
   outfileMagnetic(outfileMagneticIn),
   outfileElectric(outfileElectricIn),
@@ -45,7 +46,8 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
   overwriteExistingFiles(overwriteExistingFilesIn),
   printTransform(printTransformIn),
   fieldObject(fieldObjectIn),
-  checkParameters(checkParametersIn)
+  checkParameters(checkParametersIn),
+  drawZeroValuePoints(drawZeroValuePointsIn)
 {;}
 
 BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
@@ -57,7 +59,8 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
                                      const std::vector<G4String>& pointsColumnNamesIn,
                                      G4bool overwriteExistingFilesIn,
                                      const G4String& fieldObjectIn,
-                                     G4bool checkParametersIn):
+                                     G4bool checkParametersIn,
+                                     G4bool drawZeroValuePointsIn):
   name(nameIn),
   outfileMagnetic(outfileMagneticIn),
   outfileElectric(outfileElectricIn),
@@ -68,7 +71,8 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
   overwriteExistingFiles(overwriteExistingFilesIn),
   printTransform(false),
   fieldObject(fieldObjectIn),
-  checkParameters(checkParametersIn)
+  checkParameters(checkParametersIn),
+  drawZeroValuePoints(drawZeroValuePointsIn)
 {;}
 
 BDSFieldQueryInfo::~BDSFieldQueryInfo()

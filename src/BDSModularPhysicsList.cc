@@ -27,7 +27,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsCutsAndLimits.hh"
 #include "BDSPhysicsEMDissociation.hh"
 #include "BDSPhysicsLaserWire.hh"
-#include "BDSPhysicsRadioactivation.hh"
 #include "BDSPhysicsMuon.hh"
 #include "BDSPhysicsSynchRad.hh"
 #include "BDSPhysicsUtilities.hh"
@@ -107,6 +106,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #if G4VERSION_NUMBER > 1039
 #include "BDSPhysicsChannelling.hh"
+#include "BDSPhysicsRadioactivation.hh"
 #include "G4EmDNAPhysics.hh"
 #include "G4EmDNAPhysics_option1.hh"
 #include "G4EmDNAPhysics_option2.hh"
@@ -193,7 +193,6 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("ion_em_dissociation",    &BDSModularPhysicsList::IonEMDissociation));
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
-  physicsConstructors.insert(std::make_pair("radioactivation",        &BDSModularPhysicsList::Radioactivation));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
   physicsConstructors.insert(std::make_pair("optical",                &BDSModularPhysicsList::Optical));
@@ -226,6 +225,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("dna_5",                  &BDSModularPhysicsList::DNA));
   physicsConstructors.insert(std::make_pair("dna_6",                  &BDSModularPhysicsList::DNA));
   physicsConstructors.insert(std::make_pair("dna_7",                  &BDSModularPhysicsList::DNA));
+  physicsConstructors.insert(std::make_pair("radioactivation",        &BDSModularPhysicsList::Radioactivation));
   physicsConstructors.insert(std::make_pair("shielding_lend",         &BDSModularPhysicsList::ShieldingLEND));
 #endif
 
@@ -868,15 +868,6 @@ void BDSModularPhysicsList::LaserWire()
     }
 }
 
-void BDSModularPhysicsList::Radioactivation()
-{
-  if (!physicsActivated["radioactivation"])
-  {
-    constructors.push_back(new BDSPhysicsRadioactivation());
-    physicsActivated["radioactivation"] = true;
-  }
-}
-
 void BDSModularPhysicsList::Muon()
 {
   if (!physicsActivated["muon"])
@@ -1071,7 +1062,6 @@ void BDSModularPhysicsList::DNA()
     }
 }
 
-
 void BDSModularPhysicsList::Channelling()
 {
   if (!physicsActivated["channelling"])
@@ -1082,6 +1072,15 @@ void BDSModularPhysicsList::Channelling()
       constructors.push_back(new BDSPhysicsChannelling());
       physicsActivated["channelling"] = true;
     }
+}
+
+void BDSModularPhysicsList::Radioactivation()
+{
+  if (!physicsActivated["radioactivation"])
+  {
+    constructors.push_back(new BDSPhysicsRadioactivation());
+    physicsActivated["radioactivation"] = true;
+  }
 }
 
 void BDSModularPhysicsList::ShieldingLEND()

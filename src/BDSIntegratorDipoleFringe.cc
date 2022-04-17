@@ -201,7 +201,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
   // if this is an entrance face then the dipole transport hasn't been applied yet, so apply it to ensure
   // the particle advances along the step and then exit. If it's an exit face, then the dipole transport
   // has already been applied, so simply copy the output from the dipole transport above and exit.
-  if (localMomU.z() < backupStepperMomLimit)
+  if (localMomU.z() < (1.0-backupStepperMomLimit))
     {
       if (isEntrance)
         {BDSIntegratorDipoleRodrigues2::Stepper(yTemp, dydx, h, yOut, yErr);}

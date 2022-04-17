@@ -177,7 +177,6 @@ private:
   void IonEMDissociation();
   void IonINCLXX();
   void LaserWire();
-  void Radioactivation();
   void Muon();
   void NeutronTrackingCut();
   void Optical();
@@ -203,6 +202,7 @@ private:
 #if G4VERSION_NUMBER > 1039
   void Channelling();
   void DNA();
+  void Radioactivation();
   void ShieldingLEND();
 #endif
   /// @}

@@ -35,7 +35,7 @@ class TFile;
 class TTree;
 
 /**
- * @brief Loader of ROOT Event output for receating events.
+ * @brief Loader of ROOT Event output for recreating events.
  *
  * @author Laurie Nevay
  */
@@ -43,7 +43,7 @@ class TTree;
 class BDSOutputLoader
 {
 public:
-  explicit BDSOutputLoader(G4String filePath);
+  explicit BDSOutputLoader(const G4String& filePath);
   virtual ~BDSOutputLoader();
 
   inline G4int      DataVersion() const {return dataVersion;}

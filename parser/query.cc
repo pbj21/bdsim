@@ -50,6 +50,8 @@ void Query::clear()
   
   overwriteExistingFiles = true;
   printTransform = true;
+  
+  drawZeroValuePoints = true;
 
   pointsFile = "";
 
@@ -96,6 +98,8 @@ void Query::PublishMembers()
   publish("overwriteExistingFiles", &Query::overwriteExistingFiles);
   publish("printTransform",         &Query::printTransform);
   
+  publish("drawZeroValuePoints",    &Query::drawZeroValuePoints);
+  
   publish("pointsFile", &Query::pointsFile);
 
   publish("referenceElement", &Query::referenceElement);
@@ -135,6 +139,7 @@ void Query::print()const
 	    << "queryElectricField: "    << queryElectricField     << std::endl
 	    << "overwriteExistingFiles " << overwriteExistingFiles << std::endl
 	    << "printTransform "         << printTransform         << std::endl
+      << "drawZeroValuePoints "    << drawZeroValuePoints    << std::endl
 	    << "pointsFile "             << pointsFile             << std::endl
 	    << "referenceElement "       << referenceElement       << std::endl
 	    << "referenceElementNumber " << referenceElementNumber << std::endl

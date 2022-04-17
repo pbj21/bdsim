@@ -93,6 +93,11 @@ private:
   G4RotationMatrix          referenceBeamMomentumOffset;
   mutable G4VSolid*         worldSolid;
   
+  /// We need to keep a note of if we find any particles at all when looping through a file
+  /// so we can distinguish if the whole file had no particles, or say the last event doesn't
+  /// before we loop through the file again.
+  G4bool anyParticlesFoundAtAll;
+  
   /// Used for transiently loading information.
   std::vector<DisplacedVertex> vertices;
   

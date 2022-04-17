@@ -36,6 +36,7 @@ q1: query, nx = 100,
 	   axisAngle=1,
 	   queryMagneticField=1,
 	   queryElectricField=1,
-	   checkParameters=0;
+	   checkParameters=0,
+	   drawZeroValuePoints=0;
 
 print, q1;

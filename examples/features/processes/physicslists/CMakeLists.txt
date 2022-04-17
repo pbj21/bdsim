@@ -36,7 +36,6 @@ simple_testing(physics-qgsp-bert              "--file=qgsp_bert.gmad"           
 simple_testing_long(physics-qgsp-bert-hp      "--file=qgsp_bert_hp.gmad"           ${OVERLAP_CHECK})
 simple_testing(physics-qgsp-bic               "--file=qgsp_bic.gmad"               ${OVERLAP_CHECK})
 simple_testing_long(physics-qgsp-bic-hp       "--file=qgsp_bic_hp.gmad"            ${OVERLAP_CHECK})
-simple_testing(physics-radioactivation        "--file=radioactivation.gmad"        ${OVERLAP_CHECK})
 simple_testing_long(physics-shielding         "--file=shielding.gmad"              ${OVERLAP_CHECK})
 simple_testing(physics-stopping               "--file=stopping.gmad"               ${OVERLAP_CHECK})
 simple_testing(physics-synch-rad              "--file=synch_rad.gmad"              ${OVERLAP_CHECK})
@@ -66,6 +65,7 @@ if (G4_MINOR_VERSION GREATER 3)
   simple_testing(physics-dna-5             "--file=dna_5.gmad"              ${OVERLAP_CHECK})
   simple_testing(physics-dna-6             "--file=dna_6.gmad"              ${OVERLAP_CHECK})
   simple_testing(physics-dna-7             "--file=dna_7.gmad"              ${OVERLAP_CHECK})
+  simple_testing(physics-radioactivation        "--file=radioactivation.gmad"        ${OVERLAP_CHECK})
 endif()
 
 # test invalid physics list

@@ -59,6 +59,8 @@ namespace GMAD
     bool overwriteExistingFiles;
     bool printTransform;
     
+    bool drawZeroValuePoints;
+    
     std::string pointsFile; ///< File with 3D points to use
 
     // For 3d query in a real model - all the possible transform information required

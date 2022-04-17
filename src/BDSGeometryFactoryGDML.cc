@@ -75,6 +75,7 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
     {processedFile = BDS::PreprocessGDMLSchemaOnly(fileName);} // use schema only method
   else // no processing
     {processedFile = fileName;}
+  G4String preprocessNameToStrip = preprocessGDML ? componentName+"_" : "";
   
   G4GDMLParser* parser = new G4GDMLParser();
   parser->SetOverlapCheck(BDSGlobalConstants::Instance()->CheckOverlaps());
@@ -143,7 +144,7 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   else
     {mappingToUse = mapping;}
   
-  auto visesGDML = ApplyColourMapping(lvsGDML, mappingToUse, autoColour);
+  auto visesGDML = ApplyColourMapping(lvsGDML, mappingToUse, autoColour, preprocessNameToStrip);
   if (deleteMap)
     {delete mappingToUse;}
   

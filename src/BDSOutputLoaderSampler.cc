@@ -49,6 +49,7 @@ BDSOutputLoaderSampler::BDSOutputLoaderSampler(const G4String& filePath,
   
   localSamplerDouble = new BDSOutputROOTEventSampler<double>();
   localSamplerFloat = new BDSOutputROOTEventSampler<float>();
+  doublePrecision = localOptions->outputDoublePrecision;
   if (localOptions->outputDoublePrecision)
     {eventTree->SetBranchAddress(samplerNameLocal, &localSamplerDouble);}
   else
