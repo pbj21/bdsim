@@ -77,8 +77,10 @@ namespace GMAD
     std::list<std::string> rfCavityVacuumMaterial;
     std::list<double>      rfCavityRadius;
     std::list<double>      rfCavityThickness;
-
+  
+    std::string integrator;
     std::string magneticFieldModel;
+    std::string electricFieldModel;
     
     /// Constructor
     CoolingChannel();

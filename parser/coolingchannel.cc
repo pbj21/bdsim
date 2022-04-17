@@ -63,7 +63,9 @@ void CoolingChannel::clear()
   rfCavityVacuumMaterial.clear();
   rfCavityRadius.clear();
   rfCavityThickness.clear();
+  integrator = "g4classicalrk4";
   magneticFieldModel = "block";
+  electricFieldModel = "pillbox";
 }
 
 void CoolingChannel::PublishMembers()
@@ -108,7 +110,9 @@ void CoolingChannel::PublishMembers()
   publish("rfCavityRadius",    &CoolingChannel::rfCavityRadius);
   publish("rfCavityThickness", &CoolingChannel::rfCavityThickness);
 
+  publish("integrator",        &CoolingChannel::integrator);
   publish("magneticFieldModel",&CoolingChannel::magneticFieldModel);
+  publish("electricFieldModel",&CoolingChannel::electricFieldModel);
   
   attribute_map_list_double["coilInnerRadius"]     = &coilInnerRadius;
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
@@ -139,6 +143,7 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_string["rfCavityMaterial"]    = &rfCavityMaterial;
   attribute_map_list_double["rfCavityRadius"]      = &rfCavityRadius;
   attribute_map_list_double["rfCavityThickness"]   = &rfCavityThickness;
+  // integrator, magneticFieldModel and electricFieldModel can't be lists or arrays, so don't include here
 }
 
 template <class T>
@@ -158,12 +163,12 @@ void CoolingChannel::print()const
 	    << "mirrorCoils "                << mirrorCoils                << std::endl
 	    << "nAbsorbers "                 << nAbsorbers                 << std::endl
 	    << "absorberType "               << absorberType               << std::endl
-      << "absorberMaterial "           << absorberMaterial           << std::endl
+	    << "absorberMaterial "           << absorberMaterial           << std::endl
 	    << "absorberOffsetZ "            << absorberOffsetZ            << std::endl
 	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
 	    << "absorberCylinderRadius "     << absorberCylinderRadius     << std::endl
 	    << "absorberWedgeOpeningAngle "  << absorberWedgeOpeningAngle  << std::endl
-      << "absorberWedgeHeight "        << absorberWedgeHeight        << std::endl
+	    << "absorberWedgeHeight "        << absorberWedgeHeight        << std::endl
 	    << "absorberWedgeRotationAngle " << absorberWedgeRotationAngle << std::endl
 	    << "absorberWedgeOffsetX "       << absorberWedgeOffsetX       << std::endl
 	    << "absorberWedgeOffsetY "       << absorberWedgeOffsetY       << std::endl
@@ -176,12 +181,14 @@ void CoolingChannel::print()const
 	    << "rfFrequency "                << rfFrequency                << std::endl
 	    << "rfWindowThickness "          << rfWindowThickness          << std::endl
 	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
-      << "rfCavityVacuumMaterial "     << rfCavityVacuumMaterial     << std::endl
-      << "rfWindowRadius "             << rfWindowRadius             << std::endl
-      << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
+	    << "rfCavityVacuumMaterial "     << rfCavityVacuumMaterial     << std::endl
+	    << "rfWindowRadius "             << rfWindowRadius             << std::endl
+	    << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
 	    << "rfCavityRadius "             << rfCavityRadius             << std::endl
 	    << "rfCavityThickness "          << rfCavityThickness          << std::endl
-	    << "magneticFieldModel "         << magneticFieldModel         << std::endl;
+	    << "integrator "                 << integrator                 << std::endl
+	    << "magneticFieldModel "         << magneticFieldModel         << std::endl
+	    << "electricFieldModel "         << electricFieldModel         << std::endl;
 }
 
 template <class T>
