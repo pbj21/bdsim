@@ -59,13 +59,6 @@ public:
   /// Calculate the field value.
   virtual G4ThreeVector GetField(const G4ThreeVector& position,
                                  const G4double       t = 0) const;
-  
-  /// Generalised Complete Elliptical Integral.
-  static G4double CEL(G4double kc,
-                      G4double p,
-                      G4double c,
-                      G4double s,
-                      G4int nIterationLimit = 1000);
 
 private:
   /// Approximation for rho=0 Bz field. Brho=0 by definition. zp and zm are z+halfLength

@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSFieldMagSolenoidSheet.hh"
 #include "BDSMagnetStrength.hh"
+#include "BDSMaths.hh"
 #include "BDSUtilities.hh"
 
 #include "G4ThreeVector.hh"
@@ -101,8 +102,8 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
       G4double kp = std::sqrt(zpSq + aMinusRhoSq) / denominatorP;
       G4double km = std::sqrt(zmSq + aMinusRhoSq) / denominatorM;
       
-      Brho = B0 * (alphap * CEL(kp, 1, 1, -1) - alpham * CEL(km, 1, 1, -1)) / CLHEP::pi;
-      Bz = ((B0 * a) / (rhoPlusA)) * (betap * CEL(kp, gammaSq, 1, gamma) - betam * CEL(km, gammaSq, 1, gamma)) / CLHEP::pi;
+      Brho = B0 * (alphap * BDS::CEL(kp, 1, 1, -1) - alpham * BDS::CEL(km, 1, 1, -1)) / CLHEP::pi;
+      Bz = ((B0 * a) / (rhoPlusA)) * (betap * BDS::CEL(kp, gammaSq, 1, gamma) - betam * BDS::CEL(km, gammaSq, 1, gamma)) / CLHEP::pi;
       // technically possible for integral to return nan, so protect against it and default to B0 along z
       if (std::isnan(Brho))
 	{Brho = 0;}
@@ -113,64 +114,6 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   // so unit rho is in the x direction.
   G4ThreeVector result = G4ThreeVector(Brho,0,Bz) * normalisation;
   result = result.rotateZ(phi);
-  return result;
-}
-
-G4double BDSFieldMagSolenoidSheet::CEL(G4double kc,
-                                       G4double p,
-                                       G4double c,
-                                       G4double s,
-                                       G4int nIterationLimit)
-{
-  if (!BDS::IsFinite(kc))
-    {return NAN;}
-  
-  G4double errtol = 0.000001;
-  G4double k = std::abs(kc);
-  G4double pp = p;
-  G4double cc = c;
-  G4double ss = s;
-  G4double em = 1.0;
-  if (p > 0)
-    {
-      pp = std::sqrt(p);
-      ss = s/pp;
-    }
-  else
-    {
-      G4double f = kc * kc;
-      G4double q = 1.0 - f;
-      G4double g = 1.0 - pp;
-      f = f - pp;
-      q = q * (ss - c * pp);
-      pp = std::sqrt(f / g);
-      cc = (c - ss) / g;
-      ss = -q / (g * g * pp) + cc * pp;
-    }
-  
-  G4double f = cc;
-  cc = cc + ss/pp;
-  G4double g = k/pp;
-  ss = 2*(ss + f*g);
-  pp = g + pp;
-  g = em;
-  em = k + em;
-  G4double kk = k;
-  G4int nLoop = 0;
-  while ( (std::abs(g-k) > g*errtol) && nLoop < nIterationLimit)
-    {
-      k = 2*std::sqrt(kk);
-      kk = k*em;
-      f = cc;
-      cc = cc + ss/pp;
-      g = kk / pp;
-      ss = 2*(ss + f*g);
-      pp = g + pp;
-      g = em;
-      em = k + em;
-      nLoop++;
-    }
-  G4double result = CLHEP::halfpi*(ss + cc*em)/( em*(em + pp) );
   return result;
 }
 
