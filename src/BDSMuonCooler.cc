@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSExtent.hh"
+#include "BDSFieldBuilder.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
 #include "BDSMuonCooler.hh"
@@ -82,8 +83,8 @@ void BDSMuonCooler::Build()
   BuildContainerLogicalVolume();
   BuildCoils();
   BuildAbsorbers();
-  AttachOuterBField();
   BuildCavities();
+  BuildField();
 }
 
 void BDSMuonCooler::BuildContainerLogicalVolume()
@@ -226,9 +227,6 @@ void BDSMuonCooler::BuildAbsorbers()
     }
 }
 
-void BDSMuonCooler::AttachOuterBField()
-{;}
-
 void BDSMuonCooler::BuildCavities()
 {
   struct DriftSpec
@@ -285,4 +283,11 @@ void BDSMuonCooler::BuildCavities()
       RegisterPhysicalVolume(cavityPV);
       RegisterDaughter(cavity);
     }
+}
+
+void BDSMuonCooler::BuildField()
+{
+  BDSFieldBuilder::Instance()->RegisterFieldForConstruction(outerFieldRecipe,
+                                                            containerLogicalVolume,
+                                                            true);
 }
