@@ -110,8 +110,8 @@ std::pair<G4ThreeVector, G4ThreeVector> BDSFieldEMMuonCooler::GetField(const G4T
 								       const G4double       t) const
 {
   auto cf  = coilField->GetField(position, t);
-  auto rff = rfField->GetField(position, t);
-
+  //auto rff = rfField->GetField(position, t);
+  auto rff = std::make_pair(G4ThreeVector(), G4ThreeVector());
   // only rf has E field, but both have B -> sum B field
   G4ThreeVector b  = cf + rff.first;
   
