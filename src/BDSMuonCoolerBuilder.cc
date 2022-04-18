@@ -368,15 +368,15 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
   for (G4int i = 0; i < nRFCavities; i++)
     {
       BDS::MuonCoolerCavityInfo info = {rfVarsV[0][i] * CLHEP::m, // offsetZ
-	                                rfVarsV[1][i] * CLHEP::m, // lengthZ
+	                                      rfVarsV[1][i] * CLHEP::m, // lengthZ
                                         cavityVacuumMaterials[i], // cavity vacuum material
-					rfVarsV[5][i] * CLHEP::m, // windowThickness
+                                        rfVarsV[5][i] * CLHEP::m, // windowThickness
                                         windowMaterials[i],       // window material
-					rfVarsV[6][i] * CLHEP::m, // windowRadius
-					cavityMaterials[i],       // cavity material
-					rfVarsV[7][i] * CLHEP::m, // cavityRadius
-					rfVarsV[8][i] * CLHEP::m, // cavityThickness
-					nullptr};                 // no field recipe for now
+					                              rfVarsV[6][i] * CLHEP::m, // windowRadius
+					                              cavityMaterials[i],       // cavity material
+					                              rfVarsV[7][i] * CLHEP::m, // cavityRadius
+					                              rfVarsV[8][i] * CLHEP::m, // cavityThickness
+                                        nullptr};                 // no field recipe for now
       result.push_back(info);
     }
   
@@ -421,13 +421,12 @@ std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCavities(const std::vect
   return squares;
 }
 
-void BDS::MuonParamsToVector(const G4String& definitionName,
-			     const std::vector<const std::list<double>*>& params,
-			     const std::vector<std::string>&              paramNames,
-			     G4int                                        nExpectedParams,
-			     std::vector<std::vector<double>>&            paramsV)
+void BDS::MuonParamsToVector(const G4String&                              definitionName,
+                             const std::vector<const std::list<double>*>& params,
+                             const std::vector<std::string>&              paramNames,
+                             G4int                                        nExpectedParams,
+                             std::vector<std::vector<double>>&            paramsV)
 {
-  
   // convert to vectors from lists
   paramsV.reserve(params.size());
   for (auto l: params)
@@ -454,10 +453,10 @@ void BDS::MuonParamsToVector(const G4String& definitionName,
 }
 
 void BDS::MuonParamsToMaterials(const G4String&               definitionName,
-				const G4String&               variableName,
-				const std::list<std::string>& materialNames,
-				G4int                         nExpectedParams,
-				std::vector<G4Material*>&     materials)
+                                const G4String&               variableName,
+                                const std::list<std::string>& materialNames,
+                                G4int                         nExpectedParams,
+                                std::vector<G4Material*>&     materials)
 {
   // check size
   if (materialNames.empty() || (materialNames.size() != 1 && (G4int)materialNames.size() != nExpectedParams))
