@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSFieldMagSolenoidLoop.hh"
+#include "BDSMagnetStrength.hh"
 #include "BDSMaths.hh"
 #include "BDSUtilities.hh"
 
@@ -27,6 +28,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
+
+BDSFieldMagSolenoidLoop::BDSFieldMagSolenoidLoop(BDSMagnetStrength const* strength,
+                                                 G4double radiusIn):
+  BDSFieldMagSolenoidLoop((*strength)["field"], false, radiusIn)
+{;}
 
 BDSFieldMagSolenoidLoop::BDSFieldMagSolenoidLoop(G4double strength,
                                                  G4bool   strengthIsCurrent,
