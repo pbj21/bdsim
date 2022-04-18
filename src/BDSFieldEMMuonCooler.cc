@@ -35,7 +35,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <utility>
 
-BDSFieldEMMuonCooler::BDSFieldEMMuonCooler(const BDSFieldInfoExtraMuonCooler* info):
+BDSFieldEMMuonCooler::BDSFieldEMMuonCooler(const BDSFieldInfoExtraMuonCooler* info,
+                                           G4double brho):
   coilField(nullptr),
   rfField(nullptr)
 {

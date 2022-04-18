@@ -772,6 +772,7 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
 
 BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
 {
+  G4double brho = info.BRho();
   BDSFieldEM* field = nullptr;
   switch (info.FieldType().underlying())
     {
@@ -791,7 +792,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
     case BDSFieldType::ebfieldzero:
       {field = new BDSFieldEMZero(); break;}
     case BDSFieldType::muoncooler:
-      {field = CreateMuonCoolerField(info); break;}
+      {field = CreateMuonCoolerField(info, brho); break;}
     default:
       return nullptr;
       break;
@@ -1168,13 +1169,14 @@ G4double BDSFieldFactory::GetOuterScaling(const BDSMagnetStrength* st) const
   return result;
 }
 
-BDSFieldEM* BDSFieldFactory::CreateMuonCoolerField(const BDSFieldInfo& info) const
+BDSFieldEM* BDSFieldFactory::CreateMuonCoolerField(const BDSFieldInfo& info,
+                                                   G4double brho) const
 {
   BDSFieldInfoExtra* extraInfo = info.ExtraInfo();
   BDSFieldInfoExtraMuonCooler* mcExtraInfo = dynamic_cast<BDSFieldInfoExtraMuonCooler*>(extraInfo);
   if (!mcExtraInfo) // shouldn't happen, but just for safety
     {throw BDSException(__METHOD_NAME__, "no muon cooler extra definitions for field definition: " + info.NameOfParserDefinition());}
   
-  BDSFieldEM* result = new BDSFieldEMMuonCooler(mcExtraInfo);
+  BDSFieldEM* result = new BDSFieldEMMuonCooler(mcExtraInfo, brho);
   return result;
 }

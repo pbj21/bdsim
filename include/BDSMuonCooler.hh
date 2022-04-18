@@ -61,8 +61,8 @@ protected:
 private:
   void BuildCoils();
   void BuildAbsorbers();
-  void AttachOuterBField();
   void BuildCavities();
+  void BuildField();
   
   G4double containerRadius;
   G4Material* surroundingMaterial;

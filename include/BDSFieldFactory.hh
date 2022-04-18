@@ -151,7 +151,8 @@ private:
   G4double GetOuterScaling(const BDSMagnetStrength* st) const;
   
   /// Create a composite muon cooler field EM field.
-  BDSFieldEM* CreateMuonCoolerField(const BDSFieldInfo& info) const;
+  BDSFieldEM* CreateMuonCoolerField(const BDSFieldInfo& info,
+                                    G4double brho) const;
   
   /// Private default constructor as singleton class.
   BDSFieldFactory();

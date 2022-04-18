@@ -40,7 +40,8 @@ class BDSFieldEMMuonCooler: public BDSFieldEM
 {
 public:
   BDSFieldEMMuonCooler() = delete;
-  explicit BDSFieldEMMuonCooler(const BDSFieldInfoExtraMuonCooler* info);  
+  BDSFieldEMMuonCooler(const BDSFieldInfoExtraMuonCooler* info,
+                       G4double brho);
   virtual ~BDSFieldEMMuonCooler();
 
   /// Accessor to get B and E field.
