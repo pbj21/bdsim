@@ -51,6 +51,8 @@ std::map<BDSFieldType, std::string>* BDSFieldType::dictionary =
       {BDSFieldType::mokka,            	           "mokka"},
       {BDSFieldType::solenoid,         	           "solenoid"},
       {BDSFieldType::solenoidsheet,                "solenoidsheet"},
+      {BDSFieldType::solenoidloop,                 "solenoidloop"},
+      {BDSFieldType::solenoidblock,                "solenoidblock"},
       {BDSFieldType::dipole,           	           "dipole"},
       {BDSFieldType::quadrupole,       	           "quadrupole"},
       {BDSFieldType::dipolequadrupole, 	           "dipolequadrupole"},
@@ -59,6 +61,7 @@ std::map<BDSFieldType, std::string>* BDSFieldType::dictionary =
       {BDSFieldType::decapole,         	           "decapole"},
       {BDSFieldType::multipole,        	           "multipole"},
       {BDSFieldType::muonspoiler,      	           "muonspoiler"},
+      {BDSFieldType::muoncooler,                   "muoncooler"},
       {BDSFieldType::skewquadrupole,   	           "skewquadrupole"},
       {BDSFieldType::skewsextupole,    	           "skewsextupole"},
       {BDSFieldType::skewoctupole,     	           "skewoctupole"},
@@ -108,6 +111,8 @@ BDSFieldType BDS::DetermineFieldType(G4String bType)
   types["mokka"]            = BDSFieldType::mokka;
   types["solenoid"]         = BDSFieldType::solenoid;
   types["solenoidsheet"]    = BDSFieldType::solenoidsheet;
+  types["solenoidloop"]     = BDSFieldType::solenoidloop;
+  types["solenoidblock"]    = BDSFieldType::solenoidblock;
   types["dipole"]           = BDSFieldType::dipole;
   types["quadrupole"]       = BDSFieldType::quadrupole;
   types["dipolequadrupole"] = BDSFieldType::dipolequadrupole;
@@ -116,6 +121,7 @@ BDSFieldType BDS::DetermineFieldType(G4String bType)
   types["decapole"]         = BDSFieldType::decapole;
   types["multipole"]        = BDSFieldType::multipole;
   types["muonspoiler"]      = BDSFieldType::muonspoiler;
+  types["muoncooler"]       = BDSFieldType::muoncooler;
   types["skewquadrupole"]   = BDSFieldType::skewquadrupole;
   types["skewsextupole"]    = BDSFieldType::skewsextupole;
   types["skewoctupole"]     = BDSFieldType::skewoctupole;

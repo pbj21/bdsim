@@ -34,6 +34,7 @@ namespace GMAD
 }
 
 class BDSFieldE;
+class BDSFieldEM;
 class BDSFieldInfo;
 class BDSFieldMag;
 class BDSFieldObjects;
@@ -148,6 +149,9 @@ private:
   
   /// Return the parameter "outerScaling" from strength st, but default to 1
   G4double GetOuterScaling(const BDSMagnetStrength* st) const;
+  
+  /// Create a composite muon cooler field EM field.
+  BDSFieldEM* CreateMuonCoolerField(const BDSFieldInfo& info) const;
   
   /// Private default constructor as singleton class.
   BDSFieldFactory();
