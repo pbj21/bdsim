@@ -41,8 +41,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldInfoExtra
 {
 public:
-  BDSFieldInfoExtra();
-  virtual ~BDSFieldInfoExtra();
+  BDSFieldInfoExtra(){;}
+  virtual ~BDSFieldInfoExtra(){;}
 
   /// Derived class must implement for copying.
   virtual BDSFieldInfoExtra* Clone() const = 0;
@@ -57,6 +57,7 @@ public:
 class BDSFieldInfoExtraMuonCooler: public BDSFieldInfoExtra
 {
 public:
+  BDSFieldInfoExtraMuonCooler() = delete;
   BDSFieldInfoExtraMuonCooler(BDSFieldType magneticFieldTypeIn,
 			      BDSFieldType electricFieldTypeIn,
 			      const std::vector<BDS::MuonCoolerCoilInfo>& coilInfosIn,
@@ -66,7 +67,7 @@ public:
     coilInfos(coilInfosIn),
     cavityInfos(cavityInfosIn)
   {;}
-  virtual ~BDSFieldInfoExtraMuonCooler();
+  virtual ~BDSFieldInfoExtraMuonCooler(){;}
 
   BDSFieldType magneticFieldType; ///< Type of the magnetic sub-field.
   BDSFieldType electricFieldType; ///< Type of the electric sub-field.
