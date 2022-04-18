@@ -46,7 +46,7 @@ namespace GMAD
     std::list<double>      coilInnerRadius;
     std::list<double>      coilRadialThickness;
     std::list<double>      coilLengthZ;
-    std::list<double>      coilCurrentDensity;
+    std::list<double>      coilCurrent;
     std::list<double>      coilOffsetZ;
     std::list<std::string> coilMaterial;
     bool                   mirrorCoils;

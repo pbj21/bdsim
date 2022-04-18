@@ -34,7 +34,7 @@ void CoolingChannel::clear()
   coilInnerRadius.clear();
   coilRadialThickness.clear();
   coilLengthZ.clear();
-  coilCurrentDensity.clear();
+  coilCurrent.clear();
   coilOffsetZ.clear();
   coilMaterial.clear();
   mirrorCoils = false;
@@ -78,7 +78,7 @@ void CoolingChannel::PublishMembers()
   publish("coilInnerRadius",      &CoolingChannel::coilInnerRadius);
   publish("coilRadialThickness",  &CoolingChannel::coilRadialThickness);
   publish("coilLengthZ",          &CoolingChannel::coilLengthZ);
-  publish("coilCurrentDensity",   &CoolingChannel::coilCurrentDensity);
+  publish("coilCurrent",          &CoolingChannel::coilCurrent);
   publish("coilOffsetZ",          &CoolingChannel::coilOffsetZ);
   publish("coilMaterial",         &CoolingChannel::coilMaterial);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
@@ -117,7 +117,7 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_double["coilInnerRadius"]     = &coilInnerRadius;
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
   attribute_map_list_double["coilLengthZ"]         = &coilLengthZ;
-  attribute_map_list_double["coilCurrentDensity"]  = &coilCurrentDensity;
+  attribute_map_list_double["coilCurrent"]         = &coilCurrent;
   attribute_map_list_double["coilOffsetZ"]         = &coilOffsetZ;
   attribute_map_list_string["coilMaterial"]        = &coilMaterial;
   attribute_map_list_string["absorberType"]        = &absorberType;
@@ -157,7 +157,7 @@ void CoolingChannel::print()const
 	    << "coilInnerRadius "            << coilInnerRadius            << std::endl
 	    << "coilRadialThickness "        << coilRadialThickness        << std::endl
 	    << "coilLengthZ "                << coilLengthZ                << std::endl
-	    << "coilCurrentDensity "         << coilCurrentDensity         << std::endl
+	    << "coilCurrent "                << coilCurrent                << std::endl
 	    << "coilOffsetZ "                << coilOffsetZ                << std::endl
 	    << "coilMaterial "               << coilMaterial               << std::endl
 	    << "mirrorCoils "                << mirrorCoils                << std::endl

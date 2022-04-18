@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+class BDSFieldInfo;
 class G4Material;
 
 namespace BDS
@@ -33,7 +34,7 @@ namespace BDS
     G4double innerRadius;
     G4double radialThickness;
     G4double fullLengthZ;
-    G4double currentDensity;
+    G4double current;
     G4double offsetZ;
     G4Material* material;
   };

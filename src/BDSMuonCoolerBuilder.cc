@@ -126,12 +126,12 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
   std::vector<std::string> coilParamNames = {"coilInnerRadius",
                                              "coilRadialThickness",
                                              "coilLengthZ",
-                                             "coilCurrentDensity",
+                                             "coilCurrent",
                                              "coilOffsetZ"};
   std::vector<const std::list<double>*> coilVars = {&(definition->coilInnerRadius),
                                                     &(definition->coilRadialThickness),
                                                     &(definition->coilLengthZ),
-                                                    &(definition->coilCurrentDensity),
+                                                    &(definition->coilCurrent),
                                                     &(definition->coilOffsetZ)};
   std::vector<std::vector<double> > coilVarsV;
   BDS::MuonParamsToVector(definition->name,
@@ -148,15 +148,14 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
 			     coilMaterials);
   
   // build coil infos
-  G4double ampsPerCM2 = CLHEP::ampere / CLHEP::cm2;
   for (G4int i = 0; i < nCoils; i++)
     {
-      BDS::MuonCoolerCoilInfo info = {coilVarsV[0][i] * CLHEP::m,   // innerRadius
-                                      coilVarsV[1][i] * CLHEP::m,   // radialThickness
-                                      coilVarsV[2][i] * CLHEP::m,   // lengthZ
-                                      coilVarsV[3][i] * ampsPerCM2, // currentDensity
-                                      coilVarsV[4][i] * CLHEP::m,   // offsetZ
-                                      coilMaterials[i]              // no material for now
+      BDS::MuonCoolerCoilInfo info = {coilVarsV[0][i] * CLHEP::m,      // innerRadius
+                                      coilVarsV[1][i] * CLHEP::m,      // radialThickness
+                                      coilVarsV[2][i] * CLHEP::m,      // lengthZ
+                                      coilVarsV[3][i] * CLHEP::ampere, // current
+                                      coilVarsV[4][i] * CLHEP::m,      // offsetZ
+                                      coilMaterials[i]                 // no material for now
       };
       result.push_back(info);
     }
