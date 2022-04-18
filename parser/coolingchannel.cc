@@ -64,8 +64,8 @@ void CoolingChannel::clear()
   rfCavityRadius.clear();
   rfCavityThickness.clear();
   integrator = "g4classicalrk4";
-  magneticFieldModel = "block";
-  electricFieldModel = "pillbox";
+  magneticFieldModel = "solenoidblock";
+  electricFieldModel = "rfcavity";
 }
 
 void CoolingChannel::PublishMembers()

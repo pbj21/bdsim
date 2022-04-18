@@ -494,13 +494,21 @@ BDSFieldInfo* BDS::BuildMuonCoolerFieldRecipe(const G4String& definitionName,
                                               const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos,
                                               const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfos)
 {
-  BDSIntegratorType it = BDS::DetermineIntegratorType(integrator);
-  BDSFieldType mt = BDS::DetermineFieldType(magneticFieldModel);
-  BDSFieldType et = BDS::DetermineFieldType(electricFieldModel);
-  auto ei = new BDSFieldInfoExtraMuonCooler(mt, et, coilInfos, cavityInfos);
-  
-  auto result = new BDSFieldInfo(BDSFieldType::muoncooler, designRigidity, it);
-  result->SetNameOfParserDefinition(definitionName);
-  result->SetExtraInfo(ei);
-  return result;
+  try
+    {
+      BDSIntegratorType it = BDS::DetermineIntegratorType(integrator);
+      BDSFieldType mt = BDS::DetermineFieldType(magneticFieldModel);
+      BDSFieldType et = BDS::DetermineFieldType(electricFieldModel);
+      auto ei = new BDSFieldInfoExtraMuonCooler(mt, et, coilInfos, cavityInfos);
+      
+      auto result = new BDSFieldInfo(BDSFieldType::muoncooler, designRigidity, it);
+      result->SetNameOfParserDefinition(definitionName);
+      result->SetExtraInfo(ei);
+      return result;
+    }
+  catch (BDSException& e)
+    {
+      e.AppendToMessage("\nProblem with field in coolingchannel definition \"" + definitionName + "\"");
+      throw e;
+    }
 }

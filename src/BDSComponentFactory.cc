@@ -282,6 +282,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
   G4cout << __METHOD_NAME__ << " - creating \"" << elementName << "\"" << G4endl;
   element->print();
 #endif
+  try {
   switch(element->type)
     {
     case ElementType::_DRIFT:
@@ -409,7 +410,13 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 	break;
       }
     }
-
+  }
+  catch (BDSException& e)
+    {
+      e.AppendToMessage("\nBDSComponentFactory> Problem creating element \"" + element->name + "\"");
+      throw e;
+    }
+  
   // note this test will only be reached (and therefore the component registered)
   // if both the component didn't exist and it has been constructed
   if (component)
