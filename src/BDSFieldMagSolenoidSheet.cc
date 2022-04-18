@@ -33,19 +33,33 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(BDSMagnetStrength const* strength,
                                                    G4double radiusIn):
-  BDSFieldMagSolenoidSheet((*strength)["length"], radiusIn, (*strength)["field"])
+  BDSFieldMagSolenoidSheet((*strength)["field"], false, radiusIn, (*strength)["length"])
 {;}
 
-BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double fullLength,
-						   G4double sheetRadius,
-						   G4double B0In):
+BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double strength,
+                                                   G4bool   strengthIsCurrent,
+                                                   G4double sheetRadius,
+                                                   G4double fullLength):
   a(sheetRadius),
   halfLength(0.5*fullLength),
-  B0(B0In),
+  B0(0.0),
+  I(0.0),
   spatialLimit(std::min(1e-5*sheetRadius, 1e-5*fullLength)),
   normalisation(1.0)
 {
-  finiteStrength = BDS::IsFinite(B0In);
+  finiteStrength = BDS::IsFinite(std::abs(strength));
+  
+  // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
+  if (strengthIsCurrent)
+  {
+    I = strength;
+    B0 = CLHEP::mu0 * strength / (2*a);
+  }
+  else
+  {// strength is B0 -> calculate current
+    B0 = strength;
+    I = B0 * 2 * a / CLHEP::mu0;
+  }
   
   // The field inside the current cylinder is actually slightly parabolic in rho.
   // The equation for the field takes B0 as the peak magnetic field at the current
