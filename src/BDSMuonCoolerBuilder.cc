@@ -265,7 +265,7 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
   if (absorberTypeV.size() == 1)
     {
       for (G4int i = 1; i < nAbsorbers; i++)
-	{absorberTypeV[i] = absorberTypeV[0];}
+	{absorberTypeV.push_back(absorberTypeV[0]);}
     }
   for (G4int i = 0; i < (G4int)absorberTypeV.size(); i++)
     {
