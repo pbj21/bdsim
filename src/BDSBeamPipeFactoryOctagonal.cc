@@ -50,7 +50,7 @@ BDS::FourPoints BDSBeamPipeFactoryOctagonal::ExpandOctagon(G4double aper1,
     G4double aper4,
     G4double distance)
 {
-  // All calculations done in top right quandrant
+  // All calculations done in top right quadrant
   G4TwoVector p1 = G4TwoVector(aper3, aper2);
   G4TwoVector p1Unit = p1.unit();
   G4TwoVector p1New = distance*p1Unit;

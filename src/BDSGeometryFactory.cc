@@ -33,8 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Types.hh"
 
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 BDSGeometryFactory* BDSGeometryFactory::instance = nullptr;
@@ -85,6 +85,7 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
 
 BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componentName,
 						       const G4String&  formatAndFileName,
+                                                       const BDSFieldInfo* fieldItWillBeUsedWith,
 						       std::map<G4String, G4Colour*>* colourMapping,
 						       G4bool                 autoColour,
 						       G4double               suggestedLength,
@@ -105,7 +106,9 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   // the load the same geometry twice with/without stripping
   if (stripOuterVolumeAndMakeAssembly)
     {searchName += "_stripped";}
-  const auto search = registry.find(searchName);
+  
+  auto nameAndField = std::make_pair(searchName, fieldItWillBeUsedWith);
+  const auto search = registry.find(nameAndField);
   if (search != registry.end())
     {return search->second;}// it was found already in registry
   // else wasn't found so continue
@@ -135,8 +138,10 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
       // Set all volumes to be sensitive.
       if (makeSensitive)
 	{result->MakeAllVolumesSensitive(sensitivityType);}
-      
-      registry[(std::string)searchName] = result; // cache using optionally modified name
+  
+      // cache using optionally modified name
+      auto key = std::make_pair((std::string)searchName, fieldItWillBeUsedWith);
+      registry[key] = result;
       storage.insert(result);
     }
   

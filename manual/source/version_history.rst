@@ -29,6 +29,11 @@ V1.7.0 - 2022 / XX / XX
 * New executable options :code:`--reference` and :code:`--citation` to display the citation
   in Bibtex syntax to cite BDSIM easily.
 * The default yoke fields have changed and are on average stronger (and more correct). See below.
+* :code:`gradient` in the :code:`rf` component has the units of **V/m** and not MV/m as was
+  written in the manual. In fact, it really was volts/m internally. So there should be no change
+  in behaviour, but the documentation has been fixed and is correct and consistent. The units
+  for :code:`E` have also been clarified as volts and that this voltage is assumed across the
+  length of the element :code:`l`.
 
 
 New Features
@@ -51,11 +56,17 @@ New Features
 * New bunch distribution type `halosigma` that samples a flat halo distribution
   flat in terms of sigma. This is useful for re-weighting distributions based on
   the particle's distance from the core in terms of sigma.
+* The `halo` distribution now has an outer position cut in both X and Y axes, specified
+  by `haloXCutOuter` and `haloYCutOuter` respectively. Similar inner and outer cuts of the X and Y
+  momentum are also now possible, specified by same options as the position cuts but with a `p`
+  after the axis, e.g `haloXpCutOuter`.
 
 **Components**
 
 * A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
   voxelized geometries.
+* New `target` beam line component. We could always create a block of material with a closed
+  `rcol` but this is more intuitive.
 
 **Fields**
 
@@ -87,6 +98,7 @@ New Features
 * New materials (Inermet170, Inermet176, Inermet180, Copper-Diamond, MoGr).
 * Nicer visualisation colours for charged particles. Green for neutrals is by default now at
   20% opacity as there are usually so many gammas.
+* New units: `mV`, `GV`, `nrad`, `THz`.
 
 **Geometry**
 
@@ -98,6 +110,8 @@ New Features
   as required for NA62.
 * Ability to read GDML auxiliary information for the tag "colour" to provide colour information
   in the GDML file.
+* Beam pipe aperture may now be defined by a series of x,y points in a text file for an
+  arbitrary shaped beam pipe. This may also be used as the default one.
 
 **Physics**
 
@@ -160,6 +174,8 @@ General Updates
 * **EMD** physics has a minimum applicable kinetic energy of 1 MeV to prevent crashes in Geant4.
 * Optional executable argument added to ptc2bdsim to control ROOT split-level of sampler branches. Same
   functionality as the BDSIM option :code:`samplersSplitLevel`.
+* The green colour for collimators and the new target component has been adjusted very slightly
+  to be a little brighter.
 
 Bug Fixes
 ---------
@@ -169,6 +185,8 @@ Bug Fixes
 **Analysis**
 
 * rebdsim will now explicitly exit if a duplicate histogram name is detected whereas it didn't before.
+* If an electron was used as the beam particle, the mass might not be set correctly for optics analysis
+  (only) resulting in wrong results for sub-relativistic electron optics.
 * Fix warning when using sampler data in analysis in Python: ::
 
     input_line_154:2:36: warning: instantiation of variable 'BDSOutputROOTEventSampler<float>::particleTable' required here, but no
@@ -191,6 +209,7 @@ Bug Fixes
 
 **Fields**
 
+* Fix field maps being wrong if a GDML file was used multiple times with different fields.
 * Fix BDSIM-format field map loading with :code:`loopOrder> tzyx` in the header. It was not
   loaded correctly before. Also, there are corresponding fixes in the pybdsim package.
 * Fix lack of yoke fields for rbends.
@@ -211,7 +230,12 @@ Bug Fixes
   effective k1.
 
 **Geometry**
-  
+
+* Fix caching of loaded geometry. A loaded piece of geometry should only be reused (i.e. re-placed
+  rather than creating new logical volumes) if it will be used with the same field definition
+  (including none). If a different field is to be used on an already loaded piece of GDML it must
+  be reloaded again to create unique logical volumes as a logical volume can only have one field
+  definition. This fixes field maps being wrong if a GDML file was used multiple times with different fields.
 * If a multipole has a zero-length, it will be converted in a thin multipole.
 * Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
   with pole face rotations. Issue #306.

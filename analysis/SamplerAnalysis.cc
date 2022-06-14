@@ -74,7 +74,7 @@ void SamplerAnalysis::UpdateMass(const std::string& particleName)
       std::cout << "Primary particle: e-" << std::endl;
       particleMass = 0.000510999;;
     }
-  if (particleName == "proton")
+  else if (particleName == "proton")
     {
       std::cout << "Primary particle: proton" << std::endl;
       particleMass = 0.938272;

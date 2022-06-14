@@ -130,6 +130,7 @@ usercomponent { return USERCOMPONENT; }
 dump { return DUMP; }
 muoncooler { return MUONCOOLER; }
 ct { return CT; }
+target { return TARGET; }
 
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }

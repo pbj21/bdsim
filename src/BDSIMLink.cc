@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VModularPhysicsList.hh"
 
 #include "BDSAcceleratorModel.hh"
+#include "BDSAperturePointsLoader.hh"
 #include "BDSBeamPipeFactory.hh"
 #include "BDSBunch.hh"
 #include "BDSBunchFactory.hh"
@@ -422,6 +423,7 @@ BDSIMLink::~BDSIMLink()
 	  delete BDSFieldLoader::Instance();
 	  //delete BDSSDManager::Instance();
 	  delete BDSSamplerRegistry::Instance();
+    BDSAperturePointsCache::Instance()->ClearCachedFiles();
 	}
     }
   catch (...)

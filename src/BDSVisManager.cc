@@ -95,7 +95,7 @@ void BDSVisManager::StartSession(int argc, char** argv)
 #ifdef G4VIS_USE
 
   G4UImanager* UIManager = G4UImanager::GetUIpointer();
-  // setup paths to look for macros for the install then the build directory
+  // setup paths to look for macros for the installation then the build directory
   G4String bdsimExecPath = G4String(BDS::GetBDSIMExecPath());
   G4String macroPaths    = bdsimExecPath + "../share/bdsim/vis:@CMAKE_BINARY_DIR@/vis:./";
   G4cout << __METHOD_NAME__ << "Setting macro path to: " << macroPaths << G4endl;

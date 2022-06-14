@@ -63,10 +63,10 @@ BDSAcceleratorComponent::BDSAcceleratorComponent(const G4String&      nameIn,
   endPieceBefore(nullptr),
   endPieceAfter(nullptr),
   userLimits(nullptr),
+  fieldInfo(fieldInfoIn),
   copyNumber(-1), // -1 initialisation since it will be incremented when placed
   inputFaceNormal(inputFaceNormalIn),
-  outputFaceNormal(outputFaceNormalIn),
-  fieldInfo(fieldInfoIn)
+  outputFaceNormal(outputFaceNormalIn)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "(" << name << ")" << G4endl;

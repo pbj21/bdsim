@@ -4,6 +4,8 @@
 Visualisation
 =============
 
+.. note:: If using the visualiser over X-Windows on a Mac, see :ref:`mac-xwindows`.
+
 When BDSIM is executed **without** the :code:`--batch` executable option, the
 Geant4 visualisation system is used. This is the default behaviour as it is
 typical to view and understand the typical outcome of a model before running larger

@@ -28,16 +28,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Material.hh"
 
 
-BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeType beamPipeTypeIn,
-				 G4double        aper1In,
-				 G4double        aper2In,
-				 G4double        aper3In,
-				 G4double        aper4In,
-				 G4Material*     vacuumMaterialIn,
-				 G4double        beamPipeThicknessIn,
-				 G4Material*     beamPipeMaterialIn,
-				 G4ThreeVector   inputFaceNormalIn,
-				 G4ThreeVector   outputFaceNormalIn):
+BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeType      beamPipeTypeIn,
+				 G4double             aper1In,
+				 G4double             aper2In,
+				 G4double             aper3In,
+				 G4double             aper4In,
+				 G4Material*          vacuumMaterialIn,
+				 G4double             beamPipeThicknessIn,
+				 G4Material*          beamPipeMaterialIn,
+				 const G4ThreeVector& inputFaceNormalIn,
+				 const G4ThreeVector& outputFaceNormalIn,
+         const G4String&      pointsFileNameIn,
+         const G4String&      pointsUnitIn):
   beamPipeType(beamPipeTypeIn),
   aper1(aper1In), aper2(aper2In), aper3(aper3In), aper4(aper4In),
   aperOffsetX(0), aperOffsetY(0),
@@ -45,56 +47,68 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeType beamPipeTypeIn,
   beamPipeThickness(beamPipeThicknessIn),
   beamPipeMaterial(beamPipeMaterialIn),
   inputFaceNormal(inputFaceNormalIn),
-  outputFaceNormal(outputFaceNormalIn)
+  outputFaceNormal(outputFaceNormalIn),
+  pointsFileName(pointsFileNameIn),
+  pointsUnit(pointsUnitIn)
 {
   CheckApertureInfo();
 }
 
-BDSBeamPipeInfo::BDSBeamPipeInfo(G4String      beamPipeTypeIn,
-				 G4double      aper1In,
-				 G4double      aper2In,
-				 G4double      aper3In,
-				 G4double      aper4In,
-				 G4String      vacuumMaterialIn,
-				 G4double      beamPipeThicknessIn,
-				 G4String      beamPipeMaterialIn,
-				 G4ThreeVector inputFaceNormalIn,
-				 G4ThreeVector outputFaceNormalIn):
+BDSBeamPipeInfo::BDSBeamPipeInfo(const G4String&      beamPipeTypeIn,
+				 G4double             aper1In,
+				 G4double             aper2In,
+				 G4double             aper3In,
+				 G4double             aper4In,
+				 const G4String&      vacuumMaterialIn,
+				 G4double             beamPipeThicknessIn,
+				 const G4String&      beamPipeMaterialIn,
+				 const G4ThreeVector& inputFaceNormalIn,
+				 const G4ThreeVector& outputFaceNormalIn):
   aper1(aper1In), aper2(aper2In), aper3(aper3In), aper4(aper4In),
   aperOffsetX(0), aperOffsetY(0),
   beamPipeThickness(beamPipeThicknessIn),
   inputFaceNormal(inputFaceNormalIn),
-  outputFaceNormal(outputFaceNormalIn)
+  outputFaceNormal(outputFaceNormalIn),
+  pointsFileName(""),
+  pointsUnit("mm")
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "vacuum material: " << vacuumMaterialIn << G4endl;
-#endif
   beamPipeType     = BDS::DetermineBeamPipeType(beamPipeTypeIn);
   vacuumMaterial   = BDSMaterials::Instance()->GetMaterial(vacuumMaterialIn);
   beamPipeMaterial = BDSMaterials::Instance()->GetMaterial(beamPipeMaterialIn);
+  
+  if (beamPipeType == BDSBeamPipeType::pointsfile)
+    {CheckAndSetPointsInfo(beamPipeTypeIn);}
   CheckApertureInfo();
 }
   
-BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeInfo* defaultInfo,
-				 G4String         beamPipeTypeIn,
-				 G4double         aper1In,
-				 G4double         aper2In,
-				 G4double         aper3In,
-				 G4double         aper4In,
-				 G4String         vacuumMaterialIn,
-				 G4double         beamPipeThicknessIn,
-				 G4String         beamPipeMaterialIn,
-				 G4ThreeVector    inputFaceNormalIn,
-				 G4ThreeVector    outputFaceNormalIn):
+BDSBeamPipeInfo::BDSBeamPipeInfo(const BDSBeamPipeInfo* defaultInfo,
+				 const G4String&      beamPipeTypeIn,
+				 G4double             aper1In,
+				 G4double             aper2In,
+				 G4double             aper3In,
+				 G4double             aper4In,
+				 const G4String&      vacuumMaterialIn,
+				 G4double             beamPipeThicknessIn,
+				 const G4String&      beamPipeMaterialIn,
+				 const G4ThreeVector& inputFaceNormalIn,
+				 const G4ThreeVector& outputFaceNormalIn):
   aperOffsetX(0), aperOffsetY(0),
   inputFaceNormal(inputFaceNormalIn),
   outputFaceNormal(outputFaceNormalIn)
 {
-  if (beamPipeTypeIn == "")
-    {beamPipeType = defaultInfo->beamPipeType;}
+  if (beamPipeTypeIn.empty())
+    {
+      beamPipeType   = defaultInfo->beamPipeType;
+      pointsFileName = defaultInfo->pointsFileName; // copy even if empty
+      pointsUnit     = defaultInfo->pointsUnit;
+    }
   else 
-    {beamPipeType = BDS::DetermineBeamPipeType(beamPipeTypeIn);}
-
+    {
+      beamPipeType = BDS::DetermineBeamPipeType(beamPipeTypeIn);
+      if (beamPipeType == BDSBeamPipeType::pointsfile)
+        {CheckAndSetPointsInfo(beamPipeTypeIn);}
+    }
+  
   if (!BDS::IsFinite(aper1In))
     {aper1 = defaultInfo->aper1;}
   else
@@ -126,6 +140,23 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeInfo* defaultInfo,
     {beamPipeMaterial = BDSMaterials::Instance()->GetMaterial(beamPipeMaterialIn);}
   
   CheckApertureInfo();
+}
+
+void BDSBeamPipeInfo::CheckAndSetPointsInfo(const G4String& beamPipeTypeIn)
+{
+  auto typeAndFileName = BDS::SplitOnColon(beamPipeTypeIn); // find first colon
+  G4String fname = typeAndFileName.second;
+  if (BDS::StrContains(fname, ":"))
+    {// optional second colon with units after it
+      auto fileNameAndUnit = BDS::SplitOnColon(fname);
+      pointsFileName = fileNameAndUnit.first;
+      pointsUnit = fileNameAndUnit.second;
+    }
+  else
+    {
+      pointsFileName = fname;
+      pointsUnit = "mm";
+    }
 }
   
 void BDSBeamPipeInfo::CheckApertureInfo()

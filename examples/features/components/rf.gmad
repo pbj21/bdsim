@@ -1,7 +1,12 @@
 ! default material will be copper
 ! default phaseOffset is 0
 d1: drift, l=0.5;
+
+! 'E' is the voltage across the length of the element
+! So the units of 'E' are volts
 rf1: rf, l=10*cm, E=10*MV, frequency=90*MHz, phase=0.02;
+
+! gradient in MV/m
 rf2: rf, l=10*cm, gradient=14*MV / m, frequency=450*MHz;
 rf3: rf, l=10*cm, E=10*MV, frequency=90*MHz, tOffset=3.2*ns;
 

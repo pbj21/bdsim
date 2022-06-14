@@ -21,17 +21,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSParser.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "G4MaterialTable.hh"
 #include "G4String.hh"
 #include "G4NistManager.hh"
 #include "G4Version.hh"
 
-#include <chrono>
 #include <iomanip>
 #include <list>
 #include <map>
-#include <thread>
+#include <vector>
 
 BDSMaterials* BDSMaterials::instance = nullptr;
 
@@ -446,8 +446,7 @@ void BDSMaterials::DefineScintillators()
   tmpMaterial = new G4Material("ups923a",polystyrene->GetDensity(),1);
   tmpMaterial->AddMaterial(polystyrene,1);
   tmpMaterial->SetName("ups923a");
-  const G4int ups923a_numentries = 67;
-  G4double ups923a_PhotonEnergy[ups923a_numentries]   = {
+  std::vector<G4double> ups923a_PhotonEnergy = {
     3.35,    3.31,    3.28,    3.26,    3.25,    3.23,    3.23,
     3.22,    3.21,    3.19,    3.18,    3.17,    3.16,    3.15,
     3.14,    3.14,    3.13,    3.11,    3.1,     3.09,    3.09,
@@ -458,7 +457,26 @@ void BDSMaterials::DefineScintillators()
     2.74,    2.72,    2.71,    2.68,    2.66,    2.64,    2.62,
     2.61,    2.58,    2.55,    2.53,    2.5,     2.48,    2.46,
     2.44,    2.41,    2.38,    2.35  };
+  std::reverse(ups923a_PhotonEnergy.begin(), ups923a_PhotonEnergy.end());
+  
+  // AUG 21 - these were previously just one number as a const property but they should be non-const
+  // which requires vs energy numbers - so just use arrays the same shape
+  std::vector<G4double> ups923a_RINDEX(ups923a_PhotonEnergy.size(), 1.52);
+  std::vector<G4double> ups923a_ABSLENGTH(ups923a_PhotonEnergy.size(), 1*CLHEP::m);
+  
+  G4MaterialPropertiesTable* ups923a_mt = CreatePropertiesTable();
+#if G4VERSION_NUMBER < 1070
+  ups923a_mt->AddProperty("RINDEX",    ups923a_PhotonEnergy.data(), ups923a_RINDEX.data(),    (int)ups923a_PhotonEnergy.size());
+  ups923a_mt->AddProperty("ABSLENGTH", ups923a_PhotonEnergy.data(), ups923a_ABSLENGTH.data(), (int)ups923a_PhotonEnergy.size());
+#else
+  ups923a_mt->AddProperty("RINDEX",    ups923a_PhotonEnergy, ups923a_RINDEX);
+  ups923a_mt->AddProperty("ABSLENGTH", ups923a_PhotonEnergy, ups923a_ABSLENGTH);
+#endif
+  //Birk's constant
+  birks = (0.014/1.06)*CLHEP::cm/CLHEP::MeV;
+  tmpMaterial->GetIonisation()->SetBirksConstant(birks);
 #if G4VERSION_NUMBER < 1079
+  const G4int ups923a_numentries = 67;
   G4double ups923a_emission[ups923a_numentries]   = {
     0,       0.04,    0.11,    0.2,     0.3,     0.4,     0.52,
     0.62,    0.67,    0.68,    0.67,    0.62,    0.53,    0.48,
@@ -470,26 +488,8 @@ void BDSMaterials::DefineScintillators()
     0.37,    0.33,    0.31,    0.29,    0.28,    0.26,    0.24,
     0.2,     0.17,    0.12,    0.09,    0.08,    0.07,
     0.06,    0.04,    0.02,    0.01,    0.01  };
-#endif
-  G4double ups923a_RINDEX[ups923a_numentries];
-  G4double ups923a_ABSLENGTH[ups923a_numentries];
-  for (G4int i=0; i < ups923a_numentries; i++)
-  {
-    ups923a_RINDEX[i] = 1.52;
-    ups923a_ABSLENGTH[i] = 1*CLHEP::m;
-  }
-  
-  G4MaterialPropertiesTable* ups923a_mt = CreatePropertiesTable();
-  // AUG 21 - these were previously just one number as a const property but they should be non-const
-  // which requires vs energy numbers - so just use arrays the same shape
-  ups923a_mt->AddProperty("RINDEX",    ups923a_PhotonEnergy, ups923a_RINDEX,    ups923a_numentries);
-  ups923a_mt->AddProperty("ABSLENGTH", ups923a_PhotonEnergy, ups923a_ABSLENGTH, ups923a_numentries);
-  //Birk's constant
-  birks = (0.014/1.06)*CLHEP::cm/CLHEP::MeV;
-  tmpMaterial->GetIonisation()->SetBirksConstant(birks);
-#if G4VERSION_NUMBER < 1079
   ups923a_mt->AddConstProperty("FASTTIMECONSTANT",3.3*CLHEP::ns);
-  ups923a_mt->AddProperty("FASTCOMPONENT",ups923a_PhotonEnergy, ups923a_emission, ups923a_numentries)->SetSpline(true);
+  ups923a_mt->AddProperty("FASTCOMPONENT",ups923a_PhotonEnergy.data(), ups923a_emission, ups923a_numentries)->SetSpline(true);
   ups923a_mt->AddConstProperty("YIELDRATIO",1.0);
 #endif
   ups923a_mt->AddConstProperty("RESOLUTIONSCALE",2.0); //Check this
@@ -1134,12 +1134,9 @@ void BDSMaterials::DensityCheck(G4double  density,
 {
   if (density > 1e2)
     {// so greater than 100g / cm3, the densest natural material is around 23g/cm3
-      G4cout << G4endl << G4endl;
-      G4cout << __METHOD_NAME__ << "material \"" << materialName
-	     << "\" has a density higher than 100g/cm3! Perhaps check this!" << G4endl
-	     << "Density: " << density << "g/cm3" << G4endl << G4endl;
-      std::this_thread::sleep_for(std::chrono::seconds(2));
-      G4cout << "Proceeding..." << G4endl;
+      G4String msg = "material \"" + materialName + "\"has a density higher than 100g/cm3! Perhaps check this!\n";
+      msg += "Density: " + std::to_string(density) + " g/cm3... proceeding";
+      BDS::Warning(__METHOD_NAME__, msg);
     }
 }
 

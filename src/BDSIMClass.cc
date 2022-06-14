@@ -41,6 +41,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include "BDSAcceleratorModel.hh"
+#include "BDSAperturePointsLoader.hh"
 #include "BDSBeamPipeFactory.hh"
 #include "BDSBunch.hh"
 #include "BDSBunchFactory.hh"
@@ -316,7 +317,7 @@ int BDSIM::Initialise()
       bdsOutput->FillBeam(bb);
 
       bdsOutput->CloseFile();
-      return 2;
+      return 0;
     }
   
   /// Print the geometry tolerance
@@ -496,6 +497,7 @@ BDSIM::~BDSIM()
 	  delete BDSColours::Instance();
 	  delete BDSFieldLoader::Instance();
 	  delete BDSSamplerRegistry::Instance();
+    BDSAperturePointsCache::Instance()->ClearCachedFiles();
 	}
     }
   catch (...)

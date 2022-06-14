@@ -45,11 +45,9 @@ This examples illustrates the analysis and understanding of the products
 in an invisible 'sampler' plane after the target.
 
 The model consists of a small 1 cm vacuum pipe followed by a target. The
-solid box of target material is created by creating a collimator (`rcol`)
-with no specified aperture (`xsize` and `ysize`) and so a closed collimator
-is built (a solid box of material). The width of the target is the default
-`horizontalWidth` for all elements, which is 0.5 m. See :ref:`options-common`.
-The model looks like:
+solid box of target material is created using the `target` component.
+The width of the target is the default `horizontalWidth` for all elements,
+which is 0.5 m. See :ref:`options-common`. The model looks like:
 
 .. figure:: target-p-cu.png
 	    :width: 100%
@@ -66,8 +64,8 @@ The model was prepared by hand as it is quite simple. The input syntax is includ
 below: ::
 
  d1: drift, l=10*cm;
- c1: rcol, l=5*cm, material="copper";
- l1: line=(d1,c1);
+ t1: target, l=5*cm, material="copper";
+ l1: line=(d1,t1);
  use, l1;
 
  sample, all;
@@ -76,7 +74,7 @@ below: ::
        energy=6.5*TeV;
 
  option, physicsList="g4FTFP_BERT", 
-         defaultRangeCut=3*cm;
+         defaultRangeCut=1*cm;
 
  option, ngenerate=5,
          seed=123,
@@ -211,8 +209,8 @@ Question 1
 * What fraction of the beam makes it through the target?
 
 Here we want to know the fraction of primary particles after the target. To do this we look
-at the data recorded in the sampler after the target. The target was called "c1" in the
-input so there will be a sampler structure in the Event tree of the output called "c1".
+at the data recorded in the sampler after the target. The target was called "t1" in the
+input so there will be a sampler structure in the Event tree of the output called "t1".
 
 To get this answer we can make a histogram using rebdsim. This may seem an unintuitive
 approach but it includes all the correct event averaging and uncertainty calculations.
@@ -227,8 +225,8 @@ with the filter ("selection") that only primary particles are filled. The defaul
 histogramming is per event, i.e. normalised to the number of events. Below are two
 possible ways to achieve the same answer. ::
 
-  Histogram1D   Event. Q1PrimaryFraction   {2}  {-0.5:1.5} c1.parentID==0 c1.parentID==0
-  Histogram1D   Event. Q1PrimaryFraction2  {1}  {-2:2}     c1.x           c1.parentID==0
+  Histogram1D   Event. Q1PrimaryFraction   {2}  {-0.5:1.5} t1.parentID==0 t1.parentID==0
+  Histogram1D   Event. Q1PrimaryFraction2  {1}  {-2:2}     t1.x           t1.parentID==0
 
 This file for this example is provided in :code:`bdsim/examples/target/analysisConfig.txt`. We
 run rebdsim with the following command: ::
@@ -300,15 +298,15 @@ energies, i.e. a line for each particle type. To do this, we again histogram the
 particles recorded in the sampler after the target. We histogram the energy for
 each particle species. The following analysis is used. ::
 
-  Histogram1D  Event.  Q2All               {130} {0:6500}  c1.energy  c1.zp>0
-  Histogram1D  Event.  Q2ProtonsPrimary    {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==2212&&c1.parentID==0
-  Histogram1D  Event.  Q2ProtonsSecondary  {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==2212&&c1.parentID>0
-  Histogram1D  Event.  Q2PiPlusMinus       {130} {0:6500}  c1.energy  c1.zp>0&&abs(c1.partID)==211
-  Histogram1D  Event.  Q2PiZero            {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==111
-  Histogram1D  Event.  Q2Electrons         {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==11
-  Histogram1D  Event.  Q2Positrons         {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==-11
-  Histogram1D  Event.  Q2Gammas            {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==22
-  Histogram1D  Event.  Q2Muons             {130} {0:6500}  c1.energy  c1.zp>0&&abs(c1.partID)==13
+  Histogram1D  Event.  Q2All               {130} {0:6500}  t1.energy  t1.zp>0
+  Histogram1D  Event.  Q2ProtonsPrimary    {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==2212&&t1.parentID==0
+  Histogram1D  Event.  Q2ProtonsSecondary  {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==2212&&t1.parentID>0
+  Histogram1D  Event.  Q2PiPlusMinus       {130} {0:6500}  t1.energy  t1.zp>0&&abs(t1.partID)==211
+  Histogram1D  Event.  Q2PiZero            {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==111
+  Histogram1D  Event.  Q2Electrons         {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==11
+  Histogram1D  Event.  Q2Positrons         {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==-11
+  Histogram1D  Event.  Q2Gammas            {130} {0:6500}  t1.energy  t1.zp>0&&t1.partID==22
+  Histogram1D  Event.  Q2Muons             {130} {0:6500}  t1.energy  t1.zp>0&&abs(t1.partID)==13
 
 The particle IDs are the Particle Data Group IDs that can be found online at
 `<https://pdg.lbl.gov/2021/web/viewer.html?file=%2F2021/reviews/rpp2020-rev-monte-carlo-numbering.pdf>`_.
@@ -322,7 +320,7 @@ bounce back off of the air and go through the sampler before hitting the
 target again. We could change to the world material option to vacuum
 (:code:`option, worldMaterial="G4_Galactic";`) to avoid this or add the
 filter of the z component of the momentum is
-positive - i.e. forwards travelling. This is why we have :code:`c1.zp>0`
+positive - i.e. forwards travelling. This is why we have :code:`t1.zp>0`
 in all of the selections above. We can quickly check if there are any backwards
 going particles at all by inspecting the data in a ROOT TBrowser (see
 :ref:`basic-data-inspection`). Below is a screenshot of ROOT.
@@ -407,16 +405,16 @@ also make a logarithmically binned plot. We add more lines to the analysisConfig
 rebdsim. See :ref:`output-analysis-configuration-file` for more details. Here are the lines
 we add: ::
 
-  Histogram1DLog  Event.  Q2LogAll              {100} {1:3.82}  c1.energy  c1.zp>0
-  Histogram1DLog  Event.  Q2LogProtonsPrimary   {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==2212&&c1.parentID==0
-  Histogram1DLog  Event.  Q2LogProtonsSecondary {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==2212&&c1.parentID>0
-  Histogram1DLog  Event.  Q2LogNeutrons         {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==2112
-  Histogram1DLog  Event.  Q2LogPiPlusMinus      {100} {1:3.82}  c1.energy  c1.zp>0&&abs(c1.partID)==211
-  Histogram1DLog  Event.  Q2LogPiZero           {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==111
-  Histogram1DLog  Event.  Q2LogElectrons        {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==11
-  Histogram1DLog  Event.  Q2LogPositrons        {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==-11
-  Histogram1DLog  Event.  Q2LogGammas           {100} {1:3.82}  c1.energy  c1.zp>0&&c1.partID==22
-  Histogram1DLog  Event.  Q2LogMuons            {100} {1:3.82}  c1.energy  c1.zp>0&&abs(c1.partID)==13
+  Histogram1DLog  Event.  Q2LogAll              {100} {1:3.82}  t1.energy  t1.zp>0
+  Histogram1DLog  Event.  Q2LogProtonsPrimary   {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==2212&&t1.parentID==0
+  Histogram1DLog  Event.  Q2LogProtonsSecondary {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==2212&&t1.parentID>0
+  Histogram1DLog  Event.  Q2LogNeutrons         {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==2112
+  Histogram1DLog  Event.  Q2LogPiPlusMinus      {100} {1:3.82}  t1.energy  t1.zp>0&&abs(t1.partID)==211
+  Histogram1DLog  Event.  Q2LogPiZero           {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==111
+  Histogram1DLog  Event.  Q2LogElectrons        {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==11
+  Histogram1DLog  Event.  Q2LogPositrons        {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==-11
+  Histogram1DLog  Event.  Q2LogGammas           {100} {1:3.82}  t1.energy  t1.zp>0&&t1.partID==22
+  Histogram1DLog  Event.  Q2LogMuons            {100} {1:3.82}  t1.energy  t1.zp>0&&abs(t1.partID)==13
 
 We use the above plotting script in Python to make a logarithmically binned plot: ::
 

@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSFIELDQUERYPOINTSLOADER_H
-#define BDSFIELDQUERYPOINTSLOADER_H
+#ifndef BDSFIELDLOADERQUERYPOINTS_H
+#define BDSFIELDLOADERQUERYPOINTS_H
 #include "BDSFourVector.hh"
 
 #include "G4Types.hh"
@@ -31,11 +31,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 template <class T>
-class BDSFieldQueryPointsLoader
+class BDSFieldLoaderQueryPoints
 {
 public:
-  BDSFieldQueryPointsLoader();
-  ~BDSFieldQueryPointsLoader();
+  BDSFieldLoaderQueryPoints();
+  ~BDSFieldLoaderQueryPoints();
 
   std::vector<BDSFourVector<G4double>> Load(const G4String& fileName,
 					    std::vector<G4String>* columnNamesIn) const;

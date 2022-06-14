@@ -798,9 +798,21 @@ weighting functions are either `flat`, one over emittance `oneoverr` or exponent
 +----------------------------------+-----------------------------------------------------------------------------+
 | `haloPSWeightParameter`          | Phase space weight function parameters []                                   |
 +----------------------------------+-----------------------------------------------------------------------------+
-| `haloXCutInner`                  | X position cut in halo (multiples of sigma)                                 |
+| `haloXCutInner`                  | X position inner cut in halo (multiples of sigma)                           |
 +----------------------------------+-----------------------------------------------------------------------------+
-| `haloYCutInner`                  | Y position cut in halo (multiples of sigma)                                 |
+| `haloYCutInner`                  | Y position inner cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloXCutOuter`                  | X position outer cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloYCutOuter`                  | Y position outer cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloXpCutInner`                 | X momentum inner cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloYpCutInner`                 | Y momentum inner cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloXpCutOuter`                 | X momentum outer cut in halo (multiples of sigma)                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloYpCutOuter`                 | Y momentum outer cut in halo (multiples of sigma)                           |
 +----------------------------------+-----------------------------------------------------------------------------+
 
 * \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.

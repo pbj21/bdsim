@@ -79,7 +79,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
 
   preWeight      = track->GetWeight();
   postWeight     = preWeight;
-  energyDeposit  = 0.0; // does not loose any energy
+  energyDeposit  = 0.0; // does not lose any energy
   preEnergy      = track->GetKineticEnergy();
   postEnergy     = preEnergy;
   preMomentum    = track->GetMomentum();

@@ -106,7 +106,7 @@ void BDSBeamPipeFactoryClicPCL::CleanUp()
   BDSBeamPipeFactoryPoints::CleanUp();
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryClicPCL::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryClicPCL::CommonFinalConstruction(const G4String& nameIn,
 								G4Material* vacuumMaterialIn,
 								G4Material* beamPipeMaterialIn,
 								G4double    lengthIn)

@@ -80,7 +80,10 @@ BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component
   containerAssembly(component.containerAssembly),
   outerExtent(component.outerExtent),
   innerExtent(component.innerExtent),
+  allLogicalVolumes(component.allLogicalVolumes),
+  sensitivity(component.sensitivity),
   overrideSensitivity(component.overrideSensitivity),
+  allPhysicalVolumes(component.allPhysicalVolumes),
   placementOffset(component.placementOffset),
   placementRotation(component.placementRotation),
   lvsExcludedFromBiasing(nullptr)

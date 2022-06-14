@@ -59,7 +59,10 @@ namespace GMAD
     bool overwriteExistingFiles;
     bool printTransform;
     
-    bool drawZeroValuePoints;
+    bool   drawArrows;
+    bool   drawZeroValuePoints;
+    bool   drawBoxes;
+    double boxAlpha;
     
     std::string pointsFile; ///< File with 3D points to use
 

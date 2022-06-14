@@ -37,7 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBeamPipeFactoryRectangular::BDSBeamPipeFactoryRectangular()
 {;}
 
-BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(const G4String& nameIn,
 							   G4double    lengthIn,
 							   G4double    aper1In,
 							   G4double    aper2In,
@@ -45,7 +45,9 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
 							   G4double    /*aper4In*/,
 							   G4Material* vacuumMaterialIn,
 							   G4double    beamPipeThicknessIn,
-							   G4Material* beamPipeMaterialIn)
+							   G4Material* beamPipeMaterialIn,
+							   const G4String& /*pointsFileIn*/,
+							   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -88,17 +90,19 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
 				 lengthIn, containerHalfWidthX, containerHalfWidthY);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String      nameIn,
-							   G4double      lengthIn,
-							   G4ThreeVector inputFaceNormalIn,
-							   G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(const G4String&      nameIn,
+							   G4double             lengthIn,
+							   const G4ThreeVector& inputFaceNormalIn,
+							   const G4ThreeVector& outputFaceNormalIn,
 							   G4double      aper1In,
 							   G4double      aper2In,
 							   G4double      /*aper3In*/,
 							   G4double      /*aper4In */,
 							   G4Material*   vacuumMaterialIn,
 							   G4double      beamPipeThicknessIn,
-							   G4Material*   beamPipeMaterialIn)
+							   G4Material*   beamPipeMaterialIn,
+							   const G4String& /*pointsFileIn*/,
+							   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -116,7 +120,7 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String      nameIn,
 }
 
 
-BDSBeamPipe* BDSBeamPipeFactoryRectangular::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectangular::CommonFinalConstruction(const G4String& nameIn,
 								    G4Material* vacuumMaterialIn,
 								    G4Material* beamPipeMaterialIn,
 								    G4double    lengthIn,
@@ -143,13 +147,13 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CommonFinalConstruction(G4String    
   return aPipe;
 }
 
-void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(G4String      nameIn,
-							      G4double      lengthIn,
-							      G4double      aper1In,
-							      G4double      aper2In,
-							      G4double      beamPipeThicknessIn,
-							      G4ThreeVector inputfaceIn,
-							      G4ThreeVector outputfaceIn,
+void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(const G4String&      nameIn,
+							      G4double             lengthIn,
+							      G4double             aper1In,
+							      G4double             aper2In,
+							      G4double             beamPipeThicknessIn,
+							      const G4ThreeVector& inputfaceIn,
+							      const G4ThreeVector& outputfaceIn,
 							      G4double&     containerHalfWidthX,
 							      G4double&     containerHalfWidthY)
 {
@@ -174,6 +178,9 @@ void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(G4String      name
 
   // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
   G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, angledFaceRadius);
+
+  // check extent of volume's angled face - if it can be built, remaining volumes can be built
+  CheckAngledVolumeCanBeBuilt(lengthIn, inputfaceIn, outputfaceIn, angledFaceRadius, nameIn);
 
   angledFaceSolid = new G4CutTubs(nameIn + "_angled_face",       // name
 				  0,                             // inner radius

@@ -58,6 +58,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSDicomIntersectVolume.hh"
 
+#include "G4AffineTransform.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4Material.hh"
@@ -71,6 +72,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4SystemOfUnits.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VSolid.hh"
+#include "G4Version.hh"
 
 #include <vector>
 
@@ -184,10 +186,16 @@ void BDSDicomIntersectVolume::SetNewValue(G4UIcommand* command,
   for (unsigned int ii = 0; ii < materials.size(); ++ii)
     {fout << ii << " " << materials[ii]->GetName() << G4endl;}
   
-  //----- Loop to pantom voxels
+  //----- Loop to phantom voxels
+#if G4VERSION_NUMBER < 1100
   auto nx = G4int(thePhantomParam->GetNoVoxelX());
   auto ny = G4int(thePhantomParam->GetNoVoxelY());
   auto nz = G4int(thePhantomParam->GetNoVoxelZ());
+#else
+  auto nx = G4int(thePhantomParam->GetNoVoxelsX());
+  auto ny = G4int(thePhantomParam->GetNoVoxelsY());
+  auto nz = G4int(thePhantomParam->GetNoVoxelsZ());
+#endif
   G4int nxy = nx * ny;
   fVoxelIsInside = new G4bool[nx * ny * nz];
   G4double voxelHalfWidthX = thePhantomParam->GetVoxelHalfX();

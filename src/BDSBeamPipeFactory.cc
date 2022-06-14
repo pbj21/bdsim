@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryLHC.hh"
 #include "BDSBeamPipeFactoryLHCDetailed.hh"
 #include "BDSBeamPipeFactoryOctagonal.hh"
+#include "BDSBeamPipeFactoryPointsFile.hh"
 #include "BDSBeamPipeFactoryRaceTrack.hh"
 #include "BDSBeamPipeFactoryRectEllipse.hh"
 #include "BDSBeamPipeInfo.hh"
@@ -55,6 +56,7 @@ BDSBeamPipeFactory::BDSBeamPipeFactory()
   octagonal      = new BDSBeamPipeFactoryOctagonal();
   circularvacuum = new BDSBeamPipeFactoryCircularVacuum();
   clicpcl        = new BDSBeamPipeFactoryClicPCL();
+  pointsfile     = new BDSBeamPipeFactoryPointsFile();
 }
 
 BDSBeamPipeFactory::~BDSBeamPipeFactory()
@@ -69,6 +71,7 @@ BDSBeamPipeFactory::~BDSBeamPipeFactory()
   delete octagonal;
   delete circularvacuum;
   delete clicpcl;
+  delete pointsfile;
   instance = nullptr;
 }
 
@@ -96,6 +99,8 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
       {return circularvacuum; break;}
     case BDSBeamPipeType::clicpcl:
       {return clicpcl; break;}
+    case BDSBeamPipeType::pointsfile:
+      {return pointsfile; break;}
     default:
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "unknown type \"" << type << "\" - circular beampipe factory by default" << G4endl;
@@ -105,13 +110,10 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
     }
 }
 
-BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
+BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(const G4String&  name,
 						G4double         length,
 						BDSBeamPipeInfo* bpi)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "using beam pipe information" << G4endl;
-#endif
   if ((bpi->inputFaceNormal.z() > -1) || (bpi->outputFaceNormal.z() < 1))
     {
       return CreateBeamPipe(bpi->beamPipeType,
@@ -125,7 +127,9 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
 			    bpi->aper4,
 			    bpi->vacuumMaterial,
 			    bpi->beamPipeThickness,
-			    bpi->beamPipeMaterial);
+			    bpi->beamPipeMaterial,
+			    bpi->pointsFileName,
+			    bpi->pointsUnit);
     }
   else
     {
@@ -138,12 +142,14 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
 			    bpi->aper4,
 			    bpi->vacuumMaterial,
 			    bpi->beamPipeThickness,
-			    bpi->beamPipeMaterial);
+			    bpi->beamPipeMaterial,
+			    bpi->pointsFileName,
+			    bpi->pointsUnit);
     }
 }
   
 BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
-						G4String        name,
+						const G4String& name,
 						G4double        length,
 						G4double        aper1,
 						G4double        aper2,
@@ -151,28 +157,33 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
 						G4double        aper4,
 						G4Material*     vacuumMaterial,
 						G4double        beamPipeThickness,
-						G4Material*     beamPipeMaterial)
+						G4Material*     beamPipeMaterial,
+						const G4String& pointsFileIn,
+						const G4String& pointsUnitIn)
 {
   BDSBeamPipeFactoryBase* factory = GetAppropriateFactory(beamPipeType);
   return factory->CreateBeamPipe(name,length,aper1,aper2,aper3,aper4,
-				 vacuumMaterial,beamPipeThickness,beamPipeMaterial);
+				 vacuumMaterial,beamPipeThickness,beamPipeMaterial,
+				 pointsFileIn,pointsUnitIn);
 }
 
 BDSBeamPipe*  BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
-						 G4String        name,
+						 const G4String& name,
 						 G4double        length,
-						 G4ThreeVector   inputFaceNormal,
-						 G4ThreeVector   outputFaceNormal,
+						 const G4ThreeVector& inputFaceNormal,
+						 const G4ThreeVector& outputFaceNormal,
 						 G4double        aper1,
 						 G4double        aper2,
 						 G4double        aper3,
 						 G4double        aper4,
 						 G4Material*     vacuumMaterial,
 						 G4double        beamPipeThickness,
-						 G4Material*     beamPipeMaterial)
+						 G4Material*     beamPipeMaterial,
+						 const G4String& pointsFileIn,
+						 const G4String& pointsUnitIn)
 {
   BDSBeamPipeFactoryBase* factory = GetAppropriateFactory(beamPipeType);
   return factory->CreateBeamPipe(name,length,inputFaceNormal,outputFaceNormal,aper1,
 				 aper2,aper3,aper4,vacuumMaterial,beamPipeThickness,
-				 beamPipeMaterial);
+				 beamPipeMaterial,pointsFileIn,pointsUnitIn);
 }

@@ -38,7 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBeamPipeFactoryLHC::BDSBeamPipeFactoryLHC()
 {;}
 
-BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(const G4String& nameIn,
 						   G4double    lengthIn,
 						   G4double    aper1In,
 						   G4double    aper2In,
@@ -46,7 +46,9 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
 						   G4double    /*aper4In*/,
 						   G4Material* vacuumMaterialIn,
 						   G4double    beamPipeThicknessIn,
-						   G4Material* beamPipeMaterialIn)
+						   G4Material* beamPipeMaterialIn,
+						   const G4String& /*pointsFileIn*/,
+						   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -144,17 +146,19 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, beamPipeMaterialIn, lengthIn, width, height);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String      nameIn,
-						   G4double      lengthIn,
-						   G4ThreeVector inputFaceNormalIn,
-						   G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(const G4String&      nameIn,
+						   G4double             lengthIn,
+						   const G4ThreeVector& inputFaceNormalIn,
+						   const G4ThreeVector& outputFaceNormalIn,
 						   G4double      aper1In,
 						   G4double      aper2In,
 						   G4double      aper3In,
 						   G4double      /*aper4In*/,
 						   G4Material*   vacuumMaterialIn,
 						   G4double      beamPipeThicknessIn,
-						   G4Material*   beamPipeMaterialIn)
+						   G4Material*   beamPipeMaterialIn,
+						   const G4String& /*pointsFileIn*/,
+						   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -174,7 +178,7 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String      nameIn,
 				 lengthIn, width, height);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryLHC::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryLHC::CommonFinalConstruction(const G4String& nameIn,
 							    G4Material* vacuumMaterialIn,
 							    G4Material* beamPipeMaterialIn,
 							    G4double    lengthIn,
@@ -194,14 +198,14 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CommonFinalConstruction(G4String    nameIn,
 
 /// the angled ones have degeneracy in the geant4 solids they used so we can avoid code duplication
 /// by grouping common construction tasks
-void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
-						      G4double      lengthIn,
-						      G4double      aper1In,
-						      G4double      aper2In,
-						      G4double      aper3In,
-						      G4double      beamPipeThicknessIn,
-						      G4ThreeVector inputfaceIn,
-						      G4ThreeVector outputfaceIn)
+void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameIn,
+						      G4double             lengthIn,
+						      G4double             aper1In,
+						      G4double             aper2In,
+						      G4double             aper3In,
+						      G4double             beamPipeThicknessIn,
+						      const G4ThreeVector& inputfaceIn,
+						      const G4ThreeVector& outputfaceIn)
 {
   // build the solids
   //vacuum cylindrical solid (circular cross-section)
@@ -301,7 +305,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
 					   contRectSolid);            // solid 2
 }
 
-void BDSBeamPipeFactoryLHC::CreateContainerSubtractionSolid(G4String& nameIn,
+void BDSBeamPipeFactoryLHC::CreateContainerSubtractionSolid(const G4String& nameIn,
 							    G4double& lengthIn,
 							    G4double& beamPipeThicknessIn,
 							    G4double& aper1In,

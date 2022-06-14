@@ -68,7 +68,7 @@ private:
   void CleanUpClicPCL();
   
   /// Overloads BDSBeamPipeFactoryPoints to make asymmetric extents, otherwise the same.
-  virtual BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
+  virtual BDSBeamPipe* CommonFinalConstruction(const G4String& nameIn,
 					       G4Material* vacuumMaterialIn,
 					       G4Material* beamPipeMaterialIn,
 					       G4double    lengthIn);

@@ -36,7 +36,7 @@ public:
   BDSBeamPipeFactoryCircularVacuum();
   virtual ~BDSBeamPipeFactoryCircularVacuum(){;}
 
-  virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
+  virtual BDSBeamPipe* CreateBeamPipe(const G4String& nameIn,
 				      G4double    lengthIn,
 				      G4double    aper1               = 0,
 				      G4double    aper2               = 0,
@@ -44,24 +44,28 @@ public:
 				      G4double    aper4               = 0,
 				      G4Material* vacuumMaterialIn    = nullptr,
 				      G4double    beamPipeThicknessIn = 0,
-				      G4Material* beamPipeMaterialIn  = nullptr);
+				      G4Material* beamPipeMaterialIn  = nullptr,
+				      const G4String& pointsFileIn    = "",
+				      const G4String& pointsUnitIn    = "");
   
-  virtual BDSBeamPipe* CreateBeamPipe(G4String      nameIn,
-				      G4double      lengthIn,
-				      G4ThreeVector inputFaceNormalIn,
-				      G4ThreeVector outputFaceNormalIn,
+  virtual BDSBeamPipe* CreateBeamPipe(const G4String&      nameIn,
+				      G4double             lengthIn,
+				      const G4ThreeVector& inputFaceNormalIn,
+				      const G4ThreeVector& outputFaceNormalIn,
 				      G4double      aper1               = 0,
 				      G4double      aper2               = 0,
 				      G4double      aper3               = 0,
 				      G4double      aper4               = 0,
 				      G4Material*   vacuumMaterialIn    = nullptr,
 				      G4double      beamPipeThicknessIn = 0,
-				      G4Material*   beamPipeMaterialIn  = nullptr);
+				      G4Material*   beamPipeMaterialIn  = nullptr,
+				      const G4String& pointsFileIn      = "",
+				      const G4String& pointsUnitIn      = "");
 
 private:
   /// Abstract common build features to one function
   /// use member variables unique to this factory to pass them around
-  BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
+  BDSBeamPipe* CommonFinalConstruction(const G4String& nameIn,
 				       G4Material* vacuumMaterialIn,
 				       G4double    lengthIn,
 				       G4double    containerRadiusIn);

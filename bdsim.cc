@@ -42,7 +42,7 @@ int main(int argc, char** argv)
       bds = new BDSIM(argc, argv);
       if (!bds->Initialised())
 	{
-	  if (bds->InitialisationResult() == 1) // if 2 it's ok
+	  if (bds->InitialisationResult() == 1)
 	    {std::cout << "Intialisation failed" << std::endl; return 1;}
 	}
       else

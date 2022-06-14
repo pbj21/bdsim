@@ -1,0 +1,5 @@
+c1: target, l=2*m, material="C";
+l1: line=(c1);
+use, l1;
+
+beam, particle="proton", kineticEnergy=1*GeV;

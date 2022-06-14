@@ -30,6 +30,7 @@ simple_testing(bunch-gausstwiss-emitn         "--file=gausstwiss-en.gmad"       
 simple_testing(bunch-gausstwiss-pregenerate   "--file=gausstwiss-pregenerate.gmad"  "")	
 simple_testing(bunch-halo                     "--file=halo.gmad"                    "")
 simple_testing(bunch-halo-cut                 "--file=halo-cut.gmad"                "")
+simple_testing(bunch-halo-momentum-cut        "--file=halo-momentum-cut.gmad"       "")
 simple_testing(bunch-halo-sigma               "--file=halo-sigma.gmad"              "")
 simple_testing(bunch-ion                      "--file=ion.gmad"                     "")
 simple_testing(bunch-ion-plus-sign            "--file=ion-plus-sign.gmad"           "")

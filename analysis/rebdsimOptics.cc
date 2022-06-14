@@ -117,8 +117,8 @@ int main(int argc, char* argv[])
   TChain* modelTree = dl->GetModelTree();
   if (modelTree->GetEntries() == 0)
     {
-      std::cerr << "Data file written without Model tree that is required for optics analysis" << std::endl;
-      return 1;
+      std::cout << "Warning: data file written without Model tree that is required to know the sampler names" << std::endl;
+      std::cout << "         only the primary sampler will be analysed if available" << std::endl;
     }
 
   EventAnalysis* evtAnalysis;

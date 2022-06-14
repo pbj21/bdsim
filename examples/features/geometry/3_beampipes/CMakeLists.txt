@@ -10,3 +10,6 @@ simple_testing(aperture-octagonal-2    "--file=8a_octagonal.gmad"      ${OVERLAP
 simple_testing(aperture-circularvacuum "--file=9_circular_vacuum.gmad" ${OVERLAP_CHECK})
 simple_testing(aperture-clicpcl        "--file=10_clicpcl.gmad"        ${OVERLAP_CHECK})
 simple_testing(aperture-angled-faces   "--file=11_angled_faces_check.gmad" ${OVERLAP_CHECK})
+simple_testing(aperture-pointsfile     "--file=12_pointsfile.gmad"     ${OVERLAP_CHECK})
+simple_testing(aperture-pointsfile-default  "--file=13_pointsfiledefault.gmad"     ${OVERLAP_CHECK})
+simple_testing(aperture-pointsfile-triangle "--file=14_pointsfile_triangle.gmad"   ${OVERLAP_CHECK})

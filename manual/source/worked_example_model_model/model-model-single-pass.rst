@@ -384,6 +384,13 @@ This can be undone with: ::
 	    Visualisation of the model with a cut away plane and some events as well
 	    as perspective view turned on.
 
+.. figure:: model-model-sp-vis2-perspective.png
+	    :align: center
+	    :width: 100%
+
+	    Visualisation of the model in the same view but also with perspective
+	    turned on in the visualiser.
+
   
 Process Biasing
 ---------------

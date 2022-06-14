@@ -40,7 +40,9 @@ class G4Material;
 class BDSBeamPipeInfo
 {
 public:
-  /// extra constructor to assign all members at once
+  /// Deleted default constructor to ensure one of supplied constructors is used.
+  BDSBeamPipeInfo() = delete;
+  /// extra constructor to assign all members at once.
   BDSBeamPipeInfo(BDSBeamPipeType beamPipeTypeIn,
 		  G4double        aper1In,
 		  G4double        aper2In,
@@ -49,35 +51,37 @@ public:
 		  G4Material*     vacuumMaterialIn,
 		  G4double        beamPipeThicknessIn,
 		  G4Material*     beamPipeMaterialIn,
-		  G4ThreeVector   inputFaceNormalIn  = G4ThreeVector(0,0,-1),
-		  G4ThreeVector   outputFaceNormalIn = G4ThreeVector(0,0,1));
+		  const G4ThreeVector& inputFaceNormalIn  = G4ThreeVector(0,0,-1),
+		  const G4ThreeVector& outputFaceNormalIn = G4ThreeVector(0,0,1),
+      const G4String& pointsFileNameIn = "",
+      const G4String& pointsUnitIn = "mm");
 
   /// Constructor with string descriptors of materials and type. Automatically determined
   /// using BDSBeamPipeType and BDSMaterials
-  BDSBeamPipeInfo(G4String      beamPipeTypeIn,
-		  G4double      aper1In,
-		  G4double      aper2In,
-		  G4double      aper3In,
-		  G4double      aper4In,
-		  G4String      vacuumMaterialIn,
-		  G4double      beamPipeThicknessIn,
-		  G4String      beamPipeMaterialIn,
-		  G4ThreeVector inputFaceNormalIn  = G4ThreeVector(0,0,-1),
-		  G4ThreeVector outputFaceNormalIn = G4ThreeVector(0,0,1));
+  BDSBeamPipeInfo(const G4String&      beamPipeTypeIn,
+		  G4double             aper1In,
+		  G4double             aper2In,
+		  G4double             aper3In,
+		  G4double             aper4In,
+		  const G4String&      vacuumMaterialIn,
+		  G4double             beamPipeThicknessIn,
+		  const G4String&      beamPipeMaterialIn,
+		  const G4ThreeVector& inputFaceNormalIn  = G4ThreeVector(0,0,-1),
+		  const G4ThreeVector& outputFaceNormalIn = G4ThreeVector(0,0,1));
 
   /// Constructor that allows a default model to be used as backup. Checks on parameter
   /// validity are done after substituting unset values by values from defaultInfo.
-  BDSBeamPipeInfo(BDSBeamPipeInfo* defaultInfo,
-		  G4String      beamPipeTypeIn,
-		  G4double      aper1In,
-		  G4double      aper2In,
-		  G4double      aper3In,
-		  G4double      aper4In,
-		  G4String      vacuumMaterialIn,
-		  G4double      beamPipeThicknessIn,
-		  G4String      beamPipeMaterialIn,
-		  G4ThreeVector inputFaceNormalIn  = G4ThreeVector(0,0,-1),
-		  G4ThreeVector outputFaceNormalIn = G4ThreeVector(0,0,1));
+  BDSBeamPipeInfo(const BDSBeamPipeInfo* defaultInfo,
+		  const G4String&      beamPipeTypeIn,
+		  G4double             aper1In,
+		  G4double             aper2In,
+		  G4double             aper3In,
+		  G4double             aper4In,
+		  const G4String&      vacuumMaterialIn,
+		  G4double             beamPipeThicknessIn,
+		  const G4String&      beamPipeMaterialIn,
+		  const G4ThreeVector& inputFaceNormalIn  = G4ThreeVector(0,0,-1),
+		  const G4ThreeVector& outputFaceNormalIn = G4ThreeVector(0,0,1));
 
   /// Function to check relevant aperture values are set.  This is really a dispatch function
   /// for other aperture specific methods below
@@ -109,11 +113,13 @@ public:
   G4Material*     beamPipeMaterial;
   G4ThreeVector   inputFaceNormal;
   G4ThreeVector   outputFaceNormal;
+  G4String        pointsFileName;
+  G4String        pointsUnit;
   ///@}
   
 private:
-  /// Private default constructor to ensure one of supplied constructors is used.
-  BDSBeamPipeInfo() = delete;
+  /// Parse the type string to extract the file name and the optional units and assign to member variables.
+  void CheckAndSetPointsInfo(const G4String& beamPipeTypeIn);
   
   /// Function to check whether a parameter is set (using BDSUtilities BDS::IsFinite() ). If the
   /// accompanying G4bool setAper1 (for example) is true, the parameter will be checked for

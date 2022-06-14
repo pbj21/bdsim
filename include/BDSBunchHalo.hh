@@ -60,6 +60,8 @@ private:
   G4double gammaY;
   G4double sigmaX;
   G4double sigmaY;
+  G4double sigmaXp;
+  G4double sigmaYp;
   /// @}
 
   G4double haloNSigmaXInner;
@@ -68,11 +70,14 @@ private:
   G4double haloNSigmaYOuter;
   G4double haloXCutInner;
   G4double haloYCutInner;
+  G4double haloXCutOuter;
+  G4double haloYCutOuter;
+  G4double haloXpCutInner;
+  G4double haloYpCutInner;
+  G4double haloXpCutOuter;
+  G4double haloYpCutOuter;
   G4double haloPSWeightParameter;
   G4String weightFunction;
-  
-  G4double haloNSigmaXpOuter;
-  G4double haloNSigmaYpOuter;
 
   G4double emitInnerX;
   G4double emitInnerY;

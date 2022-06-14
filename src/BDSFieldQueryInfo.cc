@@ -32,7 +32,10 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
                                      const G4String& fieldObjectIn,
                                      G4bool printTransformIn,
                                      G4bool checkParametersIn,
-                                     G4bool drawZeroValuePointsIn):
+                                     G4bool drawArrowsIn,
+                                     G4bool drawZeroValuePointsIn,
+                                     G4bool drawBoxesIn,
+                                     G4double boxAlphaIn):
   name(nameIn),
   outfileMagnetic(outfileMagneticIn),
   outfileElectric(outfileElectricIn),
@@ -47,7 +50,10 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
   printTransform(printTransformIn),
   fieldObject(fieldObjectIn),
   checkParameters(checkParametersIn),
-  drawZeroValuePoints(drawZeroValuePointsIn)
+  drawArrows(drawArrowsIn),
+  drawZeroValuePoints(drawZeroValuePointsIn),
+  drawBoxes(drawBoxesIn),
+  boxAlpha(boxAlphaIn)
 {;}
 
 BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
@@ -60,7 +66,10 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
                                      G4bool overwriteExistingFilesIn,
                                      const G4String& fieldObjectIn,
                                      G4bool checkParametersIn,
-                                     G4bool drawZeroValuePointsIn):
+                                     G4bool drawArrowsIn,
+                                     G4bool drawZeroValuePointsIn,
+                                     G4bool drawBoxesIn,
+                                     G4double boxAlphaIn):
   name(nameIn),
   outfileMagnetic(outfileMagneticIn),
   outfileElectric(outfileElectricIn),
@@ -72,7 +81,10 @@ BDSFieldQueryInfo::BDSFieldQueryInfo(const G4String& nameIn,
   printTransform(false),
   fieldObject(fieldObjectIn),
   checkParameters(checkParametersIn),
-  drawZeroValuePoints(drawZeroValuePointsIn)
+  drawArrows(drawArrowsIn),
+  drawZeroValuePoints(drawZeroValuePointsIn),
+  drawBoxes(drawBoxesIn),
+  boxAlpha(boxAlphaIn)
 {;}
 
 BDSFieldQueryInfo::~BDSFieldQueryInfo()

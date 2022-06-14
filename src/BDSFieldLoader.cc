@@ -36,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArrayOperatorValueReflect.hh"
 #include "BDSArrayOperatorValueReflectDipoleXY.hh"
 #include "BDSArrayOperatorValueReflectDipoleY.hh"
+#include "BDSArrayOperatorValueReflectQuadrupoleXY.hh"
 #include "BDSArrayOperatorValueReflectSolenoidZ.hh"
 #include "BDSArrayOperatorValueV.hh"
 #include "BDSArrayReflectionType.hh"
@@ -672,23 +673,22 @@ void BDSFieldLoader::CreateOperators(const BDSArrayReflectionTypeSet* reflection
 	    valueOperators.emplace_back(new BDSArrayOperatorValueReflectDipoleY());
 	    break;
 	  }
-  case BDSArrayReflectionType::reflectyzdipole:
-    {
-      indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({true, false, false, false}, arrayInfo));
-      valueOperators.emplace_back(new BDSArrayOperatorValueReflect({true, false,  false, false}, arrayInfo));
-      break;
-    }
-  case BDSArrayReflectionType::reflectzsolenoid:
-    {
-      indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({false, false, true,  false}, arrayInfo));
-      valueOperators.emplace_back(new BDSArrayOperatorValueReflectSolenoidZ());
-      break;
-    }
+	case BDSArrayReflectionType::reflectyzdipole:
+	  {
+	    indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({true, false, false, false}, arrayInfo));
+	    valueOperators.emplace_back(new BDSArrayOperatorValueReflect({true, false,  false, false}, arrayInfo));
+	    break;
+	  }
+	case BDSArrayReflectionType::reflectzsolenoid:
+	  {
+	    indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({false, false, true,  false}, arrayInfo));
+	    valueOperators.emplace_back(new BDSArrayOperatorValueReflectSolenoidZ());
+	    break;
+	  }
 	case BDSArrayReflectionType::reflectxyquadrupole:
-	  {// TBC
-      throw BDSException(__METHOD_NAME__, "Not yet implemented");
-	    indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({true,  false, true,  false}, arrayInfo));
-	    valueOperators.emplace_back(new BDSArrayOperatorValueReflect({false, true,  false, false}, arrayInfo));
+	  {
+	    indexOperators.emplace_back(new BDSArrayOperatorIndexReflect({true, true, false, false}, arrayInfo));
+	    valueOperators.emplace_back(new BDSArrayOperatorValueReflectQuadrupoleXY());
 	    break;
 	  }
 	default:

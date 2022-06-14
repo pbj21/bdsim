@@ -182,7 +182,7 @@ void BDSCollimator::Build()
   G4bool buildVacuumAndAperture = (BDS::IsFinite(xAperture) && BDS::IsFinite(yAperture));
 
   // only do subtraction if aperture actually set
-  if(buildVacuumAndAperture)
+  if (buildVacuumAndAperture)
     {
       BuildInnerCollimator();
 

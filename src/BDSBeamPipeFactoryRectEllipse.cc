@@ -45,7 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBeamPipeFactoryRectEllipse::BDSBeamPipeFactoryRectEllipse()
 {;}
 
-BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(const G4String& nameIn,
 							   G4double    lengthIn,
 							   G4double    aper1In,
 							   G4double    aper2In,
@@ -53,7 +53,9 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
 							   G4double    aper4In,
 							   G4Material* vacuumMaterialIn,
 							   G4double    beamPipeThicknessIn,
-							   G4Material* beamPipeMaterialIn)
+							   G4Material* beamPipeMaterialIn,
+							   const G4String& /*pointsFileIn*/,
+							   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -159,17 +161,19 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, beamPipeMaterialIn, lengthIn, width, height);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String      nameIn,
-							   G4double      lengthIn,
-							   G4ThreeVector inputFaceNormalIn,
-							   G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(const G4String&      nameIn,
+							   G4double             lengthIn,
+							   const G4ThreeVector& inputFaceNormalIn,
+							   const G4ThreeVector& outputFaceNormalIn,
 							   G4double      aper1In,
 							   G4double      aper2In,
 							   G4double      aper3In,
 							   G4double      aper4In,
 							   G4Material*   vacuumMaterialIn,
 							   G4double      beamPipeThicknessIn,
-							   G4Material*   beamPipeMaterialIn)
+							   G4Material*   beamPipeMaterialIn,
+							   const G4String& /*pointsFileIn*/,
+							   const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -203,7 +207,7 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String      nameIn,
 				 lengthIn, width, height);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CommonFinalConstruction(const G4String& nameIn,
 								    G4Material* vacuumMaterialIn,
 								    G4Material* beamPipeMaterialIn,
 								    G4double    lengthIn,
@@ -222,15 +226,15 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CommonFinalConstruction(G4String    
 
 /// the angled ones have degeneracy in the geant4 solids they used so we can avoid code duplication
 /// by grouping common construction tasks
-void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      nameIn,
-							      G4double      lengthIn,
-							      G4double      aper1In,
-							      G4double      aper2In,
-							      G4double      aper3In,
-							      G4double      aper4In,
-							      G4double      beamPipeThicknessIn,
-							      G4ThreeVector inputfaceIn,
-							      G4ThreeVector outputfaceIn)
+void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(const G4String&      nameIn,
+							      G4double             lengthIn,
+							      G4double             aper1In,
+							      G4double             aper2In,
+							      G4double             aper3In,
+							      G4double             aper4In,
+							      G4double             beamPipeThicknessIn,
+							      const G4ThreeVector& inputfaceIn,
+							      const G4ThreeVector& outputfaceIn)
 {
   // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
   G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, aper1In);
@@ -256,6 +260,10 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
   //prepare angled face large cylinder for intersection get angled faces
   //we can actually use this for the beampipe too later on - whew
   G4double angledFaceRadius = (std::max(std::max(aper1In,aper2In),std::max(aper3In,aper4In)) + beamPipeThicknessIn) * 1.1;
+
+  // check faces of angled volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(lengthIn, inputfaceIn, outputfaceIn, angledFaceRadius, nameIn);
+
   G4VSolid* vacuumAngledSolid = new G4CutTubs(nameIn + "_pipe_angled_faces",     // name
 					      0,                                 // inner radius
 					      angledFaceRadius,                  // outer radius
@@ -355,7 +363,7 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 					   vacuumAngledSolid);          // solid 2
 }
 
-void BDSBeamPipeFactoryRectEllipse::CreateContainerSubtractionSolid(G4String& nameIn,
+void BDSBeamPipeFactoryRectEllipse::CreateContainerSubtractionSolid(const G4String& nameIn,
 								    G4double& lengthIn,
 								    G4double& beamPipeThicknessIn,
 								    G4double& aper1In,

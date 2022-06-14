@@ -140,6 +140,7 @@ The following elements may be defined
 * `kicker`_
 * `tkicker`_
 * `rf`_
+* `target`_
 * `rcol`_
 * `jcol`_
 * `ecol`_
@@ -191,9 +192,10 @@ Component Strength Scaling
 
 In the case of acceleration or energy degradation, the central energy of the beam may
 change. However, BDSIM constructs all fields with respect to the rigidity calculated
-from the particle species and the `energy` parameter in the beam definition (not `E0`,
-but `energy`). To easily scale the strengths, every beam line element has the parameter
-`scaling` that enables its strength to be directly scaled.
+from the particle species and the :code:`energy` parameter in the beam definition (i.e. not the
+central or mean energy of the beam :code:`E0`, but the design energy given by :code:`energy`).
+To easily scale the strengths, every beam line element has the parameter `scaling` that enables
+its strength to be directly scaled.
 
 In the case of a dipole, this scales the field but not the angle (the field may be calculated
 from the angle if none is specified). For example ::
@@ -203,12 +205,12 @@ from the angle if none is specified). For example ::
 
   sb1: sbend, l=2.5*m, angle=0.1;
   d1: drift, l=1*m;
-  cav1: rf, l=1*m, gradient=50, frequency=0;
+  cav1: rf, l=1*m, gradient=50*MV/m, frequency=0;
   sb2: sbend, l=2.5*m, angle=0.1, scaling=1.005;
 
   l1: line=(sb1,d1,cav1,d1,sb2,d1);
 
-In this example an rf cavity is used to accelerate the beam by 50 MeV (50 MeV / m for 1 m).
+In this example an rf cavity is used to accelerate the beam by 50 MeV (50 MV / m for 1 m).
 The particle passes through one bend, the cavity and then another. As the second bend is
 scaled (by a factor of (10 GeV + 50 MeV) / 10 GeV) = 1.005) a particle starting at (0,0) with
 perfect energy will appear at (0,0) after this lattice.
@@ -918,9 +920,10 @@ the edge effects are provided by default and are controllable with the option `i
 +================+===============================+==============+=====================+
 | `l`            | Length [m]                    | 0            | Yes                 |
 +----------------+-------------------------------+--------------+---------------------+
-| `E`            | Electric field strength       | 0            | Yes (or `gradient`) |
+| `E`            | Voltage [V] that will be      | 0            | Yes (or `gradient`) |
+|                | across the length `l`         |              |                     |
 +----------------+-------------------------------+--------------+---------------------+
-| `gradient`     | Field gradient [MV/m]         | 0            | Yes                 |
+| `gradient`     | Electric field [V/m]          | 0            | Yes                 |
 +----------------+-------------------------------+--------------+---------------------+
 | `frequency`    | Frequency of oscillation (Hz) | 0            | Yes                 |
 +----------------+-------------------------------+--------------+---------------------+
@@ -933,6 +936,15 @@ the edge effects are provided by default and are controllable with the option `i
 | `cavityModel`  | Name of cavity model object   | ""           | No                  |
 +----------------+-------------------------------+--------------+---------------------+
 
+Either :code:`gradient` or :code:`E` should be specified. :code:`E` is given in Volts,
+and internally is divided by the length of the element (:code:`l`) to give the electric
+field in Volts/m. If :code:`gradient` is specified, this is already Volts/m and the length
+is not involved. The slight misnomer of `E` instead of say `voltage` is historical.
+
+**Units** Since the value of `m` as a unit in GMAD is 1.0, it doesn't practically make a
+difference whether you write :code:`gradient=10*MV/m` or :code:`gradient=10*MV`. However,
+it is best to be explicit in units or none at all and assume the default ones.
+
 .. note:: The design energy of the machine is not affected, so the strength and fields
 	  of components after an RF cavity in a lattice are calculated with respect to
 	  the design energy, the particle and therefore, design rigidity. The user should
@@ -944,7 +956,8 @@ the edge effects are provided by default and are controllable with the option `i
 	     deficiencies of the Geant4 visualisation system. The geometry exists
 	     and is fully functional.
 
-* The field is such that a positive E-field results in acceleration of the primary particle.
+* The field is such that a positive E-field results in acceleration of the primary particle
+  (depending on the primary particle charge).
 * The phase is calculated automatically such that zero phase results in the peak E-field at
   the centre of the component for its position in the lattice.
 * Either `tOffset` or `phase` may be used to specify the phase of the oscillator.
@@ -974,7 +987,7 @@ the edge effects are provided by default and are controllable with the option `i
 Simple examples: ::
 
    rf1: rf, l=10*cm, E=10*MV, frequency=90*MHz, phase=0.02;
-   rf2: rf, l=10*cm, gradient=14*MV / m, frequency=450*MHz;
+   rf2: rf, l=10*cm, gradient=14*MV/m, frequency=450*MHz;
    rf3: rf, l=10*cm, E=10*MV, frequency=90*MHz, tOffset=3.2*ns;
 
 Rather than just a simple E-field, an electromagnetic field that is the solution to
@@ -990,6 +1003,43 @@ Pill-box field example::
 Elliptical SRF cavity geometry is also provided and may be specified by use of another
 'cavity' object in the parser. This cavity object can then be attached to an `rf`
 object by name. Details can be found in :ref:`cavity-geometry-parameters`.
+
+target
+^^^^^^
+
+.. figure:: figures/target.png
+	    :width: 40%
+	    :align: center
+
+A `target` defines a block of 1 material. By default, a square shape is used but a
+circular one can also be used. A target can be achieved similarly with an `rcol`
+with no `xsize` or `ysize` specified.
+
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
+
++------------------------+-----------------------------------+----------------+---------------+
+| **Parameter**          | **Description**                   | **Default**    | **Required**  |
++========================+===================================+================+===============+
+| `l`                    | Length [m]                        | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `material`             | Outer material                    | None           | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `horizontalWidth`      | Outer full width [m]              | 0.5 m          | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `colour`               | Name of colour desired for block  | ""             | No            |
+|                        | See :ref:`colours`                |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `minimumKineticEnergy` | Minimum kinetic energy below      | 0              | No            |
+|                        | which to artificially kill        |                |               |
+|                        | particles in this target only     |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `apertureType`         | Temporarily used to describe the  | "rectangular"  | No            |
+|                        | outer shape - only "circular" or  |                |               |
+|                        | "rectangular" are accepted        |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+
+* In future, `apertureType` will not be used to control the outer shape and any
+  shape will be possible.
 
 
 rcol
@@ -1013,7 +1063,7 @@ volume is square.
 +------------------------+-----------------------------------+----------------+---------------+
 | `xsize`                | Horizontal half aperture [m]      | 0              | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+
-| `ysize`                | Half height of jaws [m]           | 0              | Yes           |
+| `ysize`                | Vertical half aperture [m]        | 0              | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+
 | `material`             | Outer material                    | None           | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+

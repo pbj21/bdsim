@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"           // geant4 globals / types
 
 class BDSBeamPipe;
+class BDSFieldInfo;
 class BDSMagnetOuterFactoryBase;
 class BDSMagnetOuterInfo;
 class G4Material;
@@ -54,6 +55,7 @@ public:
   /// container volume that's also constructed and w.r.t. an already constructed beam pipe.
   BDSMagnetOuter* CreateMagnetOuter(BDSMagnetType       magnetType,
 				    BDSMagnetOuterInfo* outerInfo,
+                                    const BDSFieldInfo* outerFieldInfo,
 				    G4double            outerLength,
 				    G4double            chordLength,
 				    BDSBeamPipe*        beampipe);
@@ -69,6 +71,7 @@ private:
   /// suitable magnet container solid.
   BDSMagnetOuter* CreateExternal(const G4String&     name,
 				 BDSMagnetOuterInfo* info,
+				 const BDSFieldInfo* outerFieldInfo,
 				 G4double            length,
 				 G4double            magnetContainerLength,
 				 BDSBeamPipe*        beampipe);

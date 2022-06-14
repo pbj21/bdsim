@@ -1,0 +1,7 @@
+t1: target, l=0.2*m, material="Al";
+t2: target, l=0.2*m, material="Al", apertureType="circular", horizontalWidth=10*cm;
+
+lat : line = (t1, t2);
+com : line = (t1, t2);
+
+include optionsTest.gmad;

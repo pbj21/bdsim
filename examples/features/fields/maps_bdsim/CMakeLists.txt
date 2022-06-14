@@ -27,6 +27,7 @@ interpolator_test("interpolator-2d-cubic"      "2d_cubic.gmad")
 
 if (USE_GDML)
   simple_testing(field-map-b-2d-tilt "--file=fieldmap-tilt-test.gmad" "")
+  simple_testing(field-map-gdml-reuse "--file=b_field_gdml_reuse.gmad" "")
 endif()
 
 if (USE_GDML AND USE_GZSTREAM)

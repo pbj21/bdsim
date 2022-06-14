@@ -83,6 +83,8 @@ void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
       if (pointIn->NotTransportationLimitedStep())
 	{
           auto r = new BDSTrajectoryPoint(*pointIn);
+          if (fpBDSPointsContainer->size() == 1)
+            {(*fpBDSPointsContainer)[0]->SetMaterial(pointIn->GetMaterial());}
           CleanPoint(r);
           fpBDSPointsContainer->push_back(r);
 	}
@@ -90,6 +92,8 @@ void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
   else
     {
       auto r = new BDSTrajectoryPoint(*pointIn);
+      if (fpBDSPointsContainer->size() == 1)
+	{(*fpBDSPointsContainer)[0]->SetMaterial(pointIn->GetMaterial());}
       CleanPoint(r);
       fpBDSPointsContainer->push_back(r);
     }

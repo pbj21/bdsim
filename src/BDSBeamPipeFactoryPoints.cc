@@ -18,7 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipeFactoryPoints.hh"
 #include "BDSBeamPipe.hh"
-#include "BDSDebug.hh"
 #include "BDSExtent.hh"
 #include "BDSUtilities.hh"
 
@@ -31,9 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4TwoVector.hh"
 #include "G4VSolid.hh"
 
-#include <cmath>                           // sin, cos, fabs
-#include <set>
-#include <utility>                         // for std::pair
+#include <cmath>
 #include <vector>
 
 BDSBeamPipeFactoryPoints::BDSBeamPipeFactoryPoints()
@@ -64,13 +61,16 @@ void BDSBeamPipeFactoryPoints::CleanUpPoints()
 
   beamPipeInnerSolid = nullptr;
   beamPipeOuterSolid = nullptr;
+  
+  pointsFile = "";
+  pointsUnit = "";
 }
 
 void BDSBeamPipeFactoryPoints::AppendPoint(std::vector<G4TwoVector>& vec,
 					   G4double x,
 					   G4double y)
 {
-  vec.push_back(G4TwoVector(x,y));
+  vec.emplace_back(G4TwoVector(x,y));
 }
 
 void BDSBeamPipeFactoryPoints::AppendAngle(std::vector<G4TwoVector>& vec,
@@ -92,25 +92,20 @@ void BDSBeamPipeFactoryPoints::AppendAngleEllipse(std::vector<G4TwoVector>& vec,
 						  G4int    nPoints,
 						  G4double xOffset,
 						  G4double yOffset)
-  {
+{
   G4double diff = finishAngle - startAngle;
   G4double delta = diff / (G4double)nPoints;
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "start angle:  " << startAngle  << G4endl;
-  G4cout << __METHOD_NAME__ << "finish angle: " << finishAngle << G4endl;
-  G4cout << __METHOD_NAME__ << "# of points:  " << nPoints     << G4endl;
-  G4cout << __METHOD_NAME__ << "diff angle:   " << diff        << G4endl;
-  G4cout << __METHOD_NAME__ << "delta angle:  " << delta       << G4endl;
-#endif
-  for (G4double ang = startAngle; ang < finishAngle; ang += delta)
+  G4double ang = startAngle;
+  for (G4int i = 0; i < nPoints; i++)
     { // l for local
       G4double xl = xOffset + radiusA*std::sin(ang);
       G4double yl = yOffset + radiusB*std::cos(ang);
       AppendPoint(vec, xl, yl);
+      ang += delta;
     }
 }
 
-void BDSBeamPipeFactoryPoints::CreateSolids(G4String name,
+void BDSBeamPipeFactoryPoints::CreateSolids(const G4String& name,
 					    G4double length,
 					    G4bool   buildLongForIntersection)
 {
@@ -159,10 +154,10 @@ void BDSBeamPipeFactoryPoints::CreateSolids(G4String name,
 						  zOffsets, zScale);
 }
 
-void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
-						  G4double      length,
-						  G4ThreeVector inputFace,
-						  G4ThreeVector outputFace)
+void BDSBeamPipeFactoryPoints::CreateSolidsAngled(const G4String&      name,
+						  G4double             length,
+						  const G4ThreeVector& inputFace,
+						  const G4ThreeVector& outputFace)
 {
   // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
   // extra factor 2 to be safe
@@ -175,6 +170,9 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
   G4double zHalfLength          = length*0.5 - lengthSafety;
   G4double zHalfLengthContainer = length*0.5;
   
+  // check faces of angled volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(length, inputFace, outputFace, intersectionRadius, name);
+
   G4VSolid* faceSolid = new G4CutTubs(name + "_face_solid", // name
 				      0,                    // inner radius
 				      intersectionRadius,   // outer radius
@@ -218,7 +216,7 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
   // only used transversely
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(const G4String& nameIn,
 						      G4double    lengthIn,
 						      G4double    aper1In,
 						      G4double    aper2In,
@@ -226,10 +224,15 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String    nameIn,
 						      G4double    aper4In,
 						      G4Material* vacuumMaterialIn,
 						      G4double    beamPipeThicknessIn,
-						      G4Material* beamPipeMaterialIn)
+						      G4Material* beamPipeMaterialIn,
+						      const G4String& pointsFileIn,
+						      const G4String& pointsUnitIn)
 {
   // clean up after last usage
   CleanUp();
+  
+  pointsFile = pointsFileIn;
+  pointsUnit = pointsUnitIn;
   
   // generate extruded solid edges - provided by derived class
   GeneratePoints(aper1In, aper2In, aper3In, aper4In, beamPipeThicknessIn);
@@ -243,20 +246,25 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String    nameIn,
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, beamPipeMaterialIn, lengthIn);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String      nameIn,
-						      G4double      lengthIn,
-						      G4ThreeVector inputFaceNormalIn,
-						      G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(const G4String&      nameIn,
+						      G4double             lengthIn,
+						      const G4ThreeVector& inputFaceNormalIn,
+						      const G4ThreeVector& outputFaceNormalIn,
 						      G4double      aper1In,
 						      G4double      aper2In,
 						      G4double      aper3In,
 						      G4double      aper4In,
 						      G4Material*   vacuumMaterialIn,
 						      G4double      beamPipeThicknessIn,
-						      G4Material*   beamPipeMaterialIn)
+						      G4Material*   beamPipeMaterialIn,
+						      const G4String& pointsFileIn,
+						      const G4String& pointsUnitIn)
 {
   // clean up after last usage
   CleanUp();
+  
+  pointsFile = pointsFileIn;
+  pointsUnit = pointsUnitIn;
   
   // generate extruded solid edges - provided by derived class
   GeneratePoints(aper1In, aper2In, aper3In, aper4In, beamPipeThicknessIn);
@@ -265,8 +273,7 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String      nameIn,
   outputFaceNormal = outputFaceNormalIn;
 
   // calculate and set the intersection solid radius
-  intersectionRadius = CalculateIntersectionRadius(aper1In, aper2In, aper3In, aper4In,
-						   beamPipeThicknessIn);
+  intersectionRadius = CalculateIntersectionRadius(aper1In, aper2In, aper3In, aper4In, beamPipeThicknessIn);
 
   // create solids based on the member vectors of points
   CreateSolidsAngled(nameIn, lengthIn, inputFaceNormal, outputFaceNormal);
@@ -274,7 +281,7 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String      nameIn,
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, beamPipeMaterialIn, lengthIn);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryPoints::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryPoints::CommonFinalConstruction(const G4String& nameIn,
 							       G4Material* vacuumMaterialIn,
 							       G4Material* beamPipeMaterialIn,
 							       G4double    lengthIn)

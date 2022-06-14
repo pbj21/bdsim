@@ -222,9 +222,11 @@ void Parser::Initialise()
   add_var("nJ", 1e-9,  reserved);
   add_var("pJ", 1e-12, reserved);
 
+  add_var("mV",1e-3,reserved);
   add_var("V" ,1.0, reserved);
   add_var("kV",1e+3,reserved);
   add_var("MV",1e+6,reserved);
+  add_var("GV",1e+9,reserved);
 
   add_var("Tesla",1.0,reserved);
   add_var("T",    1.0,reserved);
@@ -249,10 +251,12 @@ void Parser::Initialise()
   add_var("kHz",1e+3, reserved);
   add_var("MHz",1e+6, reserved);
   add_var("GHz",1e+9, reserved);
+  add_var("THz",1e+12,reserved);
 
-  add_var("rad" ,1.0  ,reserved);
-  add_var("mrad",1.e-3,reserved);
-  add_var("urad",1.e-6,reserved);
+  add_var("rad" ,1.0, reserved);
+  add_var("mrad",1e-3,reserved);
+  add_var("urad",1e-6,reserved);
+  add_var("nrad",1e-9,reserved);
 
   add_var("degrees",std::atan(1)/45,reserved);
 

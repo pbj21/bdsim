@@ -39,7 +39,7 @@ class G4Material;
 BDSBeamPipeFactoryCircularVacuum::BDSBeamPipeFactoryCircularVacuum()
 {;}
 
-BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(const G4String& nameIn,
 							      G4double    lengthIn,
 							      G4double    aper1In,
 							      G4double    /*aper2In*/,
@@ -47,7 +47,9 @@ BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String    nameIn
 							      G4double    /*aper4In*/,
 							      G4Material* vacuumMaterialIn,
 							      G4double    /*beamPipeThicknessIn*/,
-							      G4Material* /*beamPipeMaterialIn*/)
+							      G4Material* /*beamPipeMaterialIn*/,
+							      const G4String& /*pointsFileIn*/,
+							      const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -64,22 +66,27 @@ BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String    nameIn
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, lengthIn, containerRadius);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String      nameIn,
-							      G4double      lengthIn,
-							      G4ThreeVector inputFaceNormalIn,
-							      G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(const G4String&      nameIn,
+							      G4double             lengthIn,
+							      const G4ThreeVector& inputFaceNormalIn,
+							      const G4ThreeVector& outputFaceNormalIn,
 							      G4double      aper1In,
 							      G4double      /*aper2In*/,
 							      G4double      /*aper3In*/,
 							      G4double      /*aper4In */,
 							      G4Material*   vacuumMaterialIn,
 							      G4double      /*beamPipeThicknessIn*/,
-							      G4Material*   /*beamPipeMaterialIn*/)
+							      G4Material*   /*beamPipeMaterialIn*/,
+							      const G4String& /*pointsFileIn*/,
+							      const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;
+
+  // check faces of angled container volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(lengthIn, inputFaceNormal, outputFaceNormal, aper1In, nameIn);
 
   containerSolid = new G4CutTubs(nameIn + "_container_solid",  // name
 				 0,                            // inner radius
@@ -97,7 +104,7 @@ BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String      name
 
 /// only the solids are unique, once we have those, the logical volumes and placement in the
 /// container are the same.  group all this functionality together
-BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CommonFinalConstruction(const G4String& nameIn,
 								       G4Material* vacuumMaterialIn,
 								       G4double    lengthIn,
 								       G4double    containerRadiusIn)

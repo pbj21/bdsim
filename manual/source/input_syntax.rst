@@ -155,13 +155,16 @@ uJ          :math:`10^{-6}`
 nJ          :math:`10^{-9}`
 pJ          :math:`10^{-12}`
 V           1
+mV          :math:`10^{-3}`
 kV          :math:`10^{3}`
 MV          :math:`10^{6}`
+GV          :math:`10^{9}`
 Tesla       1
 T           1
 rad         1
 mrad        :math:`10^{-3}`
 urad        :math:`10^{-6}`
+nrad        :math:`10^{-9}`
 clight      :math:`2.99792458 \times 10^{8}`
 km          :math:`10^{3}`
 m           1
@@ -181,6 +184,7 @@ Hz          1
 kHz         :math:`10^{3}`
 MHz         :math:`10^{6}`
 GHz         :math:`10^{9}`
+THz         :math:`10^{12}`
 ==========  =================================
 
 As an example, one can write either :code:`100*eV` or :code:`0.1*keV` to specify an energy value in GMAD.

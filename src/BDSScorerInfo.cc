@@ -58,7 +58,23 @@ BDSScorerInfo::BDSScorerInfo(const GMAD::Scorer& scorer,
       if (search != replacements.end())
 	{scorerTypeName = search->second;}
       else if (!BDS::StrContains(scorerTypeNameOriginal, "3d") && !BDS::StrContains(scorerTypeNameOriginal, "4d") )
-	{throw BDSException(__METHOD_NAME__, "3D scorer required but a non-3D one specified.");}
+	{
+	  G4String msg = "scorer type \"" + scorerTypeNameOriginal + "\" specified which does not";
+	  msg += "\ncontain the suffix \"3d\" or \"4d\", and there is no known mapping to the required";
+	  msg += "\n3d one. Check the scorer name or specify it with the suffix explicitly.";
+	  msg += "\nAvailable 3d scorers are:\n";
+	  for (const auto& fs : replacements)
+	    {msg += "\"" + fs.first + "\" -> \"" + fs.second + "\"\n";}
+	  // now check if it's even a valid scorer type
+	  try
+	    {BDS::DetermineScorerType(G4String(scorerTypeNameOriginal));}
+	  catch (const BDSException& e)
+	    {
+	      msg += "\n";
+	      msg += e.what();
+	    }
+	  throw BDSException(__METHOD_NAME__, msg);
+	}
     }
   
   scorerType    = BDS::DetermineScorerType(G4String(scorerTypeName));

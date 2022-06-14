@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSVISFIELDMODEL_H
 #include "BDSFieldQueryInfo.hh"
 
+#include "G4ThreeVector.hh"
 #include "G4Types.hh"
 #include "G4VModel.hh"
 
@@ -52,7 +53,14 @@ private:
   
   /// Query Info Length. For one dimension, return 0.8 x step size
   G4double QIL(const BDSFieldQueryInfo::QueryDimensionInfo& qi) const;
-  
+
+  /// Return a suitable vector of half sizes (x,y,z) for a box to
+  /// represent 1 voxel of a field query in 3D even if it's 1,2 or 3D.
+  /// If 2D, the 3rd dimension is 1% of the minimum of the other 2. If
+  /// 1D, it's 20% of the step size of that 1 dimension.
+  G4ThreeVector BoxHalfSize(const BDSFieldQueryInfo* qi) const;
+
+  /// Cache of queries.
   const std::vector<BDSFieldQueryInfo*> queries;
   
   /// @{ The vis attributes for a zero-field marker.

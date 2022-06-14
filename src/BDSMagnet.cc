@@ -194,8 +194,10 @@ void BDSMagnet::BuildVacuumField()
 void BDSMagnet::BuildOuter()
 {
   G4double outerLength = chordLength - 2*lengthSafety;
+  // The outerFieldInfo is required only so we don't reuse geometry when we need a unique field on it.
   outer = BDSMagnetOuterFactory::Instance()->CreateMagnetOuter(magnetType,
 							       magnetOuterInfo,
+                                                               outerFieldInfo,
 							       outerLength,
 							       chordLength,
 							       beampipe);

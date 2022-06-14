@@ -81,9 +81,7 @@ BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
   BDSBLM* result = nullptr;
   if (!geometryFile.empty())
     {
-      BDSGeometryExternal* blmGeom = BDSGeometryFactory::Instance()->BuildGeometry(name,
-										   geometryFile);
-
+      BDSGeometryExternal* blmGeom = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFile);
       result = new BDSBLM(blmGeom);
     }
   else

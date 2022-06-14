@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSException.hh"
-#include "BDSFieldQueryPointsLoader.hh"
+#include "BDSFieldLoaderQueryPoints.hh"
 #include "BDSFourVector.hh"
 #include "BDSUtilities.hh"
 
@@ -40,18 +40,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 template <class T>
-BDSFieldQueryPointsLoader<T>::BDSFieldQueryPointsLoader()
+BDSFieldLoaderQueryPoints<T>::BDSFieldLoaderQueryPoints()
 {;}
 
 template <class T>
-BDSFieldQueryPointsLoader<T>::~BDSFieldQueryPointsLoader()
+BDSFieldLoaderQueryPoints<T>::~BDSFieldLoaderQueryPoints()
 {;}
 
 template <class T>
-std::vector<BDSFourVector<G4double>> BDSFieldQueryPointsLoader<T>::Load(const G4String& fileName,
-									std::vector<G4String>* columnNamesIn) const
+std::vector<BDSFourVector<G4double>> BDSFieldLoaderQueryPoints<T>::Load(const G4String& fileName,
+                                                                        std::vector<G4String>* columnNamesIn) const
 {
-  G4String functionName = "BDSFieldQueryPointsLoader::Load> ";
+  G4String functionName = "BDSFieldLoaderQueryPoints::Load> ";
   T file;
 
   file.open(fileName);
@@ -98,11 +98,14 @@ std::vector<BDSFourVector<G4double>> BDSFieldQueryPointsLoader<T>::Load(const G4
       
       // skip a line if it's only whitespace
       if (std::all_of(line.begin(), line.end(), isspace))
-        {continue;}
+        {
+          lineNo += 1;
+          continue;
+        }
 
       if (!intoData)
 	{
-	  std::regex columnRow("^\\s*!"); // ignore any initial white space and look for '!'
+	  std::regex columnRow("^\\s*[!\\#]"); // ignore any initial white space and look for '!'
 	  if (std::regex_search(line, columnRow))
 	    {
 	      std::regex afterExclamation("\\s*!\\s*(.+)");
@@ -146,6 +149,7 @@ std::vector<BDSFourVector<G4double>> BDSFieldQueryPointsLoader<T>::Load(const G4
 		{*columnNamesIn = columnNamesToPrint;}
 	    }
 	  intoData = true;
+	  lineNo += 1;
 	  continue;
 	}
 
@@ -189,7 +193,7 @@ std::vector<BDSFourVector<G4double>> BDS::LoadFieldQueryPoints(const G4String& f
   if (fullFilePath.rfind("gz") != std::string::npos)
     {
 #ifdef USE_GZSTREAM
-      BDSFieldQueryPointsLoader<igzstream> loader;
+      BDSFieldLoaderQueryPoints<igzstream> loader;
       result = loader.Load(fullFilePath, columnNamesIn);
 #else
       throw BDSException(functionName, "Compressed file loading - but BDSIM not compiled with ZLIB.");
@@ -197,14 +201,14 @@ std::vector<BDSFourVector<G4double>> BDS::LoadFieldQueryPoints(const G4String& f
     }
   else
     {
-      BDSFieldQueryPointsLoader<std::ifstream> loader;
+      BDSFieldLoaderQueryPoints<std::ifstream> loader;
       result = loader.Load(fullFilePath, columnNamesIn);
     }
   return result;
 }
 
-template class BDSFieldQueryPointsLoader<std::ifstream>;
+template class BDSFieldLoaderQueryPoints<std::ifstream>;
 
 #ifdef USE_GZSTREAM
-template class BDSFieldQueryPointsLoader<igzstream>;
+template class BDSFieldLoaderQueryPoints<igzstream>;
 #endif

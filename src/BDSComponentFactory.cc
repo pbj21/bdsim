@@ -45,6 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerPlane.hh"
 #include "BDSScreen.hh"
 #include "BDSShield.hh"
+#include "BDSTarget.hh"
 #include "BDSTeleporter.hh"
 #include "BDSTerminator.hh"
 #include "BDSTiltOffset.hh"
@@ -331,6 +332,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateEllipticalCollimator(); break;} 
     case ElementType::_RCOL:
       {component = CreateRectangularCollimator(); break;}
+    case ElementType::_TARGET:
+      {component = CreateTarget(); break;}
     case ElementType::_JCOL:
       {component = CreateJawCollimator(); break;}
     case ElementType::_MUONCOOLER:
@@ -1368,6 +1371,22 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRectangularCollimator()
 				      element->ysizeOut*CLHEP::m,
 				      PrepareColour(element),
 				      circularOuter);
+}
+
+BDSAcceleratorComponent* BDSComponentFactory::CreateTarget()
+{
+  if (!HasSufficientMinimumLength(element))
+    {return nullptr;}
+  G4bool circularOuter = false;
+  G4String apertureType = G4String(element->apertureType);
+  if (apertureType == "circular")
+    {circularOuter = true;}
+  return new BDSTarget(elementName,
+		       element->l*CLHEP::m,
+		       PrepareHorizontalWidth(element),
+		       PrepareMaterial(element),
+		       PrepareColour(element),
+		       circularOuter);
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateEllipticalCollimator()
@@ -2522,9 +2541,9 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const*    
     
   // scale factor to account for reduced body length due to fringe placement.
   G4double lengthScaling = cavityLength / (element->l * CLHEP::m);
-
+  
   if (BDS::IsFinite(el->gradient))
-    {(*st)["efield"] = scaling * el->gradient * CLHEP::MeV / CLHEP::m;}
+    {(*st)["efield"] = scaling * el->gradient * CLHEP::volt / CLHEP::m;}
   else
     {(*st)["efield"] = scaling * el->E * CLHEP::volt / chordLength;}
   (*st)["efield"] /= lengthScaling;

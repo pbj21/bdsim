@@ -23,13 +23,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSVisFieldModel.hh"
 
 #include "G4ArrowModel.hh"
+#include "G4Box.hh"
 #include "G4Circle.hh"
 #include "G4Colour.hh"
 #include "G4String.hh"
+#include "G4ThreeVector.hh"
 #include "G4Types.hh"
 #include "G4VGraphicsScene.hh"
 #include "G4VMarker.hh"
 #include "G4VisAttributes.hh"
+#include "BDSWarning.hh"
 
 #include <algorithm>
 #include <array>
@@ -86,8 +89,38 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
       G4double arrowWidth = 0.3*arrowLength;
       G4double pointSize = std::max(0.1*arrowWidth, 5.0);
       
+      G4bool drawArrows = query->drawArrows;
+      G4bool drawBoxes = query->drawBoxes;
+      
+      if (!drawArrows && !drawBoxes)
+        {
+          BDS::Warning("Neither drawArrows or drawBoxes are turned on in query \"" + query->name + "\" -> skipping");
+          continue; // skip this query
+        }
+      
+      G4double boxAlpha = query->boxAlpha;
+      if (boxAlpha <= 0)
+        {
+          BDS::Warning("boxAlpha in query \"" + query->name + "\" must be > 0. Setting to 0.01");
+          boxAlpha = 0.01;
+        }
+      if (boxAlpha > 1)
+	{
+	  BDS::Warning("boxAlpha in query \"" + query->name + "\" must be <= 1. Setting to 1.0");
+	  boxAlpha = 1.0;
+	}
+      
+      G4ThreeVector boxHalfSize = BoxHalfSize(query);
+      G4AffineTransform qTransform = query->globalTransform;
+      G4RotationMatrix  qRotation  = qTransform.NetRotation().inverse();
+      G4Box aBox("b", boxHalfSize.x(), boxHalfSize.y(), boxHalfSize.z());
+      G4Polyhedron* baseBoxPoly = aBox.GetPolyhedron();
+      
       if (query->queryMagnetic)
 	{
+    G4Colour boxZeroColourB = pointVisB->GetColor();
+    G4Colour boxZeroColourB2(boxZeroColourB.GetRed(), boxZeroColourB.GetGreen(), boxZeroColourB.GetBlue(), boxAlpha);
+    G4VisAttributes* boxZeroVisB = new G4VisAttributes(boxZeroColourB2);
 	  G4String arrowPrefix = query->name + "_B_";
 	  for (const auto& xyzBE: xyzBEs)
 	    {
@@ -96,14 +129,30 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      G4ThreeVector unitB = B.unit();
 	      G4double bMag = B.mag();
 	      G4ThreeVector midPoint(xyzBE[0], xyzBE[1], xyzBE[2]);
+    
+	      // GetPolyhedron returns a pointer, but it's the same object always
+	      // and there's no interface to allow rebuilding that polyhedron, so
+	      // if we translate it we compound that transform. No method to just
+	      // set the transform, so have to copy it.
+	      G4Polyhedron boxPoly(*baseBoxPoly);
+	      boxPoly.Transform(G4Transform3D(qRotation, midPoint));
+	      
 	      if (bMag == 0)
 		{
 		  sceneHandler.BeginPrimitives();
-		  G4Circle aPoint({xyzBE[0], xyzBE[1], xyzBE[2]});
-		  aPoint.SetVisAttributes(pointVisB);
-		  aPoint.SetDiameter(G4VMarker::SizeType::world, pointSize);
-		  aPoint.SetFillStyle(G4VMarker::FillStyle::filled);
-		  sceneHandler.AddPrimitive(aPoint);
+		  if (drawArrows)
+		    {
+		      G4Circle aPoint({xyzBE[0], xyzBE[1], xyzBE[2]});
+		      aPoint.SetVisAttributes(pointVisB);
+		      aPoint.SetDiameter(G4VMarker::SizeType::world, pointSize);
+		      aPoint.SetFillStyle(G4VMarker::FillStyle::filled);
+		      sceneHandler.AddPrimitive(aPoint);
+		    }
+		  if (drawBoxes)
+		    {
+		      boxPoly.SetVisAttributes(boxZeroVisB);
+		      sceneHandler.AddPrimitive(boxPoly);
+		    }
 		  sceneHandler.EndPrimitives();
 		  continue;
 		} // don't add 0 field arrows
@@ -113,18 +162,36 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      if (!std::isfinite(normalisedValue))
 		{normalisedValue = 0.0;}
 	      G4Colour arrowColour = bFieldColour.GetValue(normalisedValue);
-	      char buf[100];
-	      sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
-	      std::string arrowName = buf;
-	      G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
-				  endPoint.x(), endPoint.y(), endPoint.z(),
-				  arrowWidth, arrowColour, arrowName);
-	      FArrow.DescribeYourselfTo(sceneHandler);
+	      if (drawBoxes)
+		{
+		  G4Colour boxColour(arrowColour.GetRed(), arrowColour.GetGreen(), arrowColour.GetBlue(), boxAlpha);
+		  sceneHandler.BeginPrimitives();
+		  boxPoly.SetVisAttributes(G4VisAttributes(boxColour));
+		  sceneHandler.AddPrimitive(boxPoly);
+		  sceneHandler.EndPrimitives();
+		}
+	      if (drawArrows)
+		{
+		  char buf[100];
+		  sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
+		  std::string arrowName = buf;
+		  G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
+				      endPoint.x(), endPoint.y(), endPoint.z(),
+				      arrowWidth, arrowColour, arrowName);
+		  FArrow.DescribeYourselfTo(sceneHandler);
+		}
 	    }
+    delete boxZeroVisB;
 	}
       
       if (query->queryElectric)
 	{
+    G4Colour boxZeroColourE = pointVisE->GetColor();
+    G4Colour boxZeroColourE2(boxZeroColourE.GetRed(),
+                             boxZeroColourE.GetGreen(),
+                             boxZeroColourE.GetBlue(),
+                             boxAlpha);
+    G4VisAttributes* boxZeroVisE = new G4VisAttributes(boxZeroColourE2);
 	  G4String arrowPrefix = query->name + "_E_";
 	  for (const auto& xyzBE: xyzBEs)
 	    {
@@ -133,14 +200,25 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      G4ThreeVector unitE = E.unit();
 	      G4double eMag = E.mag();
 	      G4ThreeVector midPoint(xyzBE[0], xyzBE[1], xyzBE[2]);
+
+	      G4Polyhedron boxPoly(*baseBoxPoly);
+	      boxPoly.Transform(G4Transform3D(qRotation, midPoint));
 	      if (eMag == 0)
 		{
 		  sceneHandler.BeginPrimitives();
-		  G4Circle aPoint({xyzBE[0], xyzBE[1], xyzBE[2]});
-		  aPoint.SetVisAttributes(pointVisE);
-		  aPoint.SetDiameter(G4VMarker::SizeType::world, pointSize);
-		  aPoint.SetFillStyle(G4VMarker::FillStyle::filled);
-		  sceneHandler.AddPrimitive(aPoint);
+		  if (drawArrows)
+		    {
+		      G4Circle aPoint({xyzBE[0], xyzBE[1], xyzBE[2]});
+		      aPoint.SetVisAttributes(pointVisE);
+		      aPoint.SetDiameter(G4VMarker::SizeType::world, pointSize);
+		      aPoint.SetFillStyle(G4VMarker::FillStyle::filled);
+		      sceneHandler.AddPrimitive(aPoint);
+		    }
+		  if (drawBoxes)
+		    {
+		      boxPoly.SetVisAttributes(boxZeroVisE);
+		      sceneHandler.AddPrimitive(boxPoly);
+		    }
 		  sceneHandler.EndPrimitives();
 		  continue;
 		} // don't add 0 field arrows
@@ -150,15 +228,27 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	      if (!std::isfinite(normalisedValue))
 		{normalisedValue = 0.0;}
 	      G4Colour arrowColour = eFieldColour.GetValue(normalisedValue);
-	      char buf[100];
-	      sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
-	      std::string arrowName = buf;
-	      
-	      G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
-				  endPoint.x(), endPoint.y(), endPoint.z(),
-				  arrowWidth, arrowColour, arrowName);
-	      FArrow.DescribeYourselfTo(sceneHandler);
+	      if (drawBoxes)
+		{
+		  G4Colour boxColour(arrowColour.GetRed(), arrowColour.GetGreen(), arrowColour.GetBlue(), boxAlpha);
+		  sceneHandler.BeginPrimitives();
+		  boxPoly.SetVisAttributes(G4VisAttributes(boxColour));
+		  sceneHandler.AddPrimitive(boxPoly);
+		  sceneHandler.EndPrimitives();
+		}
+	      if (drawArrows)
+		{
+		  char buf[100];
+		  sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
+		  std::string arrowName = buf;
+		  
+		  G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
+				      endPoint.x(), endPoint.y(), endPoint.z(),
+				      arrowWidth, arrowColour, arrowName);
+		  FArrow.DescribeYourselfTo(sceneHandler);
+		}
 	    }
+    delete boxZeroVisE;
 	}
       
       querier.CleanUp();
@@ -178,4 +268,34 @@ G4double BDSVisFieldModel::QIL(const BDSFieldQueryInfo::QueryDimensionInfo& qi) 
   
   G4double step = std::abs((qi.max - qi.min) / ((G4double)qi.n));
   return 0.8 * step;
+}
+
+G4ThreeVector BDSVisFieldModel::BoxHalfSize(const BDSFieldQueryInfo* qi) const
+{
+  G4double minSize = std::numeric_limits<double>::max();
+  G4ThreeVector result(0,0,0);
+  std::array<G4bool,3> nonZero = {false, false, false};
+  std::array<const BDSFieldQueryInfo::QueryDimensionInfo,3> dims = {qi->xInfo, qi->yInfo, qi->zInfo};
+
+  G4int nDims = 0;
+  for (G4int i = 0; i < 3; i++)
+    {
+      nonZero[i] = dims[i].n > 1;
+      if (nonZero[i])
+        {
+	  nDims += 1;
+          result[i] = dims[i].StepSize();
+          minSize = std::min(minSize, result[i]);
+        }
+    }
+
+  G4double thinSize;
+  if (nDims == 1)
+    {thinSize = 0.1 * minSize;} // 20% x 0.5
+  else // 2 or 3 dimensions - only poosibly set 3rd dimension as thin-ish
+    {thinSize = 1e-2 * minSize;}
+  for (G4int i = 0; i < 3; i++)
+    {result[i] = nonZero[i] ? result[i]*0.5 : thinSize;}
+  
+  return result;
 }

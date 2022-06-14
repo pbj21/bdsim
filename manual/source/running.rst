@@ -195,6 +195,8 @@ The user can also specify a macro file using the :code:`--vis_mac` option above.
 BDSIM will use its own macro that uses Qt and displays the model with a white background. This
 can be found in :code:`bdsim/vis/bdsim_default_vis.mac`.
 
+.. note:: If using the visualiser over X-Windows on a Mac, see :ref:`mac-xwindows`.
+
 Example::
 
   bdsim --file=sm.gmad --outfile=run2

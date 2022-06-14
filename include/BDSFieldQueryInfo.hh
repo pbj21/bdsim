@@ -47,6 +47,7 @@ public:
     G4int n = 1;
     G4double min = 0;
     G4double max = 0;
+    G4double StepSize() const {return (max - min)/n;}
   };
 
   /// Usual constructor with number of points to query in each dimension.
@@ -64,7 +65,10 @@ public:
                     const G4String& fieldObjectIn = "",
                     G4bool printTransformIn = false,
                     G4bool checkParametersIn = true,
-                    G4bool drawZeroValuePointsIn = true);
+                    G4bool drawArrowsIn = true,
+                    G4bool drawZeroValuePointsIn = true,
+                    G4bool drawBoxesIn = true,
+                    G4double boxAlphaIn = 0.2);
 
   /// Alternative constructor with list of exact points to query.
   BDSFieldQueryInfo(const G4String& nameIn,
@@ -76,8 +80,11 @@ public:
 		    const std::vector<G4String>& pointsColumnNamesIn,
 		    G4bool overwriteExistingFilesIn = false,
 		    const G4String& fieldObjectIn = "",
-        G4bool checkParametersIn = true,
-        G4bool drawZeroValuePointsIn = true);
+		    G4bool checkParametersIn = true,
+                    G4bool drawArrowsIn = true,
+		    G4bool drawZeroValuePointsIn = true,
+		    G4bool drawBoxesIn = true,
+		    G4double boxAlphaIn = 0.2);
   ~BDSFieldQueryInfo();
   
   G4String name;
@@ -102,7 +109,10 @@ public:
   
   G4bool checkParameters; ///< For internal testing use only.
   
+  G4bool drawArrows;
   G4bool drawZeroValuePoints;
+  G4bool drawBoxes;
+  G4double boxAlpha;
   
   /// Whether to query a specific set of points.
   G4bool SpecificPoints() const {return !pointsToQuery.empty();}

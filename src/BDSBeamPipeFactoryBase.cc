@@ -19,6 +19,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryBase.hh"
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
@@ -66,7 +68,7 @@ void BDSBeamPipeFactoryBase::CleanUpBase()
   outputFaceNormal = G4ThreeVector(0,0, 1);
 }
   
-void BDSBeamPipeFactoryBase::CommonConstruction(G4String    nameIn,
+void BDSBeamPipeFactoryBase::CommonConstruction(const G4String& nameIn,
 						G4Material* vacuumMaterialIn,
 						G4Material* beamPipeMaterialIn,
 						G4double    length)
@@ -74,7 +76,7 @@ void BDSBeamPipeFactoryBase::CommonConstruction(G4String    nameIn,
   allSolids.insert(vacuumSolid);
   allSolids.insert(beamPipeSolid);
   /// build logical volumes
-  BuildLogicalVolumes(nameIn,vacuumMaterialIn,beamPipeMaterialIn);
+  BuildLogicalVolumes(nameIn, vacuumMaterialIn, beamPipeMaterialIn);
   /// set visual attributes
   SetVisAttributes(beamPipeMaterialIn);
   /// set user limits
@@ -83,7 +85,7 @@ void BDSBeamPipeFactoryBase::CommonConstruction(G4String    nameIn,
   PlaceComponents(nameIn);
 }
 
-void BDSBeamPipeFactoryBase::BuildLogicalVolumes(G4String    nameIn,
+void BDSBeamPipeFactoryBase::BuildLogicalVolumes(const G4String& nameIn,
 						 G4Material* vacuumMaterialIn,
 						 G4Material* beamPipeMaterialIn)
 {
@@ -137,7 +139,7 @@ void BDSBeamPipeFactoryBase::SetUserLimits(G4double length)
   beamPipeLV->SetUserLimits(beamPipeUL);
 }
 
-void BDSBeamPipeFactoryBase::PlaceComponents(G4String nameIn)
+void BDSBeamPipeFactoryBase::PlaceComponents(const G4String& nameIn)
 {
   // PLACEMENT
   // place the components inside the container
@@ -192,4 +194,16 @@ BDSBeamPipe* BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(BDSExtent e
   aPipe->RegisterVisAttributes(allVisAttributes);
   
   return aPipe;
+}
+
+void BDSBeamPipeFactoryBase::CheckAngledVolumeCanBeBuilt(G4double length,
+                                                         const G4ThreeVector &inputface,
+                                                         const G4ThreeVector &outputface,
+                                                         G4double beampipeRadius,
+                                                         const G4String& name)
+{
+  G4bool intersects = BDS::WillIntersect(inputface.angle(), outputface.angle(), beampipeRadius*2, length);
+
+  if (intersects)
+    {throw BDSException(__METHOD_NAME__, "a volume in the \"" + name + "\" beam pipe geometry cannot be constructed as it's angled faces intersect within it's extent");}
 }

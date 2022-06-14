@@ -48,12 +48,12 @@ public:
   
   ~BDSBeamPipeFactory();
 
-  BDSBeamPipe* CreateBeamPipe(G4String         name,
+  BDSBeamPipe* CreateBeamPipe(const G4String&  name,
 			      G4double         length,
 			      BDSBeamPipeInfo* bpi);
   
   BDSBeamPipe* CreateBeamPipe(BDSBeamPipeType beamPipeTypeIn,            // aperture type
-			      G4String        nameIn,                    // name
+			      const G4String& nameIn,                    // name
 			      G4double        lengthIn,                  // length [mm]
 			      G4double        aper1 = 0,                 // aperture parameter 1
 			      G4double        aper2 = 0,                 // aperture parameter 2
@@ -61,20 +61,24 @@ public:
 			      G4double        aper4 = 0,                 // aperture parameter 4
 			      G4Material*     vacuumMaterialIn = nullptr,// vacuum material
 			      G4double        beamPipeThicknessIn = 0,   // beampipe thickness [mm]
-			      G4Material*     beamPipeMaterialIn = nullptr); // beampipe material
+			      G4Material*     beamPipeMaterialIn = nullptr, // beampipe material
+			      const G4String& pointsFileIn       = "",
+			      const G4String& pointsUnitIn       = "");
 
   BDSBeamPipe* CreateBeamPipe(BDSBeamPipeType beamPipeType,
-			      G4String        name,
+			      const G4String& name,
 			      G4double        length,
-			      G4ThreeVector   inputFaceNormal,
-			      G4ThreeVector   outputFaceNormal,
+			      const G4ThreeVector& inputFaceNormal,
+			      const G4ThreeVector& outputFaceNormal,
 			      G4double        aper1,
 			      G4double        aper2,
 			      G4double        aper3,
 			      G4double        aper4,
 			      G4Material*     vacuumMaterial,
 			      G4double        beamPipeThickness,
-			      G4Material*     beamPipeMaterial);
+			      G4Material*     beamPipeMaterial,
+			      const G4String& pointsFileIn      = "",
+			      const G4String& pointsUnitIn      = "");
 
 private:
   BDSBeamPipeFactory(); ///< Private constructor as singleton pattern.
@@ -94,6 +98,7 @@ private:
   BDSBeamPipeFactoryBase* octagonal;
   BDSBeamPipeFactoryBase* circularvacuum;
   BDSBeamPipeFactoryBase* clicpcl;
+  BDSBeamPipeFactoryBase* pointsfile;
   /// @}
 };
 

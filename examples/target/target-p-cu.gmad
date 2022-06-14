@@ -1,6 +1,6 @@
 d1: drift, l=10*cm;
-c1: rcol, l=5*cm, material="copper";
-l1: line=(d1,c1);
+t1: target, l=5*cm, material="copper";
+l1: line=(d1, t1);
 use, l1;
 
 sample, all;
@@ -9,8 +9,7 @@ beam, particle="proton",
       energy=1*TeV;
 
 option, physicsList="g4FTFP_BERT",
-	defaultRangeCut=3*cm;
+	defaultRangeCut=1*cm;
 
-option, ngenerate=1,
-	seed=123,
+option, seed=123,
 	elossHistoBinWidth=1*cm;

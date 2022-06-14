@@ -51,7 +51,7 @@ public:
   virtual ~BDSBeamPipeFactoryPoints();
 
   /// Required overloaded method from BDSBeamPipeFactoryBase to build straight piece of beam pipe
-  virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
+  virtual BDSBeamPipe* CreateBeamPipe(const G4String& nameIn,
 				      G4double    lengthIn,
 				      G4double    aper1In,
 				      G4double    aper2In,
@@ -59,25 +59,29 @@ public:
 				      G4double    aper4In,
 				      G4Material* vacuumMaterialIn,
 				      G4double    beamPipeThicknessIn,
-				      G4Material* beamPipeMaterialIn);
+				      G4Material* beamPipeMaterialIn,
+				      const G4String& pointsFileIn = "",
+				      const G4String& pointsUnitIn = "");
 
   /// Required overloaded method from BDSBeamPipeFactoryBase to build angled piece of beam pipe
-  virtual BDSBeamPipe* CreateBeamPipe(G4String      nameIn,
-				      G4double      lengthIn,
-				      G4ThreeVector inputFaceNormalIn,
-				      G4ThreeVector outputFaceNormalIn,
+  virtual BDSBeamPipe* CreateBeamPipe(const G4String&      nameIn,
+				      G4double             lengthIn,
+				      const G4ThreeVector& inputFaceNormalIn,
+				      const G4ThreeVector& outputFaceNormalIn,
 				      G4double      aper1In,
 				      G4double      aper2In,
 				      G4double      aper3In,
 				      G4double      aper4In,
 				      G4Material*   vacuumMaterialIn,
 				      G4double      beamPipeThicknessIn,
-				      G4Material*   beamPipeMaterialIn);
+				      G4Material*   beamPipeMaterialIn,
+				      const G4String& pointsFileIn = "",
+				      const G4String& pointsUnitIn = "");
   
 protected:
   /// Function to generate transverse points.  Should set member variables vacuumEdge,
   /// beamPipeInnerEdge, beamPipeOuterEdge, containerEdge and containerSubtractionEdge.
-  /// This *must* also set extentX and extentY member varibles for +ve symmetric extents.
+  /// This *must* also set extentX and extentY member variables for +ve symmetric extents.
   virtual void GeneratePoints(G4double aper1,
 			      G4double aper2,
 			      G4double aper3,
@@ -142,6 +146,11 @@ protected:
   G4double extentX;
   G4double extentY;
   ///@}
+  
+  /// @{ Temporary copy of input variables.
+  G4String pointsFile;
+  G4String pointsUnit;
+  /// @}
 
 private:
   /// Radius of intersection cylinder for angled faced beam pipe pieces. Should
@@ -151,7 +160,7 @@ private:
   /// large angled faces.
   G4double intersectionRadius;
   
-  /// Solid for innter surface of beam pipe.
+  /// Solid for inner surface of beam pipe.
   G4VSolid* beamPipeInnerSolid;
   
   /// Solid for outer surface of beam pipe.
@@ -163,19 +172,19 @@ private:
   /// Create the vacuum, inner & outer, container and container subtraction solids.
   /// Optional flag buildLongForIntersection builds the solids longer by 1.5x length
   /// in preparation for them to be intersected for angled faces, saving code duplication.
-  void CreateSolids(G4String name,
+  void CreateSolids(const G4String& name,
 		    G4double length,
 		    G4bool   buildLongForIntersection = false);
 
   /// Create angled solids.  Uses CreateSolids() method.
-  void CreateSolidsAngled(G4String      name,
-			  G4double      length,
-			  G4ThreeVector inputFace,
-			  G4ThreeVector outputFace);
+  void CreateSolidsAngled(const G4String&      name,
+			  G4double             length,
+			  const G4ThreeVector& inputFace,
+			  const G4ThreeVector& outputFace);
 
   /// Overloads BDSBeamPipeFactoryBase method to do common construction tasks and
   /// constructs BDSBeamPipe instance to return.
-  virtual BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
+  virtual BDSBeamPipe* CommonFinalConstruction(const G4String& nameIn,
 					       G4Material* vacuumMaterialIn,
 					       G4Material* beamPipeMaterialIn,
 					       G4double    lengthIn);
