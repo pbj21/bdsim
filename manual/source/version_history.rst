@@ -22,6 +22,8 @@ V1.7.0 - 2022 / XX / XX
   a name. In this case, the one it finds may be ambiguous or unexpected. The code was revised to
   purposively protect against this. This was always the case with beam line elements, but now it
   is also the case with all objects defined in the parser.
+* The input parser will now reject any variable names that are the same as an option name as
+  this is a common mistake where we put a semi-colon before another option then it has no effect.
 * GGMAD Geometry format is now deprecated. This was not maintained for a long time and with
   pyg4ometry and GDML we support much better geometry. The code is old and hard to maintain
   and really needs to be rewritten. The functionality was broken in making BDSIM compatible
@@ -30,10 +32,10 @@ V1.7.0 - 2022 / XX / XX
   in Bibtex syntax to cite BDSIM easily.
 * The default yoke fields have changed and are on average stronger (and more correct). See below.
 * :code:`gradient` in the :code:`rf` component has the units of **V/m** and not MV/m as was
-  written in the manual. In fact, it really was volts/m internally. So there should be no change
-  in behaviour, but the documentation has been fixed and is correct and consistent. The units
-  for :code:`E` have also been clarified as volts and that this voltage is assumed across the
-  length of the element :code:`l`.
+  written in the manual. Any rf component in an existing model that is defined with a :code:`gradient` but
+  without units should be updated to include units of MV/m. The documentation has been fixed and is correct
+  and consistent. The units for :code:`E` have also been clarified as volts and that this voltage is assumed
+  across the length of the element :code:`l`.
 
 
 New Features
@@ -60,6 +62,8 @@ New Features
   by `haloXCutOuter` and `haloYCutOuter` respectively. Similar inner and outer cuts of the X and Y
   momentum are also now possible, specified by same options as the position cuts but with a `p`
   after the axis, e.g `haloXpCutOuter`.
+* The radius of the transverse momentum distribution of a circular beam no longer has to be finite.
+  This is useful for generation of an idealised pencil beam.
 
 **Components**
 
@@ -116,7 +120,11 @@ New Features
 **Physics**
 
 * New muon-splitting biasing scheme.
-* New radioactivation physics list.
+* New "radioactivation" physics list.
+* New "gamma_to_mumu" physics list.
+* New "annihi_to_mumu" physics list.
+* New option for excluding certain particles from cuts, e.g. exclude muons from the
+  minimumKineticEnergy option. See :code:`particlesToExcludeFromCuts` in :ref:`options-tracking`.
 
 **Sensitivity & Output**
 
@@ -201,6 +209,13 @@ Bug Fixes
     translation unit
     BDSOutputROOTEventSampler<float>::particleTable;
 
+**Beam**
+
+* Fixed generation of circular beam distribution type. The beam previously was circular but was non-uniform with a strong
+  peak at the centre. The distribution is now uniform in x, y, xp & yp.
+* Fixed generation of ring beam distribution type. Similarly to the circular distribution, the beam had a higher density
+  of particles towards the ring's inner radius. The distribution is now uniform in x & y.
+
 **Biasing**
 
 * Fixed huge amount of print out for bias objects attached to a whole beam line. Now, bias
@@ -231,11 +246,10 @@ Bug Fixes
 
 **Geometry**
 
-* Fix caching of loaded geometry. A loaded piece of geometry should only be reused (i.e. re-placed
-  rather than creating new logical volumes) if it will be used with the same field definition
-  (including none). If a different field is to be used on an already loaded piece of GDML it must
-  be reloaded again to create unique logical volumes as a logical volume can only have one field
-  definition. This fixes field maps being wrong if a GDML file was used multiple times with different fields.
+* Fix caching of loaded geometry. A loaded piece of geometry will be reloaded (and possibly preprocessed)
+  if loaded in another beam line component to ensure we generate a unique set of logical volumes. This
+  fixes field maps, biasing, range cuts, regions and more being wrong if the same GDML file was reused
+  in different components.
 * If a multipole has a zero-length, it will be converted in a thin multipole.
 * Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
   with pole face rotations. Issue #306.
@@ -266,6 +280,10 @@ Bug Fixes
   is the access and update of a variable inside a defined object such as a field or scorer.
 * Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
   would work with this command or variables in the input GMAD.
+* The parser will reject any variable name that is the same as an option name. When editing
+  option in input, a really common (hidden) error is that there's a semi-colon after an option.
+  Therefore, the next option gets interpreted as a new constant or variable resulting in it
+  having no effect at all. The parser will not prevent this from happening by complaining.
 
 **Sensitivity**
 
@@ -283,7 +301,10 @@ Bug Fixes
   is now not be applied as well. If finite fringe field quantities are specified, the thin elements will be built
   but will only apply the fringe kicks and not the pole face effects. If using a non-matrix integrator set
   and the option :code:`buildPoleFaceGeometry` is specified as false, thin pole face kicks will be applied.
-
+* Fix calculation of the z position in the quadrupole integrator. Previously the step always advanced along z by the
+  step length h regardless of the step's direction. Now, it advances along z by the projection of the step h onto
+  the z axis. This change will only produce a noticable impact on particles with a large transverse momentum,
+  particularly those in low energy machines.
 
 **Visualisation**
 
@@ -305,6 +326,9 @@ Bug Fixes
   materials have no effect when BDSIM is compiled with respect to Geant4 V11 onwards.
 * Fix uncaught Geant4 exceptions by introducing our own exception handler to intercept
   the Geant4 one and throw our own, safely handled exceptions a la standard C++.
+* Fix a bug where a particle could be misidentified as an ion and end up being a proton.
+  An example would be "pion+" which doesn't match the correct "pi+" name in Geant4 but
+  would pass through and become a proton despite its name.
 
 
 

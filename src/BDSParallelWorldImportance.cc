@@ -92,7 +92,6 @@ void BDSParallelWorldImportance::BuildWorld()
   // GDML preprocessing turned on.
   BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(componentName,
                                                                             imGeomFile,
-                                                                            nullptr,   // no field
                                                                             nullptr,   // colour mapping
                                                                             false,     // autoColour
                                                                             0, 0,      // suggested dimensions

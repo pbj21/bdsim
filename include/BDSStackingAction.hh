@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ClassificationOfNewTrack.hh"
 #include "G4UserStackingAction.hh"
 
+#include <set>
+
 class BDSGlobalConstants;
 class G4Track;
 
@@ -53,6 +55,7 @@ private:
   G4bool stopSecondaries;   ///< Whether particles with parentID > 0 will be killed.
   G4long maxTracksPerEvent; ///< Maximum number of tracks before start killing.
   G4double minimumEK;
+  std::set<G4int> particlesToExcludeFromCuts;
  };
 
 #endif

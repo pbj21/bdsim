@@ -36,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <bitset>
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -292,6 +293,7 @@ public:
   inline G4double MinimumKineticEnergy()     const {return G4double(options.minimumKineticEnergy*CLHEP::GeV);}
   inline G4double MinimumKineticEnergyTunnel() const {return G4double(options.minimumKineticEnergyTunnel)*CLHEP::GeV;}
   inline G4double MinimumRange()             const {return G4double(options.minimumRange*CLHEP::m);}
+  inline G4String ParticlesToExcludeFromCuts() const {return G4String(options.particlesToExcludeFromCuts);}
   inline G4String VacuumMaterial()           const {return G4String(options.vacMaterial);}
   inline G4String EmptyMaterial()            const {return G4String(options.emptyMaterial);}
   inline G4String WorldMaterial()            const {return G4String(options.worldMaterial);}
@@ -359,6 +361,7 @@ public:
   inline G4UserLimits*         DefaultUserLimitsTunnel() const {return defaultUserLimitsTunnel;}
   inline BDSIntegratorSetType  IntegratorSet()           const {return integratorSet;}
   inline G4Transform3D         BeamlineTransform()       const {return beamlineTransform;}
+  inline std::set<G4int>       ParticlesToExcludeFromCutsAsSet() const {return particlesToExcludeFromCutsAsSet;}
 
   /// @{ Setter
   inline void SetSamplerDiameter(G4double samplerDiameterIn) {samplerDiameter = samplerDiameterIn;}
@@ -418,6 +421,7 @@ private:
   void InitDefaultUserLimits();
   G4UserLimits* defaultUserLimits;
   G4UserLimits* defaultUserLimitsTunnel;
+  std::set<G4int> particlesToExcludeFromCutsAsSet;
   
   /// Turn Control
   G4int turnsTaken;

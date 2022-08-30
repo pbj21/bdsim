@@ -153,6 +153,7 @@ namespace GMAD
     /// copy properties from Element into params, returns element type as integer, returs _NONE if not found
     int copy_element_to_params(const std::string& elementName);
 
+    bool InvalidSymbolName(const std::string& s, std::string& errorReason);
     /// create new parser symbol
     Symtab * symcreate(const std::string& s);
     /// look up parser symbol

@@ -1122,6 +1122,7 @@ To fix this, we must change the settings.
 1) In a terminal, do the following: ::
 
      defaults write org.macosforge.xquartz.X11 enable_iglx -bool true
+     defaults write org.xquartz.X11 enable_iglx -bool true
 
    which enables *indirect openGL over X*.
 

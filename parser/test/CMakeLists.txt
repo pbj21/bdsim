@@ -45,6 +45,7 @@ gmad_test_pass_expression(overwrite-variable-string    overwriteVariableString.g
 gmad_test_pass_expression(undeclared-variable          undeclaredVariable.gmad       "is not declared")
 gmad_test_fail(include-nonexistent  includenonexistent.gmad)
 gmad_test_fail(recursive-inclusion  recursiveinclusion.gmad)
+gmad_test_fail(option-as-variable optionAsVariable.gmad)
 
 ##########################
 ### Test Functionality ###

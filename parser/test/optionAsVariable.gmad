@@ -1,0 +1,7 @@
+! note the 2x semi-colons
+! technically we're defining a new variable called aper1
+! by mistake and this could be hidden... parser should
+! complain that aper1 is protected by the options
+option, minimumKineticEnergy=1*GeV,
+	defaultRangeCut=1*cm;
+	aper1=1;

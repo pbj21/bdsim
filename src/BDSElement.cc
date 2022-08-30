@@ -71,7 +71,7 @@ void BDSElement::BuildContainerLogicalVolume()
   // factory and built and attached in the Initialise() method of the base class. However, before Initialise()
   // is called, the member fieldInfo will be set. We pass it in here to make sure we don't reuse the same
   // geometry when a different field is required.
-  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, fieldInfo,
+  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName,
 							   nullptr, autoColourGeometry,
 							   chordLength, horizontalWidth,
 							   &namedVacuumVolumes, true,

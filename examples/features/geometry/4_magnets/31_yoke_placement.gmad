@@ -9,4 +9,4 @@ use, l1;
 beam, particle="proton",
       energy=10*GeV;
 
-checkOverlaps=1;
+option, checkOverlaps=1;

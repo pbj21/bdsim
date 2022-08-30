@@ -322,6 +322,7 @@ void Options::PublishMembers()
   publish("minimumKineticEnergy",        &Options::minimumKineticEnergy);
   publish("minimumKineticEnergyTunnel",  &Options::minimumKineticEnergyTunnel);
   publish("minimumRange",                &Options::minimumRange);
+  publish("particlesToExcludeFromCuts",  &Options::particlesToExcludeFromCuts);
   
   publish("prodCutPhotons",              &Options::prodCutPhotons);
   publish("prodCutElectrons",            &Options::prodCutElectrons);

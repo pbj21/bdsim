@@ -55,7 +55,6 @@ public:
   /// container volume that's also constructed and w.r.t. an already constructed beam pipe.
   BDSMagnetOuter* CreateMagnetOuter(BDSMagnetType       magnetType,
 				    BDSMagnetOuterInfo* outerInfo,
-                                    const BDSFieldInfo* outerFieldInfo,
 				    G4double            outerLength,
 				    G4double            chordLength,
 				    BDSBeamPipe*        beampipe);
@@ -71,7 +70,6 @@ private:
   /// suitable magnet container solid.
   BDSMagnetOuter* CreateExternal(const G4String&     name,
 				 BDSMagnetOuterInfo* info,
-				 const BDSFieldInfo* outerFieldInfo,
 				 G4double            length,
 				 G4double            magnetContainerLength,
 				 BDSBeamPipe*        beampipe);

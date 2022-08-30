@@ -41,7 +41,7 @@ Key Concepts
 
 * A "trajectory" is a record of a particle track through a model. It contains information
   about each step the particle took and there one trajectory is for one particle.
-* A "primary" particle one that started at the beginning of an event. There may be more
+* A "primary" particle is one that started at the beginning of an event. There may be more
   than one, but typically BDSIM starts with one particle per event.
 * A "secondary" particle is any subsequent particle created in the simulation, no matter
   what generation it is. e.g. a primary proton creates a pion that decays and creates a
@@ -65,7 +65,7 @@ Motivation
 
 A trajectory contains the full coordinates as well as some other information for every step
 of a particle in a model. Given a single particle may take many many steps and many many particles
-can be created, it becomes clear that storing trajectories can creating a very large amount of
+can be created, it becomes clear that storing trajectories can create a very large amount of
 information. It is for this reason that we do not store trajectories by default, nor do most
 Monte Carlo radiation transport programs (i.e. Geant4 models). In BDSIM we choose summary
 information to record that is the most useful for the purpose of an accelerator model.

@@ -69,7 +69,7 @@ void BDSBunchRing::CheckParameters()
 
 BDSParticleCoordsFull BDSBunchRing::GetNextParticleLocal()
 {
-  G4double r   = rMin + rDif * flatGen->shoot();
+  G4double r   = std::sqrt(flatGen->shoot(std::pow(rMin,2), std::pow(rMax,2)));
   G4double phi = 2 * CLHEP::pi * flatGen->shoot();
   G4double x   = X0 + r * std::sin(phi);
   G4double y   = Y0 + r * std::cos(phi);

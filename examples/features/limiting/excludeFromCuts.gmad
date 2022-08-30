@@ -1,0 +1,15 @@
+c1: target, l=100*m, material="G4_AIR", horizontalWidth=2*m;
+l1: line=(c1);
+use, l1;
+
+beam, particle="pion+", kineticEnergy=3*GeV;
+
+option, physicsList="decay",
+!	minimumKineticEnergy=2.9*GeV,
+	particlesToExcludeFromCuts="13 -13";
+
+sample, range=c1, partID={13, -13};
+
+option, storeTrajectory=1,
+	storeTrajectoryParticleID="13 -13",
+	trajectoryFilterLogicAND=1;

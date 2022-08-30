@@ -1,0 +1,11 @@
+t1: target, l=200*m, outerDiameter=20*m, material="copper";
+l1: line = (t1);
+use, l1;
+
+option, physicsList="annihi_to_mumu";
+
+option, checkOverlaps=1,
+	worldMaterial="vacuum";
+
+beam, particle="e+",
+      energy=200*GeV;

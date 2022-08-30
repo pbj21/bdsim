@@ -198,6 +198,7 @@ OptionsBase::OptionsBase()
   minimumKineticEnergy     = 0;
   minimumKineticEnergyTunnel = 0;
   minimumRange             = 0;
+  particlesToExcludeFromCuts = "";
   defaultRangeCut          = 1e-3;
   prodCutPhotons           = 1e-3;
   prodCutElectrons         = 1e-3;

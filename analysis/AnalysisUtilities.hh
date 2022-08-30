@@ -66,7 +66,12 @@ public:
 			       double stop,
 			       int    nBins,
 			       bool   includeLastPoint = true);
-  
+
+  /// Fill a vector of entries and weights into a TH1 histogram.
+  void FillTH1D(TH1D&h1d,
+		const std::vector<float>& values,
+		const std::vector<float>& weights);
+
   ClassDef(AnalysisUtilities,1);
 };
 

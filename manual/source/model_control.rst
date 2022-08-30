@@ -131,7 +131,7 @@ as it is in Geant4 (exactly) or by its PDG ID. The follow are available by defau
 * `gamma`
 * `neutron`
 * `mu-` or `mu+`
-* `pi-` or `pi+`
+* `pi-` or `pi+` or `pi0`
 * `photon` or `gamma`
 * `kaon-`, `kaon+` or `kaon0L`
 
@@ -1539,6 +1539,8 @@ Examples: ::
 |                              | G4ShortLivedConstructor, G4MesonConstructor, G4BaryonConstructor and   |
 |                              | G4IonConstructor.                                                      |
 +------------------------------+------------------------------------------------------------------------+
+| annihi_to_mumu               | Only annihilation to a muon pair for positrons is registered.          |
++------------------------------+------------------------------------------------------------------------+
 | charge_exchange              | `G4ChargeExchangePhysics`                                              |
 +------------------------------+------------------------------------------------------------------------+
 | channelling                  | This constructs the `G4Channelling` and attaches it to all charged     |
@@ -1610,6 +1612,8 @@ Examples: ::
 +------------------------------+------------------------------------------------------------------------+
 | ftfp_bert_hp                 | Similar to `FTFP_BERT`, but with the high precision neutron package.   |
 |                              | This is provided by `G4HadronPhysicsFTFP_BERT_HP`.                     |
++------------------------------+------------------------------------------------------------------------+
+| gamma_to_mumu                | Only gamma to a muon pair for gammas is registered.                    |
 +------------------------------+------------------------------------------------------------------------+
 | hadronic_elastic             | Elastic hadronic processes. This is provided by                        |
 |                              | `G4HadronElasticPhysics.`                                              |
@@ -2761,6 +2765,11 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 | minimumRange                     | A particle that would not travel this range           |
 |                                  | (a distance) in the current material will be cut [m]  |
 +----------------------------------+-------------------------------------------------------+
+| particlesToExcludeFromCuts       | A white space separated string containing PDG IDs for |
+|                                  | particles to be excluded from `minimumKineticEnergy`, |
+|                                  | `minimumRange`, `maximumTrackingTime`, and            |
+|                                  | `maximumTrackLength`. e.g. `"13 -13"`.                |
++----------------------------------+-------------------------------------------------------+
 | ptcOneTurnMapFileName            | File name for a one turn map prepared in PTC that is  |
 |                                  | used in the teleporter to improve the accuracy of     |
 |                                  | circular tracking. See :ref:`one-turn-map`.           |
@@ -2828,7 +2837,8 @@ Physics Processes
 |                                  | default.                                              |
 +----------------------------------+-------------------------------------------------------+
 | minimumKineticEnergy             | A particle below this energy will be killed and the   |
-|                                  | energy deposition recorded at that location [GeV]     |
+|                                  | energy deposition recorded at that location. [GeV]    |
+|                                  | See also, `particlesToExcludeFromCuts`.               |
 +----------------------------------+-------------------------------------------------------+
 | minimumKineticEnergyTunnel       | A particle below this energy in any BDSIM-generated   |
 |                                  | tunnel sections will be killed and the energy         |
@@ -2847,6 +2857,11 @@ Physics Processes
 +----------------------------------+-------------------------------------------------------+
 | neutronKineticEnergyLimit        | Minimum allowed energy for neutrons when using the    |
 |                                  | `neutron_tracking_cut` physics list [GeV]             |
++----------------------------------+-------------------------------------------------------+
+| particlesToExcludeFromCuts       | A white space separated string containing PDG IDs for |
+|                                  | particles to be excluded from `minimumKineticEnergy`, |
+|                                  | `minimumRange`, `maximumTrackingTime`, and            |
+|                                  | `maximumTrackLength`. e.g. `"13 -13"`.                |
 +----------------------------------+-------------------------------------------------------+
 | physicsEnergyLimitLow            | Optional lower energy level for all physics models.   |
 |                                  | This is usually 990 eV by default in Geant4. The user |
@@ -4539,6 +4554,21 @@ particles are tracked to zero energy (allowing for the above range cuts). ::
 
 .. warning:: This will affect the location of energy deposition - i.e. the curve of
 	     energy deposition of a particle showering in a material will be different.
+
+
+Certain particles can be excluded from this using :code:`option, particlesToExcludeFromCuts="1 2 3";`
+where 1, 2, 3 are the PDG IDs of the particles to be excluded separated by white space in a string.
+For example: ::
+
+  option, minimumKineticEnergy=1*GeV,
+          particlesToExcludeFromCuts="13 -13";
+
+This will remove all particles below 1 GeV kinetic energy apart from muons (both charges) which will
+be tracked down to zero energy.
+
+.. note:: The option `particlesToExcludeFromCuts` applies to the options `minimumKineticEnergy`,
+	  `minimumRange`, `maximumTrackingTime`, and `maximumTrackLength`.
+
 
 Minimum Range
 ^^^^^^^^^^^^^

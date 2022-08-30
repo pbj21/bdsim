@@ -85,7 +85,6 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
 
 BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componentName,
 						       const G4String&  formatAndFileName,
-                                                       const BDSFieldInfo* fieldItWillBeUsedWith,
 						       std::map<G4String, G4Colour*>* colourMapping,
 						       G4bool                 autoColour,
 						       G4double               suggestedLength,
@@ -107,7 +106,7 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   if (stripOuterVolumeAndMakeAssembly)
     {searchName += "_stripped";}
   
-  auto nameAndField = std::make_pair(searchName, fieldItWillBeUsedWith);
+  auto nameAndField = std::make_pair(searchName, componentName);
   const auto search = registry.find(nameAndField);
   if (search != registry.end())
     {return search->second;}// it was found already in registry
@@ -140,7 +139,7 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
 	{result->MakeAllVolumesSensitive(sensitivityType);}
   
       // cache using optionally modified name
-      auto key = std::make_pair((std::string)searchName, fieldItWillBeUsedWith);
+      auto key = std::make_pair((std::string)searchName, componentName);
       registry[key] = result;
       storage.insert(result);
     }

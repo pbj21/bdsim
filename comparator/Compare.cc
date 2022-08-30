@@ -69,7 +69,7 @@ void Compare::Directories(TDirectory* d1,
   
   // get list of keys for file 1 & loop over
   TList* d1k = d1->GetListOfKeys();
-  for(int i = 0; i < d1k->GetEntries(); ++i)
+  for (int i = 0; i < d1k->GetEntries(); ++i)
     {
       TObject* keyObject = d1k->At(i); // key object in list of keys
       TObject* d1o       = d1->Get(keyObject->GetName()); // object in file
@@ -80,9 +80,9 @@ void Compare::Directories(TDirectory* d1,
       // get storePrimaries from options tree.
       if (objectName == "Options" && className == "TTree")
         {
-          std::vector<const char *> names;
-          TTree *options = (TTree *) d1->Get(objectName.c_str());
-          Options *optLocal = new Options();
+          std::vector<const char*> names;
+          TTree* options = (TTree*) d1->Get(objectName.c_str());
+          Options* optLocal = new Options();
           optLocal->SetBranchAddress(options);
           options->GetEntry(0);
           hasPrimaries = optLocal->options->storePrimaries;
@@ -198,17 +198,30 @@ void Compare::Trees(TTree* t1, TTree* t2, std::vector<Result*>& results)
       // We need the sampler names which are in the Model tree. If we have an
       // event tree, we must have a Model tree too!
       TDirectory* dir = t1->GetDirectory();
+  
+      std::vector<std::string> samplerNames;
+      std::vector<std::string> samplerCNames;
+      std::vector<std::string> samplerSNames;
+      
       TTree* modTree = dynamic_cast<TTree*>(dir->Get("Model"));
+      bool warn = false;
       if (!modTree)
-	{return;} // shouldn't really happen, but we can't compare the samplers
-      
-      Model* mod = new Model();
-      mod->SetBranchAddress(modTree);
-      modTree->GetEntry(0);
-      std::vector<std::string> names = mod->SamplerNames();
-      delete mod;
-      
-      Compare::EventTree(t1, t2, results, names);
+	{warn = true;}  // shouldn't really happen, but we can't compare the samplers
+      else if (modTree->GetEntries() == 0)
+	{warn = true;}
+      else
+	{
+	  Model* mod = new Model();
+	  mod->SetBranchAddress(modTree);
+	  modTree->GetEntry(0);
+	  samplerNames = mod->SamplerNames();
+	  samplerCNames = mod->SamplerCNames();
+	  samplerSNames = mod->SamplerSNames();
+	  delete mod;
+	}
+      if (warn)
+	{std::cout << "Model not stored so can't compare sampler branches." << std::endl;}
+      Compare::EventTree(t1, t2, results, samplerNames, samplerCNames, samplerSNames);
       return;
     }
   
@@ -301,7 +314,7 @@ void Compare::Optics(TTree* t1, TTree* t2, std::vector<Result*>& results)
 
   // loop over branches
   // for each branch loop over all entries and compare to reference file
-  for(int j = 0; j<oa1->GetSize(); ++j)
+  for (int j = 0; j< oa1->GetSize(); ++j)
     {
       TBranch* b1 = (TBranch*)(*oa1)[j];
       std::string branchName = std::string(b1->GetName());
@@ -404,7 +417,9 @@ void Compare::Optics(TTree* t1, TTree* t2, std::vector<Result*>& results)
 }
 
 void Compare::EventTree(TTree* t1, TTree* t2, std::vector<Result*>& results,
-			const std::vector<std::string>& samplerNames)
+			const std::vector<std::string>& samplerNames,
+			const std::vector<std::string>& samplerCNames,
+			const std::vector<std::string>& samplerSNames)
 {
   ResultEventTree* ret = new ResultEventTree();
   ret->name            = t1->GetName();
@@ -426,19 +441,30 @@ void Compare::EventTree(TTree* t1, TTree* t2, std::vector<Result*>& results,
   G4bool processSamplers = !samplerNames.empty();
   Event* evtLocal1 = new Event(/*debug=*/false, processSamplers, BDSIM_DATA_VERSION);
   Event* evtLocal2 = new Event(/*debug=*/false, processSamplers, BDSIM_DATA_VERSION);
-  evtLocal1->SetBranchAddress(t1, &samplerNames);
-  evtLocal2->SetBranchAddress(t2, &samplerNames);
+  evtLocal1->SetBranchAddress(t1, &samplerNames, false, nullptr, nullptr, &samplerCNames, &samplerSNames);
+  evtLocal2->SetBranchAddress(t2, &samplerNames, false, nullptr, nullptr, &samplerCNames, &samplerSNames);
 
-  for (auto i = 0; i < t1->GetEntries(); i++)
+  for (long int i = 0; i < (long int)t1->GetEntries(); i++)
     {
       ResultEvent re = ResultEvent();
       re.name    = std::to_string(i);
       re.passed  = true; // default true
       re.objtype = "Event of Event Tree";
-      
+
+#ifdef DEBUGOUTPUT
+      Int_t bytesLoaded1 = t1->GetEntry(i);
+      Int_t bytesLoaded2 = t2->GetEntry(i);
+      std::cout << "Bytes loaded (1) " << bytesLoaded1 << std::endl;
+      std::cout << "Bytes loaded (2) " << bytesLoaded2 << std::endl;
+      std::cout << evtLocal1->GetPrimaries()->n << std::endl;
+      std::cout << evtLocal2->GetPrimaries()->n << std::endl;
+      std::cout << evtLocal1 << " " << evtLocal2 << std::endl;
+      std::cout << evtLocal1->GetPrimaries() << " " << evtLocal2->GetPrimaries() << std::endl;
+#else
       t1->GetEntry(i);
       t2->GetEntry(i);
-
+#endif
+      
       if (hasPrimaries)
         {Compare::Sampler(evtLocal1->GetPrimaries(), evtLocal2->GetPrimaries(), &re);}
       for (auto j = 0; j < (int)evtLocal1->Samplers.size(); j++)
@@ -469,64 +495,61 @@ void Compare::Sampler(BDSOutputROOTEventSampler<float>* e1,
 		      ResultEvent* re)
 #endif
 {
-  ResultSampler rs(e1->samplerName);
+  std::string samplerName = e1->samplerName;
+  if (samplerName == "sampler") // the default name in BDSOutputROOTEventSampler.cc
+    {samplerName = e2->samplerName;} // could still be the default value but worth a try
+  ResultSampler rs(samplerName);
   
   if (e1->n != e2->n)
-    {
-      rs.passed = true;
-      rs.offendingLeaves.push_back("n");
-    }
+    {rs.passed = false; rs.offendingLeaves.emplace_back("n");}
   else
     {
       // only one z / S entry, so only check once
       if (Diff(e1->z, e2->z))
-        {rs.passed = false; rs.offendingLeaves.push_back("z");}
+        {rs.passed = false; rs.offendingLeaves.emplace_back("z");}
       if (Diff(e1->S, e2->S))
-        {rs.passed = false; rs.offendingLeaves.push_back("S");}
+        {rs.passed = false; rs.offendingLeaves.emplace_back("S");}
       
       for (int i = 0; i < e1->n; i++)
 	{
 	  if (Diff(e1->energy, e2->energy, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("energy");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("energy");}
 	  if (Diff(e1->x, e2->x, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("x");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("x");}
 	  if (Diff(e1->y, e2->y, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("y");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("y");}
 	  if (Diff(e1->xp, e2->xp, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("xp");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("xp");}
 	  if (Diff(e1->yp, e2->yp, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("yp");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("yp");}
 	  if (Diff(e1->zp, e2->zp, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("zp");}
-      if (Diff(e1->p, e2->p, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("p");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("zp");}
+	  if (Diff(e1->p, e2->p, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("p");}
 	  if (Diff(e1->T, e2->T, i))
-	    {rs.passed = false; rs.offendingLeaves.push_back("T");}
-      if (Diff(e1->partID, e2->partID, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("partID");}
-      if (Diff(e1->charge, e2->charge, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("charge");}
-      if (Diff(e1->isIon, e2->isIon, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("isIon");}
-      if (Diff(e1->ionA, e2->ionA, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("ionA");}
-      if (Diff(e1->ionZ, e2->ionZ, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("ionZ");}
-      if (Diff(e1->nElectrons, e2->nElectrons, i))
-        {rs.passed = false; rs.offendingLeaves.push_back("nElectrons");}
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("T");}
+	  if (Diff(e1->partID, e2->partID, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("partID");}
+	  if (Diff(e1->charge, e2->charge, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("charge");}
+	  if (Diff(e1->isIon, e2->isIon, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("isIon");}
+	  if (Diff(e1->ionA, e2->ionA, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("ionA");}
+	  if (Diff(e1->ionZ, e2->ionZ, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("ionZ");}
+	  if (Diff(e1->nElectrons, e2->nElectrons, i))
+	    {rs.passed = false; rs.offendingLeaves.emplace_back("nElectrons");}
 	}
     }
-
+  
   // update parent result status
   if (!rs.passed)
-    {
-      re->passed = false;
-      re->offendingBranches.push_back(e1->samplerName);
-    }
+    {re->passed = false; re->offendingBranches.push_back(samplerName);}
   re->samplerResults.push_back(rs);
 }
 
-bool Compare::Summarise(std::vector<Result*> results)
+bool Compare::Summarise(const std::vector<Result*>& results)
 {
   bool allPassed = true;
   const int titleWidth = 20;

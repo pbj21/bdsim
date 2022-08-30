@@ -1830,6 +1830,11 @@ geometry can be used in several ways:
 3) As a general element in the beam line where the geometry constitutes the whole object. (see :ref:`element`)
 4) As the world volume in which the BDSIM beamline is placed. (see :ref:`external-world-geometry`)
 
+.. note:: If a given geometry file is reused in different components, it will be reloaded on purpose
+	  to generate a unique set of logical volumes so we have the possibility of different fields,
+	  cuts, regions, colours etc. It will only be loaded once though, if the same component
+	  is used repeatedly.
+
 .. warning:: If including any external geometry, overlaps must be checked in the visualiser by
 	     running :code:`/geometry/test/run` before the model is used for a physics study.
    

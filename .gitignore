@@ -63,3 +63,6 @@ manual/build/*
 examples/features/scoring/*build
 
 examples/features/interfaces/*build
+
+.build*
+.install*

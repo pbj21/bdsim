@@ -101,7 +101,7 @@ void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew)
 
 void HistogramMeanFromFile::Terminate()
 {
-  // terminate each accumualtor
+  // terminate each accumulator
   // this returns a pointer to the result but no need to store
   for (auto& h : histograms1d)
     {h->Terminate();}

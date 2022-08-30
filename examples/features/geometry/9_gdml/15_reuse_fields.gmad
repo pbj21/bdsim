@@ -1,0 +1,27 @@
+f1: field, type="bmap2d", magneticFile="bdsim2d:../../fields/maps_bdsim/2dboxexample-1T.dat.gz", bScaling=1;
+f2: field, type="bmap2d", magneticFile="bdsim2d:../../fields/maps_bdsim/2dboxexample-1T.dat.gz", bScaling=-2;
+
+! we reuse the same GDML file but with different fields - this should
+! force bdsim to load the geometry afresh and create a new set of lvs
+! as required for a unique field.
+box1: element, fieldAll="f1", l=1.1*m, geometry="gdml:../../fields/maps_bdsim/abox.gdml";
+box2: element, fieldAll="f2", l=1.1*m, geometry="gdml:../../fields/maps_bdsim/abox.gdml";
+
+l1: line=(box1,box2);
+use, l1;
+
+beam, particle="e-",
+      energy=3*GeV;
+
+! fields should appear opposite signed
+q1: query, nx=10, xmin=-40*cm, xmax=40*cm,
+    	   ny=10, ymin=-40*cm, ymax=40*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_2d_scaling_pos.dat",
+	   referenceElement="box1";
+
+q2: query, nx=10, xmin=-40*cm, xmax=40*cm,
+    	   ny=10, ymin=-40*cm, ymax=40*cm,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_2d_scaling_neg.dat",
+	   referenceElement="box2";

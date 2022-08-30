@@ -1,5 +1,6 @@
 # high precision tests take a while to load neutron data, so labelled long
-simple_testing(phsyics-all-particles          "--file=all_particles.gmad"          ${OVERLAP_CHECK})
+simple_testing(physics-all-particles          "--file=all_particles.gmad"          ${OVERLAP_CHECK})
+simple_testing(physics-annihi-to-mumu         "--file=annihi_to_mumu.gmad"         ${OVERLAP_CHECK})
 simple_testing(physics-charge-exchange        "--file=charge_exchange.gmad"        ${OVERLAP_CHECK})
 simple_testing(physics-decay                  "--file=decay.gmad"                  ${OVERLAP_CHECK})
 simple_testing(physics-decay-radioactive      "--file=decay_radioactive.gmad"      ${OVERLAP_CHECK})
@@ -20,6 +21,7 @@ simple_testing(physics-ftfp-bert              "--file=ftfp_bert.gmad"           
 simple_testing_long(physics-ftfpberthp        "--file=ftfp_bert_hp.gmad"           ${OVERLAP_CHECK})
 simple_testing(physics-g4-ftfp-bert           "--file=g4FTFP_BERT.gmad"            ${OVERLAP_CHECK})
 simple_testing(physics-g4-qbbc                "--file=g4QBBC.gmad"                 ${OVERLAP_CHECK})
+simple_testing(physics-gamma-to-mumu          "--file=gamma_to_mumu.gmad"          ${OVERLAP_CHECK})
 simple_testing(physics-hadronic-elastic       "--file=hadronic_elastic.gmad"       ${OVERLAP_CHECK})
 simple_testing(physics-hadronic-elastic-d     "--file=hadronic_elastic_d.gmad"     ${OVERLAP_CHECK})
 simple_testing(physics-hadronic-elastic-h     "--file=hadronic_elastic_h.gmad"     ${OVERLAP_CHECK})

@@ -688,6 +688,14 @@ void Parser::add_var(std::string name, double value, int is_reserved)
   sp->Set(value,is_reserved);
 }
 
+bool Parser::InvalidSymbolName(const std::string& s, std::string& errorReason)
+{
+  bool result = false;
+  if (options.NameExists(s))
+    {result = true; errorReason = "The variable name \"" + s + "\" is an option name and cannot be used as a variable name";}
+  return result;
+}
+
 Symtab * Parser::symcreate(const std::string& s)
 {
   return symtab_map.symcreate(s);

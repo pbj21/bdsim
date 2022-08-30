@@ -489,8 +489,9 @@ coordinates of muons reaching the detector plane. The 'variable' plotted: ::
 
   Trajectory.XYZ[][0].fX:Trajectory.XYZ[][0].fZ
 
-can be broken down.  Roughly it's y vs x which is ROOT's inconsistent syntax order. All the
-binning etc is handled by rebdsim so is done in x, xy, xyz order consistently. For one variable: ::
+can be broken down. This is of the form y vs x (:code:`y:x`), which is ROOT's inconsistent
+syntax order. All the binning etc is handled by rebdsim so is done in x, xy, xyz order
+consistently. For one variable: ::
 
   Trajectory.XYZ[][0].fX
 

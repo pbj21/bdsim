@@ -129,17 +129,16 @@ BDSLinkOpaqueBox::BDSLinkOpaqueBox(BDSAcceleratorComponent* acceleratorComponent
 		    1,
 		    true);
 
-  G4RotationMatrix* rm = nullptr;
+  G4ThreeVector of = G4ThreeVector(ox,oy,0);
+  G4RotationMatrix* rm = new G4RotationMatrix();
   if (BDS::IsFinite(tilt))
     {
-      rm = new G4RotationMatrix();
       rm->rotateZ(tilt);
-      RegisterRotationMatrix(rm);
     }
-  // auto componentPlacement =
-  G4cout << "Component placed at " << G4ThreeVector(ox,oy,0) << " inside opaque box" << G4endl;
-  new G4PVPlacement(rm,
-		    G4ThreeVector(ox,oy,0),
+  G4Transform3D* placementTransform = new G4Transform3D(*rm, of);
+  delete rm;
+
+  new G4PVPlacement(*placementTransform,
 		    component->GetContainerLogicalVolume(),
 		    component->GetName() + "_pv",
 		    containerLogicalVolume,
@@ -150,15 +149,9 @@ BDSLinkOpaqueBox::BDSLinkOpaqueBox(BDSAcceleratorComponent* acceleratorComponent
   outerExtent = BDSExtent(xsize, ysize, zsize);
 
   G4RotationMatrix* rm2 = new G4RotationMatrix();
-  G4TwoVector xy = G4TwoVector(component->Sagitta(),0);
-  if (BDS::IsFinite(tilt))
-    {xy.rotate(tilt);}
-  else if (BDS::IsFinite(component->GetAngle()))
-    {rm2->rotate(-0.5 * component->GetAngle(), G4ThreeVector(0,1,0));}
-  offsetToStart = G4ThreeVector(xy.x(), xy.y(), -0.5*component->GetChordLength());
-  transformToStart = G4Transform3D(rm2->inverse(), offsetToStart);
+  offsetToStart = G4ThreeVector(0.0, 0.0, -0.5*component->GetChordLength());
+  transformToStart = G4Transform3D(*rm2, offsetToStart);
   delete rm2;
-  G4cout << "Transform to start (local) " << transformToStart.getTranslation() << G4endl;
 }
 
 BDSLinkOpaqueBox::~BDSLinkOpaqueBox()

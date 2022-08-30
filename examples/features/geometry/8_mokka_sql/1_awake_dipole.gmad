@@ -37,7 +37,7 @@ option, beampipeRadius = 35*mm,
         turnOnOpticalAbsorption = 1,
         turnOnMieScattering = 1,
         turnOnOpticalSurface = 1,
-        scintYieldFactor = 0.01;
+        scintYieldFactor = 0.01,
 	maximumTrackingTime=1e-3*s;
 
 option, physicsList = "ftfp_bert optical synchrad";

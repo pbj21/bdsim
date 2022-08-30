@@ -649,6 +649,9 @@ symdecl : VARIABLE '='
         {
           if(execute)
             {
+              std::string errorReason;
+              if (Parser::Instance()->InvalidSymbolName(*($1), errorReason))
+                {yyerror(errorReason.c_str());}
               Symtab *sp = Parser::Instance()->symcreate(*($1));
               $$ = sp;
             }

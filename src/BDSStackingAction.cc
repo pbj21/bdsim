@@ -49,6 +49,7 @@ BDSStackingAction::BDSStackingAction(const BDSGlobalConstants* globals)
   if (maxTracksPerEvent == 0) // 0 is default -> no action - set maximum possible number
     {maxTracksPerEvent = LONG_MAX;}
   minimumEK = globals->MinimumKineticEnergy();
+  particlesToExcludeFromCuts = globals->ParticlesToExcludeFromCutsAsSet();
 }
 
 BDSStackingAction::~BDSStackingAction()
@@ -69,8 +70,8 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
 	<< std::setw(6) << SM->GetNPostponedTrack()
 	<< G4endl;
 #endif
-
-  if (aTrack->GetKineticEnergy() < minimumEK)
+  G4int pdgCode = aTrack->GetParticleDefinition()->GetPDGEncoding();
+  if ( (aTrack->GetKineticEnergy() < minimumEK) && (particlesToExcludeFromCuts.count(pdgCode) == 0) )
     {classification = fKill;}
   
   // If beyond max number of tracks, kill it
@@ -80,7 +81,7 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
   // Optionally kill all neutrinos
   if (killNeutrinos)
     {
-      G4int pdgNr = std::abs(aTrack->GetParticleDefinition()->GetPDGEncoding());
+      G4int pdgNr = std::abs(pdgCode);
       if( pdgNr == 12 || pdgNr == 14 || pdgNr == 16)
 	{classification = fKill;}
     }

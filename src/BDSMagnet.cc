@@ -197,7 +197,6 @@ void BDSMagnet::BuildOuter()
   // The outerFieldInfo is required only so we don't reuse geometry when we need a unique field on it.
   outer = BDSMagnetOuterFactory::Instance()->CreateMagnetOuter(magnetType,
 							       magnetOuterInfo,
-                                                               outerFieldInfo,
 							       outerLength,
 							       chordLength,
 							       beampipe);

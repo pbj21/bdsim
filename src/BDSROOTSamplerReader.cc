@@ -177,7 +177,7 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
       if (deleteIt)
         {
 #ifdef BDSDEBUG
-          G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pdgcode << G4endl;
+          G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pd->GetPDGEncoding() << G4endl;
 #endif
           nParticlesSkipped++;
           continue;

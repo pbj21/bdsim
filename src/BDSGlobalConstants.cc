@@ -231,6 +231,23 @@ void BDSGlobalConstants::InitVisAttributes()
 
 void BDSGlobalConstants::InitDefaultUserLimits()
 {
+  auto pteAsVector = BDS::SplitOnWhiteSpace(ParticlesToExcludeFromCuts());
+  // construct the set of PDG IDs
+  for (G4int i = 0; i < (G4int)pteAsVector.size(); i++)
+    {
+      try
+        {
+          G4int pdgID = std::stoi(pteAsVector[i]);
+          particlesToExcludeFromCutsAsSet.insert(pdgID);
+        }
+      catch (std::logic_error& e)
+        {
+          G4String msg = "Particle ID " + pteAsVector[i] + " at index " + std::to_string(i);
+          msg += " in the option particlesToExcludeFromCutsAsSet cannot be converted to an integer";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
+    }
+  
   defaultUserLimits = new G4UserLimits("default_cuts");
   const G4double maxTime = MaxTime();
   if (maxTime > 0)
@@ -238,13 +255,17 @@ void BDSGlobalConstants::InitDefaultUserLimits()
       G4cout << __METHOD_NAME__ << "Setting maximum tracking time to " << maxTime << " ns" << G4endl;
       defaultUserLimits->SetUserMaxTime(maxTime);
     }
-  G4double minEK = MinimumKineticEnergy();
   defaultUserLimits->SetMaxAllowedStep(MaxStepLength());
   defaultUserLimits->SetUserMaxTrackLength(MaxTrackLength());
+  G4double minEK = MinimumKineticEnergy();
   defaultUserLimits->SetUserMinEkine(minEK);
-  defaultUserLimits->SetUserMinRange(MinimumRange());
   if (minEK > 0)
     {G4cout << __METHOD_NAME__ << "Default minimum kinetic energy for model: " << minEK/CLHEP::GeV << " GeV" << G4endl;}
+  G4double minR = MinimumRange();
+  defaultUserLimits->SetUserMinRange(minR);
+  if (minR > 0)
+    {G4cout << __METHOD_NAME__ << "Default minimum range for user limits: " << minR/CLHEP::mm << " mm" << G4endl;} 
+
   
   BDSFieldInfo::defaultUL = defaultUserLimits; // update static member for field definitions
 

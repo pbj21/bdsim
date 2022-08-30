@@ -23,9 +23,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSModularPhysicsList.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSPhysicalConstants.hh"
+#include "BDSPhysicsAnnihiToMuMu.hh"
 #include "BDSPhysicsCherenkov.hh"
 #include "BDSPhysicsCutsAndLimits.hh"
 #include "BDSPhysicsEMDissociation.hh"
+#include "BDSPhysicsGammaToMuMu.hh"
 #include "BDSPhysicsLaserWire.hh"
 #include "BDSPhysicsMuon.hh"
 #include "BDSPhysicsSynchRad.hh"
@@ -161,6 +163,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   SetVerboseLevel(1);
 
   physicsConstructors.insert(std::make_pair("all_particles",          &BDSModularPhysicsList::AllParticles));
+  physicsConstructors.insert(std::make_pair("annihi_to_mumu",         &BDSModularPhysicsList::AnnihiToMuMu));
   physicsConstructors.insert(std::make_pair("charge_exchange",        &BDSModularPhysicsList::ChargeExchange));
   physicsConstructors.insert(std::make_pair("cherenkov",              &BDSModularPhysicsList::Cherenkov));
   physicsConstructors.insert(std::make_pair("cuts_and_limits",        &BDSModularPhysicsList::CutsAndLimits));
@@ -180,6 +183,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("em_4",                   &BDSModularPhysicsList::Em4));
   physicsConstructors.insert(std::make_pair("ftfp_bert",              &BDSModularPhysicsList::FTFPBERT));
   physicsConstructors.insert(std::make_pair("ftfp_bert_hp",           &BDSModularPhysicsList::FTFPBERTHP));
+  physicsConstructors.insert(std::make_pair("gamma_to_mumu",          &BDSModularPhysicsList::GammaToMuMu));
   physicsConstructors.insert(std::make_pair("hadronic_elastic",       &BDSModularPhysicsList::HadronicElastic));
   physicsConstructors.insert(std::make_pair("hadronic_elastic_d",     &BDSModularPhysicsList::HadronicElasticD));
   physicsConstructors.insert(std::make_pair("hadronic_elastic_h",     &BDSModularPhysicsList::HadronicElasticH));
@@ -255,6 +259,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   // initialise all to empty vectors and specify only ones that have some incompatible physics lists
   for (const auto& kv : physicsConstructors)
     {incompatible.insert(std::make_pair(kv.first, std::vector<G4String>()));}
+  incompatible["annihi_to_mumu"] = {"em_extra"};
   incompatible["em"]     = {"em_ss", "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_ss"]  = {"em",    "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_wvi"] = {"em",    "em_ss",  "em_1",   "em_2", "em_3", "em_4"};
@@ -265,6 +270,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   incompatible["em_livermore"] = {"em_livermore_polarised"};
   incompatible["ftfp_bert"]    = {"ftfp_bert_hp", "qgsp_bert", "qgsp_bert_hp", "qgsp_bic", "qgsp_bic_hp"};
   incompatible["ftfp_bert_hp"] = {"ftfp_bert",    "qgsp_bert", "qgsp_bert_hp", "qgsp_bic", "qgsp_bic_hp"};
+  incompatible["gamma_to_mumu"] = {"em_extra"};
   incompatible["hadronic_elastic"]      = {"hadronic_elastic_d", "hadronic_elastic_h", "hadronic_elastic_hp", "hadronic_elastic_lend", "hadronic_elastic_xs"};
   incompatible["hadronic_elastic_d"]    = {"hadronic_elastic",   "hadronic_elastic_h", "hadronic_elastic_hp", "hadronic_elastic_lend", "hadronic_elastic_xs"};
   incompatible["hadronic_elastic_h"]    = {"hadronic_elastic",   "hadronic_elastic_d", "hadronic_elastic_hp", "hadronic_elastic_lend", "hadronic_elastic_xs"};
@@ -478,6 +484,15 @@ void BDSModularPhysicsList::AllParticles()
   ConstructAllIons();
 }
 
+void BDSModularPhysicsList::AnnihiToMuMu()
+{
+  if (!physicsActivated["annihi_to_mumu"])
+    {
+      constructors.push_back(new BDSPhysicsAnnihiToMuMu());
+      physicsActivated["annihi_to_mumu"] = true;
+    }
+}
+
 void BDSModularPhysicsList::ChargeExchange()
 {
   ConstructAllIons();
@@ -504,7 +519,7 @@ void BDSModularPhysicsList::CutsAndLimits()
 {
   if (!physicsActivated["cuts_and_limits"])
     {
-      constructors.push_back(new BDSPhysicsCutsAndLimits());
+      constructors.push_back(new BDSPhysicsCutsAndLimits(BDSGlobalConstants::Instance()->ParticlesToExcludeFromCutsAsSet()));
       physicsActivated["cuts_and_limits"] = true;
     }
 }
@@ -702,6 +717,15 @@ void BDSModularPhysicsList::FTFPBERTHP()
     {
       constructors.push_back(new G4HadronPhysicsFTFP_BERT_HP());
       physicsActivated["ftfp_bert_hp"] = true;
+    }
+}
+
+void BDSModularPhysicsList::GammaToMuMu()
+{
+  if (!physicsActivated["gamma_to_mumu"])
+    {
+      constructors.push_back(new BDSPhysicsGammaToMuMu());
+      physicsActivated["gamma_to_mumu"] = true;
     }
 }
 

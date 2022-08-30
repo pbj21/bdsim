@@ -11,6 +11,7 @@ simple_fail(bunch-halo-cut-bad-parms          "--file=halo-cut-bad.gmad"        
 simple_fail(bunch-ion-bad-energy              "--file=ion-bad.gmad"                  "")
 simple_fail(bunch-ion-bad-az                  "--file=ion-bad-az.gmad"               "")
 simple_fail(bunch-ion-bad-az-float            "--file=ion-bad-az-float.gmad"         "")
+simple_fail(bunch-ion-bad-q                   "--file=ion-bad-q.gmad"                "")
 simple_fail(bunch-multiple-emittances         "--file=multiple-emittances.gmad"      "")
 simple_fail(bunch-multiple-energy-momentum    "--file=multiple-energy-momentum.gmad" "")
 simple_fail(bunch-multiple-sigmaE-sigmaEk-sigmaP  "--file=multiple-sigmaE-sigmaEk-sigmaP.gmad" "")	

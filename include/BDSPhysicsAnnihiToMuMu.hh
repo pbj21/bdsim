@@ -16,41 +16,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef COMPRESULTSAMPLER_H
-#define COMPRESULTSAMPLER_H
+#ifndef BDSPHYSICSANNIHITOMUMU_H
+#define BDSPHYSICSANNIHITOMUMU_H
 
-#include "Result.hh"
+#include "BDSSingleUse.hh"
 
-#include <sstream>
-#include <string>
+#include "G4VPhysicsConstructor.hh"
 
 /**
- * @brief Result of comparison of a sampler branch.
+ * @brief High energy muon processes.
  * 
+ * Constructs e+ annihilation to Muon pair only.
+ *
  * @author Laurie Nevay
  */
 
-class ResultSampler: public Result
-{ 
+class BDSPhysicsAnnihiToMuMu: public G4VPhysicsConstructor, public BDSSingleUse
+{
 public:
-  ResultSampler(std::string nameIn):
-    Result(nameIn, "Sampler")
-  {;}
-  
-  virtual ~ResultSampler() {}
+  BDSPhysicsAnnihiToMuMu();
+  virtual ~BDSPhysicsAnnihiToMuMu();
+  /// Construct all leptions, photons (inc optical), and pion +- just in case.
+  virtual void ConstructParticle();
 
-  std::vector<std::string> offendingLeaves;
-
-  virtual std::string print() const
-  {
-    std::stringstream ss; 
-    ss << Result::print();
-    ss << "Offending leaves: ";
-    for (const auto& leafName : offendingLeaves)
-      {ss << "\"" << leafName << "\" ";}
-    ss << "\n";
-    return ss.str();
-  }
+  /// Construct and attach the processes to the relevant particles.
+  virtual void ConstructProcess();
 };
-
 #endif

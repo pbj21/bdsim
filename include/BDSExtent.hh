@@ -122,7 +122,7 @@ public:
   BDSExtent Tilted(G4double angle) const;
 
   /// @{ Provide a new copy of this extent with an offset applied.
-  BDSExtent Translate(G4ThreeVector offset) const {return Translate(offset.x(), offset.y(), offset.z());}
+  BDSExtent Translate(const G4ThreeVector& offset) const {return Translate(offset.x(), offset.y(), offset.z());}
   BDSExtent Translate(G4double dx, G4double dy, G4double dz) const;
   /// @}
 

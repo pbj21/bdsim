@@ -65,7 +65,9 @@ namespace Compare
   void Optics(TTree* t1, TTree* t2, std::vector<Result*>& results);
 
   void EventTree(TTree* t1, TTree* t2, std::vector<Result*>& results,
-		 const std::vector<std::string>& samplerNames);
+		 const std::vector<std::string>& samplerNames,
+		 const std::vector<std::string>& samplerCNames,
+		 const std::vector<std::string>& samplerSNames);
 
 #ifdef __ROOTDOUBLE__
   void Sampler(BDSOutputROOTEventSampler<double>* e1,
@@ -93,14 +95,14 @@ namespace Compare
   void PrintNoMatching(std::string className, std::string objectName);
 
   /// Loop over results and print any failed ones. Returns true if all passed.
-  bool Summarise(std::vector<Result*> results);
+  bool Summarise(const std::vector<Result*>& results);
 
   /// Check whether a string is prefixed with another string.
   bool StringStartsWith(std::string aString, std::string prefix);
 
   bool IsInVector(std::string key, const std::vector<std::string>& vec);
 
-  inline bool NanOrInf(const double& val) {return std::isnan(val) | std::isinf(val);}
+  inline bool NanOrInf(const double& val) {return std::isnan(val) || std::isinf(val);}
 
   inline bool GTEZero(const double& val) {return val >= 0;}
   inline bool LTZero(const double& val)  {return val < 0;}

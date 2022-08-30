@@ -156,9 +156,21 @@ BDSOutputROOTEventSampler<float>* Event::GetSampler(int index)
   return index >= (int) Samplers.size() ? nullptr : Samplers[index];
 }
 
+BDSOutputROOTEventSamplerC* Event::GetSamplerC(const std::string& name)
+{
+  auto found = samplerCMap.find(name);
+  return found != samplerCMap.end() ? found->second : nullptr;
+}
+
 BDSOutputROOTEventSamplerC* Event::GetSamplerC(int index)
 {
   return index >= (int) SamplersC.size() ? nullptr : SamplersC[index];
+}
+
+BDSOutputROOTEventSamplerS* Event::GetSamplerS(const std::string& name)
+{
+  auto found = samplerSMap.find(name);
+  return found != samplerSMap.end() ? found->second : nullptr;
 }
 
 BDSOutputROOTEventSamplerS* Event::GetSamplerS(int index)
@@ -284,46 +296,52 @@ void Event::SetBranchAddress(TTree* t,
       // of the object type and not the base class (say TObject) so there's no
       // way to easily map these -> ifs
       // special case first, then alphabetical as this is how they'll come from a set (optimisation)
+
+      // we record the return result of SetBranchAddress but don't test it - only
+      // for debugging purposes
+      Int_t addressSetResult = 0;
       if (name == "Primary")
 	{// special case
 	  usePrimaries = true;
-	  t->SetBranchAddress("Primary.", &Primary);
+	  addressSetResult = t->SetBranchAddress("Primary.", &Primary);
 	}
       else if (name == "ApertureImpacts")
-	{t->SetBranchAddress("ApertureImpacts.",  &ApertureImpacts);}
+	{addressSetResult = t->SetBranchAddress("ApertureImpacts.", &ApertureImpacts);}
       else if (name == "Eloss")
-	{t->SetBranchAddress("Eloss.",       &Eloss);}
+	{addressSetResult = t->SetBranchAddress("Eloss.",           &Eloss);}
       else if (name == "ElossVacuum")
-	{t->SetBranchAddress("ElossVacuum.", &ElossVacuum);}
+	{addressSetResult = t->SetBranchAddress("ElossVacuum.",     &ElossVacuum);}
       else if (name == "ElossTunnel")
-	{t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
+	{addressSetResult = t->SetBranchAddress("ElossTunnel.",     &ElossTunnel);}
       else if (name == "ElossWorld")
-	{t->SetBranchAddress("ElossWorld.",  &ElossWorld);}
+	{addressSetResult = t->SetBranchAddress("ElossWorld.",      &ElossWorld);}
       else if (name == "ElossWorldContents")
-	{t->SetBranchAddress("ElossWorldContents.", &ElossWorldContents);}
+	{addressSetResult = t->SetBranchAddress("ElossWorldContents.", &ElossWorldContents);}
       else if (name == "ElossWorldExit")
-	{t->SetBranchAddress("ElossWorldExit.",     &ElossWorldExit);}
+	{addressSetResult = t->SetBranchAddress("ElossWorldExit.",  &ElossWorldExit);}
       else if (name == "Histos")
-	{t->SetBranchAddress("Histos.",  &Histos);}
+	{addressSetResult = t->SetBranchAddress("Histos.",          &Histos);}
       else if (name == "Info")
-	{t->SetBranchAddress("Info.",    &Info);}
+	{addressSetResult = t->SetBranchAddress("Info.",            &Info);}
       else if (name == "Summary")
-	{t->SetBranchAddress("Summary.", &Summary);}
+	{addressSetResult = t->SetBranchAddress("Summary.",         &Summary);}
       else if (name == "PrimaryGlobal")
-	{t->SetBranchAddress("PrimaryGlobal.",   &PrimaryGlobal);}
+	{addressSetResult = t->SetBranchAddress("PrimaryGlobal.",   &PrimaryGlobal);}
       else if (name == "PrimaryFirstHit")
-	{t->SetBranchAddress("PrimaryFirstHit.", &PrimaryFirstHit);}
+	{addressSetResult = t->SetBranchAddress("PrimaryFirstHit.", &PrimaryFirstHit);}
       else if (name == "PrimaryLastHit")
-	{t->SetBranchAddress("PrimaryLastHit.",  &PrimaryLastHit);}
+	{addressSetResult = t->SetBranchAddress("PrimaryLastHit.",  &PrimaryLastHit);}
       else if (name == "TunnelHit")
-	{t->SetBranchAddress("TunnelHit.",       &TunnelHit);}
+	{addressSetResult = t->SetBranchAddress("TunnelHit.",       &TunnelHit);}
       else if (name == "Trajectory")
-	{t->SetBranchAddress("Trajectory.",      &Trajectory);}
+	{addressSetResult = t->SetBranchAddress("Trajectory.",      &Trajectory);}
       else if (name.substr(0,4) == "COLL")
 	{
-	  SetBranchAddressCollimatorSingle(t, name+".", ithCollimator);
+	  addressSetResult = SetBranchAddressCollimatorSingle(t, name+".", ithCollimator);
 	  ithCollimator++;
 	}
+      if (debug) // has to be done inside loop
+        {std::cout << "SetBranchAddress result: " << addressSetResult << std::endl;}
     }
   
   if (debug)
@@ -458,19 +476,21 @@ void Event::SetBranchAddressCollimators(TTree* t,
     }
 }
 
-void Event::SetBranchAddressCollimatorSingle(TTree* t,
-					     const std::string& name,
-					     int i)
+Int_t Event::SetBranchAddressCollimatorSingle(TTree* t,
+					      const std::string& name,
+					      int i)
 {
   // we must not push_back to collimators (vector) as this might expand it
   // and invalidate all addresses to pointers in that vector
   collimators[i] = new BDSOutputROOTEventCollimator();
   collimatorNames.push_back(name);
   collimatorMap[name] = collimators[i];
-  
-  t->SetBranchAddress(name.c_str(), &collimators[i]);
+
+  // record result purely for debugging purposes
+  Int_t addressSetResult = t->SetBranchAddress(name.c_str(), &collimators[i]);
   if (debug)
     {std::cout << "Event::SetBranchAddress> " << name << " " << collimators[i] << std::endl;}
+  return addressSetResult;
 }
 
 void Event::Fill(Event* other)

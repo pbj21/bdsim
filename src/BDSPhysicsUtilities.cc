@@ -61,6 +61,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleTableIterator.hh"
 #include "G4PionMinus.hh"
 #include "G4PionPlus.hh"
+#include "G4PionZero.hh"
 #include "G4Positron.hh"
 #include "G4ProductionCutsTable.hh"
 #include "G4Proton.hh"
@@ -87,6 +88,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iomanip>
 #include <map>
+#include <regex>
 #include <set>
 #include <stdexcept>
 #include <string> // for stoi
@@ -140,10 +142,9 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
 	    {
 	      G4cout << "\nAdding cuts and limits physics process to Geant4 reference physics list" << G4endl;
 	      G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
-	      G4cout
-		<< "This is done by default for the functionality of BDSIM tracking and should not affect the physics greatly.\n";
+	      G4cout << "This is done by default for the functionality of BDSIM tracking and should not affect the physics greatly.\n";
 	      G4cout << "See the BDSIM manual about Geant4 reference physics lists for details." << G4endl;
-	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits());
+	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits(g->ParticlesToExcludeFromCutsAsSet()));
 	    }
 	  else if (!g->G4PhysicsUseBDSIMCutsAndLimits() && g->Circular())
 	    {
@@ -295,10 +296,14 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
 
   std::map<G4String, G4String> commonSubstitutions = { {"photon", "gamma"},
 						       {"electron", "e-"},
-						       {"positron", "e+"} };
+						       {"positron", "e+"},
+                                                       {"pion+", "pi+"},
+                                                       {"pion-", "pi-"},
+                                                       {"pion0", "pi0"} };
 
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  if (BDS::StrContains(particleName, "ion"))
+  std::regex ionParticle("(ion\\s).*");
+  if (std::regex_match(particleName, ionParticle))
     {
       G4GenericIon::GenericIonDefinition(); // construct general ion particle
       auto ionDef = new BDSIonDefinition(particleName); // parse the ion definition
@@ -368,6 +373,8 @@ void BDS::ConstructBeamParticleG4(const G4String& name)
     {G4PionMinus::PionMinusDefinition();}
   else if (name == "pi+")
     {G4PionPlus::PionPlusDefinition();}
+  else if (name == "pi0")
+    {G4PionZero::PionZeroDefinition();}
   else if (name == "neutron")
     {G4Neutron::NeutronDefinition();}
   else if (name == "photon" || name == "gamma")
@@ -514,7 +521,7 @@ G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(G4bool useEMD,
       G4cout << "\nWARNING - adding cuts and limits physics process to \"COMPLETE\" physics list" << G4endl;
       G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
       G4cout << "This can be turned off by setting option, g4PhysicsUseBDSIMCutsAndLimits=0;\n" << G4endl;
-      physlist->RegisterPhysics(new BDSPhysicsCutsAndLimits());
+      physlist->RegisterPhysics(new BDSPhysicsCutsAndLimits(BDSGlobalConstants::Instance()->ParticlesToExcludeFromCutsAsSet()));
     }
   return physlist;
 }

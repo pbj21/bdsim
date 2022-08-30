@@ -614,5 +614,5 @@ DRIFT_539: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="
 DRIFT_540: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="lhc", l=0.75;
 DRIFT_541: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="lhc", l=1.5;
 DRIFT_542: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="lhc", l=1.5;
-DRIFT_543: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="lhc", l=3.25;
+DRIFT_543: drift, aper1=0.05, aper2=0.03, aper3=0.05, aper4=0.05, apertureType="lhc", l=3.24999;
 theendoftheline: marker;

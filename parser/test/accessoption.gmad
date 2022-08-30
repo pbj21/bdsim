@@ -1,5 +1,5 @@
-outerDiameter = option["outerDiameter"] + 0.1;
-print, outerDiameter;
+outerDiameter2 = option["outerDiameter"] + 0.1;
+print, outerDiameter2;
 
 option, nturns = 123;
 print, option["nturns"];

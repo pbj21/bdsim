@@ -85,7 +85,9 @@ public:
 #else
   BDSOutputROOTEventSampler<float>*  GetSampler(int index);
 #endif
+  BDSOutputROOTEventSamplerC*        GetSamplerC(const std::string& name);
   BDSOutputROOTEventSamplerC*        GetSamplerC(int index);
+  BDSOutputROOTEventSamplerS*        GetSamplerS(const std::string& name);
   BDSOutputROOTEventSamplerS*        GetSamplerS(int index);
   BDSOutputROOTEventAperture*        GetAperture() {return ApertureImpacts;}
   BDSOutputROOTEventCollimator*      GetCollimator(const std::string& name);
@@ -114,8 +116,8 @@ public:
 			bool                      allBranchesOn     = false,
 			const RBDS::VectorString* branchesToTurnOn  = nullptr,
 			const RBDS::VectorString* collimatorNamesIn = nullptr,
-      const RBDS::VectorString* samplerCNamesIn  = nullptr,
-      const RBDS::VectorString* samplerSNamesIn  = nullptr);
+			const RBDS::VectorString* samplerCNamesIn  = nullptr,
+			const RBDS::VectorString* samplerSNamesIn  = nullptr);
 
   /// @{ Local variable ROOT data is mapped to.
 #ifdef __ROOTDOUBLE__
@@ -184,9 +186,9 @@ private:
   /// @{ Utility function to avoid repetition of code.
   void SetBranchAddressCollimators(TTree* t,
 				   const RBDS::VectorString* collimatorNames);
-  void SetBranchAddressCollimatorSingle(TTree* t,
-					const std::string& name,
-					int i);
+  Int_t SetBranchAddressCollimatorSingle(TTree* t,
+					 const std::string& name,
+					 int i);
   /// @}
   
   TTree* tree;

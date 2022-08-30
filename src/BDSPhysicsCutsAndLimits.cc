@@ -16,26 +16,43 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDebug.hh"
 #include "BDSPhysicsCutsAndLimits.hh"
+#include "BDSProcessUserSpecialCutsPDG.hh"
+
+#include "globals.hh"
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
 #include "G4Positron.hh"
 #include "G4Proton.hh"
 #include "G4StepLimiter.hh"
+#include "G4Types.hh"
 #include "G4UserSpecialCuts.hh"
 #include "G4Version.hh"
 
-BDSPhysicsCutsAndLimits::BDSPhysicsCutsAndLimits():
-  G4VPhysicsConstructor("BDSPhysicsCutsAndLimits")
+#include <set>
+
+BDSPhysicsCutsAndLimits::BDSPhysicsCutsAndLimits(const std::set<G4int>& pdgsToExcludeFromCuts):
+  G4VPhysicsConstructor("BDSPhysicsCutsAndLimits"),
+  useParticleExclusionFromCuts(!pdgsToExcludeFromCuts.empty())
 {
   stepLimiter = new G4StepLimiter();
   specialCuts = new G4UserSpecialCuts();
+  bdsSpecialCuts = new BDSProcessUserSpecialCutsPDG(pdgsToExcludeFromCuts);
+  if (useParticleExclusionFromCuts)
+    {
+      G4cout << __METHOD_NAME__ << "Excluding the following particle IDs from minimumKineticEnergy, minimumRange, maximumTrackLength cuts\n{ ";
+      for (const auto& pdgID : pdgsToExcludeFromCuts)
+        {G4cout << pdgID << " ";}
+      G4cout << "}" << G4endl;
+    }
 }
 
 BDSPhysicsCutsAndLimits::~BDSPhysicsCutsAndLimits()
 {
   delete stepLimiter;
   delete specialCuts;
+  delete bdsSpecialCuts;
 }
 
 void BDSPhysicsCutsAndLimits::ConstructParticle()
@@ -53,6 +70,8 @@ void BDSPhysicsCutsAndLimits::ConstructProcess()
 
   G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
 
+  auto cutsProcess = useParticleExclusionFromCuts ? bdsSpecialCuts : specialCuts;
+  
 #if G4VERSION_NUMBER > 1029
   auto aParticleIterator = GetParticleIterator();
 #endif
@@ -70,8 +89,8 @@ void BDSPhysicsCutsAndLimits::ConstructProcess()
 	{particle->SetApplyCutsFlag(true);}
 
       // apply general cuts processes to all particles
-      ph->RegisterProcess(stepLimiter,particle); // this is for MaxAllowedStep
-      ph->RegisterProcess(specialCuts,particle); // this is for all other limits
+      ph->RegisterProcess(stepLimiter, particle); // this is for MaxAllowedStep
+      ph->RegisterProcess(cutsProcess, particle); // this is for all other limits
     }
 
   SetActivated();

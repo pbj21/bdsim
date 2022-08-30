@@ -63,6 +63,11 @@ BDSIonDefinition::BDSIonDefinition(G4int    aIn,
       G4String message("Invalid ion definition: A is less than Z");
       throw BDSException(__METHOD_NAME__, message);
     }
+  if (charge > z)
+    {
+        G4String message("Invalid ion definition: Charge is greater than Z");
+        throw BDSException(__METHOD_NAME__, message);
+    }
   if (z != charge)
     {
       nElectrons = z - (G4int)charge;
@@ -124,5 +129,10 @@ void BDSIonDefinition::Parse(const G4String& definition)
     {
       nElectrons = z - charge;
       G4cout << __METHOD_NAME__ << nElectrons << " bound electrons to ion inferred from charge, A and Z." << G4endl;
+    }
+  if (charge > z)
+    {
+      G4String message("Invalid ion definition: Charge is greater than Z");
+      throw BDSException(__METHOD_NAME__, message);
     }
 }

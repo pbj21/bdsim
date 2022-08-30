@@ -23,6 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4VPhysicsConstructor.hh"
 
+#include <set>
+
+class BDSProcessUserSpecialCutsPDG;
 class G4StepLimiter;
 class G4UserSpecialCuts;
 
@@ -33,7 +36,8 @@ class G4UserSpecialCuts;
 class BDSPhysicsCutsAndLimits: public G4VPhysicsConstructor, public BDSSingleUse
 {
 public:
-  BDSPhysicsCutsAndLimits();
+  BDSPhysicsCutsAndLimits() = delete;
+  explicit BDSPhysicsCutsAndLimits(const std::set<G4int>& pdgsToExcludeFromCuts = {});
   virtual ~BDSPhysicsCutsAndLimits();
   /// @{ Assignment and copy constructor not implemented nor used
   BDSPhysicsCutsAndLimits& operator=(const BDSPhysicsCutsAndLimits&) = delete;
@@ -49,5 +53,7 @@ public:
 private:
   G4StepLimiter*     stepLimiter;  ///< Step limit process for MaxAllowedStep.
   G4UserSpecialCuts* specialCuts;  ///< Process for all other limits.
+  BDSProcessUserSpecialCutsPDG* bdsSpecialCuts;
+  G4bool useParticleExclusionFromCuts;
 };
 #endif

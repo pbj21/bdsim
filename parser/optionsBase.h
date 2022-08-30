@@ -238,6 +238,7 @@ namespace GMAD
     double   minimumKineticEnergy;
     double   minimumKineticEnergyTunnel;
     double   minimumRange;
+    std::string particlesToExcludeFromCuts;
     double   defaultRangeCut;
     double   prodCutPhotons;
     double   prodCutElectrons;

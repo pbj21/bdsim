@@ -435,6 +435,8 @@ void BDSExecOptions::Usage() const
 	<<"--circular                   : assume circular machine - turn control"            << G4endl
 	<<"--colours                    : list available colours included in bdsim"          << G4endl
 	<<"                               by default"                                        << G4endl
+	<<"--exportGeometryTo=<filename.extension> : export the fully constructed geometry"  << G4endl
+	<<"                               to a file. Only gdml extension supported."         << G4endl
 	<<"--E0=N                       : set E0 for the bunch for this run (GeV only)"      << G4endl
     	<<"--Ek0=N                      : set Ek0 for the bunch for this run (GeV only)"     << G4endl
 	<<"--geant4MacroFileName=<filename>        : macro run after visualisation"          << G4endl
