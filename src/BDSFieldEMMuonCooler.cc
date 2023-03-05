@@ -48,54 +48,54 @@ BDSFieldEMMuonCooler::BDSFieldEMMuonCooler(const BDSFieldInfoExtraMuonCooler* in
         std::vector<BDSFieldMag*> fields;
         std::vector<G4ThreeVector> fieldOffsets;
         for (const auto& ci : coilInfos)
-	  {
-	    fields.push_back(new BDSFieldMagSolenoidBlock(ci.current,
-							  true,
-							  ci.innerRadius,
-							  ci.radialThickness,
-							  ci.fullLengthZ));
-	    fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
-	  }
+          {
+            fields.push_back(new BDSFieldMagSolenoidBlock(ci.current,
+                                                          true,
+                                                          ci.innerRadius,
+                                                          ci.radialThickness,
+                                                          ci.fullLengthZ));
+            fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
+          }
         coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);
         break;
       }
     case BDSFieldType::solenoidsheet:
       {
-	const auto& coilInfos = info->coilInfos;
-	std::vector<BDSFieldMag*> fields;
-	std::vector<G4ThreeVector> fieldOffsets;
-	for (const auto& ci : coilInfos)
-	  {
-	    fields.push_back(new BDSFieldMagSolenoidSheet(ci.current,
-							  true,
-							  ci.innerRadius + 0.5*ci.radialThickness,
-							  ci.fullLengthZ));
-	    fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
-	  }
-	coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);
-	break;
+        const auto& coilInfos = info->coilInfos;
+        std::vector<BDSFieldMag*> fields;
+        std::vector<G4ThreeVector> fieldOffsets;
+        for (const auto& ci : coilInfos)
+          {
+            fields.push_back(new BDSFieldMagSolenoidSheet(ci.current,
+                                                          true,
+                                                          ci.innerRadius + 0.5*ci.radialThickness,
+                                                          ci.fullLengthZ));
+            fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
+          }
+        coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);
+        break;
       }
     case BDSFieldType::solenoidloop:
       {
-	const auto& coilInfos = info->coilInfos;
-	std::vector<BDSFieldMag*> fields;
-	std::vector<G4ThreeVector> fieldOffsets;
-	for (const auto& ci : coilInfos)
-	  {
-	    fields.push_back(new BDSFieldMagSolenoidLoop(ci.current,
-							 true,
-							 ci.innerRadius + 0.5*ci.radialThickness));
-	    fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
-	  }
-	coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);
-	break;
+        const auto& coilInfos = info->coilInfos;
+        std::vector<BDSFieldMag*> fields;
+        std::vector<G4ThreeVector> fieldOffsets;
+        for (const auto& ci : coilInfos)
+          {
+            fields.push_back(new BDSFieldMagSolenoidLoop(ci.current,
+                                                         true,
+                                                         ci.innerRadius + 0.5*ci.radialThickness));
+            fieldOffsets.emplace_back(G4ThreeVector(0,0,ci.offsetZ));
+          }
+        coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);
+        break;
       }
     default:
       {
-	G4String msg = "\"" + info->magneticFieldType.ToString();
-	msg += "\" is not a valid field model for a muon cooler B field";
-	throw BDSException(__METHOD_NAME__, msg);
-	break;
+        G4String msg = "\"" + info->magneticFieldType.ToString();
+        msg += "\" is not a valid field model for a muon cooler B field";
+        throw BDSException(__METHOD_NAME__, msg);
+        break;
       }
     }
 }
@@ -107,7 +107,7 @@ BDSFieldEMMuonCooler::~BDSFieldEMMuonCooler()
 }
 
 std::pair<G4ThreeVector, G4ThreeVector> BDSFieldEMMuonCooler::GetField(const G4ThreeVector& position,
-								       const G4double       t) const
+                                                                       const G4double       t) const
 {
   auto cf  = coilField->GetField(position, t);
   //auto rff = rfField->GetField(position, t);

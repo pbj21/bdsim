@@ -53,4 +53,3 @@ G4ThreeVector BDSFieldMagVectorSum::GetField(const G4ThreeVector& position,
     }
   return result;
 }
-

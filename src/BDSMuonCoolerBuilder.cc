@@ -107,13 +107,13 @@ BDSMuonCooler* BDS::BuildMuonCooler(const GMAD::Element* element,
   G4Material* surroundingMaterial = BDSMaterials::Instance()->GetMaterial(definition->surroundingMaterial);
   auto result = new BDSMuonCooler(G4String(element->name),
                                   elementChordLength,
-				  elementRadius,
-				  surroundingMaterial,
-				  coilInfos,
-				  cavityInfos,
-				  absorberInfos,
-				  beamPipeInfo,
-				  outerFieldRecipe);
+                                  elementRadius,
+                                  surroundingMaterial,
+                                  coilInfos,
+                                  cavityInfos,
+                                  absorberInfos,
+                                  beamPipeInfo,
+                                  outerFieldRecipe);
   return result;
 }
 
@@ -135,17 +135,17 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
                                                     &(definition->coilOffsetZ)};
   std::vector<std::vector<double> > coilVarsV;
   BDS::MuonParamsToVector(definition->name,
-			  coilVars,
-			  coilParamNames,
-			  nCoils,
-			  coilVarsV);
+                          coilVars,
+                          coilParamNames,
+                          nCoils,
+                          coilVarsV);
 
   std::vector<G4Material*> coilMaterials;
   BDS::MuonParamsToMaterials(definition->name,
-			     "coilMaterial",
-			     definition->coilMaterial,
-			     nCoils,
-			     coilMaterials);
+                             "coilMaterial",
+                             definition->coilMaterial,
+                             nCoils,
+                             coilMaterials);
   
   // build coil infos
   for (G4int i = 0; i < nCoils; i++)
@@ -185,16 +185,16 @@ void BDS::CheckMuonCoolerCoilInfosForOverlaps(const G4String& definitionName,
   for (G4int i = 0; i < (G4int)coilSquares.size(); i++)
     {
       for (G4int j = i+1; j < (G4int)coilSquares.size(); j++)
-	{
-	  if (i == j)
-	    {continue;}
-	  if (coilSquares[i].Overlaps(coilSquares[j]))
-	    {
-	      G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
-	      msg += " overlaps with coil #" + std::to_string(j) + "\n" + coilSquares[i].Str() + "\n" + coilSquares[j].Str();
-	      throw BDSException(__METHOD_NAME__,msg);
-	    }
-	}
+        {
+          if (i == j)
+            {continue;}
+          if (coilSquares[i].Overlaps(coilSquares[j]))
+            {
+              G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
+              msg += " overlaps with coil #" + std::to_string(j) + "\n" + coilSquares[i].Str() + "\n" + coilSquares[j].Str();
+              throw BDSException(__METHOD_NAME__,msg);
+            }
+        }
     }
   
   // check all lie inside the container length and radius
@@ -202,20 +202,20 @@ void BDS::CheckMuonCoolerCoilInfosForOverlaps(const G4String& definitionName,
   for (G4int i = 0; i < (G4int)coilSquares.size(); i++)
     {
       if (std::abs(coilSquares[i].z1) > halfLength || std::abs(coilSquares[i].z2) > halfLength)
-	{
-	  G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
-	  msg += " lies outside +- the half length (" + std::to_string(halfLength) + " mm) of the element \"" + elementName + "\"\n";
-	  msg += coilSquares[i].Str();
-	  throw BDSException(__METHOD_NAME__,msg);
-	}
+        {
+          G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
+          msg += " lies outside +- the half length (" + std::to_string(halfLength) + " mm) of the element \"" + elementName + "\"\n";
+          msg += coilSquares[i].Str();
+          throw BDSException(__METHOD_NAME__,msg);
+        }
       if (coilSquares[i].r2 >= elementRadius)
-	{
-	  G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
-	  msg += " outer radius (" + std::to_string(coilSquares[i].r2) + " mm) is greater than 1/2 the horizontalWidth of the element \"" + elementName + "\"\n";
-	  msg += elementName + ": horizontalWidth = " + std::to_string(elementRadius) + " mm\n";
-	  msg += "Coil cross-section: " + coilSquares[i].Str();
-	  throw BDSException(__METHOD_NAME__,msg);
-	}
+        {
+          G4String msg = "error in definition \"" + definitionName + "\": coil #" + std::to_string(i);
+          msg += " outer radius (" + std::to_string(coilSquares[i].r2) + " mm) is greater than 1/2 the horizontalWidth of the element \"" + elementName + "\"\n";
+          msg += elementName + ": horizontalWidth = " + std::to_string(elementRadius) + " mm\n";
+          msg += "Coil cross-section: " + coilSquares[i].Str();
+          throw BDSException(__METHOD_NAME__,msg);
+        }
     }
 }
 
@@ -244,10 +244,10 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
                                                    &(definition->absorberWedgeApexToBase)};
   std::vector<std::vector<double> > absVarsV;
   BDS::MuonParamsToVector(definition->name,
-			  absVars,
-			  absParamNames,
-			  nAbsorbers,
-			  absVarsV);
+                          absVars,
+                          absParamNames,
+                          nAbsorbers,
+                          absVarsV);
   absVarsV.reserve(absVars.size());
   
   // check the absorber type list
@@ -265,25 +265,25 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
   if (absorberTypeV.size() == 1)
     {
       for (G4int i = 1; i < nAbsorbers; i++)
-	{absorberTypeV.push_back(absorberTypeV[0]);}
+        {absorberTypeV.push_back(absorberTypeV[0]);}
     }
   for (G4int i = 0; i < (G4int)absorberTypeV.size(); i++)
     {
       auto search = absorberTypes.find(absorberTypeV[i]);
       if (search == absorberTypes.end())
-	{
-	  G4String msg = "unknown type of absorber: \"" + absorberTypeV[i] + "\" at index " + std::to_string(i);
-	  msg += "\nin definition \"" + definition->name + "\"";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
+        {
+          G4String msg = "unknown type of absorber: \"" + absorberTypeV[i] + "\" at index " + std::to_string(i);
+          msg += "\nin definition \"" + definition->name + "\"";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
     }
   
   std::vector<G4Material*> absorberMaterials;
   BDS::MuonParamsToMaterials(definition->name,
-			     "absorberMaterial",
-			     definition->absorberMaterial,
-			     nAbsorbers,
-			     absorberMaterials);
+                             "absorberMaterial",
+                             definition->absorberMaterial,
+                             nAbsorbers,
+                             absorberMaterials);
   
   // build absorber infos
   for (G4int i = 0; i < nAbsorbers; i++)
@@ -292,14 +292,14 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
       G4double dy = absVarsV[7][i] * CLHEP::m; // wedgeOffsetY
       G4double dz = absVarsV[0][i] * CLHEP::m;
       BDS::MuonCoolerAbsorberInfo info = {absorberTypeV[i],            // absorberType
-					  absVarsV[1][i] * CLHEP::m,   // cylinderLength
-					  absVarsV[2][i] * CLHEP::m,   // cylinderRadius
-					  absVarsV[3][i] * CLHEP::rad, // wedgeOpeningAngle
-					  absVarsV[4][i] * CLHEP::m,   // wedgeHeight
-					  absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
-					  G4ThreeVector(dx,dy,dz),     // wedgeOffset
-					  absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
-					  absorberMaterials[i]
+                                          absVarsV[1][i] * CLHEP::m,   // cylinderLength
+                                          absVarsV[2][i] * CLHEP::m,   // cylinderRadius
+                                          absVarsV[3][i] * CLHEP::rad, // wedgeOpeningAngle
+                                          absVarsV[4][i] * CLHEP::m,   // wedgeHeight
+                                          absVarsV[5][i] * CLHEP::rad, // wedgeRotationAngle
+                                          G4ThreeVector(dx,dy,dz),     // wedgeOffset
+                                          absVarsV[8][i] * CLHEP::m,   // wedgeApexToBase
+                                          absorberMaterials[i]
       };
       result.push_back(info);
     }
@@ -323,28 +323,28 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
   G4int nRFCavities = definition->nRFCavities;
   std::vector<std::string> rfParamNames = {"rfOffsetZ",
                                            "rfLength",
-					   "rfVoltage",
-					   "rfPhase",
-					   "rfFrequency",
-					   "rfWindowThickness",
-					   "rfWindowRadius",
-					   "rfCavityRadius",
-					   "rfCavityThickness"};
+                                           "rfVoltage",
+                                           "rfPhase",
+                                           "rfFrequency",
+                                           "rfWindowThickness",
+                                           "rfWindowRadius",
+                                           "rfCavityRadius",
+                                           "rfCavityThickness"};
   std::vector<const std::list<double>*> rfVars = {&(definition->rfOffsetZ),
                                                   &(definition->rfLength),
-						  &(definition->rfVoltage),
-						  &(definition->rfPhase),
-						  &(definition->rfFrequency),
-						  &(definition->rfWindowThickness),
-						  &(definition->rfWindowRadius),
-						  &(definition->rfCavityRadius),
-						  &(definition->rfCavityThickness)};
+                                                  &(definition->rfVoltage),
+                                                  &(definition->rfPhase),
+                                                  &(definition->rfFrequency),
+                                                  &(definition->rfWindowThickness),
+                                                  &(definition->rfWindowRadius),
+                                                  &(definition->rfCavityRadius),
+                                                  &(definition->rfCavityThickness)};
   std::vector<std::vector<double> > rfVarsV;
   BDS::MuonParamsToVector(definition->name,
-			  rfVars,
-			  rfParamNames,
-			  nRFCavities,
-			  rfVarsV);
+                          rfVars,
+                          rfParamNames,
+                          nRFCavities,
+                          rfVarsV);
   std::vector<G4Material*> windowMaterials;
   BDS::MuonParamsToMaterials(definition->name,
                              "rfWindowMaterial",
@@ -368,14 +368,14 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
   for (G4int i = 0; i < nRFCavities; i++)
     {
       BDS::MuonCoolerCavityInfo info = {rfVarsV[0][i] * CLHEP::m, // offsetZ
-	                                      rfVarsV[1][i] * CLHEP::m, // lengthZ
+                                              rfVarsV[1][i] * CLHEP::m, // lengthZ
                                         cavityVacuumMaterials[i], // cavity vacuum material
                                         rfVarsV[5][i] * CLHEP::m, // windowThickness
                                         windowMaterials[i],       // window material
-					                              rfVarsV[6][i] * CLHEP::m, // windowRadius
-					                              cavityMaterials[i],       // cavity material
-					                              rfVarsV[7][i] * CLHEP::m, // cavityRadius
-					                              rfVarsV[8][i] * CLHEP::m, // cavityThickness
+                                                                      rfVarsV[6][i] * CLHEP::m, // windowRadius
+                                                                      cavityMaterials[i],       // cavity material
+                                                                      rfVarsV[7][i] * CLHEP::m, // cavityRadius
+                                                                      rfVarsV[8][i] * CLHEP::m, // cavityThickness
                                         nullptr};                 // no field recipe for now
       result.push_back(info);
     }
@@ -437,11 +437,11 @@ void BDS::MuonParamsToVector(const G4String&                              defini
     {
       auto& v = paramsV[i];
       if (((G4int) v.size() != nExpectedParams && v.size() != 1) || v.empty())
-	{
-	  G4String msg = "error in coolingchannel definition \"" + definitionName + "\"\n";
-	  msg += "number of " + paramNames[i] + " doesn't match expected number (" + std::to_string(nExpectedParams) + ") or isn't 1";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
+        {
+          G4String msg = "error in coolingchannel definition \"" + definitionName + "\"\n";
+          msg += "number of " + paramNames[i] + " doesn't match expected number (" + std::to_string(nExpectedParams) + ") or isn't 1";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
       // if the vector is single-valued, then we copy the first value up to nExpected
       // values so all are the same size
       if (v.size() == 1)
@@ -473,16 +473,16 @@ void BDS::MuonParamsToMaterials(const G4String&               definitionName,
       G4String materialName = G4String(materialNames.front());
       G4Material* material = BDSMaterials::Instance()->GetMaterial(materialName);
       for (G4int i = 0; i < nExpectedParams; i++)
-	{materials.push_back(material);}
+        {materials.push_back(material);}
     }
   else
     {
       std::vector<std::string> materialNamesV = {std::begin(materialNames), std::end(materialNames)};
       for (G4int i = 0; i < (G4int)materialNamesV.size(); i++)
-	{
-	  G4Material* material = BDSMaterials::Instance()->GetMaterial(materialNamesV[i]);
-	  materials[i] = material;
-	}
+        {
+          G4Material* material = BDSMaterials::Instance()->GetMaterial(materialNamesV[i]);
+          materials[i] = material;
+        }
     }
 }
 

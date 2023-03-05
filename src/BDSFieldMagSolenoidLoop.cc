@@ -48,15 +48,15 @@ BDSFieldMagSolenoidLoop::BDSFieldMagSolenoidLoop(G4double strength,
   
   // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
   if (strengthIsCurrent)
-  {
-    I = strength;
-    B0 = CLHEP::mu0 * strength / (2*a);
-  }
+    {
+      I = strength;
+      B0 = CLHEP::mu0 * strength / (2*a);
+    }
   else
-  {// strength is B0 -> calculate current
-    B0 = strength;
-    I = B0 * 2 * a / CLHEP::mu0;
-  }
+    {// strength is B0 -> calculate current
+      B0 = strength;
+      I = B0 * 2 * a / CLHEP::mu0;
+    }
   
   mu0OverPiTimesITimesA = CLHEP::mu0 * I * a / CLHEP::pi;
 }
@@ -97,9 +97,9 @@ G4ThreeVector BDSFieldMagSolenoidLoop::GetField(const G4ThreeVector& position,
   
   // technically possible for integral to return nan, so protect against it and default to B0 along z
   if (std::isnan(Brho))
-	  {Brho = 0;}
+    {Brho = 0;}
   if (std::isnan(Bz))
-	  {Bz = B0;}
+    {Bz = B0;}
   
   // we have to be consistent with the phi we calculated at the beginning,
   // so unit rho is in the x direction.
