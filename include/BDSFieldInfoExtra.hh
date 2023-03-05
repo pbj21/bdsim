@@ -59,9 +59,9 @@ class BDSFieldInfoExtraMuonCooler: public BDSFieldInfoExtra
 public:
   BDSFieldInfoExtraMuonCooler() = delete;
   BDSFieldInfoExtraMuonCooler(BDSFieldType magneticFieldTypeIn,
-			      BDSFieldType electricFieldTypeIn,
-			      const std::vector<BDS::MuonCoolerCoilInfo>& coilInfosIn,
-			      const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfosIn):
+                              BDSFieldType electricFieldTypeIn,
+                              const std::vector<BDS::MuonCoolerCoilInfo>& coilInfosIn,
+                              const std::vector<BDS::MuonCoolerCavityInfo>& cavityInfosIn):
     magneticFieldType(magneticFieldTypeIn),
     electricFieldType(electricFieldTypeIn),
     coilInfos(coilInfosIn),

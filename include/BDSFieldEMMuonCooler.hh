@@ -46,7 +46,7 @@ public:
 
   /// Accessor to get B and E field.
   virtual std::pair<G4ThreeVector, G4ThreeVector> GetField(const G4ThreeVector& position,
-							   const G4double       t) const;
+                                                           const G4double       t) const;
   
 private:
   BDSFieldMag* coilField;
