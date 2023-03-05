@@ -307,13 +307,13 @@ std::vector<BDS::MuonCoolerAbsorberInfo> BDS::BuildMuonCoolerAbsorberInfo(const 
   return result;
 }
 
-void BDS::CheckMuonCoolerAbsorberInfoForOverlaps(const G4String& definitionName,
-                                                 const G4String& elementName,
-                                                 const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfos,
-                                                 const std::vector<BDS::SquareCheck>& coilInfos,
-                                                 const std::vector<BDS::SquareCheck>& cavityInfos,
-                                                 G4double elementChordLength,
-                                                 G4double elementRadius)
+void BDS::CheckMuonCoolerAbsorberInfoForOverlaps(const G4String& /*definitionName*/,
+                                                 const G4String& /*elementName*/,
+                                                 const std::vector<BDS::MuonCoolerAbsorberInfo>& /*absorberInfos*/,
+                                                 const std::vector<BDS::SquareCheck>& /*coilInfos*/,
+                                                 const std::vector<BDS::SquareCheck>& /*cavityInfos*/,
+                                                 G4double /*elementChordLength*/,
+                                                 G4double /*elementRadius*/)
 {;}
 
 std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMAD::CoolingChannel* definition)
@@ -383,12 +383,12 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
   return result;
 }
 
-void BDS::CheckMuonCoolerCavityInfosForOverlaps(const G4String& definitionName,
-                                                const G4String& elementName,
-                                                const std::vector<BDS::SquareCheck>& cavitySquares,
-                                                const std::vector<BDS::SquareCheck>& coilSquares,
-                                                G4double elementChordLength,
-                                                G4double elementRadius)
+void BDS::CheckMuonCoolerCavityInfosForOverlaps(const G4String& /*definitionName*/,
+                                                const G4String& /*elementName*/,
+                                                const std::vector<BDS::SquareCheck>& /*cavitySquares*/,
+                                                const std::vector<BDS::SquareCheck>& /*coilSquares*/,
+                                                G4double /*elementChordLength*/,
+                                                G4double /*elementRadius*/)
 {;}
 
 std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCoils(const std::vector<BDS::MuonCoolerCoilInfo>& coilInfos)
@@ -396,12 +396,12 @@ std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCoils(const std::vector<
   std::vector<BDS::SquareCheck> squares;
   squares.reserve(coilInfos.size());
   for (auto& info : coilInfos)
-  {
-    squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.fullLengthZ,
-                                          info.offsetZ+0.5*info.fullLengthZ,
-                                          info.innerRadius,
-                                          info.innerRadius+info.radialThickness});
-  }
+    {
+      squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.fullLengthZ,
+                                            info.offsetZ+0.5*info.fullLengthZ,
+                                            info.innerRadius,
+                                            info.innerRadius+info.radialThickness});
+    }
   return squares;
 }
 
