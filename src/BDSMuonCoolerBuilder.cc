@@ -368,14 +368,14 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
   for (G4int i = 0; i < nRFCavities; i++)
     {
       BDS::MuonCoolerCavityInfo info = {rfVarsV[0][i] * CLHEP::m, // offsetZ
-                                              rfVarsV[1][i] * CLHEP::m, // lengthZ
+                                        rfVarsV[1][i] * CLHEP::m, // lengthZ
                                         cavityVacuumMaterials[i], // cavity vacuum material
                                         rfVarsV[5][i] * CLHEP::m, // windowThickness
                                         windowMaterials[i],       // window material
-                                                                      rfVarsV[6][i] * CLHEP::m, // windowRadius
-                                                                      cavityMaterials[i],       // cavity material
-                                                                      rfVarsV[7][i] * CLHEP::m, // cavityRadius
-                                                                      rfVarsV[8][i] * CLHEP::m, // cavityThickness
+                                        rfVarsV[6][i] * CLHEP::m, // windowRadius
+                                        cavityMaterials[i],       // cavity material
+                                        rfVarsV[7][i] * CLHEP::m, // cavityRadius
+                                        rfVarsV[8][i] * CLHEP::m, // cavityThickness
                                         nullptr};                 // no field recipe for now
       result.push_back(info);
     }
@@ -411,13 +411,13 @@ std::vector<BDS::SquareCheck> BDS::MuonCoolerSquaresFromCavities(const std::vect
   squares.reserve(cavityInfos.size());
   /*
   for (auto& info : cavityInfos)
-  {
-    squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.lengthZ,
-                                          info.offsetZ+0.5*info.lengthZ,
-                                          info.innerRadius,
-                                          info.innerRadius+info.radialThickness});
-  }
-   */
+    {
+      squares.emplace_back(BDS::SquareCheck{info.offsetZ-0.5*info.lengthZ,
+                                            info.offsetZ+0.5*info.lengthZ,
+                                            info.innerRadius,
+                                            info.innerRadius+info.radialThickness});
+    }
+  */
   return squares;
 }
 
@@ -445,10 +445,10 @@ void BDS::MuonParamsToVector(const G4String&                              defini
       // if the vector is single-valued, then we copy the first value up to nExpected
       // values so all are the same size
       if (v.size() == 1)
-      {
-        for (G4int j = 1; j < nExpectedParams; j++)
-        {v.push_back(v[0]);}
-      }
+        {
+          for (G4int j = 1; j < nExpectedParams; j++)
+            {v.push_back(v[0]);}
+        }
     }
 }
 
