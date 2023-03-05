@@ -232,7 +232,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
 
   // construct placement geometry from parser
   BDSBeamline* mainBeamLine = BDSAcceleratorModel::Instance()->BeamlineSetMain().massWorld;
-  auto componentFactory = new BDSComponentFactory(designParticle, userComponentFactory);
+  auto componentFactory = new BDSComponentFactory(designParticle, userComponentFactory, false); // false for printing out integrator set again
   placementBL = BDS::BuildPlacementGeometry(BDSParser::Instance()->GetPlacements(),
                                             mainBeamLine,
                                             componentFactory);
@@ -716,7 +716,7 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
   // Geant4 at the right time, so we have a separate placement call for them
   BDSBeamlineSet mainBL = BDSAcceleratorModel::Instance()->BeamlineSetMain();
   PlaceBeamlineInWorld(mainBL.massWorld,
-		       worldPV, checkOverlaps, true);
+		       worldPV, checkOverlaps, true, false, false, false, true); // record pv set to element for output
   PlaceBeamlineInWorld(mainBL.endPieces,
 		       worldPV, checkOverlaps);
   if (BDSGlobalConstants::Instance()->BuildTunnel())
@@ -726,9 +726,9 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
     }
   // No energy counter SD added here as individual placements have that attached
   // during construction time
-  PlaceBeamlineInWorld(placementBL, worldPV, checkOverlaps);
+  PlaceBeamlineInWorld(placementBL, worldPV, checkOverlaps, false, false, false, false, true);
 
-  // Place BLMs. Similarly no sensitivity set here - done at construction time.
+  // Place BLMs. Similarly, no sensitivity set here - done at construction time.
   PlaceBeamlineInWorld(BDSAcceleratorModel::Instance()->BLMsBeamline(),
 		       worldPV,
 		       checkOverlaps,
@@ -741,7 +741,7 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
   for (auto const& bl : extras)
     {// extras is a map so iterator has first and second for key and value
       // note these are currently not sensitive as there's no CL frame for them
-      PlaceBeamlineInWorld(bl.second.massWorld, worldPV, checkOverlaps);
+      PlaceBeamlineInWorld(bl.second.massWorld, worldPV, checkOverlaps, false, false, false, false, true);
       PlaceBeamlineInWorld(bl.second.endPieces, worldPV, checkOverlaps);
     }
 }
@@ -752,7 +752,8 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
 						   G4bool                setRegions,
 						   G4bool                registerInfo,
 						   G4bool                useCLPlacementTransform,
-						   G4bool                useIncrementalCopyNumbers)
+						   G4bool                useIncrementalCopyNumbers,
+                                                   G4bool                registerPlacementNamesForOutput)
 {
   if (!beamline)
     {return;}
@@ -768,7 +769,7 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
 	{
 	  auto accComp = element->GetAcceleratorComponent();
 	  const G4String regionName = accComp->GetRegion();
-	  if(!regionName.empty()) // ie string is defined so we should attach region
+	  if (!regionName.empty()) // ie string is defined so we should attach region
 	    {
 	      G4Region* region = BDSAcceleratorModel::Instance()->Region(regionName);
 	      auto contLV = accComp->GetContainerLogicalVolume();
@@ -789,13 +790,15 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
       if (registerInfo)
         {
 	  BDSPhysicalVolumeInfo* theinfo = new BDSPhysicalVolumeInfo(element->GetName(),
-                                                               placementName,
+								     placementName,
 								     element->GetSPositionMiddle(),
 								     element->GetIndex(),
 								     beamline);
 	  
 	  BDSPhysicalVolumeInfoRegistry::Instance()->RegisterInfo(pvs, theinfo, true);
         }
+      if (registerPlacementNamesForOutput)
+	{BDSPhysicalVolumeInfoRegistry::Instance()->RegisterPVsForOutput(element, pvs);}
       i++; // for incremental copy numbers
     }
 }

@@ -1,0 +1,8 @@
+include ptc-loop.gmad;
+
+option, recreate=1,
+	recreateFileName="ptcfile-sample.root";
+
+
+option, startFromEvent=4,
+	ngenerate=1;

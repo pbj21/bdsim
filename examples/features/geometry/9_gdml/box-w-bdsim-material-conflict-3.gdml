@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials>
+		<element name="nitrogen" formula="N" Z="7">
+			<atom value="14.01"/>
+		</element>
+		<element name="oxygen" formula="O" Z="8">
+			<atom value="16.0"/>
+		</element>
+		<material name="airbdsim">
+			<D value="0.00129"/>
+			<fraction ref="nitrogen" n="0.7"/>
+			<fraction ref="oxygen" n="0.3"/>
+		</material>
+	</materials>
+	<solids>
+		<box name="box" x="20" y="30" z="40" lunit="mm"/>
+		<box name="world" x="200" y="200" z="200" lunit="mm"/>
+	</solids>
+	<structure>
+		<volume name="boxlv">
+			<materialref ref="airbdsim"/>
+			<solidref ref="box"/>
+		</volume>
+		<volume name="worldlv">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="world"/>
+			<physvol name="boxpv">
+				<volumeref ref="boxlv"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="worldlv"/>
+	</setup>
+</gdml>

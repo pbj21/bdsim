@@ -23,6 +23,7 @@ class BDSBunch;
 class BDSComponentConstructor;
 class BDSComponentFactoryUser;
 class BDSDetectorConstruction;
+class BDSGlobalConstants;
 class BDSOutput;
 class BDSParser;
 class BDSRunManager;
@@ -77,6 +78,10 @@ public:
   /// and the (user-provided) constructor that can construct it.
   void RegisterUserComponent(const G4String& componentTypeName,
 			     BDSComponentConstructor* componentConstructor);
+
+  /// Generate the primaries, fill in the output and close the output. In a function to
+  /// simplify the main.
+  void GeneratePrimariesOnly(const BDSGlobalConstants* globals);
   
   /// Provide a physics list that will be used inplace of the BDSIM generate one.
   void RegisterUserPhysicsList(G4VModularPhysicsList* userPhysicsListIn) {userPhysicsList = userPhysicsListIn;}

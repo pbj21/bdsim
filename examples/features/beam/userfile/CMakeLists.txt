@@ -1,6 +1,8 @@
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 simple_testing(bunch-userfile                  "--file=userfile.gmad"                  "")
+simple_testing(bunch-userfile-ngenerate        "--file=userfile2.gmad"                 "")
+simple_testing(bunch-userfile-loop             "--file=userfile-loop.gmad"             "")
 simple_testing(bunch-userfile-assumed-particle "--file=userfile-assumed-particle.gmad" "")
 simple_testing(bunch-userfile-below-rest-mass  "--file=userfile-below-rest-mass.gmad"  "")
 simple_testing(bunch-userfile-blank-lines      "--file=userfile-blank-lines.gmad"      "")
@@ -12,6 +14,7 @@ simple_testing(bunch-userfile-one-column       "--file=userfile-one-column.gmad"
 simple_testing(bunch-userfile-neutral-particle "--file=userfile-neutral.gmad"          "")
 simple_testing(bunch-userfile-placet           "--file=userfile-placet.gmad"           "")
 simple_testing(bunch-userfile-recreate         "--file=userfile-recreate.gmad"         "")
+simple_testing(bunch-userfile-recreate-w-loop  "--file=userfile-recreate-w-loop.gmad"  "")
 simple_testing(bunch-userfile-unknown-particle "--file=userfile-unknown-particle.gmad" "")
 simple_testing(bunch-userfile-ek               "--file=userfile-ek.gmad"               "")
 simple_testing(bunch-userfile-s                "--file=userfile-s.gmad"                "")
@@ -20,8 +23,14 @@ simple_testing(bunch-userfile-all-columns1     "--file=userfile-all-columns.gmad
 simple_testing(bunch-userfile-all-columns2     "--file=userfile-all-columns2.gmad"     "")
 simple_testing(bunch-userfile-all-columns3     "--file=userfile-all-columns3.gmad"     "")
 simple_testing(bunch-userfile-xp0-yp0          "--file=userfile-xp0yp0.gmad"           "")
+simple_testing(bunch-userfile-skip-lines       "--file=userfile-skip-lines.gmad"       "")
+simple_testing(bunch-userfile-fully-featured   "--file=userfile-fully-featured.gmad"   "")
 
-simple_fail(bunch-userfile-bad-units   "--file=userfile-bad-units.gmad")
+simple_fail(bunch-userfile-bad-units          "--file=userfile-bad-units.gmad")
+simple_fail(bunch-userfile-bad-nlinesSkip     "--file=userfile-bad-skipping.gmad")
+simple_fail(bunch-userfile-bad-nlinesIgnore   "--file=userfile-bad-nlinesIgnore.gmad")
+simple_fail(bunch-userfile-bad-loop           "--file=userfile-bad-loop.gmad")
+simple_fail(bunch-userfile-bad-recreate-loop  "--file=userfile-bad-recreate-loop.gmad")
 
 if (USE_GZSTREAM)
   simple_testing(bunch-userfile-gz "--file=userfile-gz.gmad" "")

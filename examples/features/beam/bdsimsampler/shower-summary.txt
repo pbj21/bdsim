@@ -1,0 +1,49 @@
+BDSIM output file - using DataLoader
+Event #: 0
+[-321, -211, -11, 11, 22, 211, 310, 321, 2112, 2212, 3122]
+Event #: 1
+[-211, 11, 22, 211, 310, 321, 2212]
+Event #: 2
+[-211, 22, 211, 310, 2112, 2212]
+Event #: 3
+[-2212, -211, -11, 11, 22, 211, 2112, 2212]
+Event #: 4
+[-211, 211, 2112, 2212]
+Event #: 5
+[2212]
+Event #: 6
+[-211, -11, 11, 22, 211, 321, 2112, 2212]
+Event #: 7
+[-211, 22, 211, 2112, 2212, 1000010030]
+Event #: 8
+[-211, 211, 2112, 2212, 1000010020]
+Event #: 9
+[-211, 211, 321, 2112, 2212]
+Event  0 unique pdgids:  {3122, -321}
+Event  1 no unique pdgids
+Event  2 no unique pdgids
+Event  3 unique pdgids:  {-2212}
+Event  4 no unique pdgids
+Event  5 no unique pdgids
+Event  6 no unique pdgids
+Event  7 unique pdgids:  {1000010030}
+Event  8 unique pdgids:  {1000010020}
+Event  9 no unique pdgids
+
+All pdgids across the file:  [-2212, -321, -211, -11, 11, 22, 211, 310, 321, 2112, 2212, 3122, 1000010020, 1000010030]
+
+Count of number of events with a given PDG ID
+-2212 1
+-321 1
+-211 9
+-11 3
+11 4
+22 6
+211 9
+310 3
+321 4
+2112 8
+2212 10
+3122 1
+1000010020 1
+1000010030 1

@@ -1,0 +1,19 @@
+include userfile.gmad;
+
+beam, distrFile  = "userbeamdata-comment.dat";
+
+! ignore first 2 lines
+beam, nlinesIgnore=2;
+
+! skip the first 2 valid data lines after this
+! these will actually be found on lines 4 and 6
+! first good line should be line 8
+beam, nlinesSkip=2;
+
+! should loop 1x set of coordinates
+option, ngenerate=3;
+
+! need to turn off default file length matching
+! and request to allow looping also
+beam, distrFileMatchLength=0,
+      distrFileLoop=1;

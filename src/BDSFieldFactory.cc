@@ -165,7 +165,9 @@ BDSFieldFactory::BDSFieldFactory():
   G4double defaultRigidity = std::numeric_limits<double>::max();
   if (designParticle)
     {defaultRigidity = designParticle->BRho();}
-  PrepareFieldDefinitions(BDSParser::Instance()->GetFields(), defaultRigidity);
+  // we do this so we don't have to have used the parser to use this class
+  if (BDSParser::IsInitialised())
+    {PrepareFieldDefinitions(BDSParser::Instance()->GetFields(), defaultRigidity);}
   useOldMultipoleOuterFields = BDSGlobalConstants::Instance()->UseOldMultipoleOuterFields();
 }
 
@@ -1113,7 +1115,7 @@ BDSFieldObjects* BDSFieldFactory::CreateTeleporter(const BDSFieldInfo& info)
   G4Mag_EqRhs*     bEqOfMotion = new G4Mag_UsualEqRhs(bGlobalField);
 
   G4MagIntegratorStepper* integrator;
-  auto mapfile = BDSGlobalConstants::Instance()->PTCOneTurnMapFileName();
+  auto mapfile = BDSGlobalConstants::Instance()->PTCOneTurnMapFileName(); // TBC - this shouldn't come from global constants
   BDSPTCOneTurnMap* otm = nullptr;
 
   if (!mapfile.empty())

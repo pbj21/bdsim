@@ -1,0 +1,4 @@
+include userfile.gmad;
+
+! more than the 5 entries in the file and looping should be off by default
+option, ngenerate=6;

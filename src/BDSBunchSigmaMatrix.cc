@@ -29,7 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/PhysicalConstants.h"
 
 BDSBunchSigmaMatrix::BDSBunchSigmaMatrix():
-  BDSBunchGaussian("sigma matrix")
+  BDSBunchGaussian("gauss/gausstwiss")
 {;}
 
 void BDSBunchSigmaMatrix::SetOptions(const BDSParticleDefinition* beamParticle,

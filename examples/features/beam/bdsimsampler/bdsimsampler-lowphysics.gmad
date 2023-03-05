@@ -1,10 +1,10 @@
 include bdsimsampler.gmad;
 
 beam, distrType="bdsimsampler:c1",
-      distrFile="../../data/shower1.root";
+      distrFile="../../data/shower.root";
 
 
 ! reduce physics list to nothing - so only magnetic tracking
 ! we should have trouble loading exotic particles we don't
-! know the properties of
+! know the properties of and skip them
 option, physicsList="";

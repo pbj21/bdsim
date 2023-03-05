@@ -1,0 +1,4 @@
+include ptc.gmad;
+
+
+beam, nlinesSkip=2;

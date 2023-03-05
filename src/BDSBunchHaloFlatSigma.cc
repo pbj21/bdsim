@@ -110,7 +110,7 @@ namespace BDS
 }
 
 BDSBunchHaloFlatSigma::BDSBunchHaloFlatSigma():
-  BDSBunch("halo-nsigma-flat"),
+  BDSBunch("halosigma"),
   alphaX(0.0), alphaY(0.0),
   betaX(0.0),  betaY(0.0),
   emitX(0.0), emitY(0.0),

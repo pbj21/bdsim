@@ -56,6 +56,7 @@ void Placement::clear()
   autoColour = true;
   stripOuterVolume = false;
   fieldAll   = "";
+  dontReloadGeometry = false;
 }
 
 void Placement::PublishMembers()
@@ -84,6 +85,7 @@ void Placement::PublishMembers()
   publish("autoColour",    &Placement::autoColour);
   publish("stripOuterVolume", &Placement::stripOuterVolume);
   publish("fieldAll",      &Placement::fieldAll);
+  publish("dontReloadGeometry", &Placement::dontReloadGeometry);
 }
 
 void Placement::print()const
@@ -97,23 +99,24 @@ void Placement::print()const
 	    << "referenceElementNumber " << referenceElementNumber << "\n"
 	    << "s "             << s             << "\n"
 	    << "x "             << x             << "\n"
-    	    << "y "             << y             << "\n"
-    	    << "z "             << z             << "\n"
-    	    << "phi "           << phi           << "\n"
-    	    << "theta "         << theta         << "\n"
-    	    << "psi "           << psi           << "\n"
-    	    << "axisX "         << axisX         << "\n"
-    	    << "axisY "         << axisY         << "\n"
-    	    << "axisZ "         << axisZ         << "\n"
-    	    << "angle "         << angle         << "\n"
+      << "y "             << y             << "\n"
+    	<< "z "             << z             << "\n"
+      << "phi "           << phi           << "\n"
+      << "theta "         << theta         << "\n"
+      << "psi "           << psi           << "\n"
+      << "axisX "         << axisX         << "\n"
+      << "axisY "         << axisY         << "\n"
+      << "axisZ "         << axisZ         << "\n"
+      << "angle "         << angle         << "\n"
 	    << "sensitive "     << sensitive     << "\n"
 	    << "axisAngle "     << axisAngle     << "\n"
 	    << "side \""        << side          << "\"\n"
-            << "sideOffset "    << sideOffset    << "\n"
+      << "sideOffset "    << sideOffset    << "\n"
 	    << "axisAngle "     << axisAngle     << "\n"
-        << "autoColour "    << autoColour    << "\n"
-        << "stripOuterVolume "    << stripOuterVolume << "\n"
-	    << "fieldAll \""    << fieldAll      << "\"" << std::endl;
+      << "autoColour "    << autoColour    << "\n"
+      << "stripOuterVolume "    << stripOuterVolume << "\n"
+	    << "fieldAll \""    << fieldAll      << "\"" << "\n"
+      << "dontReloadGeometry " << dontReloadGeometry << std::endl;
 }
 
 Placement::Placement(const SamplerPlacement& sp):
@@ -137,6 +140,7 @@ Placement::Placement(const SamplerPlacement& sp):
   axisAngle = sp.axisAngle;
   autoColour = false;
   stripOuterVolume = false;
+  dontReloadGeometry = false;
 }
 
 Placement::Placement(const ScorerMesh& sm):
@@ -161,6 +165,7 @@ Placement::Placement(const ScorerMesh& sm):
   axisAngle = sm.axisAngle;
   autoColour = false;
   stripOuterVolume = false;
+  dontReloadGeometry = false;
 }
 
 Placement::Placement(const BLMPlacement& bp):
@@ -185,6 +190,7 @@ Placement::Placement(const BLMPlacement& bp):
   sideOffset = bp.sideOffset;
   autoColour = false;
   stripOuterVolume = false;
+  dontReloadGeometry = false;
 }
 
 Placement::Placement(const Query& qu):
@@ -208,4 +214,5 @@ Placement::Placement(const Query& qu):
   axisZ      = qu.axisZ;
   angle      = qu.angle;
   axisAngle  = qu.axisAngle;
+  dontReloadGeometry = false;
 }

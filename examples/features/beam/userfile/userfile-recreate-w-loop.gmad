@@ -1,0 +1,7 @@
+include userfile-loop.gmad;
+
+option, recreate=1,
+	recreateFileName="userfile-sample.root",
+	startFromEvent=7;
+
+option, ngenerate=2;

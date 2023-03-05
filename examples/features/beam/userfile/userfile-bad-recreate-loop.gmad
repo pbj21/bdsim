@@ -1,0 +1,8 @@
+include userfile.gmad;
+
+option, recreate=1,
+	recreateFileName="userfile-sample.root",
+	startFromEvent=3;
+
+
+option, ngenerate=4;

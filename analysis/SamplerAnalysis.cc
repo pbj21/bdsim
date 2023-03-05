@@ -26,6 +26,7 @@ double SamplerAnalysis::particleMass = 0;
 
 SamplerAnalysis::SamplerAnalysis():
   s(nullptr),
+  npart(0),
   S(0),
   debug(false)
 {
@@ -40,6 +41,7 @@ SamplerAnalysis::SamplerAnalysis(BDSOutputROOTEventSampler<double> *samplerIn,
                                  bool debugIn):
 #endif
   s(samplerIn),
+  npart(0),
   S(0),
   debug(debugIn)
 {
@@ -290,7 +292,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
     optical[i][3]  = (1+std::pow(optical[i][1],2))/optical[i][2];                                // gamma
 
     optical[i][10] = S;
-    optical[i][11] = npart;
+    optical[i][11] = (double)npart;
   }
 
   // statistical error calculation
@@ -408,7 +410,7 @@ double SamplerAnalysis::powSumToCentralMoment(fourDArray&   powSumsIn,
       double s_1_0 = powSumsIn[a][b][m][n];
       int k = m > n ? a : b;
 
-      moment = s_1_0/npartIn+offsets[k];
+      moment = s_1_0/(double)npartIn+offsets[k];
     }
 
   else if((n == 2 && m == 0) || (n == 0 && m == 2))
@@ -517,7 +519,8 @@ double SamplerAnalysis::centMomToCovariance(fourDArray&   centMoms,
 					    int k,
 					    int i,
 					    int j)
-{  
+{
+  double npartInD = (double)npartIn;
   double cov = 0.0;
 
   int a = 0;
@@ -540,7 +543,7 @@ double SamplerAnalysis::centMomToCovariance(fourDArray&   centMoms,
 	      m_2_0 = centMoms[a][a+1][0][2];
 	}
 
-      cov = -((npartIn-3)*std::pow(m_2_0,2))/(npartIn*(npartIn-1)) + m_4_0/npartIn;
+      cov = -((npartInD-3)*std::pow(m_2_0,2))/(npartInD*(npartInD-1)) + m_4_0/npartInD;
     }
   
   else if(i == 2 && j == 2)
@@ -552,7 +555,7 @@ double SamplerAnalysis::centMomToCovariance(fourDArray&   centMoms,
       m_0_2 = centMoms[a][a+1][0][2];
       m_2_2 = centMoms[a][a+1][2][2];
 
-      cov = -((npartIn-2)*std::pow(m_1_1,2))/(npartIn*(npartIn-1)) + (m_0_2*m_2_0)/(npartIn*(npartIn-1)) + m_2_2/npartIn;
+      cov = -((npartInD-2)*std::pow(m_1_1,2))/(npartInD*(npartInD-1)) + (m_0_2*m_2_0)/(npartInD*(npartInD-1)) + m_2_2/npartInD;
     }
 
   else if((i == 0 && j == 2) || (i == 1 && j == 2) || (i == 2 && j == 0) || (i == 2 && j == 1))
@@ -572,7 +575,7 @@ double SamplerAnalysis::centMomToCovariance(fourDArray&   centMoms,
       m_3_1 = centMoms[a][a+1][1][3];
     }
 
-    cov = -((npartIn-3)*m_1_1*m_2_0)/(npartIn*(npartIn-1)) + m_3_1/npartIn;
+    cov = -((npartInD-3)*m_1_1*m_2_0)/(npartInD*(npartInD-1)) + m_3_1/npartInD;
   }
   else if((i == 0 && j == 1) || (i == 1 && j == 0) )
   {
@@ -583,7 +586,7 @@ double SamplerAnalysis::centMomToCovariance(fourDArray&   centMoms,
     m_0_2 = centMoms[a][a+1][2][0];
     m_2_2 = centMoms[a][a+1][2][2];
 
-    cov = 2*std::pow(m_1_1,2)/(npartIn*(npartIn-1)) - m_2_0*m_0_2/npartIn + m_2_2/npartIn;
+    cov = 2*std::pow(m_1_1,2)/(npartInD*(npartInD-1)) - m_2_0*m_0_2/npartInD + m_2_2/npartInD;
   }
 
   return cov;

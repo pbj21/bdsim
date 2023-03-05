@@ -59,19 +59,19 @@ namespace GMAD
   };
   
   template <typename T>
-    void Region::set_value(std::string property, T value)
+  void Region::set_value(std::string property, T value)
     {
 #ifdef BDSDEBUG
       std::cout << "region> Setting value " << std::setw(25) << std::left << property << value << std::endl;
 #endif
       // member method can throw runtime_error, catch and exit gracefully
-      try {
-	set(this,property,value);
-      }
-      catch(const std::runtime_error&) {
-	std::cerr << "Error: region> unknown option \"" << property << "\" with value " << value  << std::endl;
-	exit(1);
-      }
+      try
+	{set(this,property,value);}
+      catch(const std::runtime_error&)
+	{
+	  std::cerr << "Error: region> unknown option \"" << property << "\" with value \"" << value << "\"" << std::endl;
+	  exit(1);
+	}
     }
 }
 

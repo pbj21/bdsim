@@ -9,4 +9,4 @@ beam, particle="proton",
       distrType="userfile",
       distrFileFormat="x[mm]",
       distrFile="xoffset.dat",
-      matchDistrFileLength=0;
+      distrFileMatchLength=0;

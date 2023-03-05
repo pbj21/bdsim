@@ -1,0 +1,5 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! instead of matching the file, we limit to just N events
+!option, ngenerate=2;
+! This has to be an executable option with --ngenerate=N

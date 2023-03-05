@@ -59,10 +59,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   nCollimators(0),
+  nCavities(0),
   localSamplersInitialised(false),
   localCollimatorsInitialised(false)
 {
   G4bool storeCollimatorInfo = globals->StoreCollimatorInfo();
+  G4bool storeCavityInfo = globals->StoreCavityInfo();
   G4bool storeTurn       = globals->StoreELossTurn();
   G4bool storeLinks      = globals->StoreELossLinks();
   G4bool storeLocal      = globals->StoreELossLocal();
@@ -79,7 +81,7 @@ BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   headerOutput  = new BDSOutputROOTEventHeader();
   beamOutput    = new BDSOutputROOTEventBeam();
   optionsOutput = new BDSOutputROOTEventOptions();
-  modelOutput   = new BDSOutputROOTEventModel(storeCollimatorInfo);
+  modelOutput   = new BDSOutputROOTEventModel(storeCollimatorInfo, storeCavityInfo);
 
   eLoss       = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
 					   storeGlobal, storeTime, storeStepLength,
@@ -273,36 +275,45 @@ void BDSOutputStructures::InitialiseMaterialMap()
   
   const auto materialTable = G4Material::GetMaterialTable(); // should be an std::vector<G4Material*>*
   
-  // It's totally permitted to use degenerate material names as the geometry is done by pointer
-  // We need a way to sort the materials for a given input irrespective of pointer or memory
+  // It's completely permitted to use degenerate material names as the geometry is constructed by
+  // pointer. We need a way to sort the materials for a given input irrespective of pointer or memory
   // location so the result is the same for multiple runs of bdsim.
+
   // Use a pair of <name, density>. A c++ map will be internally sorted by keys and the various
-  // comparison operators are defined by pairs in <utility>.
-  // Once sorted, by a map, we then loop over that map and generate integer IDs for each
-  // material
-  // This is a little overkill really as we ensure in BDSMaterials we don't make materials
-  // with degenerate names and ultimately, we can't define degenerate materials in GMAD so
-  // this shouldn't happen. Perhaps it could from GDML.
+  // comparison operators are defined by pairs in <utility>. Once sorted, by a map, we then loop
+  // over that map and generate integer IDs for each material.
+  
+  // This may seem overkill as we ensure in BDSMaterials we don't make materials with
+  // degenerate names and ultimately, we can't define degenerate materials in GMAD so
+  // this shouldn't happen. But, if someone turns off preprocessGDML and they have degenerate
+  // material names in multiple GDML files or a repeated definition of the same material
+  // in multiple GDML files, we will end up with different G4Material instances but still
+  // need a way to distinguish them withouth using the pointer.
+  
   std::map<std::pair<G4String, G4double>, G4Material*> sortingMap;
   std::map<G4String, int> nameCount;
   std::map<G4Material*, G4String> matToUniqueName;
+  
   for (const auto& mat : *materialTable)
     {
       G4String matName = mat->GetName();
-      sortingMap[std::make_pair(matName, mat->GetDensity())] = mat;
+      G4String matNameUnique = matName;
       
       auto search = nameCount.find(matName);
       if (search != nameCount.end())
 	{
 	  search->second += 1;
-	  matToUniqueName[mat] = matName + std::to_string(search->second);
+	  matNameUnique = matName + std::to_string(search->second);
+	  matToUniqueName[mat] = matNameUnique;
 	}
       else
 	{
 	  nameCount[matName] = 0;
 	  matToUniqueName[mat] = matName;
 	}
+      sortingMap[std::make_pair(matNameUnique, mat->GetDensity())] = mat;
     }
+  
   short int i = 0;
   for (const auto& kv : sortingMap)
     {
@@ -337,7 +348,8 @@ void BDSOutputStructures::PrepareCollimatorInformation()
 {
   const G4String collimatorPrefix = "COLL_";
   const BDSBeamline* flatBeamline = BDSAcceleratorModel::Instance()->BeamlineMain();
-  collimatorIndices = flatBeamline->GetIndicesOfCollimators();
+  if (flatBeamline)
+    {collimatorIndices = flatBeamline->GetIndicesOfCollimators();}
   nCollimators = (G4int)collimatorIndices.size();
   
   for (auto index : collimatorIndices)
@@ -359,6 +371,36 @@ void BDSOutputStructures::PrepareCollimatorInformation()
       G4double xDiff = info.xSizeOut - info.xSizeIn;
       G4double yDiff = info.ySizeOut - info.ySizeIn;
       collimatorDifferences.emplace_back(xDiff, yDiff); // construct in place
+    }
+}
+
+void BDSOutputStructures::PrepareCavityInformation()
+{
+    const G4String cavityPrefix = "CAV_";
+    const BDSBeamline* flatBeamline = BDSAcceleratorModel::Instance()->BeamlineMain();
+    if (flatBeamline)
+      {
+        std::vector<G4int> pillboxIndices = flatBeamline->GetIndicesOfElementsOfType("cavity_pillbox");
+        std::vector<G4int> rectIndices = flatBeamline->GetIndicesOfElementsOfType("cavity_rectangular");
+        std::vector<G4int> ellipticalIndices = flatBeamline->GetIndicesOfElementsOfType("cavity_elliptical");
+        cavityIndices = pillboxIndices;
+        cavityIndices.insert(std::end(cavityIndices), std::begin(rectIndices), std::end(rectIndices));
+        cavityIndices.insert(std::end(cavityIndices), std::begin(ellipticalIndices), std::end(ellipticalIndices));
+        nCavities = (G4int) cavityIndices.size();
+      }
+    for (auto index : cavityIndices)
+    {
+      // prepare output structure name
+      const BDSBeamlineElement* el = flatBeamline->at(index);
+      // use the 'placement' name for a unique name (with copy number included)
+      G4String cavityName = cavityPrefix + el->GetPlacementName();
+      cavityNames.push_back(cavityName);
+      cavityIndicesByName[el->GetName()]          = index;
+      cavityIndicesByName[el->GetPlacementName()] = index;
+
+      BDSOutputROOTEventCavityInfo info;
+      info.Fill(el);
+      cavityInfo.push_back(info);
     }
 }
 

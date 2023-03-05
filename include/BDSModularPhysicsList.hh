@@ -180,6 +180,7 @@ private:
   void IonINCLXX();
   void LaserWire();
   void Muon();
+  void MuonInelastic();
   void NeutronTrackingCut();
   void Optical();
   void QGSPBERT();

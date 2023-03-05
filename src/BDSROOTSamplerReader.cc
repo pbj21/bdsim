@@ -28,14 +28,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPrimaryVertexInformationV.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "G4Event.hh"
+#include "G4EventManager.hh"
 #include "G4LorentzVector.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
-#include "G4RunManager.hh"
-#include "G4TransportationManager.hh"
-#include "G4VSolid.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -44,19 +43,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>
 
 BDSROOTSamplerReader::BDSROOTSamplerReader(const G4String& distrType,
-					   const G4String& fileNameIn,
-					   BDSBunchEventGenerator* bunchIn,
+                                           const G4String& fileNameIn,
+                                           BDSBunchEventGenerator* bunchIn,
+                                           G4bool loopFileIn,
                                            G4bool removeUnstableWithoutDecayIn,
-					   G4bool warnAboutSkippedParticlesIn):
-  currentFileEventIndex(0),
-  nEventsInFile(0),
+                                           G4bool warnAboutSkippedParticlesIn):
+  BDSPrimaryGeneratorFile(loopFileIn, bunchIn),
   reader(nullptr),
   fileName(fileNameIn),
-  bunch(bunchIn),
   removeUnstableWithoutDecay(removeUnstableWithoutDecayIn),
-  warnAboutSkippedParticles(warnAboutSkippedParticlesIn),
-  worldSolid(nullptr),
-  anyParticlesFoundAtAll(false)
+  warnAboutSkippedParticles(warnAboutSkippedParticlesIn)
 {
   std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrType); // before:after
   samplerName = ba.second;
@@ -64,6 +60,11 @@ BDSROOTSamplerReader::BDSROOTSamplerReader(const G4String& distrType,
   referenceBeamMomentumOffset = bunch->ReferenceBeamMomentumOffset();
   reader = new BDSOutputLoaderSampler(fileName, samplerName);
   nEventsInFile = reader->NEventsInFile();
+  bunch->SetNEventsInFile(nEventsInFile);
+  G4cout << __METHOD_NAME__ << nEventsInFile << " events found in file" << G4endl;
+  if (!bunch)
+    {throw BDSException(__METHOD_NAME__, "must be constructed with a valid BDSBunchEventGenerator instance");}
+  SkipEvents(bunch->eventGeneratorNEventsSkip);
 }
 
 BDSROOTSamplerReader::~BDSROOTSamplerReader()
@@ -75,38 +76,44 @@ void BDSROOTSamplerReader::GeneratePrimaryVertex(G4Event* anEvent)
 {
   if (!reader)
     {throw BDSException(__METHOD_NAME__, "no file reader available");}
-  
-  G4int nParticles = 0;
+
   currentVertices.clear();
-  while (nParticles < 1)
-    {
-      if (currentFileEventIndex > nEventsInFile)
-	{
-	  G4cout << __METHOD_NAME__ << "End of file reached. Return to beginning of file for next event." << G4endl;
-	  currentFileEventIndex = 0;
-	}
-      ReadSingleEvent(currentFileEventIndex);
-      nParticles = (G4int)currentVertices.size();
-      if (nParticles > 0)
-        {anyParticlesFoundAtAll = true;}
-      currentFileEventIndex++;
-      if ((nParticles < 1) && (currentFileEventIndex > nEventsInFile) && !anyParticlesFoundAtAll)
-        {throw BDSException(__METHOD_NAME__, "no events in file provide any suitable particles from the sampler "+samplerName);}
-    }
-  for (auto* v : currentVertices)
-    {anEvent->AddPrimaryVertex(v);}
-  currentVertices.clear();
+
+  // currentFileEventIndex is zero counting by nEventsInFile will be 1 greater
+  if (currentFileEventIndex >= nEventsInFile)
+	  {
+	    endOfFileReached = true;
+	    G4cout << __METHOD_NAME__ << "End of file reached. ";
+	  
+	    if (loopFile)
+	      {
+          if (OKToLoopFile())
+            {
+              G4cout << "Returning to beginning of file for next event." << G4endl;
+              currentFileEventIndex = 0;
+              endOfFileReached = false;
+            }
+          else
+            {
+              BDS::Warning(__METHOD_NAME__, "file looping requested, but 0 events passed filters - ending.");
+              return;
+            }
+	      }
+	    else
+	      {
+	        G4cout << G4endl; // to flush output
+	        return;
+	      }
+	  }
+      
+  ReadSingleEvent(currentFileEventIndex, anEvent);
 }
 
 void BDSROOTSamplerReader::RecreateAdvanceToEvent(G4int eventOffset)
 {
   G4cout << "BDSROOTSamplerLoader::RecreateAdvanceToEvent> Advancing file to event: " << eventOffset << G4endl;
-  for (G4int i = 0; i < eventOffset; i++)
-    {
-      G4Event* event = new G4Event();
-      GeneratePrimaryVertex(event);
-      delete event;
-    }
+  ThrowExceptionIfRecreateOffsetTooHigh(eventOffset);
+  SkipEvents(eventOffset);
 }
 
 void BDSROOTSamplerReader::ReadPrimaryParticlesFloat(G4long index)
@@ -153,7 +160,7 @@ void BDSROOTSamplerReader::ReadPrimaryParticlesDouble(G4long index)
     }
 }
 
-void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
+void BDSROOTSamplerReader::ReadSingleEvent(G4long index, G4Event* anEvent)
 {
   if (reader->DoublePrecision())
     {ReadPrimaryParticlesDouble(index);}
@@ -166,7 +173,7 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
     {
       const auto vertex = xyzVertex.vertex;
       // if the particle definition isn't found from the pdgcode in the construction
-      // of G4PrimaryParticle, it means the mass, charge, etc will be wrong - don't
+      // of G4PrimaryParticle, it means the mass, charge, etc. will be wrong - don't
       // stack this particle into the vertex.
       // technically shouldn't happen as bdsim produced this output... but safety first
       const G4ParticleDefinition* pd = vertex->GetParticleDefinition();
@@ -176,9 +183,6 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
       
       if (deleteIt)
         {
-#ifdef BDSDEBUG
-          G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pd->GetPDGEncoding() << G4endl;
-#endif
           nParticlesSkipped++;
           continue;
         }
@@ -191,21 +195,21 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
       centralCoords.AddOffset(xyzVertex.xyz); // add on the local offset from the sampler
       
       BDSParticleCoordsFull local(centralCoords.x,
-				  centralCoords.y,
-				  centralCoords.z,
-				  unitMomentum.x(),
-				  unitMomentum.y(),
-				  unitMomentum.z(),
-				  centralCoords.T,
-				  centralCoords.s,
+                                  centralCoords.y,
+                                  centralCoords.z,
+                                  unitMomentum.x(),
+                                  unitMomentum.y(),
+                                  unitMomentum.z(),
+                                  centralCoords.T,
+                                  centralCoords.s,
                                   vertex->GetTotalEnergy(),
-				  overallWeight);
+                                  overallWeight);
 
       if (!bunch->AcceptParticle(local, rp, vertex->GetKineticEnergy(), vertex->GetPDGcode()))
-	{
-	  nParticlesSkipped++;
-	  continue;
-	}
+        {
+          nParticlesSkipped++;
+          continue;
+        }
   
       BDSParticleCoordsFullGlobal fullCoordsGlobal = bunch->ApplyTransform(local);
   
@@ -216,26 +220,26 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
       
       // ensure it's in the world - not done in primary generator action for event generators
       if (!VertexInsideWorld(fullCoordsGlobal.global.Position()))
-	{
-	  delete g4vtx;
-	  nParticlesSkipped++;
-	  continue;
-	}  
+        {
+          delete g4vtx;
+          nParticlesSkipped++;
+          continue;
+        }
       
       G4double brho     = 0;
       G4double charge   = vertex->GetCharge();
       G4double momentum = vertex->GetTotalMomentum();
       if (BDS::IsFinite(charge)) // else leave as 0
-	{
-	  brho = momentum / CLHEP::GeV / BDS::cOverGeV / charge;
-	  brho *= CLHEP::tesla*CLHEP::m; // rigidity (in Geant4 units)
-	}
+        {
+          brho = momentum / CLHEP::GeV / BDS::cOverGeV / charge;
+          brho *= CLHEP::tesla*CLHEP::m; // rigidity (in Geant4 units)
+        }
       auto vertexInfo = new BDSPrimaryVertexInformation(fullCoordsGlobal,
-                                             vertex->GetTotalMomentum(),
-                                             vertex->GetCharge(),
-                                             brho,
-                                             vertex->GetMass(),
-                                             vertex->GetPDGcode());
+                                                        vertex->GetTotalMomentum(),
+                                                        vertex->GetCharge(),
+                                                        brho,
+                                                        vertex->GetMass(),
+                                                        vertex->GetPDGcode());
 
       // update momentum in case of a beam line transform
       auto prim = new G4PrimaryParticle(*vertex);
@@ -249,21 +253,34 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index)
   
   if (nParticlesSkipped > 0 && warnAboutSkippedParticles)
     {G4cout << __METHOD_NAME__ << nParticlesSkipped << " particles skipped" << G4endl;}
+
+  if (currentVertices.empty())
+    {// no particles found that pass criteria... we can't simulate this event... abort and move on
+      nEventsSkipped++;
+      if (warnAboutSkippedParticles)
+        {G4cout << __METHOD_NAME__ << "no particles found in event number: " << currentFileEventIndex << " in the file" << G4endl;}
+    }
+  else
+    {
+      vertexGeneratedSuccessfully = true;
+      nEventsReadThatPassedFilters++;
+    }
   
   // clear initially loaded ones
   for (auto& v : vertices)
     {delete v.vertex;}
   vertices.clear();
+
+  currentFileEventIndex++;
+
+  for (auto* v : currentVertices)
+    {anEvent->AddPrimaryVertex(v);}
+  currentVertices.clear();
 }
 
-G4bool BDSROOTSamplerReader::VertexInsideWorld(const G4ThreeVector& pos) const
+void BDSROOTSamplerReader::SkipEvents(G4long eventOffset)
 {
-  if (!worldSolid)
-    {// cache the world solid
-      G4Navigator* navigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
-      G4VPhysicalVolume* world = navigator->GetWorldVolume();
-      worldSolid = world->GetLogicalVolume()->GetSolid();
-    }
-  EInside qinside = worldSolid->Inside(pos);
-  return qinside == kInside;
+  if (eventOffset > 0)
+    {G4cout << __METHOD_NAME__ << "skipping " << eventOffset << " into file." << G4endl;}
+  currentFileEventIndex = eventOffset;
 }

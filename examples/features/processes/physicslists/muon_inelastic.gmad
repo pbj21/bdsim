@@ -1,0 +1,8 @@
+c1: rcol, l=2*m, outerDiameter=20*cm, material="copper";
+l1: line = (c1);
+use, l1;
+
+option, physicsList="muon_inelastic";
+
+beam, particle="mu-",
+      energy=50*GeV;

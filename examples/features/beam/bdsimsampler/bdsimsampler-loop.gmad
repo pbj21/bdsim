@@ -1,4 +1,7 @@
 include bdsimsampler.gmad;
 
-! only 10 events in file - force looping
-option, ngenerate=13;
+beam, distrFileMatchLength=0,
+      distrFileLoop=1;
+
+! purposively request more events than in file to test looping
+option, ngenerate=20;

@@ -26,8 +26,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSBunch;
 class BDSOutputLoader;
+class BDSPrimaryGeneratorFile;
 class BDSPTCOneTurnMap;
-class BDSROOTSamplerReader;
 class G4Event;
 class G4ParticleGun;
 
@@ -36,9 +36,6 @@ namespace GMAD
   class Beam;
 }
 
-#ifdef USE_HEPMC3
-class BDSHepMC3Reader;
-#endif
 
 /**
  * @brief Generates primary particle vertices using BDSBunch.
@@ -50,7 +47,7 @@ class BDSPrimaryGeneratorAction: public G4VUserPrimaryGeneratorAction
 public:
   /// Bunch must have a valid particle definition (ie not nullptr).
   BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
-			    const GMAD::Beam& beam);
+                            const GMAD::Beam& beam);
   virtual ~BDSPrimaryGeneratorAction();
 
   /// Main interface for Geant4. Prepare primary(ies) for the event.
@@ -61,18 +58,20 @@ public:
   /// Register a PTC map instance used in the teleporter which this
   /// class will set initial (first turn) primary coordinates for.
   void RegisterPTCOneTurnMap(BDSPTCOneTurnMap* otmIn) {oneTurnMap = otmIn;}
-private:  
+  
+private:
+  /// For a file-based event generator there are a few checks we have to do - put in a function to keep tidy.
+  void GeneratePrimariesFromFile(G4Event* anEvent);
   
   G4ParticleGun* particleGun;     ///< Geant4 particle gun that creates single particles.
-  BDSBunch* bunch;                ///< BDSIM particle generator.  
+  BDSBunch* bunch;                ///< BDSIM particle generator.
   G4bool writeASCIISeedState;     ///< Cache of whether to write seed state as ASCII per event.
   BDSOutputLoader* recreateFile;  ///< Optional output handler for restoring seed state. 
   G4bool   recreate;              ///< Whether to load seed state at start of event from rootevent file.
   G4int    eventOffset;           ///< The offset in the file to read events from when setting the seed.
   G4bool   useASCIISeedState;     ///< Whether to use the ascii seed state each time.
   G4bool   ionPrimary;            ///< The primary particle will be an ion.
-  G4bool   useEventGeneratorFile; ///< Whether to use event generator file.
-  G4bool   useSamplerLoader;      ///< Whether to use a sampler loader.
+  G4bool   distrFileMatchLength;  ///< Match external file length for event generator.
   
   /// World extent that particle coordinates are checked against to ensure they're inside it.
   BDSExtent worldExtent;
@@ -84,11 +83,7 @@ private:
   /// Cached OTM for setting first turn primary coords.
   BDSPTCOneTurnMap* oneTurnMap;
 
-#ifdef USE_HEPMC3
-  /// Event generator file loader.
-  BDSHepMC3Reader* hepMC3Reader;
-#endif
-  BDSROOTSamplerReader* samplerReader;
+  BDSPrimaryGeneratorFile* generatorFromFile;
 };
 
 #endif

@@ -196,18 +196,18 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
 									      info.BRho());
       
       delete tempField; // clear up
-      
-      G4double ratio = (*scalingStrength)[scalingKey] / (*calculatedStrengths)[scalingKey];
+
+      G4double calculatedNumber = (*calculatedStrengths)[scalingKey];
+      G4double ratio = (*scalingStrength)[scalingKey] / calculatedNumber;
       if (!std::isnormal(ratio))
         {
           G4cout << __METHOD_NAME__ << "invalid ratio detected (" << ratio << ") setting to 1.0" << G4endl;
           ratio = 1;
         }
       G4double newScale = result->Scaling() * ratio;
-#ifdef BDSDEBUG
-      G4cout << "Ratio of supplied strength to calculated map strength: " << ratio << G4endl;
-      G4cout << "New scale factor (inc. units): " << newScale << G4endl;
-#endif
+      G4cout << "autoScale> Calculated " << scalingKey << " = " << calculatedNumber << G4endl;
+      G4cout << "autoScale> Ratio of supplied strength to calculated map strength: " << ratio << G4endl;
+      G4cout << "autoScale> New overall scaling factor: " << bScaling*ratio << G4endl;
       result->SetScaling(newScale);
       delete calculatedStrengths;
     }

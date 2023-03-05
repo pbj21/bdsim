@@ -2,7 +2,7 @@
 include bdsimsampler-lowphysics.gmad;
 
 ! restore physics list
-option, physicsList="all_particles";
+option, physicsList="all_particles decay";
 
 ! we choose a kinetic energy above the primary energy of the original file
 ! which will mean all particles are filtered out, so none will pass

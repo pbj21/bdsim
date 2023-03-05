@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSGlobalConstants;
 class BDSOutputROOTEventAperture;
 class BDSOutputROOTEventBeam;
+class BDSOutputROOTEventCavityInfo;
 class BDSOutputROOTEventCollimator;
 class BDSOutputROOTEventCollimatorInfo;
 class BDSOutputROOTEventCoords;
@@ -78,7 +79,10 @@ protected:
   /// required or not based on number of collimators.
   void PrepareCollimatorInformation();
 
-  /// Construct collimtors.
+  /// Extract number of collimators and their names from beam line.
+  void PrepareCavityInformation();
+
+  /// Construct collimators.
   void InitialiseCollimators();
 
   /// Clear the local particle data structure.
@@ -179,7 +183,14 @@ protected:
   /// Cache of aperture differences for each collimator info to avoid repeated calculation and
   /// to avoid storing unnecessary output in the collimator info.
   std::vector<std::pair<G4double, G4double> >   collimatorDifferences;
-  
+
+  // cavity specific output
+  std::vector<G4String>     cavityNames;         ///< Names of cavities in output structures.
+  G4int                     nCavities;           ///< Number of cavities in beam line.
+  std::vector<G4int>        cavityIndices;       ///< Indices in beam line that are cavities.
+  std::map<G4String, G4int> cavityIndicesByName; ///< Indices mapped to their name.
+  std::vector<BDSOutputROOTEventCavityInfo> cavityInfo; ///< Cavity parameters.
+
   std::map<G4Material*, short int> materialToID;
   std::map<short int, G4String>    materialIDToNameUnique;
   

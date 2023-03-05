@@ -83,8 +83,8 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
     }
 }
 
-BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componentName,
-						       const G4String&  formatAndFileName,
+BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String               componentName,
+						       const G4String&        formatAndFileName,
 						       std::map<G4String, G4Colour*>* colourMapping,
 						       G4bool                 autoColour,
 						       G4double               suggestedLength,
@@ -93,7 +93,8 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
 						       G4bool                 makeSensitive,
 						       BDSSDType              sensitivityType,
                                                        G4bool                 stripOuterVolumeAndMakeAssembly,
-                                                       G4UserLimits*          userLimitsToAttachToAllLVs)
+                                                       G4UserLimits*          userLimitsToAttachToAllLVs,
+                                                       G4bool                 dontReloadGeometry)
 {
   std::pair<G4String, G4String> ff = BDS::SplitOnColon(formatAndFileName);
   G4String fileName = BDS::GetFullPath(ff.second);
@@ -105,6 +106,14 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   // the load the same geometry twice with/without stripping
   if (stripOuterVolumeAndMakeAssembly)
     {searchName += "_stripped";}
+  
+  // we have this option to purposively not reload geometry uniquely for multiple
+  // instances by different component names - we need this sometimes, but we must
+  // use it cautiously knowing all the instances will be identical
+  // therefore we use a fixed nonsense name that someone is prevented from calling
+  // a component (because it's an option)
+  if (dontReloadGeometry)
+    {componentName = "dontReloadGeometry";}
   
   auto nameAndField = std::make_pair(searchName, componentName);
   const auto search = registry.find(nameAndField);

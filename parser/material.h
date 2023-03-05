@@ -69,19 +69,19 @@ namespace GMAD
   };
 
   template <typename T>
-    void Material::set_value(const std::string& property, T value)
+  void Material::set_value(const std::string& property, T value)
     {
 #ifdef BDSDEBUG
       std::cout << "parser> Setting value " << std::setw(25) << std::left << property << value << std::endl;
 #endif
       // member method can throw runtime_error, catch and exit gracefully
-      try {
-        set(this,property,value);
-      }
-      catch(const std::runtime_error&) {
-        std::cerr << "Error: parser> unknown material option \"" << property << "\" with value " << value << std::endl;
-        exit(1);
-      }
+      try
+        {set(this,property,value);}
+      catch (const std::runtime_error&)
+	{
+	  std::cerr << "Error: parser> unknown material option \"" << property << "\" with value \"" << value << "\"" << std::endl;
+	  exit(1);
+	}
     }
 }
 

@@ -144,8 +144,10 @@ int main(int argc, char *argv[])
   // shortcut for handiness
 #ifndef __ROOTDOUBLE__
   typedef BDSOutputROOTEventSampler<float> samplerd;
+  typedef float SamplerDataType;
 #else
   typedef BDSOutputROOTEventSampler<double> samplerd;
+  typedef double SamplerDataType;
 #endif
 
   // setup local objects, branches and link to output file
@@ -162,7 +164,7 @@ int main(int argc, char *argv[])
     }
 
   std::cout << "Writing to BDSIM file event by event" << std::endl;
-  // we can only loose particles so the number of entries in the first
+  // we can only lose particles so the number of entries in the first
   // is the number of 'events' or entries we'll use
   int nEvents   = (int)input->segments[0].size();
   int nSamplers = (int)input->size(); // we know our localSamplers has the same size
@@ -184,16 +186,16 @@ int main(int argc, char *argv[])
 
 	  double p = nominalMomentum*(1. + data.pt);
 	  double E = std::sqrt(std::pow(p,2) + std::pow(mass,2));
-	  lSampler->energy.push_back(E);
-	  lSampler->p.push_back(p);
-	  lSampler->x.push_back(data.x);
-	  lSampler->y.push_back(data.y);
+	  lSampler->energy.push_back((SamplerDataType)E);
+	  lSampler->p.push_back((SamplerDataType)p);
+	  lSampler->x.push_back((SamplerDataType)data.x);
+	  lSampler->y.push_back((SamplerDataType)data.y);
 	  lSampler->z = 0;                   // local z always 0
 
-	  lSampler->xp.push_back(data.px);
-	  lSampler->yp.push_back(data.py);
-	  lSampler->zp.push_back(std::sqrt(1 - std::pow(data.px,2) - std::pow(data.py,2)));
-	  lSampler->T.push_back(data.T);
+	  lSampler->xp.push_back((SamplerDataType)data.px);
+	  lSampler->yp.push_back((SamplerDataType)data.py);
+	  lSampler->zp.push_back((SamplerDataType)(std::sqrt(1 - std::pow(data.px,2) - std::pow(data.py,2))));
+	  lSampler->T.push_back((SamplerDataType)data.T);
 
 	  lSampler->weight.push_back(1);
 	  lSampler->partID.push_back(pdgID);
@@ -201,7 +203,7 @@ int main(int argc, char *argv[])
 	  lSampler->trackID.push_back(0);
 	  lSampler->modelID = 0;
 	  lSampler->turnNumber.push_back(0);
-	  lSampler->S = data.s;
+	  lSampler->S = (SamplerDataType)data.s;
 	}
       outputFile->cd();
       eventOutputTree->Fill();

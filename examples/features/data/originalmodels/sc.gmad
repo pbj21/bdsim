@@ -1,10 +1,12 @@
 d1 : drift,      l=0.5*m;
-fq1: quadrupole, l=0.1*m, k1=0.1; 
-d2 : drift,      l=1.0*m;
+fq1: quadrupole, l=0.1*m, k1=0.1;
+d2a: drift,      l=0.4*m;
+c1: rcol, l=0.2*m, xsize=3*cm, ysize=4*cm, material="graphite", horizontalWidth=0.2*m;
+d2b : drift,     l=0.4*m;
 dq1: quadrupole, l=0.1*m, k1=-0.1;
 d3 : drift,      l=0.5*m;
 
-fodo: line = (d1,fq1, d2, dq1, d3);
+fodo: line = (d1, fq1, d2a, c1, d2b, dq1, d3);
 
 simpleCollimation: line = (fodo,fodo);
 use,period=simpleCollimation;
@@ -16,10 +18,10 @@ option, ngenerate=10,
 	beampipeThickness=0.1*cm,
 	defaultRangeCut=1*cm,	
     	buildTunnel=1,
-	checkOverlaps=1,
 	storeTrajectories=1,
 	storeElossTunnel=1,
-	storeElossWorld=1;
+	storeElossWorld=1,
+        storeCollimatorInfo=1;
 
 beam, particle="e-",
       energy=1.0*GeV,

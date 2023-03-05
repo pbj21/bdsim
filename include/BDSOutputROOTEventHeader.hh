@@ -56,9 +56,12 @@ public:
   std::vector<std::string> trajectoryFilters;  ///< Names of filters.
   bool skimmedFile;                            ///< Whether this is a skimmed output file
   unsigned long long int nOriginalEvents;      ///< Number of original events if skimmed.
+  unsigned long long int nEventsRequested;     ///< Number of events requested to be simulated from the file.
+  unsigned long long int nEventsInFile;        ///< Number of events in the input distribution file irrespective of filters.
+  unsigned long long int nEventsInFileSkipped; ///< Number of events from distribution file that were skipped due to filters.
   
   /// Update the file type.
-  void SetFileType(std::string fileTypeIn) {fileType = fileTypeIn;}
+  void SetFileType(const std::string& fileTypeIn) {fileType = fileTypeIn;}
   
   /// #ifndef __ROOTBUILD__
   /// Nominally, we don't expose the fill methods to the analysis root dictionaries

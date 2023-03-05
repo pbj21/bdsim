@@ -52,7 +52,8 @@ namespace GMAD
       std::string distrFile;
       std::string distrFileFormat;
       bool        distrFileFromExecOptions; ///< Required to know how to build the absolute path properly
-      bool        matchDistrFileLength;
+      bool        distrFileMatchLength;
+      bool        distrFileLoop;
       bool        removeUnstableWithoutDecay;
       ///@}
       int         nlinesIgnore; ///< Ignore first lines in the input bunch file.
@@ -131,6 +132,7 @@ namespace GMAD
       bool offsetSampleMean;
 
       /// @{ Event generator file filter.
+      int    eventGeneratorNEventsSkip;
       double eventGeneratorMinX;
       double eventGeneratorMaxX;
       double eventGeneratorMinY;

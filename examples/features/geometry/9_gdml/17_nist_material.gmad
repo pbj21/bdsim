@@ -1,0 +1,8 @@
+! load a gdml file with a NIST material with "G4_" prefix and check we
+! don't delete it
+box1: element,l=1.1*m, geometry="gdml:box1.gdml";
+l1: line=(box1);
+use, l1;
+
+beam, particle="e-",
+      energy=3*GeV;

@@ -37,7 +37,7 @@ class BDSOutputROOTEventRunInfo: public TObject
 {
 public:
   BDSOutputROOTEventRunInfo();
-  BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info);
+  explicit BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info);
   virtual ~BDSOutputROOTEventRunInfo();
   void Flush();
 

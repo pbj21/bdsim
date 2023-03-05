@@ -19,10 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSBUNCHUSERFILE_H
 #define BDSBUNCHUSERFILE_H 
 
-#include "BDSBunch.hh"
+#include "BDSBunchFileBased.hh"
 
 #include <fstream>
 #include <list>
+#include <regex>
 #include <set>
 #include <sstream>
 #include <string>
@@ -41,7 +42,7 @@ class BDSParticleCoordsFullGlobal;
  */
 
 template <class T>
-class BDSBunchUserFile: public BDSBunch
+class BDSBunchUserFile: public BDSBunchFileBased
 {
 public: 
   BDSBunchUserFile();
@@ -64,6 +65,8 @@ public:
   /// aborted and the user has a 1:1 representation of particle coordinates to events
   /// in the output.
   virtual BDSParticleCoordsFullGlobal GetNextParticleValid(G4int maxTries);
+  
+  virtual G4bool DistributionIsFinished() const {return endOfFileReached;}
 
   /// Get the next particle.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
@@ -75,17 +78,27 @@ private:
   G4String distrFile;     ///< Bunch file.
   G4String distrFilePath; ///< Bunch file including absolute path.
   G4String bunchFormat;   ///< Format of the file.
-  G4int    nlinesIgnore;  ///< Number of lines that will be ignored at the start the file.
-  G4int    nlinesSkip;    ///< Number of lines that will be skipped after the nlinesIgnore.
+  G4long   nlinesIgnore;  ///< Number of lines that will be ignored at the start the file.
+  G4long   nlinesSkip;    ///< Number of lines that will be skipped after the nlinesIgnore.
+  G4long   nLinesValidData;
   G4double particleMass;  ///< Cache of nominal beam particle mass.
   G4int    lineCounter;   ///< Line counter.
   G4bool   printedOutFirstTime;    ///< Whether we've printed out opening the file the first time.
   G4bool   anEnergyCoordinateInUse;///< Whether Et, Ek or P are in the columns.
   G4bool   changingParticleType;   ///< Whether the particle type is a column.
+  G4bool   endOfFileReached;
 
   void ParseFileFormat(); ///< Parse the column tokens and units factors
   void OpenBunchFile();   ///< Open the file and check it's open.
-  void SkipLines();       ///< Read lines according to nlinesIgnore.
+  
+  /// Skip nlinesIgnore into the file irrespective of what's on the lines. If the
+  /// end of file is reached, an exception is thrown.
+  void SkipNLinesIgnoreIntoFile(G4bool usualPrintOut=true);
+  
+  /// Skip nlinesSkip further into the data where a line has to be 'valid' - i.e. it
+  /// is not an empty or comment line.
+  void SkipNLinesSkip(G4bool usualPrintOut=true);
+  
   void CloseBunchFile();  ///< Close the file handler
 
   /// Read a word out of the string stream, in effect advancing the internal
@@ -107,6 +120,9 @@ private:
 
   /// List of variables to parse on each line.
   std::list<Doublet> fields;
+  
+  /// Return true if a line is all whitespace or is commented out (starts with '#').
+  G4bool SkippableLine(const std::string& line) const;
 
   /// Check conflicting columns aren't specified in file, e.g. P and Ek. Throw exception if wrong.
   void CheckConflictingParameters(const std::set<G4String>& s) const;
@@ -114,8 +130,11 @@ private:
   template <typename U>
   void CheckAndParseUnits(const G4String& name, const G4String& rest, U unitParser);
 
-  /// Open the file, skip lines, then count number of lines, then close file again.
-  G4int CountLinesInFile();
+  /// Open the file, skip the nlinesIgnore, then count the number of valid lines in the file.
+  /// A valid line is one that can be used for coordinates, so empty lines or commented lines
+  /// are ignored from this count. This number should be the number of particle coordinate sets
+  /// we can read from the file.
+  G4long CountNLinesValidDataInFile();
   
   /// Open the file and skip lines.
   virtual void Initialise();
@@ -125,7 +144,9 @@ private:
   void EndOfFileAction();
 
   G4double ffact; ///< Cache of flip factor from global constants.
+  std::regex comment;
   G4bool   matchDistrFileLength;
+  G4bool   distrFileLoop;
 };
 
 namespace BDS

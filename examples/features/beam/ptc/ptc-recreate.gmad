@@ -1,0 +1,18 @@
+! this bit is very similar to ptc-loop but without setting option, ngenerate in
+! the input so we can test it with recreate + match
+
+include ptc.gmad;
+
+!beam, distrFileLoop=1,
+!      distrFileMatchLength=0;
+!option, ngenerate=5;  ! TURNED OFF
+
+beam, distrFile="ptc-inrays-short.madx";
+
+! end of duplicate bit
+
+
+option, recreate=1,
+	recreateFileName="ptcfile-sample.root";
+beam, distrFileLoop=0;
+option, startFromEvent=1;

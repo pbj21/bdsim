@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsGammaToMuMu.hh"
 #include "BDSPhysicsLaserWire.hh"
 #include "BDSPhysicsMuon.hh"
+#include "BDSPhysicsMuonInelastic.hh"
 #include "BDSPhysicsSynchRad.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
@@ -198,6 +199,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
+  physicsConstructors.insert(std::make_pair("muon_inelastic",         &BDSModularPhysicsList::MuonInelastic));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
   physicsConstructors.insert(std::make_pair("optical",                &BDSModularPhysicsList::Optical));
   physicsConstructors.insert(std::make_pair("qgsp_bert",              &BDSModularPhysicsList::QGSPBERT));
@@ -260,6 +262,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   for (const auto& kv : physicsConstructors)
     {incompatible.insert(std::make_pair(kv.first, std::vector<G4String>()));}
   incompatible["annihi_to_mumu"] = {"em_extra"};
+  incompatible["muon_inelastic"] = {"em_extra", "muon"};
   incompatible["em"]     = {"em_ss", "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_ss"]  = {"em",    "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_wvi"] = {"em",    "em_ss",  "em_1",   "em_2", "em_3", "em_4"};
@@ -898,6 +901,15 @@ void BDSModularPhysicsList::Muon()
     {
       constructors.push_back(new BDSPhysicsMuon(emWillBeUsed));
       physicsActivated["muon"] = true;
+    }
+}
+
+void BDSModularPhysicsList::MuonInelastic()
+{
+  if (!physicsActivated["muon_inelastic"])
+    {
+      constructors.push_back(new BDSPhysicsMuonInelastic());
+      physicsActivated["muon_inelastic"] = true;
     }
 }
 

@@ -52,6 +52,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 /// parser error message, defined in parser.y
 int yyerror(const char *);
+int yyerror2(const char *s); ///< Similar but without advice about semicolon
 /// declaration needed by bison
 extern int yylex();
 

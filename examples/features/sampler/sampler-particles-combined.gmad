@@ -34,7 +34,7 @@ beam, particle="e-",
       distrFile="varied-particles.dat",
       Xp0=1e-3;
 
-beam, matchDistrFileLength=1;
+beam, distrFileMatchLength=1;
 
 option, physicsList="all_particles";
 

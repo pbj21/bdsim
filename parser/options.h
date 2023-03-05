@@ -86,7 +86,7 @@ namespace GMAD
       }
     catch (const std::runtime_error&)
       {
-        std::cerr << "Error: options> unknown option \"" << name << "\" with value " << value << std::endl;
+        std::cerr << "Error: options> unknown option \"" << name << "\" with value \"" << value << "\"" << std::endl;
         exit(1);
       }
   }

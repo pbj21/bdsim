@@ -1,14 +1,15 @@
 include eventgeneratorfile-hepmc2.gmad;
 
-beam, eventGeneratorMinX=-2*m,
+beam, eventGeneratorMinX=-2*mm,
       eventGeneratorMaxX=2*mm,
-      eventGeneratorMinY=-2*m,
+      eventGeneratorMinY=-2*mm,
       eventGeneratorMaxY=2*mm,
       eventGeneratorMinZ=-1*mm,
       eventGeneratorMaxZ=1*mm,
       eventGeneratorMinXp=0,
-      eventGeneratorMaxXp=4*mrad,
+      eventGeneratorMaxXp=0.5*rad,
       eventGeneratorMaxYp=1*mrad,
       eventGeneratorMinZp=0,
-      eventGeneratorMaxEK=1*TeV,
-      eventGeneratorParticles="111 211 -211 12 -12 proton";
+      eventGeneratorMinEk=300*MeV,
+      eventGeneratorMaxEk=10*GeV,
+      eventGeneratorParticles="211";

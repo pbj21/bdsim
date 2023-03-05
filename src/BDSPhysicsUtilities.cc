@@ -37,6 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "FTFP_BERT.hh"
 #include "globals.hh"
 #include "G4AntiNeutrinoE.hh"
+#include "G4AntiNeutrinoMu.hh"
+#include "G4AntiNeutrinoTau.hh"
 #include "G4AntiNeutron.hh"
 #include "G4AntiProton.hh"
 #include "G4Electron.hh"
@@ -56,6 +58,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LeptonConstructor.hh"
 #include "G4MuonPlus.hh"
 #include "G4NeutrinoE.hh"
+#include "G4NeutrinoMu.hh"
+#include "G4NeutrinoTau.hh"
 #include "G4Neutron.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleTableIterator.hh"
@@ -389,10 +393,23 @@ void BDS::ConstructBeamParticleG4(const G4String& name)
     {G4KaonPlus::KaonPlusDefinition();}
   else if (name == "kaon0L")
     {G4KaonZeroLong::KaonZeroLongDefinition();}
+  else if (name == "nu_e")
+    {G4NeutrinoE::NeutrinoEDefinition();}
+  else if (name == "anti_nu_e")
+    {G4AntiNeutrinoE::AntiNeutrinoEDefinition();}
+  else if (name == "nu_mu")
+    {G4NeutrinoMu::NeutrinoMuDefinition();}
+  else if (name == "anti_nu_mu")
+    {G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();}
+  else if (name == "nu_tau")
+    {G4NeutrinoTau::NeutrinoTauDefinition();}
+  else if (name == "anti_nu_tau")
+    {G4AntiNeutrinoTau::AntiNeutrinoTauDefinition();}
   else
     {
-      G4cout << "Unknown common particle type \"" << name
-             << "\" - if it doesn't work, include all \"all_particles\" in the physicsList option." << G4endl;
+      G4String msg = "Unknown common particle type \"" + name;
+      msg += "\" - if it doesn't work, include all \"all_particles\" in the physicsList option.";
+      BDS::Warning(__METHOD_NAME__, msg);
     }
 }
 

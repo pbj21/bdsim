@@ -44,6 +44,9 @@ public:
 
   virtual ~BDSCavityElement();
 
+  inline const BDSFieldInfo* GetFieldInfo() const {return vacuumFieldInfo;}
+  inline const BDSCavityInfo* GetCavityInfo() const {return cavityInfo;}
+
 protected:
   /// Provided to fulfill BDSAcceleratorComponent requirement. Doesn't do anything.
   /// All construction is in Build.

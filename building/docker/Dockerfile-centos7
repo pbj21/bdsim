@@ -1,0 +1,10 @@
+FROM centos:7
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /tmp
+
+RUN yum -y install epel-release git.x86_64 make.x86_64 \
+    gcc.x86_64 gcc-c++.x86_64 gcc-gfortran.x86_64 \
+    xerces-c-devel.x86_64 zlib-devel.x86_64 wget.x86_64 \
+    openssl-devel.x86_64

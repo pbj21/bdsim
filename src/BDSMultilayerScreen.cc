@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4OpticalSurface.hh"
 #include "G4PVPlacement.hh"               
 #include "G4VSolid.hh"
+#include "G4Version.hh"
 
 BDSMultilayerScreen::BDSMultilayerScreen(const G4TwoVector& xysizeIn,
 					 const G4String&    nameIn):
@@ -132,7 +133,11 @@ void BDSMultilayerScreen::ReflectiveSurface(G4int layer1, G4int layer2)
   OpSurface->SetFinish(polished);  
   
   G4MaterialPropertiesTable* SMPT = new G4MaterialPropertiesTable();
+#if G4VERSION_NUMBER > 1109
+  SMPT->AddConstProperty("REFLECTIVITY",0.8,true);
+#else
   SMPT->AddConstProperty("REFLECTIVITY",0.8);
+#endif
   
   /*
   OpSurface->SetSigmaAlpha(0.7);
@@ -162,7 +167,11 @@ void BDSMultilayerScreen::RoughSurface(G4int layer1, G4int layer2)
   G4double sigma_alpha=0.7;
   OpSurface->SetSigmaAlpha(sigma_alpha);
   G4MaterialPropertiesTable* SMPT = new G4MaterialPropertiesTable();
+#if G4VERSION_NUMBER > 1109
+  SMPT->AddConstProperty("REFLECTIVITY",0.0, true);
+#else
   SMPT->AddConstProperty("REFLECTIVITY",0.0);
+#endif
   OpSurface->SetMaterialPropertiesTable(SMPT);
 }
 

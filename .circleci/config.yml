@@ -52,9 +52,9 @@ jobs:
       - store_test_results:
           path: ./bdsim-build/ctest_output.xml
 
-      - store_artifacts:
-          path: ./bdsim.tgz
-          destination: bdsim.tgz
+      #- store_artifacts:
+      #    path: ./bdsim.tgz
+      #    destination: bdsim.tgz
 
 
 # Invoke jobs via workflows

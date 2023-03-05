@@ -279,7 +279,7 @@ int BDSIM::Initialise()
                                           globals->BeamlineTransform(),
                                           globals->BeamlineS(),
                                           globals->GeneratePrimariesOnly());
-  G4cout << "Bunch distribution: " << bdsBunch->Name() << G4endl;
+  G4cout << "Bunch distribution: \"" << bdsBunch->Name() << "\"" << G4endl;
   /// We no longer need beamParticle so delete it to avoid confusion. The definition is
   /// held inside bdsBunch (can be updated dynamically).
   delete beamParticle;
@@ -292,31 +292,7 @@ int BDSIM::Initialise()
   /// until after the physics list has been constructed and attached a run manager.
   if (globals->GeneratePrimariesOnly())
     {      
-      // output creation is duplicated below but with this if loop, we exit so ok.
-      bdsOutput->NewFile();
-      const G4int nToGenerate = globals->NGenerate();
-      const G4int printModulo = globals->PrintModuloEvents();
-      bdsBunch->BeginOfRunAction(nToGenerate);
-      auto flagsCache(G4cout.flags());
-      for (G4int i = 0; i < nToGenerate; i++)
-	{
-	  if (i%printModulo == 0)
-	    {G4cout << "\r Primary> " << std::fixed << i << " of " << nToGenerate << G4endl;}
-	  BDSParticleCoordsFullGlobal coords = bdsBunch->GetNextParticleValid();
-	  // always pull particle definition in case it's updated
-	  const BDSParticleDefinition* pDef = bdsBunch->ParticleDefinition();
-	  bdsOutput->FillEventPrimaryOnly(coords, pDef);
-	}
-      G4cout.flags(flagsCache); // restore cout flags
-      // Write options now the file is open
-      const GMAD::OptionsBase* ob = BDSParser::Instance()->GetOptionsBase();
-      bdsOutput->FillOptions(ob);
-      
-      // Write beam
-      const GMAD::BeamBase* bb = BDSParser::Instance()->GetBeamBase();
-      bdsOutput->FillBeam(bb);
-
-      bdsOutput->CloseFile();
+      GeneratePrimariesOnly(globals);
       return 0;
     }
   
@@ -329,26 +305,19 @@ int BDSIM::Initialise()
       G4cout << __METHOD_NAME__ << std::setw(12) << "Angular: " << std::setw(7) << theGeometryTolerance->GetAngularTolerance() << " rad"  << G4endl;
       G4cout << __METHOD_NAME__ << std::setw(12) << "Radial: "  << std::setw(7) << theGeometryTolerance->GetRadialTolerance()  << " mm"   << G4endl;
     }
+  
   /// Set user action classes
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Event Action" << G4endl;
-#endif
   BDSEventAction* eventAction = new BDSEventAction(bdsOutput);
   runManager->SetUserAction(eventAction);
-
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Run Action"<<G4endl;
-#endif
-  runManager->SetUserAction(new BDSRunAction(bdsOutput,
+  
+  BDSRunAction* runAction = new BDSRunAction(bdsOutput,
                                              bdsBunch,
                                              bdsBunch->ParticleDefinition()->IsAnIon(),
                                              eventAction,
-                                             globals->StoreTrajectorySamplerID()));
-
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Stepping Action"<<G4endl;
-#endif
-  // Only add steppingaction if it is actually used, so do check here (for performance reasons)
+                                             globals->StoreTrajectorySamplerID());
+  runManager->SetUserAction(runAction);
+  
+  // Only add stepping action if it is actually used, so do check here (for performance reasons)
   G4int verboseSteppingEventStart = globals->VerboseSteppingEventStart();
   G4int verboseSteppingEventStop  = BDS::VerboseEventStop(verboseSteppingEventStart,
                                                           globals->VerboseSteppingEventContinueFor());
@@ -359,9 +328,6 @@ int BDSIM::Initialise()
 						      verboseSteppingEventStop));
     }
   
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Tracking Action"<<G4endl;
-#endif
   runManager->SetUserAction(new BDSTrackingAction(globals->Batch(),
                                                   globals->StoreTrajectory(),
                                                   globals->StoreTrajectoryOptions(),
@@ -371,14 +337,8 @@ int BDSIM::Initialise()
                                                   globals->VerboseSteppingPrimaryOnly(),
                                                   globals->VerboseSteppingLevel()));
 
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Stacking Action"<<G4endl;
-#endif
   runManager->SetUserAction(new BDSStackingAction(globals));
-
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Primary Generator"<<G4endl;
-#endif
+  
   auto primaryGeneratorAction = new BDSPrimaryGeneratorAction(bdsBunch, parser->GetBeam());
   runManager->SetUserAction(primaryGeneratorAction);
   BDSFieldFactory::SetPrimaryGeneratorAction(primaryGeneratorAction);
@@ -521,4 +481,33 @@ void BDSIM::RegisterUserComponent(const G4String& componentTypeName,
 
   userComponentFactory->RegisterComponent(componentTypeName,
 					  componentConstructor);
+}
+
+void BDSIM::GeneratePrimariesOnly(const BDSGlobalConstants* globals)
+{
+  // output creation is duplicated below but with this if loop, we exit so ok.
+  bdsOutput->NewFile();
+  const G4int nToGenerate = globals->NGenerate();
+  const G4int printModulo = globals->PrintModuloEvents();
+  bdsBunch->BeginOfRunAction(nToGenerate);
+  auto flagsCache(G4cout.flags());
+  for (G4int i = 0; i < nToGenerate; i++)
+    {
+      if (i%printModulo == 0)
+        {G4cout << "\r Primary> " << std::fixed << i << " of " << nToGenerate << G4endl;}
+      BDSParticleCoordsFullGlobal coords = bdsBunch->GetNextParticleValid();
+      // always pull particle definition in case it's updated
+      const BDSParticleDefinition* pDef = bdsBunch->ParticleDefinition();
+      bdsOutput->FillEventPrimaryOnly(coords, pDef);
+    }
+  G4cout.flags(flagsCache); // restore cout flags
+  // Write options now the file is open
+  const GMAD::OptionsBase* ob = BDSParser::Instance()->GetOptionsBase();
+  bdsOutput->FillOptions(ob);
+  
+  // Write beam
+  const GMAD::BeamBase* bb = BDSParser::Instance()->GetBeamBase();
+  bdsOutput->FillBeam(bb);
+  
+  bdsOutput->CloseFile();
 }

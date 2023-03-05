@@ -166,7 +166,7 @@ G4int BDSLinkOpaqueBox::PlaceOutputSampler()
   BDSApertureInfo ap = BDSApertureInfo(apt, outputSamplerRadius, 0, 0, 0);
   sampler = new BDSSamplerCustom(samplerName, ap);
   sampler->GetContainerLogicalVolume()->SetSensitiveDetector(BDSSDManager::Instance()->SamplerLink());
-  
+  sampler->MakeMaterialValidForUseInMassWorld();
   auto z2 = component->GetExtent();
   G4ThreeVector position = G4ThreeVector(0,0,0.5*component->GetChordLength() + 2*BDSSamplerCustom::ChordLength());
   G4RotationMatrix* rm = nullptr;

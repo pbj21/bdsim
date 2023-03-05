@@ -1238,6 +1238,12 @@ int yyerror(const char *s)
   exit(1);
 }
 
+int yyerror2(const char *s)
+{
+  std::cout << s << " at line " << GMAD::line_num << " of file " << yyfilename << std::endl;
+  exit(1);
+}
+
 extern "C" {
   int yywrap()
   {

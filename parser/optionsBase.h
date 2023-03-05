@@ -308,6 +308,7 @@ namespace GMAD
     bool        storeApertureImpactsAll;
     bool        storeApertureImpactsHistograms;
     double      apertureImpactsMinimumKE;
+    bool        storeCavityInfo;
     bool        storeCollimatorInfo;
     bool        storeCollimatorHits;
     bool        storeCollimatorHitsLinks;
@@ -377,6 +378,8 @@ namespace GMAD
     bool        storeModel;
 
     int         samplersSplitLevel;
+    int         modelSplitLevel;
+    int         uprootCompatible;
 
     // circular options
     int         nturns;

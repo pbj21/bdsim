@@ -285,6 +285,9 @@ namespace BDS
                                            G4double length,
                                            G4double containerWidth,
                                            G4double containerHeight=0);
+
+  /// Calculate the arc length from the chord length for a given angle.
+  G4double ArcLengthFromChordLength(G4double chordLength, G4double angle);
 }
 
 #endif

@@ -25,138 +25,198 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "parser/beam.h"
 
+#include "globals.hh"
+#include "G4String.hh"
+#include "G4Types.hh"
+
 #include "CLHEP/Units/PhysicalConstants.h"
 
+#include <array>
 #include <fstream>
 #include <regex>
 #include <string>
+#include <vector>
+
 
 BDSBunchPtc::BDSBunchPtc():
-  BDSBunch("ptc"),
+  BDSBunchFileBased("ptc"),
   matchDistrFileLength(false),
   nRays(0),
-  fileName("./inrays.madx"),
   iRay(0),
-  loopedOver(false),
-  beta(1.0)
+  beta(1.0),
+  distrFileLoop(false),
+  nlinesSkip(0),
+  lineCounter(0)
 {;}
 
 BDSBunchPtc::~BDSBunchPtc()
 {
-  for (std::vector<double*>::iterator i = ptcData.begin();i!=ptcData.end();++i)
-    {delete[] *i;}
+  ptcData.clear();
 }
 
 void BDSBunchPtc::LoadPtcFile()
 {
+  G4cout << "BDSBunchPtc::LoadPtcFile> opening " << fileName << G4endl;
+
   // open file and read line by line and extract values
   std::ifstream ifstr(fileName);
 
   if (!ifstr)
     {throw BDSException(__METHOD_NAME__, "\"" + fileName + "\" file doesn't exist - exiting as no input");}
 
-  std::string line; 
+  std::string line;
+  lineCounter = 0;
+  
+  for (G4int i = 0; i < nlinesSkip; i++)
+    {
+      std::getline(ifstr, line);
+      lineCounter++;
+      // we must check explicitly if we've gone past the end of the file
+      if (ifstr.eof())
+        {
+          G4String msg = "end of file reached on line " + std::to_string(lineCounter) + " before nlinesSkip + nlinesIgnore (";
+          msg += std::to_string(nlinesSkip) + " reached.";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
+    }
+  IncrementNEventsInFileSkipped((unsigned long long int)nlinesSkip);
+  
   // read single line 
   while (std::getline(ifstr,line))
     {
+      lineCounter++;
       int isComment = line.compare(0, 1, "!");
       if (isComment == 0)
-	{continue;}
+        {continue;}
       else
-	{
-	  // variable for storage
-	  double x  = 0.0;
-	  double y  = 0.0;
-	  double px = 0.0;
-	  double py = 0.0;
-	  double t  = 0.0;
-	  double pt = 0.0;
-	  
-	  // create regular expressions
-	  std::regex rex("\\sx\\s*=\\s*([0-9eE.+-]+)");
-	  std::regex rey("\\sy\\s*=\\s*([0-9eE.+-]+)");
-	  std::regex repx("px\\s*=\\s*([0-9eE.+-]+)");
-	  std::regex repy("py\\s*=\\s*([0-9eE.+-]+)");
-	  std::regex ret("\\st\\s*=\\s*([0-9eE.+-]+)");
-	  std::regex rept("pt\\s*=\\s*([0-9eE.+-]+)");
-	  
-	  // return search match objects
-	  std::smatch smx;
-	  std::smatch smy;
-	  std::smatch smpx;
-	  std::smatch smpy;
-	  std::smatch smt;
-	  std::smatch smpt;
-	  
-	  // perform search
-	  std::regex_search(line,smx, rex);
-	  std::regex_search(line,smy, rey);
-	  std::regex_search(line,smpx,repx);
-	  std::regex_search(line,smpy,repy);
-	  std::regex_search(line,smt, ret);
-	  std::regex_search(line,smpt, rept);
-	  
-	  if(smx.size() == 2)  x  = std::stod(smx[1]);
-	  if(smy.size() == 2)  y  = std::stod(smy[1]);
-	  if(smpx.size() == 2) px = std::stod(smpx[1]);
-	  if(smpy.size() == 2) py = std::stod(smpy[1]);
-	  if(smt.size() == 2)  t  = std::stod(smt[1]);
-	  if(smpt.size() == 2) pt = std::stod(smpt[1]);
-	  
+        {
+          // variable for storage
+          double x  = 0.0;
+          double y  = 0.0;
+          double px = 0.0;
+          double py = 0.0;
+          double t  = 0.0;
+          double pt = 0.0;
+          
+          // create regular expressions
+          std::regex rex("\\sx\\s*=\\s*([0-9eE.+-]+)");
+          std::regex rey("\\sy\\s*=\\s*([0-9eE.+-]+)");
+          std::regex repx("px\\s*=\\s*([0-9eE.+-]+)");
+          std::regex repy("py\\s*=\\s*([0-9eE.+-]+)");
+          std::regex ret("\\st\\s*=\\s*([0-9eE.+-]+)");
+          std::regex rept("pt\\s*=\\s*([0-9eE.+-]+)");
+          
+          // return search match objects
+          std::smatch smx;
+          std::smatch smy;
+          std::smatch smpx;
+          std::smatch smpy;
+          std::smatch smt;
+          std::smatch smpt;
+          
+          // perform search
+          std::regex_search(line,smx, rex);
+          std::regex_search(line,smy, rey);
+          std::regex_search(line,smpx,repx);
+          std::regex_search(line,smpy,repy);
+          std::regex_search(line,smt, ret);
+          std::regex_search(line,smpt, rept);
+          
+          if(smx.size() == 2)  x  = std::stod(smx[1]);
+          if(smy.size() == 2)  y  = std::stod(smy[1]);
+          if(smpx.size() == 2) px = std::stod(smpx[1]);
+          if(smpy.size() == 2) py = std::stod(smpy[1]);
+          if(smt.size() == 2)  t  = std::stod(smt[1]);
+          if(smpt.size() == 2) pt = std::stod(smpt[1]);
+          
 #ifdef BDSDEBUG 
-	  G4cout << __METHOD_NAME__ << "read line " << line << G4endl;
-	  G4cout << __METHOD_NAME__ << "values    " << x << " " << px << " " << y << " " << py << " " << t << " " << pt << G4endl;   
+          G4cout << __METHOD_NAME__ << "read line " << line << G4endl;
+          G4cout << __METHOD_NAME__ << "values    " << x << " " << px << " " << y << " " << py << " " << t << " " << pt << G4endl;   
 #endif 
-	  
-	  double* values = new double[6];
-	  values[0] = x;
-	  values[1] = px;
-	  values[2] = y;
-	  values[3] = py;
-	  values[4] = t;
-	  values[5] = pt;
-	  
-	  // append values to storage vector
-	  ptcData.push_back(values);
-	}
+          ptcData.emplace_back(std::array<double, 6>{x, px, y, py, t, pt});
+        }
     }
   
   // set number of available rays in options
-  nRays = ptcData.size();
-  
-  if (matchDistrFileLength)
-    {BDSGlobalConstants::Instance()->SetNumberToGenerate(nRays);}
+  nRays = (G4int)ptcData.size();
 }
 
 void BDSBunchPtc::SetOptions(const BDSParticleDefinition* beamParticle,
-			     const GMAD::Beam& beam,
-			     const BDSBunchType& distrType,
-			     G4Transform3D beamlineTransformIn,
-			     const G4double beamlineSIn)
+                             const GMAD::Beam& beam,
+                             const BDSBunchType& distrType,
+                             G4Transform3D beamlineTransformIn,
+                             const G4double beamlineSIn)
 {
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << " " << beam.distrFile << G4endl;
-#endif
-
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
-  matchDistrFileLength = G4bool(beam.matchDistrFileLength);
+  matchDistrFileLength = G4bool(beam.distrFileMatchLength);
   beta = beamParticle->Beta();
-  SetDistrFile((G4String)beam.distrFile); 
-  LoadPtcFile();
+  fileName = BDS::GetFullPath(beam.distrFile);
+  distrFileLoop = beam.distrFileLoop;
+  nlinesSkip = beam.nlinesSkip + beam.nlinesIgnore;
 }
 
-void BDSBunchPtc::SetDistrFile(const G4String& distrFileName)
+void BDSBunchPtc::Initialise()
 {
-  fileName = BDS::GetFullPath(distrFileName);
+  try
+    {LoadPtcFile();}
+  catch (BDSException& e)
+    {
+      std::string msg = "\nError on line " + std::to_string(lineCounter);
+      e.AppendToMessage(msg);
+      throw e;
+    }
+  catch (std::exception& e)
+    {
+      std::string msg = "Error on line " + std::to_string(lineCounter);
+      throw BDSException(__METHOD_NAME__, msg);
+    }
+  
+  auto g = BDSGlobalConstants::Instance();
+  G4bool nGenerateHasBeenSet = g->NGenerateSet();
+  if (matchDistrFileLength)
+    {
+      if (!nGenerateHasBeenSet)
+        {
+          g->SetNumberToGenerate(nRays);
+          G4cout << "BDSBunchPtc::Initialise> distrFileMatchLength is true -> simulating "
+                 << nRays << " events" << G4endl;
+          if (g->Recreate())
+            {// have to do this now before the primary generator action is called already in the run
+              G4int nLeftFromOffset = nRays - (g->StartFromEvent() % nRays);
+              g->SetNumberToGenerate(nLeftFromOffset);
+              G4cout << "BDSBunchPtc::Initialise> distrFileMatchLength + recreation -> simulate the "
+                     << nLeftFromOffset << " lines left given startFromEvent" << G4endl;
+            }
+        }
+      else
+        {
+          G4cout << "BDSBunchPtc::Initialise> matchDistrFileLength has been requested "
+                 << "but ngenerate has been specified -> use ngenerate" << G4endl;
+        }
+    }
+  else
+    {
+      G4int nGenerate = g->NGenerate();
+      if ( (nGenerate > nRays) && !distrFileLoop )
+        {
+          G4String msg = "ngenerate (" + std::to_string(nGenerate) + ") is greater than the number of inrays (";
+          msg += std::to_string(nRays) + ") but distrFileLoop is false in the beam command";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
+    }
 }
 
 BDSParticleCoordsFull BDSBunchPtc::GetNextParticleLocal()
 {
-  // if all particles are read, start at 0 again and note it down in bool flag
-  if (iRay == nRays)
+  if ( iRay == nRays) // so that we're safe to still read the last entry
     {
-      iRay       = 0;
-      loopedOver = true;
+      if (distrFileLoop)
+        {
+          iRay = 0;
+          G4cout << __METHOD_NAME__ << "End of file reached. Returning to beginning of file." << G4endl;
+        }
+      else
+        {throw BDSException(__METHOD_NAME__, "unable to read another event as file finished");}
     }
   
   G4double x  = ptcData[iRay][0] * CLHEP::m + X0;
@@ -173,13 +233,40 @@ BDSParticleCoordsFull BDSBunchPtc::GetNextParticleLocal()
 
   BDSParticleCoordsFull result(x,y,z,xp,yp,zp,t,S0+z,E,/*weight=*/1.0);
 
-  iRay++;  
-  if (loopedOver)
-    {
-      G4cout << __METHOD_NAME__ << "End of file reached. Returning to beginning of file." << G4endl;
-      loopedOver = false; // reset flag until next time
-    }
+  iRay++;
 
   return result;
+}
+
+void BDSBunchPtc::RecreateAdvanceToEvent(G4int eventOffset)
+{
+  if (eventOffset >= nRays)
+    {
+      if (distrFileLoop)
+        {
+          G4int nToRoll = eventOffset % nRays;
+          eventOffset = nToRoll;
+        }
+      else
+        {
+          G4String msg = "eventOffset (" + std::to_string(eventOffset);
+          msg += ") is greater than the number of inrays in the PTC file";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
+    }
+  
+  iRay = eventOffset;
+  
+  G4int nEventsRemaining = nRays - eventOffset;
+  G4int nGenerate = BDSGlobalConstants::Instance()->NGenerate();
+  if (nGenerate > nEventsRemaining && !distrFileLoop)
+    {
+      G4String msg = "ngenerate (" + std::to_string(nGenerate) + ") requested in recreate mode is greater than number\n";
+      msg += "of remaining valid lines in file (" + std::to_string(nEventsRemaining) + ") and distrFileLoop is turned off.";
+      throw BDSException("BDSBunchPtc>", msg);
+    }
+  // note we cannot update ngenerate here as we're already being called from the primary
+  // generator action in the start of the event after BeamOn(nEvents) has been called
+  // therefore this adjustment for recreation + match is done earlier in this class
 }
 

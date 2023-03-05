@@ -58,7 +58,7 @@ void BDSPhysicsRadioactivation::ConstructProcess()
   // initialise atomic deexcitation
   G4LossTableManager* man = G4LossTableManager::Instance();
   G4VAtomDeexcitation* ad = man->AtomDeexcitation();
-  if(!ad)
+  if (!ad)
     {
       G4EmParameters::Instance()->SetAuger(true);
       ad = new G4UAtomicDeexcitation();

@@ -32,6 +32,7 @@ For each submodule:
      is run though, this will be overwritten.
    * Regenerate data samples in :code:`examples/features/data/` using regenerateSamples.sh
    * Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
+   * Regenerate data sample :code:`examples/features/beam/ptc/ptc-sample.root` using regeneratePtcSample.sh.
 
 
 6. Update version history (including submodule and data versions) in

@@ -37,8 +37,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <limits>
 #include <cstdio>
+#include <iomanip>
+#include <ios>
+#include <limits>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -172,9 +175,9 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 		}
 	      if (drawArrows)
 		{
-		  char buf[100];
-		  sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
-		  std::string arrowName = buf;
+		  std::stringstream ss;
+		  ss << std::setw(2) << std::fixed << xyzBE[0] << "_" << xyzBE[1] << "_" << xyzBE[2];
+		  std::string arrowName = ss.str();
 		  G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
 				      endPoint.x(), endPoint.y(), endPoint.z(),
 				      arrowWidth, arrowColour, arrowName);
@@ -196,7 +199,7 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 	  for (const auto& xyzBE: xyzBEs)
 	    {
 	      // x y z Bx By Bz Ex Ey Ez
-	      G4ThreeVector E(xyzBE[3], xyzBE[4], xyzBE[5]);
+	      G4ThreeVector E(xyzBE[6], xyzBE[7], xyzBE[8]);
 	      G4ThreeVector unitE = E.unit();
 	      G4double eMag = E.mag();
 	      G4ThreeVector midPoint(xyzBE[0], xyzBE[1], xyzBE[2]);
@@ -238,10 +241,9 @@ void BDSVisFieldModel::DescribeYourselfTo(G4VGraphicsScene& sceneHandler)
 		}
 	      if (drawArrows)
 		{
-		  char buf[100];
-		  sprintf(buf, "(%.2g, %.2g, %.2g)", xyzBE[0], xyzBE[1], xyzBE[2]);
-		  std::string arrowName = buf;
-		  
+		  std::stringstream ss;
+		  ss << std::setw(2) << std::fixed << xyzBE[0] << "_" << xyzBE[1] << "_" << xyzBE[2];
+		  std::string arrowName = ss.str();		  
 		  G4ArrowModel FArrow(startPoint.x(), startPoint.y(), startPoint.z(),
 				      endPoint.x(), endPoint.y(), endPoint.z(),
 				      arrowWidth, arrowColour, arrowName);

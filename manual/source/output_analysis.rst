@@ -238,6 +238,13 @@ Example from :code:`bdsim/examples/features/data/`: ::
 
   bdsimCombine combined-raw.root sample*
 
+This will add another TTree to the output called :code:`EventCombineInfo`. This has one
+number in it that is the file index that each event originally came from. This separate
+TTree has the same number of events as the Event tree. It is, in ROOT terminology, a
+"friend" tree, which means its variables can be used as if they are in the Event tree.
+The index can be used to find the original file name in the header in the variable
+:code:`combinedFiles` (see :ref:`output-header-tree`).
+
 Notes:
 
 * More than 1 file must be merged otherwise the program will stop
@@ -265,7 +272,7 @@ Notes:
 To merge files together in small chunks to reduce a data size (e.g. every 10 files into 1), a small
 Python (3) script is available in :code:`bdsim/utils/chunkermp.py`. This allows us to reduce a data
 set into fewer files in parallel. Note, this may cause intensive disk usage, but usually using some
-parallel processes will be significantly faster than one.
+parallel processes will be significantly faster than just one.
 
 Example: ::
 
@@ -273,11 +280,12 @@ Example: ::
   > import chunkermp
   > chunkermp.ReduceRun("datafiles/*.root", 10, "outputdir/", nCPUs=4)
 
+
 This will combine the glob result of :code:`datafiles/*.root` in chunks of 10 files at a time to :code:`outputdir`
 using 4 processes. Note, the trailing "/" must be present if it is a directory.
 
 A single threaded version is included in :code:`bdsim/utils/chunker.py` that could be used potentially
-for Python2.
+for Python2 but is untested.
 
 This script simply builds and executes the system commands, so `bdsimCombine` must therefore be
 available as a command (i.e. :code:`source <bdsim-install-dir>/bin/bdsim.sh` before using).

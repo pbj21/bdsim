@@ -1,0 +1,7 @@
+include userfile.gmad;
+
+beam, distrFileLoop=1,
+      matchDistrFileLength=0;
+
+! 2x the data in the user file
+option, ngenerate=10;

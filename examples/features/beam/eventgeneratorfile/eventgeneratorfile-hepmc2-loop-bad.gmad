@@ -1,0 +1,13 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! particle is known about to geant4 so passes input checks, but
+! isn't in the events file, so we won't find any events with it
+beam, eventGeneratorParticles="3222";
+
+! make sure it isn't rejected by no decay table for it
+option, physicsList="all_particles decay";
+
+beam, distrFileMatchLength=0,
+      distrFileLoop=1;
+
+option, ngenerate=200;

@@ -1,0 +1,26 @@
+Docker files for testing
+
+Command to build a given image
+
+docker build -t jairhul/<IMAGENAME> -f <DOCKERFILE> <CONTEXTPATH>
+
+e.g. 
+docker build -t jairhul/centos7-geant4v10.5.1-environment -f Dockerfile-centos7-bdsim-geant4v10.5.1-environment  .
+
+
+ - These contain a version of geant4
+ - The docker file points to the branch of a given version and updates it.
+ - The patch numbers refer to the latest patch known on that branch
+ - If a patch (e.g. v11.0.3 -> v11.0.4) number changes then advance the numbers of the dockerfile name and rebuild image
+ - If a minior or major version number (e.g v11.0.3 -> v11.1.0) copy dockerfile and rename  and rebuild image
+
+Dockerfile-centos7-bdsim-environment
+Dockerfile-centos7-bdsim-geant4v10.1.3-environment
+Dockerfile-centos7-bdsim-geant4v10.2.3-environment
+Dockerfile-centos7-bdsim-geant4v10.3.3-environment
+Dockerfile-centos7-bdsim-geant4v10.4.3-environment
+Dockerfile-centos7-bdsim-geant4v10.5.1-environment
+Dockerfile-centos7-bdsim-geant4v10.6.3-environment
+Dockerfile-centos7-bdsim-geant4v10.7.4-environment
+Dockerfile-centos7-bdsim-geant4v11.0.3-environment
+

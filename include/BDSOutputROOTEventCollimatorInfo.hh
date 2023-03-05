@@ -50,6 +50,8 @@ public:
   double      ySizeIn;
   double      xSizeOut;
   double      ySizeOut;
+  double      jawTiltLeft;
+  double      jawTiltRight;
   
   virtual ~BDSOutputROOTEventCollimatorInfo();
 #ifndef __ROOTBUILD__

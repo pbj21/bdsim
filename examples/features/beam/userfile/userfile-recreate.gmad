@@ -4,5 +4,5 @@ option, recreate=1,
 	recreateFileName="userfile-sample.root",
 	startFromEvent=3;
 
-
-option, ngenerate=4;
+! original userfile has only 5 events in it so we can only do 1 starting from 3 (0 counting)
+option, ngenerate=1;

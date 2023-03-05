@@ -1,4 +1,7 @@
 include eventgeneratorfile-hepmc2.gmad;
 
+beam, distrFileMatchLength=0,
+      distrFileLoop=1;
+
 ! purposively request more events than in file to test looping
 option, ngenerate=10;

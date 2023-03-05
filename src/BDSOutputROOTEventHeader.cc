@@ -56,6 +56,9 @@ void BDSOutputROOTEventHeader::FlushLocal()
   trajectoryFilters.clear();
   skimmedFile   = false;
   nOriginalEvents = 0;
+  nEventsRequested = 0;
+  nEventsInFileSkipped = 0;
+  nEventsInFile = 0;
   
 #ifndef __ROOTDOUBLE__
   doublePrecisionOutput = false;
@@ -65,7 +68,7 @@ void BDSOutputROOTEventHeader::FlushLocal()
 }
 
 void BDSOutputROOTEventHeader::Fill(const std::vector<std::string>& analysedFilesIn,
-				    const std::vector<std::string>& combinedFilesIn)
+                                    const std::vector<std::string>& combinedFilesIn)
 {
   time_t rawtime;
   time(&rawtime);

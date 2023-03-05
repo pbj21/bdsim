@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSMUONPHYSICS_H
-#define BDSMUONPHYSICS_H
+#ifndef BDSPHYSICSMUON_H
+#define BDSPHYSICSMUON_H
 
 #include "BDSSingleUse.hh"
 
@@ -45,7 +45,7 @@ public:
   BDSPhysicsMuon();
   explicit BDSPhysicsMuon(G4bool emWillBeUsed);
   virtual ~BDSPhysicsMuon();
-  /// Construct all leptions, photons (inc optical), and pion +- just in case.
+  /// Construct all leptons, photons (inc optical), and pion +- just in case.
   virtual void ConstructParticle();
 
   /// Construct and attach the processes to the relevant particles.

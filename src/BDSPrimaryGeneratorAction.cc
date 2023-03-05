@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunch.hh"
-#include "BDSBunchEventGenerator.hh"
 #include "BDSDebug.hh"
 #include "BDSEventInfo.hh"
 #include "BDSException.hh"
@@ -28,15 +27,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParticleDefinition.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSPrimaryGeneratorAction.hh"
+#include "BDSPrimaryGeneratorFile.hh"
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPTCOneTurnMap.hh"
-#include "BDSROOTSamplerReader.hh"
+#include "BDSRunAction.hh"
 #include "BDSRandom.hh"
 #include "BDSUtilities.hh"
-
-#ifdef USE_HEPMC3
-#include "BDSHepMC3Reader.hh"
-#endif
+#include "BDSWarning.hh"
 
 #include "parser/beam.h"
 
@@ -44,28 +41,29 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Event.hh"
+#include "G4EventManager.hh"
 #include "G4HEPEvtInterface.hh"
 #include "G4IonTable.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4Run.hh"
+#include "G4RunManager.hh"
 
 BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
-						     const GMAD::Beam& beam):
+                                                     const GMAD::Beam& beam):
   bunch(bunchIn),
   recreateFile(nullptr),
   eventOffset(0),
-  ionPrimary(bunchIn->BeamParticleIsAnIon()),
-  useEventGeneratorFile(false),
-  useSamplerLoader(false),
+  ionPrimary(false),
+  distrFileMatchLength(beam.distrFileMatchLength),
   ionCached(false),
-  oneTurnMap(nullptr)
-#ifdef USE_HEPMC3
-  ,
-  hepMC3Reader(nullptr)
-#endif
-  ,
-  samplerReader(nullptr)
+  oneTurnMap(nullptr),
+  generatorFromFile(nullptr)
 {
+  if (!bunchIn)
+    {throw BDSException(__METHOD_NAME__, "valid BDSBunch required");}
+  ionPrimary = bunchIn->BeamParticleIsAnIon();
+  
   particleGun  = new G4ParticleGun(1); // 1-particle gun
 
   writeASCIISeedState = BDSGlobalConstants::Instance()->WriteSeedState();
@@ -80,51 +78,17 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
     }
 
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  particleGun->SetParticlePosition(G4ThreeVector(0.*CLHEP::cm,0.*CLHEP::cm,0.*CLHEP::cm));
+  particleGun->SetParticlePosition(G4ThreeVector());
   particleGun->SetParticleTime(0);
-
-  BDSBunchType egf = BDSBunchType::eventgeneratorfile;
-  useEventGeneratorFile = BDS::StrContains(G4String(beam.distrType), egf.ToString());
-  BDSBunchType samp = BDSBunchType::bdsimsampler;
-  useSamplerLoader = BDS::StrContains(beam.distrType, samp.ToString());
   
-  if (useEventGeneratorFile)
-    {
-#ifdef USE_HEPMC3
-      if (beam.distrFile.empty())
-        {throw BDSException(__METHOD_NAME__, "no distrFile specified for event generator beam distribution.");}
-      G4String filename = BDS::GetFullPath(beam.distrFile, false, beam.distrFileFromExecOptions);
-      BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
-      if (!beg)
-	{throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
-      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, beg, beam.removeUnstableWithoutDecay,
-                                         beam.eventGeneratorWarnSkippedParticles);
-      if (recreate)
-        {hepMC3Reader->RecreateAdvanceToEvent(eventOffset);}
-#else
-      throw BDSException(__METHOD_NAME__, "event generator file being used but BDSIM not compiled with HEPMC3");
-#endif
-    }
-  else if (useSamplerLoader)
-  {
-    if (beam.distrFile.empty())
-    {throw BDSException(__METHOD_NAME__, "no distrFile specified for event generator beam distribution.");}
-    G4String filename = BDS::GetFullPath(beam.distrFile, false, beam.distrFileFromExecOptions);
-    BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
-    if (!beg)
-    {throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
-    samplerReader = new BDSROOTSamplerReader(beam.distrType, filename, beg, beam.eventGeneratorWarnSkippedParticles);
-  }
+  generatorFromFile = BDSPrimaryGeneratorFile::ConstructGenerator(beam, bunch, recreate, eventOffset);
 }
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
 {
   delete particleGun;
   delete recreateFile;
-#ifdef USE_HEPMC3
-  delete hepMC3Reader;
-#endif
-  delete samplerReader;
+  delete generatorFromFile;
 }
 
 void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
@@ -152,19 +116,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   anEvent->SetUserInformation(eventInfo);
   eventInfo->SetSeedStateAtStart(BDSRandom::GetSeedState());
 
-#ifdef USE_HEPMC3
-  if (useEventGeneratorFile)
+  // events from external file
+  if (generatorFromFile)
     {
-      hepMC3Reader->GeneratePrimaryVertex(anEvent);
-      return; // don't need any further steps
+      GeneratePrimariesFromFile(anEvent);
+      return; // nothing else to be done here
     }
-#endif
-  if (useSamplerLoader)
-  {
-    samplerReader->GeneratePrimaryVertex(anEvent);
-    return; // don't need any further steps
-  }
-
+  
   // update particle definition in the special case of an ion - can only be done here
   // and not before due to Geant4 ion information availability only at run time
   if (ionPrimary && !ionCached)
@@ -174,9 +132,12 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
 
   // generate set of coordinates - internally the bunch may try many times to generate
-  // coordinates with total energy above the rest mass and may throw an exception if
-  // it can't
+  // coordinates with total energy above the rest mass and may throw an exception if it can't
   BDSParticleCoordsFullGlobal coords;
+  
+  // BDSBunch distributions based on files do not (as a principle) have the ability to filter
+  // the particles they load so the number of events to generate can be predicted exactly and
+  // there is no need to check on whether an event has been successfully generated here.
   try
     {coords = bunch->GetNextParticleValid();}
   catch (const BDSException& exception)
@@ -205,28 +166,18 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if (EK <= 0)
     {
       G4cout << __METHOD_NAME__ << "Event #" << anEvent->GetEventID()
-	     << " - Particle kinetic energy smaller than 0! "
-	     << "This will not be tracked." << G4endl;
+             << " - Particle kinetic energy smaller than 0! "
+             << "This will not be tracked." << G4endl;
       anEvent->SetEventAborted();
       return;
-    }
-
-  // write initial particle position and momentum
-  if (writeASCIISeedState)
-    {
-      std::ofstream ofstr("output.primary.txt");
-      ofstr << coords.local.x  << " " << coords.local.y  << " " << coords.local.z << " "
-	    << coords.local.xp << " " << coords.local.yp << " " << coords.local.zp << " "
-	    << coords.local.T  << " " << coords.local.totalEnergy << " " << coords.local.weight << std::endl;
-      ofstr.close();
     }
 
   // check the coordinates are valid
   if (!worldExtent.Encompasses(coords.global))
     {
       G4cerr << __METHOD_NAME__ << "point: " << coords.global
-	     << "mm lies outside the world volume with extent ("
-	     << worldExtent << " - event aborted!" << G4endl << G4endl;
+             << "mm lies outside the world volume with extent ("
+             << worldExtent << " - event aborted!" << G4endl << G4endl;
       anEvent->SetEventAborted();
     }
 
@@ -250,9 +201,56 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // associate full set of coordinates with vertex for writing to output after event
   vertex->SetUserInformation(new BDSPrimaryVertexInformation(coords,
-							     bunch->ParticleDefinition()));
+                                                             bunch->ParticleDefinition()));
 
 #ifdef BDSDEBUG
   vertex->Print();
 #endif
+}
+
+
+void BDSPrimaryGeneratorAction::GeneratePrimariesFromFile(G4Event* anEvent)
+{
+  G4bool distributionFinished = generatorFromFile->DistributionIsFinished(); // only happens if no looping
+  G4int nGenerateRequested = BDSGlobalConstants::Instance()->NGenerate();
+  
+  G4bool generatedVertexOK = false;
+  if (!distributionFinished)
+    {generatedVertexOK = generatorFromFile->GeneratePrimaryVertexSafe(anEvent);}
+
+  // file finished (no more events) and we haven't generated a viable event
+  if (distributionFinished && !generatedVertexOK)
+    {
+      G4bool endRunNow = false;
+      if (distrFileMatchLength)
+        {
+          endRunNow = true;
+          G4cout << __METHOD_NAME__ << "distribution file finished (matched in length): ending run." << G4endl;
+          if (generatorFromFile->NEventsReadThatPassedFilters() == 0)
+            {BDS::Warning(__METHOD_NAME__, "no events passed filters and were simulated.");}
+        }
+      else if (generatorFromFile->NEventsReadThatPassedFilters() < nGenerateRequested)
+        {// not matching the file length specifically but requested a certain number of events
+          // If the NEventsReadThatPassedFilters == nGenerateRequested then this won't happen as we won't
+          // try to generate another new event beyond this and the run will end naturally without intervention here.
+          endRunNow = true;
+          G4int currentEventIndex = G4RunManager::GetRunManager()->GetCurrentRun()->GetNumberOfEvent();
+          G4cerr << __METHOD_NAME__ << "unable to generate " << nGenerateRequested
+                 << " events as fewer events passed the filters in the file." << G4endl;
+          G4cerr << __METHOD_NAME__ << currentEventIndex << " events generated" << G4endl;
+        }
+      // common bit to artificially abort the event and then end the run now
+      if (endRunNow)
+        {
+          anEvent->SetEventAborted();
+          G4EventManager::GetEventManager()->AbortCurrentEvent();
+          G4RunManager::GetRunManager()->AbortRun();
+          return; // don't generate anything - just return
+        }
+    }
+  else if (!generatedVertexOK) // file isn't finished, but we didn't successfully generate this event
+    {   
+      anEvent->SetEventAborted();
+      G4EventManager::GetEventManager()->AbortCurrentEvent();
+    }
 }

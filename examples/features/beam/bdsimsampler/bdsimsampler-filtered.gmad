@@ -2,7 +2,7 @@
 include bdsimsampler-lowphysics.gmad;
 
 ! restore physics list
-option, physicsList="all_particles";
+option, physicsList="all_particles decay";
 
 beam, eventGeneratorMinX=-20*mm,
       eventGeneratorMaxX=20*mm,
@@ -12,5 +12,5 @@ beam, eventGeneratorMinX=-20*mm,
       eventGeneratorMaxYp=0.1,
       eventGeneratorMinZp=0.9,
       eventGeneratorMinEK=1.5*GeV,
-      eventGeneratorMaxEK=1*TeV,
+      eventGeneratorMaxEK=100*GeV,
       eventGeneratorParticles="111 211 -211 12 -12 proton";

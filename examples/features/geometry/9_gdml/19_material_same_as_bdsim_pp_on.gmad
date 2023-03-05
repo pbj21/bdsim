@@ -1,0 +1,7 @@
+box1: element, l=1.1*m, geometry="gdml:box-w-bdsim-material-conflict-1.gdml";
+l1: line=(box1);
+use, l1;
+beam, particle="e-", energy=3*GeV;
+
+! explicitly set as on even though default to ensure test always works
+option, preprocessGDML=1;

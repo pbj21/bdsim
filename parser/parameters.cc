@@ -178,6 +178,7 @@ Parameters::Parameters()
   setMap["geometryFile"]   = false;
   setMap["stripOuterVolume"] = false;
   setMap["autoColour"]     = false;
+  setMap["elementLengthIsArcLength"] = false;
   setMap["material"]       = false;
   setMap["namedVacuumVolumes"] = false;
   setMap["markAsCollimator"] = false;
@@ -188,6 +189,9 @@ Parameters::Parameters()
   setMap["dicomDataFile"]  = false;
 
   setMap["colour"] = false;
+
+  setMap["jawTiltLeft"] = false;
+  setMap["jawTiltRight"] = false;
 
   setMap["crystalLeft"]            = false;
   setMap["crystalRight"]           = false;

@@ -1,7 +1,7 @@
 beam,  particle = "e-",
        energy = 1.0*GeV,
        distrType = "eventgeneratorfile:hepmc2",
-       distrFile = "egf-hepmc2.dat";
+       distrFile = "egf-hepmc2-4pp-100gev-evts.dat";
 
 d1: drift, l=0.25;
 q1: quadrupole, l=0.5, k1=2.0;
@@ -10,14 +10,12 @@ q2: quadrupole, l=0.5, k1=-2.0;
 lat : line = (d1,q1,d1,d1,q2,d1);
 use, period=lat;
 
-sample, all;
+sample, range=d1[3];
 
 option, stopSecondaries=1;
 
-option, ngenerate=2;
-
 ! we need some physics list to ensure the particles are defined that
 ! will be supplied in the event generator file - use a full physics list
-option, physicsList="g4FTFP_BERT";
+option, physicsList="all_particles decay";
 
 option, seed=123;

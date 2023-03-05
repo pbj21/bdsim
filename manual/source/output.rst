@@ -236,10 +236,13 @@ type and last physics process are recorded as a snapshot of the particle at that
 
 We don't store trajectory information by default because it is an **incredible** amount of information and
 hard to deal with sensibly. Turning on trajectory storage in the options will store by default,
-**only** the primary particle(s) trajectory(ies). We then use some options to include a set of
-particles we're interested in and whether to also store the trajectories that connect these particles
-back to the primary.
+**only** the primary particle(s) trajectory(ies). We then use some options to specify (filter down to)
+a set of particles we're interested in and also store the trajectories that connect these particles
+back to the primary. A set of subsequent options define which numbers will be stored for each trajectory
+and each point along the trajectory.
 
+* Filtering options: :ref:`options-trajectory-filtering`
+* Storage options: :ref:`options-trajectory-storage`
 * The trajectory filters are combined with a **logical OR**. So, if two filters are used, a trajectory
   will be stored if it matches either one OR the other. In analysis, the variable `filters` has
   Booleans stored for which filters a particular trajectory matched and can be used to disentangle
@@ -260,7 +263,6 @@ histogram the first point in each trajectory afterwards.  e.g. ::
 	  storeTrajectorySamplerID="samplername",
 	  trajectoryFilterLogicAND=1;
 
-See :ref:`bdsim-options-output` with options beginning with :code:`storeTrajectory` and :code:`traj`.
 
 5) Collimator Hits
 ^^^^^^^^^^^^^^^^^^
@@ -494,6 +496,8 @@ of the BDSIM classes.  The trees are:
 | Event        | Information collected per Event                                     |
 +--------------+---------------------------------------------------------------------+
 
+.. _output-header-tree:
+
 Header Tree
 ^^^^^^^^^^^
 
@@ -549,9 +553,15 @@ BDSOutputROOTEventHeader
 | skimmedFile            | bool                     | Whether this file's Event tree is     |
 |                        |                          | made of skimmed events.               |
 +------------------------+--------------------------+---------------------------------------+
-| nOriginalEvents        | unsigned long long int   | If a skimmed file, this is the number |
+| nOriginalEvents (\*)   | unsigned long long int   | If a skimmed file, this is the number |
 |                        |                          | of events in the original file.       |
 +------------------------+--------------------------+---------------------------------------+
+
+* (\*) This variable may only be filled in the second entry of the tree as they are only
+  available at the end of a run and ROOT does not permit overwriting an entry. The first entry
+  to the header tree is written when the file is opened and must be there in case of a crash
+  or the BDSIM instance was killed.
+
 
 ParticleData Tree
 ^^^^^^^^^^^^^^^^^
@@ -772,6 +782,19 @@ One entry in the model tree represents one beam line.
 | fintxk2             | std::vector<float>       | 2nd fringe-field integral for exit pole face                 |
 +---------------------+--------------------------+--------------------------------------------------------------+
 
+Additionally:
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.4\textwidth}|p{0.3\textwidth}|
+
++---------------------+--------------------------------------+----------------------------------------------------+
+| pvNames             | std::vector<std::vector<std::string> | Name of physical volume(s) placed in the world for |
+|                     |                                      | a given beamline element                           |
++---------------------+--------------------------------------+----------------------------------------------------+
+| pvNamesWPointer     | std::vector<std::vector<std::string> | Same as pvNames but with the pointer appended to   |
+|                     |                                      | the name                                           |
++---------------------+--------------------------------------+----------------------------------------------------+
+
+
 Optional collimator information also store in the model.
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
@@ -868,6 +891,7 @@ BDSOutputROOTEventCollimatorInfo
 | ySizeOut           | double        | Vertical half aperture at exit(m)          |
 +--------------------+---------------+--------------------------------------------+
 
+.. _output-run-tree:
 
 Run Tree
 ^^^^^^^^
@@ -877,8 +901,14 @@ Run Tree
 	    :align: center
 
 This tree contains two branches called "Histos." and "Summary." which represent instances of
-:code:`include/BDSOutputROOTEventHistograms.hh` and :code:`include/BSOutputROOTEventInfo`,
-respectively. Histos contains two vectors of 1D and 2D histograms that are produced per run.
+:code:`include/BDSOutputROOTEventHistograms.hh` and :code:`include/BSOutputROOTRunInfo`,
+respectively. See:
+
+* :ref:`output-structure-run-info`
+* :ref:`output-structure-histograms`
+
+Histos contains vectors of any 1D, 2D and 3D histograms that are produced per run. Currently,
+these are 'simple histograms' and not the per-event average ones for the run.
 
 .. _output-event-tree:
 
@@ -886,7 +916,7 @@ Event Tree
 ^^^^^^^^^^
 
 .. figure:: figures/rootevent_event_tree.png
-	    :width: 35%
+	    :width: 40%
 	    :align: center
 
 This tree contains information on a per-event basis.  Everything shown in the above tree has a
@@ -1229,6 +1259,8 @@ system so there are only global coordinates recorded.
 | turn                  | std::vector<int>      | (optional) Turn in circular machine on loss                       |
 +-----------------------+-----------------------+-------------------------------------------------------------------+
 
+.. _output-structure-run-info:
+
 BDSOutputROOTEventRunInfo
 *************************
 
@@ -1247,6 +1279,15 @@ BDSOutputROOTEventRunInfo
 +-----------------------------+-------------------+---------------------------------------------+
 | seedStateAtStart            | std::string       | State of random number generator at the     |
 |                             |                   | start of the run as provided by CLHEP       |
++-----------------------------+-------------------+---------------------------------------------+
+| nEventsInFile               | long              | Number of events from input distribution    |
+|                             |                   | file that were found. Excludes any ignored  |
+|                             |                   | or skipped events, but includes all events  |
+|                             |                   | after those irrespective of filters.        |
++-----------------------------+-------------------+---------------------------------------------+
+| nEventsInFileSkipped        | long              | Number of events if any that were skipped   |
+|                             |                   | from an input distribution given the        |
+|                             |                   | filters used.                               |
 +-----------------------------+-------------------+---------------------------------------------+
 
 .. _output-structure-trajectory:
@@ -1701,7 +1742,8 @@ BDSOutputROOTEventCoords
 +-----------------+-------------+-------------------------------------------------------+
 | T               | double      | Time (ns)                                             |
 +-----------------+-------------+-------------------------------------------------------+
-	     
+
+.. _output-structure-histograms:
 	     
 BDSOutputROOTEventHistograms
 ****************************
@@ -1858,3 +1900,21 @@ BDSOutputROOTEventCollimator
 +--------------------------+---------------------+-----------------------------------------------------------------------------+
 | rigidity                 | std::vector<float>  | Rigidity of the particle for each hit (Tm)                                  |
 +--------------------------+---------------------+-----------------------------------------------------------------------------+
+
+
+EventCombineInfo Tree
+^^^^^^^^^^^^^^^^^^^^^
+
+This tree will only exist in a file produced by running `bdsimCombine` to merge
+the events from multiple BDSIM raw files into one file.
+
+It is a friend tree to the Event tree.
+
+
++--------------------+----------------+------------------------------------------------------+
+| **Leaf Name**      | **Type**       | **Description**                                      |
++====================+================+======================================================+
+| combinedFileIndex  | UInt_t         | Unsigned 32 bit integer. Index to header variable    |
+|                    |                | combinedFiles vector for the file this event was     |
+|                    |                | combined from.                                       |
++--------------------+----------------+------------------------------------------------------+

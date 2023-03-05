@@ -1,3 +1,6 @@
 include eventgeneratorfile-hepmc2.gmad;
 
+! overwrite physics list without decay physics
+option, physicsList="all_particles";
+
 beam, removeUnstableWithoutDecay=0;

@@ -1,0 +1,4 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! test by name as well as by PDG integer ID
+beam, eventGeneratorParticles="211 proton neutron -211";

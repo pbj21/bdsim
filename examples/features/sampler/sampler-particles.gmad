@@ -13,6 +13,8 @@ beam, particle="proton",
       distrFileFormat="pdgid",
       distrFile="varied-particles.dat";
 
+! this is the old option - keep here for testing
+! new one is distrFileMatchLength
 beam, matchDistrFileLength=1;
 
 option, physicsList="all_particles";

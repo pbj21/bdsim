@@ -1,5 +1,4 @@
 import pybdsim
-import numpy as np
 import ROOT
 
 def AnalyseFile(filename, outfilename):

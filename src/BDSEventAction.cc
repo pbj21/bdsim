@@ -178,13 +178,13 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   eventInfo = static_cast<BDSEventInfo*>(evt->GetUserInformation());
 
   // number feedback
-  G4int event_number = evt->GetEventID();
-  BDSSDTerminator::eventNumber = event_number; // update static member of terminator
-  eventInfo->SetIndex(event_number);
-  if (event_number%printModulo == 0)
-    {G4cout << "---> Begin of event: " << event_number << G4endl;}
+  G4int currentEventID = evt->GetEventID();
+  BDSSDTerminator::eventNumber = currentEventID; // update static member of terminator
+  eventInfo->SetIndex(currentEventID);
+  if (currentEventID % printModulo == 0)
+    {G4cout << "---> Begin of event: " << currentEventID << G4endl;}
   if (verboseEventBDSIM) // always print this out
-    {G4cout << __METHOD_NAME__ << "event #" << event_number << G4endl;}
+    {G4cout << __METHOD_NAME__ << "event #" << currentEventID << G4endl;}
 
   // cache hit collection IDs for quicker access
   if (samplerCollID_plane < 0)

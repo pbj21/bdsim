@@ -276,17 +276,20 @@ void BDSIntegratorDipoleQuadrupole::OneStep(const G4ThreeVector& posIn,
   // eqOfM->FCof() gives us conversion to MeV,mm and rigidity in Tm correctly
   // as well as charge of the given particle
   G4double K1  = std::abs(fcof)*bPrime/nomMomentum;
+  G4bool focussing = K1 >= 0; // depends on charge as well (in eqOfM->FCof())
 
   // separate focussing strengths for vertical and horizontal axes.
   // Used by matrix elements so must be derived from nominal values.
-  G4double kx2 = std::pow(1.0 / rho, 2) + K1;
-  G4double kx  = std::sqrt(std::abs(kx2));
+  // strength parameter calculated differently depending on value
+  // default values are for +ve K1
+  G4double invrho2 = std::pow(1.0 / rho, 2);
+  G4double kx2 = invrho2 + K1;
+  G4double kx = std::sqrt(std::abs(kx2));
+  G4double kxl = kx * h;
+
   G4double ky2 = -K1;
   G4double ky  = std::sqrt(std::abs(ky2));
-  G4double kxl = kx * h;
   G4double kyl = ky * h;
-
-  G4bool focussing = K1 >= 0; // depends on charge as well (in eqOfM->FCof())
 
   G4double x0  = posIn.x();
   G4double y0  = posIn.y();
@@ -307,10 +310,10 @@ void BDSIntegratorDipoleQuadrupole::OneStep(const G4ThreeVector& posIn,
   // matrix elements. All must derived from nominal parameters.
   if (focussing)
     {//focussing
-      X11= std::cos(kxl);
-      X12= std::sin(kxl)/kx;
-      X21=-std::abs(kx2)*X12;
-      X22= X11;
+      X11 = std::cos(kxl);
+      X12 = std::sin(kxl)/kx;
+      X21 =-std::abs(kx2)*X12;
+      X22 = X11;
       X16 = (1.0/beta) * ((1.0/rho) / kx2) * (1 - std::cos(kxl));
       X26 = (1.0/beta) * (1.0/rho) * X12;
 
@@ -323,13 +326,29 @@ void BDSIntegratorDipoleQuadrupole::OneStep(const G4ThreeVector& posIn,
     }
   else
     {// defocussing
-      X11= std::cosh(kxl);
-      X12= std::sinh(kxl)/kx;
-      X21= std::abs(kx2)*X12;
-      X22= X11;
-      X16 = (1.0/beta) * ((1.0/rho) / kx2) * (1 - std::cosh(kxl));
+      if (std::abs(K1) < invrho2)
+        {
+          kx2 = invrho2 - std::abs(K1);
+          kx  = std::sqrt(std::abs(kx2));
+          kxl = kx * h;
+          X11 = std::cos(kxl);
+          X12 = std::sin(kxl)/kx;  // always +ve
+          X21 = -std::abs(kx2)*X12;
+          X22 = X11;
+        }
+      else
+        {
+          kx2 = std::abs(K1) - invrho2;
+          kx  = std::sqrt(std::abs(kx2));
+          kxl = kx * h;
+          X11 = std::cosh(kxl);
+          X12 = std::sinh(kxl)/kx;  // always +ve
+          X21 = std::abs(kx2)*X12;
+          X22 = X11;
+        }
+      X16 = (1.0/beta) * ((1.0/rho) / kx2) * (1 - std::cos(kxl));
       X26 = (1.0/beta) * (1.0/rho) * X12;
-      
+
       Y11= std::cos(kyl);
       Y12= std::sin(kyl)/ky;
       if (std::isnan(Y12))  //y12 can be nan from div by 0 in previous line

@@ -184,6 +184,8 @@ G4int BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& colli
                                                         G4double rotation,
                                                         G4double xOffset,
                                                         G4double yOffset,
+                                                        G4double jawTiltLeft,
+                                                        G4double jawTiltright,
                                                         G4bool   buildLeftJaw,
                                                         G4bool   buildRightJaw,
                                                         G4bool   isACrystalIn,
@@ -238,6 +240,8 @@ G4int BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& colli
   el.offsetX  = xOffset / CLHEP::m;
   el.offsetY  = yOffset / CLHEP::m;
   el.horizontalWidth = 2.0; // m
+  el.jawTiltLeft = jawTiltLeft; // rad
+  el.jawTiltRight = jawTiltright; // rad
 
   // if we don't want to build a jaw, then we set it to outside the width.
   if (!buildLeftJaw)

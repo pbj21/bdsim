@@ -132,7 +132,7 @@ void BDSOutputROOTEventTrajectory::Fill(const BDSTrajectoriesToStore* trajectori
       if (!trajFlag.second) // ie false, then continue and don't store
 	{continue;}
 
-      partID.push_back((int &&) traj->GetPDGEncoding());
+      partID.push_back((int) traj->GetPDGEncoding());
       trackID.push_back((unsigned int) std::abs(traj->GetTrackID()));
       parentID.push_back((unsigned int) std::abs(traj->GetParentID()));
       parentIndex.push_back((unsigned int) std::abs(traj->GetParentIndex()));

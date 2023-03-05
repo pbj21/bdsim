@@ -196,10 +196,10 @@ void BDSMagnet::BuildOuter()
   G4double outerLength = chordLength - 2*lengthSafety;
   // The outerFieldInfo is required only so we don't reuse geometry when we need a unique field on it.
   outer = BDSMagnetOuterFactory::Instance()->CreateMagnetOuter(magnetType,
-							       magnetOuterInfo,
-							       outerLength,
-							       chordLength,
-							       beampipe);
+                                                               magnetOuterInfo,
+                                                               outerLength,
+                                                               chordLength,
+                                                               beampipe);
 
   if (outer)
     {
@@ -238,39 +238,39 @@ void BDSMagnet::BuildOuterField()
       BDSMagnetStrength* scalingStrength = vacuumFieldInfo ? vacuumFieldInfo->MagnetStrength() : nullptr;
       G4LogicalVolume* vol = outer->GetContainerLogicalVolume();
       BDSFieldBuilder::Instance()->RegisterFieldForConstruction(outerFieldInfo,
-								vol,
-								true,
+                                                                vol,
+                                                                true,
                                                                 scalingStrength,
-								scalingKey);
+                                                                scalingKey);
       // Attach to the container but don't propagate to daughter volumes. This ensures
       // any gap between the beam pipe and the outer also has a field.
       BDSFieldBuilder::Instance()->RegisterFieldForConstruction(outerFieldInfo,
-								containerLogicalVolume,
-								false,
+                                                                containerLogicalVolume,
+                                                                false,
                                                                 scalingStrength,
-								scalingKey);
+                                                                scalingKey);
       
       // in the case of LHC-style geometry, override the second beam pipe (which is a daughter of the outer)
       // field to be the opposite sign of the main vacuum field (same strength)
       auto mgt = magnetOuterInfo->geometryType;
       if (mgt == BDSMagnetGeometryType::lhcleft || mgt == BDSMagnetGeometryType::lhcright)
-	{
-	  std::set<BDSGeometryComponent*> daughtersSet = outer->GetAllDaughters();
-	  std::vector<BDSGeometryComponent*> daughters(daughtersSet.begin(), daughtersSet.end());
-	  if (daughters.size() == 1 && vacuumFieldInfo)
-	    {
-	      BDSFieldInfo* secondBPField = new BDSFieldInfo(*vacuumFieldInfo);
-	      G4double sign = mgt == BDSMagnetGeometryType::lhcleft ? 1.0 : -1.0;
-	      secondBPField->Translate(G4ThreeVector(sign * BDSMagnetOuterFactoryLHC::beamSeparation, 0, 0));
-	      (*(secondBPField->MagnetStrength()))["field"] *= -1; // flip the sign
-	      if (BDS::IsFinite((*(secondBPField->MagnetStrength()))["k1"]))
-		{(*(secondBPField->MagnetStrength()))["k1"] *= -1;}
-	      secondBPField->SetIntegratorType(BDSIntegratorType::g4classicalrk4);
-	      BDSFieldBuilder::Instance()->RegisterFieldForConstruction(secondBPField,
-									daughters[0]->GetContainerLogicalVolume(),
-									true);
-	    }
-	}
+        {
+          std::set<BDSGeometryComponent*> daughtersSet = outer->GetAllDaughters();
+          std::vector<BDSGeometryComponent*> daughters(daughtersSet.begin(), daughtersSet.end());
+          if (daughters.size() == 1 && vacuumFieldInfo)
+            {
+              BDSFieldInfo* secondBPField = new BDSFieldInfo(*vacuumFieldInfo);
+              G4double sign = mgt == BDSMagnetGeometryType::lhcleft ? 1.0 : -1.0;
+              secondBPField->Translate(G4ThreeVector(sign * BDSMagnetOuterFactoryLHC::beamSeparation, 0, 0));
+              (*(secondBPField->MagnetStrength()))["field"] *= -1; // flip the sign
+              if (BDS::IsFinite((*(secondBPField->MagnetStrength()))["k1"]))
+                {(*(secondBPField->MagnetStrength()))["k1"] *= -1;}
+              secondBPField->SetIntegratorType(BDSIntegratorType::g4classicalrk4);
+              BDSFieldBuilder::Instance()->RegisterFieldForConstruction(secondBPField,
+                                                                        daughters[0]->GetContainerLogicalVolume(),
+                                                                        true);
+            }
+        }
     }
 }
 
@@ -281,8 +281,8 @@ void BDSMagnet::BuildContainerLogicalVolume()
     {//build around that
       // container solid will have been updated in BuildOuter if the outer exists
       containerLogicalVolume = new G4LogicalVolume(containerSolid,
-						   emptyMaterial,
-						   name + "_container_lv");
+                                                   emptyMaterial,
+                                                   name + "_container_lv");
       
       // user limits - provided by BDSAcceleratorComponent
       containerLogicalVolume->SetUserLimits(userLimits);
@@ -307,12 +307,12 @@ void BDSMagnet::PlaceComponents()
       G4ThreeVector beamPipeOffset = -1*GetPlacementOffset();
       // place beampipe
       G4PVPlacement* beamPipePV = new G4PVPlacement(nullptr,                 // rotation
-						    beamPipeOffset,          // position in container
-						    beampipe->GetContainerLogicalVolume(),  // its logical volume
-						    name + "_beampipe_pv",   // its name
-						    containerLogicalVolume,  // its mother  volume
-						    false,                   // no boolean operation
-						    0,                       // copy number
+                                                    beamPipeOffset,          // position in container
+                                                    beampipe->GetContainerLogicalVolume(),  // its logical volume
+                                                    name + "_beampipe_pv",   // its name
+                                                    containerLogicalVolume,  // its mother  volume
+                                                    false,                   // no boolean operation
+                                                    0,                       // copy number
                                                     checkOverlaps);
       
       RegisterPhysicalVolume(beamPipePV);
@@ -325,12 +325,12 @@ void BDSMagnet::PlaceComponents()
       
       // place outer volume
       G4PVPlacement* magnetOuterPV = new G4PVPlacement(nullptr,                // rotation
-						       outerOffset,            // at normally (0,0,0)
-						       outer->GetContainerLogicalVolume(), // its logical volume
-						       name+"_outer_pv",       // its name
-						       containerLogicalVolume, // its mother  volume
-						       false,                  // no boolean operation
-						       0,                      // copy number
+                                                       outerOffset,            // at normally (0,0,0)
+                                                       outer->GetContainerLogicalVolume(), // its logical volume
+                                                       name+"_outer_pv",       // its name
+                                                       containerLogicalVolume, // its mother  volume
+                                                       false,                  // no boolean operation
+                                                       0,                      // copy number
                                                        checkOverlaps);
 
       RegisterPhysicalVolume(magnetOuterPV);

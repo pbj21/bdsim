@@ -225,6 +225,7 @@ public:
   inline G4bool   StoreApertureImpactsAll()  const {return G4bool  (options.storeApertureImpactsAll);}
   inline G4bool   StoreApertureImpactsHistograms()  const {return G4bool  (options.storeApertureImpactsHistograms);}
   inline G4double ApertureImpactsMinimumKE() const {return G4double(options.apertureImpactsMinimumKE*CLHEP::GeV);}
+  inline G4bool   StoreCavityInfo()          const {return G4bool  (options.storeCavityInfo);}
   inline G4bool   StoreCollimatorInfo()      const {return G4bool  (options.storeCollimatorInfo);}
   inline G4bool   StoreCollimatorHits()      const {return G4bool  (options.storeCollimatorHits);}
   inline G4bool   StoreCollimatorHitsLinks() const {return G4bool  (options.storeCollimatorHitsLinks);}
@@ -279,6 +280,8 @@ public:
   inline G4bool   StoreSamplerIon()          const {return G4bool  (options.storeSamplerIon);}
   inline G4bool   StoreModel()               const {return G4bool  (options.storeModel);}
   inline G4int    SamplersSplitLevel()       const {return G4int   (options.samplersSplitLevel);}
+  inline G4int    ModelSplitLevel()          const {return G4int   (options.modelSplitLevel);}
+  inline G4int    UprootCompatible()         const {return G4int   (options.uprootCompatible);}
   inline G4bool   TrajConnect()              const {return G4bool  (options.trajConnect);}
   inline G4double TrajCutGTZ()               const {return G4double(options.trajCutGTZ*CLHEP::m);}
   inline G4double TrajCutLTR()               const {return G4double(options.trajCutLTR*CLHEP::m);}

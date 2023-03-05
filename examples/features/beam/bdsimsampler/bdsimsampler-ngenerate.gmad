@@ -1,0 +1,9 @@
+! load shower sample
+include bdsimsampler-lowphysics.gmad;
+
+! restore physics list
+option, physicsList="all_particles decay";
+
+! instead of matching the file, we limit to just N events
+!option, ngenerate=3;
+! This has to be an executable option with --ngenerate=N

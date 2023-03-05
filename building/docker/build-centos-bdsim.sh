@@ -1,4 +1,4 @@
-docker build . -f Dockerfile-centos-bdsim -t bdsim
+docker build . -f Dockerfile-centos7-bdsim -t bdsim
 
 # Need following flag for apple silicon
 # softwareupdate --install-rosetta

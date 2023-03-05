@@ -1,0 +1,5 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+beam, eventGeneratorNEventsSkip=2;
+
+option, printFractionEvents=-1;

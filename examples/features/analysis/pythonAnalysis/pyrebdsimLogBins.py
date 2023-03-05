@@ -25,6 +25,9 @@ def AnalyseFile(filename, outfilename):
 
     eventTree = d.GetEventTree()
     for event in eventTree:
+        # WARNING - never construct a numpy array inside the loop
+        # it will get progressibly slower and slower (just numpy)
+        
         # the 'event' temporary object here, now looks exactly
         # like the file layout you see in a TBrowser
 

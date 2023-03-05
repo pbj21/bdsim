@@ -247,7 +247,7 @@ OptionsBase::OptionsBase()
   backupStepperMomLimit    = 0.1;   // fraction of unit momentum
 
   // default value in Geant4, old value 0 - error must be greater than this
-  minimumEpsilonStep       = 5e-25;
+  minimumEpsilonStep       = 1e-12;   // used to be 1e-25 but since v11.1 this has to be greater than double precision
   maximumEpsilonStep       = 1e-7;    // default value in Geant4, old value 1e-7
   deltaOneStep             = 1e-6;    // maximum allowed spatial error in position (1um)
   stopSecondaries          = false;
@@ -269,6 +269,7 @@ OptionsBase::OptionsBase()
   storeApertureImpactsIons   = false;
   storeApertureImpactsAll    = false;
   apertureImpactsMinimumKE   = 0;
+  storeCavityInfo            = true;
   storeCollimatorInfo        = false;
   storeCollimatorHits        = false;
   storeCollimatorHitsLinks   = false;
@@ -336,6 +337,8 @@ OptionsBase::OptionsBase()
   storeModel               = true;
 
   samplersSplitLevel       = 0;
+  modelSplitLevel          = 1;
+  uprootCompatible         = 0;
 
   // circular options
   nturns                   = 1;

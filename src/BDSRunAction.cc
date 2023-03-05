@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAuxiliaryNavigator.hh"
 #include "BDSBeamline.hh"
 #include "BDSBunch.hh"
+#include "BDSBunchFileBased.hh"
 #include "BDSDebug.hh"
 #include "BDSEventAction.hh"
 #include "BDSEventInfo.hh"
@@ -59,16 +60,16 @@ BDSRunAction::BDSRunAction(BDSOutput*      outputIn,
                            BDSBunch*       bunchGeneratorIn,
 			   G4bool          usingIonsIn,
 			   BDSEventAction* eventActionIn,
-			   G4String        trajectorySamplerIDIn):
+			   const G4String& trajectorySamplerIDIn):
   output(outputIn),
   starttime(time(nullptr)),
-  seedStateAtStart(""),
   info(nullptr),
   bunchGenerator(bunchGeneratorIn),
   usingIons(usingIonsIn),
   cpuStartTime(std::clock_t()),
   eventAction(eventActionIn),
-  trajectorySamplerID(trajectorySamplerIDIn)
+  trajectorySamplerID(trajectorySamplerIDIn),
+  nEventsRequested(0)
 {;}
 
 BDSRunAction::~BDSRunAction()
@@ -85,6 +86,7 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   
   // Bunch generator beginning of run action (optional mean subtraction).
   bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed());
+  nEventsRequested = aRun->GetNumberOfEventToBeProcessed();
 
   SetTrajectorySamplerIDs();
   CheckTrajectoryOptions();
@@ -138,20 +140,29 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
   time_t stoptime = time(nullptr);
   info->SetStopTime(stoptime);
   // Run duration
-  G4float duration = difftime(stoptime, starttime);
-  info->SetDurationWall(G4double(duration));
+  G4float duration = static_cast<G4float>(difftime(stoptime, starttime));
+  info->SetDurationWall(duration);
 
   // Calculate the elapsed CPU time for the event.
   auto cpuEndTime = std::clock();
-  G4double durationCPU = static_cast<G4double>(cpuEndTime - cpuStartTime) / CLOCKS_PER_SEC;
+  G4float durationCPU = static_cast<G4float>(cpuEndTime - cpuStartTime) / CLOCKS_PER_SEC;
   info->SetDurationCPU(durationCPU);
   
   // Output feedback
-  G4cout << G4endl << __METHOD_NAME__ << "Run " << aRun->GetRunID()
-	 << " end. Time is " << asctime(localtime(&stoptime));
+  G4cout << G4endl << __METHOD_NAME__ << "Run " << aRun->GetRunID() << " end. Time is " << asctime(localtime(&stoptime));
   
   // Write output
-  output->FillRun(info);
+  // In the case of a file-based bunch generator, it will have cached these numbers - get them.
+  unsigned long long int nEventsDistrFileSkipped = 0;
+  unsigned long long int nEventsInOriginalDistrFile = 0;
+  if (auto beg = dynamic_cast<BDSBunchFileBased*>(bunchGenerator))
+    {
+      nEventsDistrFileSkipped = beg->NEventsInFileSkipped();
+      nEventsInOriginalDistrFile = beg->NEventsInFile();
+      if (nEventsDistrFileSkipped > 0)
+        {G4cout << __METHOD_NAME__ << nEventsDistrFileSkipped << " events were skipped as no particles passed the filters in them." << G4endl;}
+    }
+  output->FillRun(info, nEventsRequested, nEventsInOriginalDistrFile, nEventsDistrFileSkipped);
   output->CloseFile();
   info->Flush();
 

@@ -91,6 +91,13 @@ To add a purposively failing test, i.e. a test that the program should complain 
 	  to only copy files that are defined in the repository, therefore avoiding copying the
 	  typically polluted example directory when developing the code.
 
+
+To add a test that passes by finding some text explicitly in the print out (i.e. a test that should
+provide a warning but maybe not return 1 error code), use: ::
+
+  simple_testing_w_string(testname  "--file=inputfile.gmad"  "regex_expression")
+
+
 Steps:
 
 1) Define new input file

@@ -67,7 +67,8 @@ BDSOutputROOT::~BDSOutputROOT()
 void BDSOutputROOT::NewFile() 
 {
   G4String newFileName = GetNextFileName();
-  
+  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+
   theRootOutputFile = new TFile(newFileName,"RECREATE", "BDS output file");
   if (theRootOutputFile->IsZombie())
     {throw BDSException(__METHOD_NAME__, "Unable to open output file: \"" + newFileName +"\"");}
@@ -93,7 +94,7 @@ void BDSOutputROOT::NewFile()
   theParticleDataTree->Branch("ParticleData.", "BDSOutputROOTParticleData",   particleDataOutput,32000, 1);
   theBeamOutputTree->Branch("Beam.",           "BDSOutputROOTEventBeam",      beamOutput,       32000, 2);
   theOptionsOutputTree->Branch("Options.",     "BDSOutputROOTEventOptions",   optionsOutput,    32000, 2);
-  theModelOutputTree->Branch("Model.",         "BDSOutputROOTEventModel",     modelOutput,      32000, 1);
+  theModelOutputTree->Branch("Model.",         "BDSOutputROOTEventModel",     modelOutput,      32000, globals->ModelSplitLevel());
   theRunOutputTree->Branch("Histos.",          "BDSOutputROOTEventHistograms",runHistos,        32000, 1);
   theRunOutputTree->Branch("Summary.",         "BDSOutputROOTEventRunInfo",   runInfo,          32000, 1);
 
@@ -135,7 +136,6 @@ void BDSOutputROOT::NewFile()
   theEventOutputTree->Branch("Histos.",     "BDSOutputROOTEventHistograms", evtHistos, 32000, 1);
 
   // build sampler structures
-  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
   for (G4int i = 0; i < (G4int)samplerTrees.size(); ++i)
     {
       auto samplerTreeLocal = samplerTrees.at(i);
@@ -180,6 +180,12 @@ void BDSOutputROOT::NewFile()
 
 void BDSOutputROOT::WriteHeader()
 {
+  theHeaderOutputTree->Fill();
+}
+
+void BDSOutputROOT::WriteHeaderEndOfFile()
+{
+  // there's no way to overwrite an entry in a ttree so we just add another entry with updated information
   theHeaderOutputTree->Fill();
 }
 

@@ -518,7 +518,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String&
   poleIntersectionSolid = new G4Tubs(name + "_yoke_intersection_solid", // name
 				     0,                                 // start radius
 				     yokeStartRadius - lengthSafetyLarge,
-				     length,  // long half length for unamibiguous intersection
+				     length,  // long half-length for unambiguous intersection
 				     0,                                 // start angle
 				     CLHEP::twopi);                     // sweep angle
   allSolids.insert(poleIntersectionSolid);
@@ -1053,8 +1053,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleC(const G4String&   
   G4double extXNeg = 0;
   G4double extYPos = 0;
   G4double extYNeg = 0;
-  // Typically we have a positive bend angle that (by convention) causes a
-  // bend to the -ve x direction in right handed coordinates. Also, typically,
+  // Typically, we have a positive bend angle that (by convention) causes a
+  // bend to the -ve x direction in right-handed coordinates. Also, typically,
   // a C shaped magnet has the yoke to the inside so there is an aperture for
   // any radiation to escape to the outside. Therefore, we build the yoke like this
   // and flip it if required. Points are done in clock wise order from the bottom left

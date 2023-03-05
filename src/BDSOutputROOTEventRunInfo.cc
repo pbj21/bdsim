@@ -27,8 +27,7 @@ BDSOutputROOTEventRunInfo::BDSOutputROOTEventRunInfo():
   startTime(time_t()),
   stopTime(time_t()),
   durationWall(0),
-  durationCPU(0),
-  seedStateAtStart("")
+  durationCPU(0)
 {;}
 
 BDSOutputROOTEventRunInfo::BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info):

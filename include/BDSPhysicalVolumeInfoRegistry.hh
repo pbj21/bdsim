@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 
 class G4VPhysicalVolume;
+class BDSBeamlineElement;
 class BDSPhysicalVolumeInfo;
 
 typedef std::map<G4VPhysicalVolume*, BDSPhysicalVolumeInfo*>::iterator BDSPVInfoIterator;
@@ -91,8 +92,16 @@ public:
   /// the main search each time.
   void RegisterExcludedPV(G4VPhysicalVolume* physicalVolume);
 
+  /// Register a set of PVs with respect to a beamline element for the purpose of
+  /// providing this information in the output. Not for memory management.
+  void RegisterPVsForOutput(const BDSBeamlineElement* element,
+			    const std::set<G4VPhysicalVolume*>& physicalVolumes);
+
   /// output stream
   friend std::ostream& operator<< (std::ostream &out, BDSPhysicalVolumeInfoRegistry const &r);
+  
+  /// Access a set of volumes registered for the placement of a beamline element.
+  const std::set<G4VPhysicalVolume*>* PVsForBeamlineElement(BDSBeamlineElement* element) const;
 
 private:
   /// Default constructor is private as singleton
@@ -126,6 +135,10 @@ private:
   std::set<G4VPhysicalVolume*> excludedVolumes;
   
   std::set<BDSPhysicalVolumeInfo*> pvInfosForDeletion;
+
+  /// This map is kept not for memory management, but for keeping a record of PVs
+  /// for each beamline element placed. This information can be written to the output.
+  std::map<const BDSBeamlineElement*, std::set<G4VPhysicalVolume*> > pvsForAGivenElement;
 };
 
 

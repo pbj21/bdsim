@@ -702,3 +702,12 @@ G4double BDS::CalculateSafeAngledVolumeLength(G4double angleIn,
     }
   return sLength;
 }
+
+G4double BDS::ArcLengthFromChordLength(G4double chordLength, G4double angle)
+{
+  if (!BDS::IsFinite(angle))
+    {return chordLength;} // avoid division by zero in the following lines
+  G4double radiusOfCurvature = 0.5*chordLength / std::sin(0.5*std::abs(angle));
+  G4double arcLength = radiusOfCurvature * std::abs(angle);
+  return arcLength;
+}

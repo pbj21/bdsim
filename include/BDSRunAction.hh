@@ -47,7 +47,7 @@ public:
 	       BDSBunch*       bunchGeneratorIn,
 	       G4bool          usingIonsIn,
 	       BDSEventAction* eventActionIn,
-	       G4String        trajectorySamplerIDIn);
+	       const G4String& trajectorySamplerIDIn);
   virtual ~BDSRunAction();
   
   virtual void BeginOfRunAction(const G4Run*);
@@ -79,6 +79,7 @@ private:
   std::clock_t  cpuStartTime;     ///< Start time of run.
   BDSEventAction* eventAction;    ///< Event action for updating information at start of run.
   G4String        trajectorySamplerID; ///< Copy of option.
+  unsigned long long int nEventsRequested; ///< Cache of ngenerate.
 };
 
 #endif

@@ -1,0 +1,4 @@
+include userfile.gmad
+
+! fewer than the 5 entries in the file - so ok
+option, ngenerate=3;

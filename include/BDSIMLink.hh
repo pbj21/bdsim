@@ -97,6 +97,8 @@ public:
                            double rotation,
                            double xOffset,
                            double yOffset,
+                           double jawTiltLeft = 0.0,
+                           double jawTiltRight = 0.0,
                            bool   buildLeftJaw  = true,
                            bool   buildRightJaw = true,
                            bool   isACrystal    = false,

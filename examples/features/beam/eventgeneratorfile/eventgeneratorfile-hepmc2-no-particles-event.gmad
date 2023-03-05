@@ -1,0 +1,7 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! only 2/4 events have a 13 in them
+beam, eventGeneratorParticles="13";
+
+! make sure it isn't rejected by no decay table for it
+option, physicsList="all_particles decay";

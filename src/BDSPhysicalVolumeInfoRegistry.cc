@@ -127,6 +127,12 @@ void BDSPhysicalVolumeInfoRegistry::RegisterExcludedPV(G4VPhysicalVolume* physic
   excludedVolumes.insert(physicalVolume);
 }
 
+void BDSPhysicalVolumeInfoRegistry::RegisterPVsForOutput(const BDSBeamlineElement* element,
+                                                         const std::set<G4VPhysicalVolume*>& physicalVolumes)
+{
+  pvsForAGivenElement[element] = physicalVolumes;
+}
+
 G4bool BDSPhysicalVolumeInfoRegistry::IsRegistered(G4VPhysicalVolume* physicalVolume)
 {
   return (IsRegisteredToReadOutRegister(physicalVolume) || IsRegisteredToBackupRegister(physicalVolume));
@@ -169,4 +175,10 @@ std::ostream& operator<< (std::ostream& out, BDSPhysicalVolumeInfoRegistry const
   for (BDSPVInfoIteratorConst itBU = r.backupRegister.begin(); itBU != r.backupRegister.end(); ++ itBU)
     {out << itBU->first->GetName() << "\t" << *(itBU->second) << G4endl;}
   return out;
+}
+
+const std::set<G4VPhysicalVolume*>* BDSPhysicalVolumeInfoRegistry::PVsForBeamlineElement(BDSBeamlineElement* element) const
+{
+  auto search = pvsForAGivenElement.find(element);
+  return search != pvsForAGivenElement.end() ? &search->second : nullptr;
 }

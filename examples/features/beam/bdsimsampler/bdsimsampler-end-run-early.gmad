@@ -1,0 +1,9 @@
+! load shower sample
+include bdsimsampler-lowphysics.gmad;
+
+! restore physics list
+option, physicsList="all_particles decay";
+
+! the last event doesn't have a 22 - so test where there was
+! at least one valid event but the last one isn't
+beam, eventGeneratorParticles="22";

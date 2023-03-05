@@ -258,6 +258,11 @@ csample { return CSAMPLE; }
   }
 
   std::cout << "parser> reading file " << includefilename << std::endl; //yytext
+  if (includefilename == yyfilename)
+    {
+       std::string errorstring = "\nError: recursively including the same file inside itself!\n\n Problem"; // at line.. etc
+       yyerror(errorstring.c_str());
+    }
   if(include_stack_ptr >= max_include_depth - 1)
     {
       std::string errorstring = "Error : Include depth exceeds " + std::to_string(max_include_depth);

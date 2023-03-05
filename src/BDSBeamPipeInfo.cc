@@ -182,7 +182,7 @@ void BDSBeamPipeInfo::CheckApertureInfo()
     case BDSBeamPipeType::clicpcl:
       {InfoOKForClicPCL();     break;}
     default:
-      InfoOKForCircular();
+      {InfoOKForCircular();    break;}
     }
 }
 

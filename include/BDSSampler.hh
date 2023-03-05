@@ -50,6 +50,10 @@ public:
   inline G4int GetFilterSetID() const {return filterSetID;}
   /// @}
   
+  /// Normally the sampler has nullptr material. But, in case we use it in the mass
+  /// world, we should set a valid material. This function sets it to G4_GALACTIC.
+  void MakeMaterialValidForUseInMassWorld();
+  
 protected:
   /// Common construction tasks such as creating a logical volume from the solid
   /// and visualisation options.

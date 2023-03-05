@@ -96,7 +96,8 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   std::set<G4LogicalVolume*>   lvsGDML;
   std::map<G4String, G4Material*> materialsGDML;
   GetAllLogicalPhysicalAndMaterials(containerPV, pvsGDML, lvsGDML, materialsGDML);
-  BDSMaterials::Instance()->CacheMaterialsFromGDML(materialsGDML, componentName, preprocessGDML);
+  BDSMaterials::Instance()->CheckForConflictingMaterialsAfterLoad(fileName, componentName);
+  BDSMaterials::Instance()->CacheMaterialsFromGDML(materialsGDML);
 
   // load possible colours in auxiliary tags
   std::map<G4String, G4Colour*> gdmlColours;
@@ -117,14 +118,14 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 	      G4String colourString = colourName + ":";
 	      for (const auto& c : colVals)
 		{colourString += " " + c;}
-	      // false = don't normalie to 255 as already done so
+	      // false = don't normalise to 255 as already done so
 	      G4Colour* colour = BDSColours::Instance()->GetColour(colourString, false);
 	      gdmlColours[lv->GetName()] = colour;
 	    }
 	}
     }
 
-  G4cout << "Loaded GDML file \"" << fileName << "\" containing:" << G4endl;
+  G4cout << "Loaded GDML file \"" << processedFile << "\" containing:" << G4endl;
   G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
 
   // resolve loaded map with possible external map with minimal copying
@@ -152,7 +153,7 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   ApplyUserLimits(lvsGDML, ul);
   
   // make sure container is visible - Geant4 always makes the container invisible.
-  G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(containerLV->GetMaterial());
+  G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(containerLV->GetMaterial(), preprocessNameToStrip);
   G4VisAttributes* vis = new G4VisAttributes(*c);
   vis->SetVisibility(true);
   visesGDML.insert(vis);

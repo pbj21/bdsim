@@ -208,8 +208,8 @@ void Event::SetBranchAddress(TTree* t,
 			     bool                      allBranchesOn,
 			     const RBDS::VectorString* branchesToTurnOn,
 			     const RBDS::VectorString* collimatorNamesIn,
-           const RBDS::VectorString* samplerCNamesIn,
-           const RBDS::VectorString* samplerSNamesIn)
+			     const RBDS::VectorString* samplerCNamesIn,
+			     const RBDS::VectorString* samplerSNamesIn)
 {
   if (debug)
     {std::cout << "Event::SetBranchAddress" << std::endl;}
@@ -337,7 +337,7 @@ void Event::SetBranchAddress(TTree* t,
 	{addressSetResult = t->SetBranchAddress("Trajectory.",      &Trajectory);}
       else if (name.substr(0,4) == "COLL")
 	{
-	  addressSetResult = SetBranchAddressCollimatorSingle(t, name+".", ithCollimator);
+	  addressSetResult = SetBranchAddressCollimatorSingle(t, nameDot, ithCollimator);
 	  ithCollimator++;
 	}
       if (debug) // has to be done inside loop

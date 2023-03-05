@@ -116,7 +116,8 @@ public:
 				   G4bool                setRegions        = false,
 				   G4bool                registerInfo      = false,
 				   G4bool                useCLPlacementTransform = false,
-				   G4bool                useIncrementalCopyNumbers = false);
+				   G4bool                useIncrementalCopyNumbers = false,
+				   G4bool                registerPlacementNamesForOutput = false);
 
   /// Create a transform based on the information in the placement. If S is supplied, it's
   /// updated with the final S coordinate calculated. If an extent is given - only in the

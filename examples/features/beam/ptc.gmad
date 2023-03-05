@@ -1,9 +1,0 @@
-beam,  particle="e-",
-       energy = 1*GeV,
-       distrType  = "ptc",
-       distrFile  = "ptc-inrays.madx";
-
-include options.gmad
-include fodo.gmad;
-
-option, ngenerate=10;

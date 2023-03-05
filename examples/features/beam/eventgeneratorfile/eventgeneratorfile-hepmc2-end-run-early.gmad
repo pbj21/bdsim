@@ -1,0 +1,8 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! This exists in event 0,1 out of 4 in the file, so we
+! should skip the last two events. By skipping the
+! last event, we're finishing the run early - purpose of the test.
+beam, eventGeneratorParticles="130";
+
+beam, removeUnstableWithoutDecay=0;

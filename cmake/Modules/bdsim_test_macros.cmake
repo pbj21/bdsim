@@ -59,6 +59,11 @@ macro(simple_fail test_name args)
     set_tests_properties(${test_name} PROPERTIES WILL_FAIL 1)
 endmacro()
 
+macro(simple_testing_w_string test_name args expression)
+    _run_test(${test_name} ${args})
+    set_tests_properties(${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "${expression}")
+endmacro()
+
 # a macro that adds a simple test
 # and then add a second test that compares two files
 # (e.g. an output file and a reference file)

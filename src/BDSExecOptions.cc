@@ -345,7 +345,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 		int result = 1;
 		conversion = BDS::IsInteger(optarg, result);
 		options.set_value("ngenerate", result);
-		beam.set_value("matchDistrFileLength", false); // ngenerate overrides.
+		beam.set_value("distrFileMatchLength", false); // ngenerate overrides.
 	      }
 	    else if ( !strcmp(optionName, "nturns") || !strcmp(optionName, "nTurns"))
 	      {
@@ -435,6 +435,8 @@ void BDSExecOptions::Usage() const
 	<<"--circular                   : assume circular machine - turn control"            << G4endl
 	<<"--colours                    : list available colours included in bdsim"          << G4endl
 	<<"                               by default"                                        << G4endl
+	<<"--distrFile=<filename>       : file to use for bunch distribution"                << G4endl
+	<<"--distrfileNLinesSkip=N      : skip N lines in the file (userfile)"               << G4endl
 	<<"--exportGeometryTo=<filename.extension> : export the fully constructed geometry"  << G4endl
 	<<"                               to a file. Only gdml extension supported."         << G4endl
 	<<"--E0=N                       : set E0 for the bunch for this run (GeV only)"      << G4endl
@@ -481,7 +483,7 @@ void BDSExecOptions::Usage() const
 	<<"--vis_debug                  : display all volumes in visualiser"                 << G4endl
 	<<"--vis_mac=<file>             : file with the visualisation macro script, default" << G4endl
 	<<"                               provided by BDSIM openGL (OGLSQt))"                << G4endl
-	<<"--writeseedstate             : write an ASCII file seed state for each event"     << G4endl;
+	<<"--writeSeedState             : write an ASCII file seed state for each event"     << G4endl;
 }
 
 void BDSExecOptions::PrintCopyright() const

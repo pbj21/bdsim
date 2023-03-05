@@ -19,10 +19,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSBUNCHPTC_H
 #define BDSBUNCHPTC_H
 
-#include "BDSBunch.hh"
+#include "BDSBunchFileBased.hh"
 
-#include "globals.hh"
+#include "G4String.hh"
+#include "G4Types.hh"
 
+#include <array>
 #include <vector>
 
 /**
@@ -31,7 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * @author Stewart Boogert
  */
 
-class BDSBunchPtc: public BDSBunch
+class BDSBunchPtc: public BDSBunchFileBased
 {  
 public: 
   BDSBunchPtc();
@@ -41,22 +43,26 @@ public:
 			  const BDSBunchType& distrType,
 			  G4Transform3D beamlineTransformIn = G4Transform3D::Identity,
 			  const G4double beamlineS = 0);
+  
+  virtual void Initialise();
+  
   virtual BDSParticleCoordsFull GetNextParticleLocal();
+  
+  virtual void RecreateAdvanceToEvent(G4int eventOffset);
   
 private:
   /// Load the PTC file into memory
   void LoadPtcFile();
 
-  /// Assign the distribution file by finding the full path of it.
-  void SetDistrFile(const G4String& distrFileNameIn);
-
   G4bool   matchDistrFileLength; ///< Whether to only run the number of particles in the file.
   G4int    nRays;     ///< Number of rays in file (1 counting).
   G4String fileName;  ///< File name.
   G4int    iRay;      ///< Iterator counter for current ray.
-  std::vector<double*> ptcData; ///< Data.
-  G4bool loopedOver;  ///< Whether we've reset to loop over the file again.
+  std::vector<std::array<double, 6>> ptcData; ///< Data.
   G4double beta;      ///< Velocity w.r.t. speed of light. Needed to convert mom. to energy.
+  G4bool distrFileLoop;
+  G4int nlinesSkip;
+  G4int lineCounter;
 };
 
 #endif

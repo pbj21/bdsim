@@ -41,7 +41,7 @@ public:
   std::string seedStateAtStart;         ///< Seed state at the start of the event.
   int    index;                         ///< Number of this event or run.
   bool   aborted;                       ///< Whether the event was aborted or not.
-  bool   primaryHitMachine;             ///< Wether the primary particle hit the accelerator or not.
+  bool   primaryHitMachine;             ///< Whether the primary particle hit the accelerator or not.
   bool   primaryAbsorbedInCollimator;   ///< Whether the primary stopped in a collimator.
   double memoryUsageMb;                 ///< Memory usage (rusage.ru_maxrss).
   double energyDeposited;               ///< Total energy deposited in machine (not world or tunnel).
