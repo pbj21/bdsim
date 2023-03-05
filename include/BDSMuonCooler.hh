@@ -41,14 +41,14 @@ class BDSMuonCooler: public BDSAcceleratorComponent
 {
 public:
   BDSMuonCooler(const G4String& nameIn,
-		G4double                                        lengthIn,
-		G4double                                        containerRadiusIn,
-		G4Material*                                     surroundingMaterialIn,
-		const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
-		const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
-		const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
-		BDSBeamPipeInfo*                                beamPipeTemplateIn,
-		BDSFieldInfo*                                   outerFieldRecipeIn);
+                G4double                                        lengthIn,
+                G4double                                        containerRadiusIn,
+                G4Material*                                     surroundingMaterialIn,
+                const std::vector<BDS::MuonCoolerCoilInfo>&     coilInfosIn,
+                const std::vector<BDS::MuonCoolerCavityInfo>&   cavityInfosIn,
+                const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfosIn,
+                BDSBeamPipeInfo*                                beamPipeTemplateIn,
+                BDSFieldInfo*                                   outerFieldRecipeIn);
   virtual ~BDSMuonCooler();
 
 protected:

@@ -100,19 +100,19 @@ namespace BDS
   /// Utility function to convert list of doubles to vector, build vector of whether single valued and throw an expection
   /// if not nExpectedParams or 1.
   void MuonParamsToVector(const G4String&                              definitionName,
-			  const std::vector<const std::list<double>*>& params,
-			  const std::vector<std::string>&              paramNames,
-			  G4int                                        nExpectedParams,
-			  std::vector<std::vector<double>>&            paramsV);
+                          const std::vector<const std::list<double>*>& params,
+                          const std::vector<std::string>&              paramNames,
+                          G4int                                        nExpectedParams,
+                          std::vector<std::vector<double>>&            paramsV);
 
   /// Utility function that returns (ie modifies by reference) a vector of
   /// G4Materials from either 1 or multiple materials in a list. Throws an
   /// exception if the number isn't 1 or nExpectedParams.
   void MuonParamsToMaterials(const G4String&               definitionName,
-			     const G4String&               variableName,
-			     const std::list<std::string>& materialNames,
-			     G4int                         nExpectedParams,
-			     std::vector<G4Material*>&     materials);
+                             const G4String&               variableName,
+                             const std::list<std::string>& materialNames,
+                             G4int                         nExpectedParams,
+                             std::vector<G4Material*>&     materials);
   
   BDSFieldInfo* BuildMuonCoolerFieldRecipe(const G4String& definitionName,
                                            G4double        designRigidity,
