@@ -1,11 +1,4 @@
-option,	physicsList="em",
-	defaultRangeCut=1*cm,	
-	prodCutPositrons=1*cm,
-	prodCutElectrons=1*cm,
-	prodCutPhotons=1*cm,
-	checkOverlaps=1;
-
-option, ngenerate=1;
+option,	checkOverlaps=1;
 
 ! we allow the normal magnet geometry as it affects the construction of the drift
 

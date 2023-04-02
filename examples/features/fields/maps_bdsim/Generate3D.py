@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as _plt
 import numpy as _np
@@ -39,14 +37,14 @@ def main():
     f.Write('3dexample.dat')
 
     # compress the result
-    _check_call(['gzip', "3dexample.dat"])
+    _check_call(['gzip', "-f", "3dexample.dat"])
 
     # construct flipped ordered data for testing purposes
     ff = pybdsim.Field.Field3D(data)
     ff.Write('3dexample_zyx.dat', writeLoopOrderReversed=True)
 
     # compress the result
-    _check_call(['gzip', "3dexample_zyx.dat"])
+    _check_call(['gzip', "-f", "3dexample_zyx.dat"])
 
     #Plot(data)
     return data

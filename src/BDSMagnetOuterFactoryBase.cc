@@ -101,7 +101,7 @@ void BDSMagnetOuterFactoryBase::CreateLogicalVolumes(const G4String& name,
   else
     {outerVisAttr = new G4VisAttributes(*BDSColours::Instance()->GetColour("default"));}
   outerVisAttr->SetVisibility(true);
-  outerVisAttr->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
+  outerVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
   allVisAttributes.insert(outerVisAttr);
   if (poleLV)
     {poleLV->SetVisAttributes(outerVisAttr);}

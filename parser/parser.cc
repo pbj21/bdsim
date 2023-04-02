@@ -65,6 +65,7 @@ namespace GMAD {
   template void Parser::Add<ScorerMesh, FastList<ScorerMesh> >(bool unique, const std::string& className);
   template void Parser::Add<CavityModel, FastList<CavityModel> >(bool unique, const std::string& className);
   template void Parser::Add<BLMPlacement, FastList<BLMPlacement> >(bool unique, const std::string& className);
+  template void Parser::Add<Modulator, FastList<Modulator> >(bool unique, const std::string& className);
   template void Parser::Add<SamplerPlacement, FastList<SamplerPlacement> >(bool unique, const std::string& className);
   template void Parser::Add<Atom, FastList<Atom> >(bool unique, const std::string& className);
   template void Parser::Add<Field, FastList<Field> >(bool unique, const std::string& className);
@@ -298,15 +299,17 @@ void Parser::expand_sequences()
     }
 }
 
-void Parser::expand_line(const std::string& name, std::string start, std::string end)
+void Parser::expand_line(const std::string& name,
+                         const std::string& start,
+                         const std::string& end)
 {
   expand_line(beamline_list, name, start, end);
 }
 
 void Parser::expand_line(FastList<Element>& target,
                          const std::string& name,
-                         std::string        start,
-                         std::string        end)
+                         const std::string& start,
+                         const std::string& end)
 {
   const Element& line = find_element(name);
   if(line.type != ElementType::_LINE && line.type != ElementType::_REV_LINE )
@@ -597,15 +600,13 @@ Element& Parser::find_element(const std::string& element_name)
 
 const Element& Parser::find_element(const std::string& element_name)const
 {
-  std::list<Element>::const_iterator it = element_list.find(element_name);
-  std::list<Element>::const_iterator iterEnd = element_list.end();
-
-  if(it == iterEnd)
+  auto search = element_list.find(element_name);
+  if (search == element_list.end())
     {
       std::cerr << "parser.h> Error: unknown element \"" << element_name << "\"." << std::endl; 
       exit(1);
     }
-  return (*it);
+  return (*search);
 }
 
 const Element* Parser::find_placement_element_safe(const std::string& element_name) const
@@ -776,6 +777,7 @@ void Parser::Overwrite(const std::string& objectName)
     else if ( (extended = FindAndExtend<ScorerMesh> (objectName)) ) {}
     else if ( (extended = FindAndExtend<Aperture>   (objectName)) ) {}
     else if ( (extended = FindAndExtend<BLMPlacement> (objectName)) ) {}
+    else if ( (extended = FindAndExtend<Modulator>  (objectName)) ) {}
   }
 
   if (!extended)
@@ -896,6 +898,9 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   auto searchBLMPlacement = std::find_if(blm_list.begin(), blm_list.end(), [&on](const BLMPlacement& obj) {return obj.name == on;});
   if (searchBLMPlacement != blm_list.end())
     {searchBLMPlacement->print(); return true;}
+  auto searchModulator = std::find_if(modulator_list.begin(), modulator_list.end(), [&on](const Modulator& obj) {return obj.name == on;});
+  if (searchModulator != modulator_list.end())
+    {searchModulator->print(); return true;}
   
   return false;
 }
@@ -1012,6 +1017,12 @@ namespace GMAD {
 
   template<>
   FastList<BLMPlacement>& Parser::GetList<BLMPlacement>() {return blm_list;}
+
+  template<>
+  Modulator& Parser::GetGlobal() {return modulator;}
+
+  template<>
+  FastList<Modulator>& Parser::GetList<Modulator>() {return modulator_list;}
 
   template<>
   Aperture& Parser::GetGlobal() {return aperture;}

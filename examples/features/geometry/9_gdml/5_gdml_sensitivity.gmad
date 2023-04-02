@@ -1,19 +1,13 @@
-e1: element, geometry="gdml:sensitive1.gdml", l=0.4*m;
-e2: element, geometry="gdml:sensitive2.gdml", l=0.4*m;
-d1: drift, l=1*m;
+e1: element, geometry="gdml:sensitive1.gdml", l=0.21*m;
+e2: element, geometry="gdml:sensitive2.gdml", l=0.21*m;
+d1: drift, l=0.2*m, aper1=10*cm;
 
 l1: line = (d1,e1,d1,e2,d1,e1);
 use,period=l1;
-sample,all;
 
 beam, particle="e-",
-      energy=100*GeV;
+      energy=1*GeV;
 
-option, physicsList="em";
-
-option, prodCutPhotons=5*cm,
-	prodCutElectrons=5*cm,
-	prodCutPositrons=5*cm,
-	minimumKineticEnergy=100*MeV;
-
-option, elossHistoBinWidth=1*cm;
+option, physicsList="em",
+        minimumKineticEnergy=10*MeV,
+        elossHistoBinWidth=1*cm;

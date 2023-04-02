@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
@@ -116,14 +117,22 @@ std::vector<BDSFieldObjects*> BDSFieldBuilder::CreateAndAttachAll()
     {
       BDSFieldObjects* field = nullptr;
       const BDSFieldInfo* currentInf = infos[i];
-      if (currentInf->AutoScale())
+      try
+      {
+        if (currentInf->AutoScale())
+          {
+            field = BDSFieldFactory::Instance()->CreateField(*(infos[i]),
+                                                             scalingStrengths[i],
+                                                             scalingKeys[i]);
+          }
+        else
+          {field = BDSFieldFactory::Instance()->CreateField(*(infos[i]));}
+      }
+      catch (BDSException& e)
         {
-          field = BDSFieldFactory::Instance()->CreateField(*(infos[i]),
-                                                           scalingStrengths[i],
-                                                           scalingKeys[i]);
+          e.AppendToMessage("\nField would be attached to logical volume named \"" + lvs[i][0]->GetName() + "\"");
+          throw e;
         }
-      else
-        {field = BDSFieldFactory::Instance()->CreateField(*(infos[i]));}
       if (field)
         {
           fields.push_back(field);

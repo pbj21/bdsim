@@ -53,6 +53,8 @@ public:
 
   /// Extent of field.
   virtual BDSExtent Extent() const {return array->Extent();}
+  
+  virtual G4bool TimeVarying() const {return array->TimeVarying();}
 
 protected:
   /// Each derived class should implement this function. Note T suffix (was templated)

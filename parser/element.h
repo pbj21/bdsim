@@ -72,10 +72,11 @@ namespace GMAD
     std::list<double> knl; ///< multipole expansion coefficients
     std::list<double> ksl; ///< skew multipole expansion
     double gradient;  ///< for rf cavities in V / m
-    double E;         ///< electric field amplitude for rf cavities in V
+    double E;         ///< voltage for rf cavities in V that will be assumed over length l
     double frequency; ///< frequency for rf cavity in Hz
     double phase;     ///< phase of rf cavity (rad)
     double tOffset;   ///< time offset used for phase calculation (ns)
+    std::string fieldModulator;
 
     ///@{ rmatrix elements, only 4x4
     double kick1;
@@ -219,8 +220,9 @@ namespace GMAD
     std::string material;
     std::string namedVacuumVolumes; ///< For imported geometry - identify vacuum volumes.
     bool        markAsCollimator;
-    std::string spec;  ///< arbitrary specification to pass to beamline builder
-    std::string cavityModel; ///< model for rf cavities
+    std::string spec;            ///< Arbitrary specification to pass to beamline builder.
+    std::string cavityModel;     ///< Name of geometry model object for rfconstantinz cavities.
+    std::string cavityFieldType; ///< Name for type of field to use in a cavity.
 
     std::string dicomDataPath; ///< for CT, file for DICOM construction data
     std::string dicomDataFile; ///< for CT, file for DICOM construction data

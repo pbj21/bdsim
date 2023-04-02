@@ -51,6 +51,8 @@ be used literally.  The following command may be used to display all options::
 |                                       | added to :code:`nlinesIgnore`. This is applied |
 |                                       | again if the file loops.                       |
 +---------------------------------------+------------------------------------------------+
+|  -\-distrFileLoopNTimes=N             | Repeat the distribution file entirely N times. |
++---------------------------------------+------------------------------------------------+
 |  -\-exportGeometryTo=<file>           | Exports the geometry to a file                 |
 |                                       | extension, which determines the format         |
 |                                       | where possible extensions are ("gdml")         |

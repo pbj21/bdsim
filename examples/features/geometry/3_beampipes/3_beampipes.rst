@@ -140,3 +140,11 @@ A custom beam pipe defined by :code:`12_points.dat`.
 
 .. figure:: 12_pointsfile.png
 	    :width: 50%
+
+16_rhombus.gmad
+---------------
+
+A few diffrent rhombus shapes.
+
+.. figure:: 16_rhombus.png
+            :width: 40%

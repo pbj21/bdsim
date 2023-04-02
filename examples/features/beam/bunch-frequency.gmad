@@ -1,0 +1,12 @@
+include gauss.gmad;
+
+! 10x sigmaT
+! "period" is a keyword in gmad, so we can't use that
+per = 1e-8;
+
+freq = 1.0/per;
+
+beam, bunchFrequency=freq,
+      eventsPerBunch=10;
+
+option, ngenerate=30;

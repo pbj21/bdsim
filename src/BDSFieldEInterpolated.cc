@@ -26,6 +26,7 @@ BDSFieldEInterpolated::BDSFieldEInterpolated(const BDSInterpolator* interpolator
 					     const G4Transform3D&   offset,
 					     G4double               eScalingIn):
   BDSFieldE(offset),
+  timeVarying(false),
   eScaling(eScalingIn),
   extentNoOffset(BDSExtent()),
   smallestSpatialStep(std::numeric_limits<double>::max())
@@ -34,5 +35,6 @@ BDSFieldEInterpolated::BDSFieldEInterpolated(const BDSInterpolator* interpolator
     {
       extentNoOffset = interpolator->Extent();
       smallestSpatialStep = interpolator->SmallestSpatialStep();
+      timeVarying = interpolator->TimeVarying();
     }
 }

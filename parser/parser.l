@@ -92,6 +92,8 @@ std::string yyfilename;
 marker { return MARKER; } // reserved elements
 drift { return DRIFT; }
 rf { return RF; }
+rfx { return RFX; }
+rfy { return RFY; }
 rfcavity { return RF; }
 sbend { return SBEND; } 
 rbend {return RBEND; }
@@ -148,6 +150,7 @@ xsecbias {return XSECBIAS; }
 xsecBias {return XSECBIAS; }
 aperture {return APERTURE; }
 blm {return BLM;}
+modulator {return MODULATOR;}
 
 matdef { return MATERIAL; }
 atom { return ATOM; }

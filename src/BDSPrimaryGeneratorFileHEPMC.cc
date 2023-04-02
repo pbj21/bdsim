@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSEventGeneratorFileType.hh"
 #include "BDSException.hh"
-#include "BDSHepMC3Reader.hh"
+#include "BDSPrimaryGeneratorFileHEPMC.hh"
 #include "BDSParticleCoords.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSParticleCoordsFullGlobal.hh"
@@ -62,12 +62,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 
-BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
-                                 const G4String& fileNameIn,
-                                 BDSBunchEventGenerator* bunchIn,
-                                 G4bool loopFileIn,
-                                 G4bool removeUnstableWithoutDecayIn,
-                                 G4bool warnAboutSkippedParticlesIn):
+BDSPrimaryGeneratorFileHEPMC::BDSPrimaryGeneratorFileHEPMC(const G4String& distrType,
+                                                           const G4String& fileNameIn,
+                                                           BDSBunchEventGenerator* bunchIn,
+                                                           G4bool loopFileIn,
+                                                           G4bool removeUnstableWithoutDecayIn,
+                                                           G4bool warnAboutSkippedParticlesIn):
   BDSPrimaryGeneratorFile(loopFileIn, bunchIn),
   hepmcEvent(nullptr),
   reader(nullptr),
@@ -87,13 +87,13 @@ BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
   SkipEvents(bunch->eventGeneratorNEventsSkip);
 }
 
-BDSHepMC3Reader::~BDSHepMC3Reader()
+BDSPrimaryGeneratorFileHEPMC::~BDSPrimaryGeneratorFileHEPMC()
 {
   delete hepmcEvent;
   delete reader;
 }
 
-void BDSHepMC3Reader::GeneratePrimaryVertex(G4Event* anEvent)
+void BDSPrimaryGeneratorFileHEPMC::GeneratePrimaryVertex(G4Event* anEvent)
 {
   if (!reader)
     {throw BDSException(__METHOD_NAME__, "no file reader available");}
@@ -103,14 +103,14 @@ void BDSHepMC3Reader::GeneratePrimaryVertex(G4Event* anEvent)
     {HepMC2G4(hepmcEvent, anEvent);} // this will update vertexGeneratedSuccessfully if one is created
 }
 
-void BDSHepMC3Reader::RecreateAdvanceToEvent(G4int eventOffset)
+void BDSPrimaryGeneratorFileHEPMC::RecreateAdvanceToEvent(G4int eventOffset)
 {
   G4cout << __METHOD_NAME__ << "advancing file to event: " << eventOffset << G4endl;
   ThrowExceptionIfRecreateOffsetTooHigh(eventOffset);
   SkipEvents(eventOffset);
 }
 
-void BDSHepMC3Reader::OpenFile(G4bool usualPrintOut)
+void BDSPrimaryGeneratorFileHEPMC::OpenFile(G4bool usualPrintOut)
 {
   currentFileEventIndex = 0;
   endOfFileReached = false;
@@ -144,7 +144,7 @@ void BDSHepMC3Reader::OpenFile(G4bool usualPrintOut)
     }
 }
 
-void BDSHepMC3Reader::CloseFile()
+void BDSPrimaryGeneratorFileHEPMC::CloseFile()
 {
   if (reader)
     {reader->close();}
@@ -154,7 +154,7 @@ void BDSHepMC3Reader::CloseFile()
   endOfFileReached = true;
 }
 
-G4long BDSHepMC3Reader::CountEventsInFile()
+G4long BDSPrimaryGeneratorFileHEPMC::CountEventsInFile()
 {
   G4cout << __METHOD_NAME__ << "counting number of events" << G4endl;
   OpenFile(false);
@@ -177,7 +177,7 @@ G4long BDSHepMC3Reader::CountEventsInFile()
   return nEvents;
 }
 
-G4bool BDSHepMC3Reader::ReadSingleEvent()
+G4bool BDSPrimaryGeneratorFileHEPMC::ReadSingleEvent()
 {
   delete hepmcEvent;
   hepmcEvent = new HepMC3::GenEvent();
@@ -217,22 +217,30 @@ G4bool BDSHepMC3Reader::ReadSingleEvent()
     }
 }
 
-void BDSHepMC3Reader::SkipEvents(G4int nEventsToSkip)
+void BDSPrimaryGeneratorFileHEPMC::SkipEvents(G4int nEventsToSkip)
 {
   if (nEventsToSkip > 0)
     {G4cout << __METHOD_NAME__ << "skipping " << nEventsToSkip << " into file." << G4endl;}
-  if (nEventsToSkip > nEventsInFile)
+  else
+    {return ;}
+  G4long distrFileLoopNTimes = bunch->DistrFileLoopNTimes();
+  G4long nAvailable = nEventsInFile * distrFileLoopNTimes;
+  if ((G4long)nEventsToSkip > nAvailable)
     {
       G4String msg = "number of events to skip (" + std::to_string(nEventsToSkip) + ") is greater than the number of events (";
-      msg += std::to_string(nEventsInFile) + ") in this file.";
+      msg += std::to_string(nEventsInFile);
+      if (distrFileLoopNTimes > 1)
+        {msg += " x " + std::to_string(distrFileLoopNTimes) + " loops of file";}
+      msg += ") in this file.";
       throw BDSException("BDSBunchUserFile::RecreateAdvanceToEvent>", msg);
     }
-  for (G4int i = 0; i < nEventsToSkip; i++)
+  G4long nToSkipSinglePass = nAvailable % nEventsToSkip;
+  for (G4int i = 0; i < nToSkipSinglePass; i++)
     {ReadSingleEvent();}
 }
 
-void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
-                               G4Event* g4event)
+void BDSPrimaryGeneratorFileHEPMC::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
+                                            G4Event* g4event)
 {
   BDSParticleCoordsFull centralCoords = bunch->GetNextParticleLocal();
   // do the transform for the reference particle (if any transform) and use that

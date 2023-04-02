@@ -38,6 +38,7 @@ void Field::clear()
   magneticInterpolator = "cubic";
   electricFile         = "";
   electricInterpolator = "cubic";
+  fieldModulator       = "";
   x         = 0;
   y         = 0;
   z         = 0;
@@ -71,6 +72,7 @@ void Field::PublishMembers()
   publish("magneticInterpolator", &Field::magneticInterpolator);
   publish("electricFile",         &Field::electricFile);
   publish("electricInterpolator", &Field::electricInterpolator);
+  publish("fieldModulator",       &Field::fieldModulator);
   publish("x",                    &Field::x);
   publish("y",                    &Field::y);
   publish("z",                    &Field::z);
@@ -98,12 +100,13 @@ void Field::print()const
 	    << "name "                 << name                 << std::endl
 	    << "type "                 << type                 << std::endl
 	    << "eScaling "             << eScaling             << std::endl
-    	    << "bScaling "             << bScaling             << std::endl
+    	<< "bScaling "             << bScaling             << std::endl
 	    << "integrator "           << integrator           << std::endl
 	    << "magneticFile "         << magneticFile         << std::endl
 	    << "magneticInterpolator " << magneticInterpolator << std::endl
 	    << "electricFile "         << electricFile         << std::endl
 	    << "electricInterpolator " << electricInterpolator << std::endl
+        << "fieldModulator "       << fieldModulator       << std::endl
 	    << "x, y, z,t "            << x << " " << y << " " << z << " " << t << std::endl
 	    << "phi, theta, psi "      << phi   << " " << theta << " " << psi   << std::endl
 	    << "axisX, Y, Z "          << axisX << " " << axisY << " " << axisZ << std::endl
@@ -115,5 +118,5 @@ void Field::print()const
 	    << "magneticSubField "     << magneticSubField     << std::endl
 	    << "magneticReflection "   << magneticReflection   << std::endl
 	    << "electricReflection "   << electricReflection   << std::endl
-      << "fieldParameters "      << fieldParameters      << std::endl;
+	    << "fieldParameters "      << fieldParameters      << std::endl;
 }

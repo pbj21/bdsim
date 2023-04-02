@@ -3,37 +3,31 @@
 	<define/>
 	<materials/>
 	<solids>
-		<box lunit="mm" name="PREPEND_saContainerSolid" x="2*200" y="2*200" z="2*200"/>
-		<orb name="PREPEND_saOuterSolid" r="100"/>
-		<orb name="PREPEND_saInnerSolid" r="50"/>
+		<box name="saContainerSolid" x="200" y="200" z="200" lunit="mm"/>
+		<orb name="saOuterSolid" r="100" lunit="mm"/>
+		<orb name="saInnerSolid" r="50" lunit="mm"/>
 	</solids>
 	<structure>
-		<volume name="PREPEND_saInnerLV_lv">
+		<volume name="saInnerLV">
 			<materialref ref="G4_Ca"/>
-			<solidref ref="PREPEND_saInnerSolid"/>
+			<solidref ref="saInnerSolid"/>
 		</volume>
-		<volume name="PREPEND_saOuterLV_lv">
+		<volume name="saOuterLV">
 			<materialref ref="G4_C"/>
-			<solidref ref="PREPEND_saOuterSolid"/>
-			<physvol name="PREPEND_saInnerPV_pv">
-				<volumeref ref="PREPEND_saInnerLV_lv"/>
-				<position name="PREPEND_saInnerPV_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_saInnerPV_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_saInnerPV_sca" x="1" y="1" z="1"/>
+			<solidref ref="saOuterSolid"/>
+			<physvol name="saInnerPV">
+				<volumeref ref="saInnerLV"/>
 			</physvol>
 		</volume>
-		<volume name="PREPEND_saContainerLV_lv">
+		<volume name="saContainerLV">
 			<materialref ref="G4_Be"/>
-			<solidref ref="PREPEND_saContainerSolid"/>
-			<physvol name="PREPEND_saOuterPV_pv">
-				<volumeref ref="PREPEND_saOuterLV_lv"/>
-				<position name="PREPEND_saOuterPV_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_saOuterPV_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_saOuterPV_sca" x="1" y="1" z="1"/>
+			<solidref ref="saContainerSolid"/>
+			<physvol name="saOuterPV">
+				<volumeref ref="saOuterLV"/>
 			</physvol>
 		</volume>
 	</structure>
 	<setup name="Default" version="1.0">
-		<world ref="PREPEND_saContainerLV_lv"/>
+		<world ref="saContainerLV"/>
 	</setup>
 </gdml>

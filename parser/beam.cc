@@ -170,11 +170,16 @@ void Beam::PublishMembers()
   publish("matchDistrFileLength", &Beam::distrFileMatchLength);  // for backwards compatibility
   publish("distrFileMatchLength", &Beam::distrFileMatchLength);
   publish("distrFileLoop",        &Beam::distrFileLoop);
+  publish("distrFileLoopNTimes",  &Beam::distrFileLoopNTimes);
   publish("removeUnstableWithoutDecay", &Beam::removeUnstableWithoutDecay);
   publish("nlinesIgnore",         &Beam::nlinesIgnore);
   publish("nLinesIgnore",         &Beam::nlinesIgnore); // for consistency
   publish("nlinesSkip",           &Beam::nlinesSkip);
   publish("nLinesSkip",           &Beam::nlinesSkip);   // for consistency
+  
+  publish("bunchFrequency",       &Beam::bunchFrequency);
+  publish("bunchPeriod",          &Beam::bunchPeriod);
+  publish("eventsPerBunch",       &Beam::eventsPerBunch);
 
   // aliases
   publish("distribution",         &Beam::distrType);

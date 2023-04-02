@@ -1,0 +1,20 @@
+
+m1: modulator, type="sint", frequency=7.3*MHz, phase=pi/4, amplitudeOffset=1.0, amplitudeScale=0.9;
+
+rf1: rfx, l=50*cm, gradient=12*MV/m, frequency=9.2*MHz, fieldModulator="m1";
+rf2: rfy, l=50*cm, gradient=12*MV/m, frequency=9.2*MHz, fieldModulator="m1", phase=pi/2;
+d1: drift, l=2*m;
+du: dump, l=1*cm;
+lat: line=(rf1, rf2, d1, du);
+use, lat;
+
+beam, particle="e-",
+      kineticEnergy=1*GeV,
+      distrType="gauss",
+      sigmaX=500*um,
+      sigmaY=500*um,
+      sigmaT=5*ps,
+      eventsPerBunch=20,
+      bunchFrequency=100*MHz;
+
+sample, range=d1;

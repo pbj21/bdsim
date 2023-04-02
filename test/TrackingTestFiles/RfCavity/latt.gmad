@@ -1,5 +1,5 @@
 d1: drift, l=0.5;
-q : rfcavity, gradient=500, l=1.0;
+q : rf, gradient=500, l=1.0;
 d2: drift, l=0.5;
 m : marker;
 

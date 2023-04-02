@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as _plt
 import numpy as _np
@@ -51,7 +49,7 @@ def main():
     f.Write('4dexample.dat')
     
     # compress the result
-    _check_call(['gzip', "4dexample.dat"])
+    _check_call(['gzip', "-f", "4dexample.dat"])
 
     return data
     

@@ -42,6 +42,8 @@ public:
 
   virtual ~BDSFieldEInterpolated(){;}
   
+  virtual G4bool TimeVarying() const {return timeVarying;}
+  
   inline G4double EScaling() const {return eScaling;}
   inline void     SetEScaling(G4double eScalingIn) {eScaling = eScalingIn;}
 
@@ -52,6 +54,9 @@ public:
   inline BDSExtent Extent() const {return extentNoOffset.Translate(transform.getTranslation());} ///< With offset.
 
   inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
+
+protected:
+  G4bool timeVarying;
   
 private:
   G4double eScaling; ///< E field scaling value.

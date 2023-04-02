@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 namespace GMAD
 {
   class Field;
+  class Modulator;
 }
 
 class BDSFieldE;
@@ -39,6 +40,8 @@ class BDSFieldInfo;
 class BDSFieldMag;
 class BDSFieldObjects;
 class BDSMagnetStrength;
+class BDSModulator;
+class BDSModulatorInfo;
 class BDSParticleDefinition;
 class BDSPrimaryGeneratorAction;
 
@@ -63,6 +66,10 @@ class G4Mag_EqRhs;
  *
  * This also makes use of BDSParser singleton class to create a series of BDSFieldInfo 
  * field specifications as defined by the parser.
+ *
+ * This owns the converted modulator definitions (BDSModulatorInfo*) despite the design
+ * of a factory that should give up ownership. This is so we don't duplicate the instance
+ * for the sake of ownership.
  * 
  * @author Laurie Nevay
  */
@@ -87,11 +94,23 @@ public:
 			       const G4String&          scalingKey      = "none");
 
   /// Return a BDSFieldInfo instance from the parser definitions. Will
-  /// exit if no matching field definition found.
+  /// exit if no matching field definition is found but will return nullptr
+  /// if empty string supplied.
   BDSFieldInfo* GetDefinition(const G4String& name) const;
+  
+  /// Return a BDSModulatorInfo instance from the parser definitions. Will
+  /// exit if no matching modulator definition is found but will return nullptr
+  /// if empty string supplied.
+  BDSModulatorInfo* GetModulatorDefinition(const G4String& modulatorName) const;
 
   /// Suggest a default interpolator.
   static BDSInterpolatorType DefaultInterpolatorType(G4int numberOfDimensions);
+  
+  static G4double CalculateGlobalPhase(G4double oscillatorFrequency,
+                                       G4double tOffsetIn);
+  
+  static G4double CalculateGlobalPhase(const BDSModulatorInfo& modulatorInfo,
+                                       const BDSFieldInfo& fieldInfo);
 
 private:
   /// Create a purely magnetic field.
@@ -150,6 +169,10 @@ private:
   /// Return the parameter "outerScaling" from strength st, but default to 1
   G4double GetOuterScaling(const BDSMagnetStrength* st) const;
   
+  /// Create the necessary modulator.
+  BDSModulator* CreateModulator(const BDSModulatorInfo* modulatorRecipe,
+                                const BDSFieldInfo& info) const;
+  
   /// Create a composite muon cooler field EM field.
   BDSFieldEM* CreateMuonCoolerField(const BDSFieldInfo& info,
                                     G4double brho) const;
@@ -164,6 +187,9 @@ private:
   void PrepareFieldDefinitions(const std::vector<GMAD::Field>& definitions,
                                G4double defaultBRho);
   
+  /// Prepare all required modulator definitions that can be used dynamically.
+  void PrepareModulatorDefinitions(const std::vector<GMAD::Modulator>& definitions);
+  
   /// Convert the string 'value' to a double. Throw an exception including the parameterNameForError if it doesn't work.
   G4double ConvertToDoubleWithException(const G4String& value,
                                         const G4String& parameterNameForError) const;
@@ -176,6 +202,7 @@ private:
 
   /// BDSFieldInfo definitions prepare from parser vector of definitions.
   std::map<G4String, BDSFieldInfo*> parserDefinitions;
+  std::map<G4String, BDSModulatorInfo*> parserModulatorDefinitions;
 
   /// Cache of design particle for fields.
   static const BDSParticleDefinition* designParticle;

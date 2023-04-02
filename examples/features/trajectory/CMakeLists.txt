@@ -15,6 +15,7 @@ simple_testing(trajectory-particle-e-               "--file=trajectory-particle-
 simple_testing(trajectory-particle-e+               "--file=trajectory-particle-e+.gmad"               "")
 simple_testing(trajectory-particleid-single         "--file=trajectory-particleid-single.gmad"         "")
 simple_testing(trajectory-particleid-multiple       "--file=trajectory-particleid-multiple.gmad"       "")
+simple_testing(trajectory-secondary                 "--file=trajectory-secondary.gmad"                 "")
 simple_testing(trajectory-energy-threshold-25mev    "--file=trajectory-energy-threshold-25mev.gmad"    "")
 simple_testing(trajectory-energy-threshold-hadronic "--file=trajectory-energy-threshold-hadronic.gmad" "")	
 simple_testing(trajectory-energy-threshold-50mev    "--file=trajectory-energy-threshold-50mev.gmad"    "")

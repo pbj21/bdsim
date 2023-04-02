@@ -8,7 +8,15 @@ use, l1;
 option, aper1=13*mm,
 	beampipeThickness=1*mm;
 
-beam, particle="e-",
-      energy=1.3*GeV;
+! fire the beam into the yoke to check sensitivity
+beam, particle="proton",
+      energy=13*GeV,
+      X0=12*cm,
+      Y0=12*cm;
 
 option, checkOverlaps=1;
+
+option, physicsList="g4FTFP_BERT",
+        minimumKineticEnergy=100*MeV,
+        worldMaterial="vacuum",
+        elossHistoBinWidth=1*cm;

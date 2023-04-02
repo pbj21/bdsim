@@ -85,6 +85,8 @@ BDSColours::BDSColours()
   colours["multipole"]        = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rfcavity"]         = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rf"]               = colours["rfcavity"];
+  colours["rfx"]              = colours["rf"];
+  colours["rfy"]              = colours["rf"];
   colours["srfcavity"]        = new G4Colour(0.69,  0.769, 0.871); // light steel blue
   colours["collimator"]       = new G4Colour(0.25,  0.4,   0.2);   // dark green
   colours["ecol"]             = colours["collimator"];

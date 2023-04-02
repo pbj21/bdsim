@@ -237,7 +237,11 @@ private:
 
   /// Construct scoring meshes.
   void ConstructScoringMeshes();
-  
+
+  /// Print out the sensitivity of every single volume so far constructed in the world.
+  void VerboseSensitivity() const;
+  /// Recursive function to print out each sensitive detector name.
+  void PrintSensitiveDetectorsOfLV(const G4LogicalVolume* lv, G4int currentDepth) const;
 
   /// List of bias objects - for memory management
   std::vector<BDSBOptrMultiParticleChangeCrossSection*> biasObjects;

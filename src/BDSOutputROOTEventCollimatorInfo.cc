@@ -96,17 +96,16 @@ void BDSOutputROOTEventCollimatorInfo::Fill(const BDSBeamlineElement* element)
       xSizeOut = coll->XApertureOut() / CLHEP::m;
       ySizeOut = coll->YApertureOut() / CLHEP::m;
       if (xSizeOut < 0) // fix default -1 value to be the same as input
-	{xSizeOut = xSizeIn;}
+        {xSizeOut = xSizeIn;}
       if (ySizeOut < 0)
-	{ySizeOut = ySizeIn;}
+        {ySizeOut = ySizeIn;}
     }
 
   BDSCollimatorJaw* jcoll = dynamic_cast<BDSCollimatorJaw*>(comp);
-    if (jcoll)
+  if (jcoll)
     {
-        jawTiltLeft  = jcoll->getJawTiltLeft() / CLHEP::rad;
-        jawTiltRight  = jcoll->getJawTiltRight() / CLHEP::rad;
-    }
-
+      jawTiltLeft = jcoll->GetJawTiltLeft() / CLHEP::rad;
+      jawTiltRight = jcoll->GetJawTiltRight() / CLHEP::rad;
+    } 
 }
 #endif

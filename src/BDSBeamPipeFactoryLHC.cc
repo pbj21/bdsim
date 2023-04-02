@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryLHC.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSExtent.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"                      // geant4 globals / types
 #include "G4Box.hh"
@@ -207,6 +208,9 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameI
 						      const G4ThreeVector& inputfaceIn,
 						      const G4ThreeVector& outputfaceIn)
 {
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, aper1In);
+
   // build the solids
   //vacuum cylindrical solid (circular cross-section)
   G4VSolid* vacCylSolid = new G4CutTubs(nameIn + "_vacuum_cylinder", // name
@@ -221,7 +225,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameI
   G4VSolid* vacRectSolid = new G4Box(nameIn + "_vacuum_box", // name
 				     aper1In,                // x half width
 				     aper2In,                // y half width
-				     lengthIn); // z full width (long for unambiguous intersection)
+                                     angledVolumeLength); // z full width (long for unambiguous intersection)
   allSolids.insert(vacCylSolid);
   allSolids.insert(vacRectSolid);
   //intersection of both of these gives the desired shape
@@ -244,7 +248,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameI
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
 					 aper1In + lengthSafetyLarge,// x half width
 					 aper2In + lengthSafetyLarge,// y half width
-					 1.7*lengthIn); // z long for unambiguous intersection
+                                         angledVolumeLength); // z long for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
@@ -265,7 +269,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameI
   G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box",    // name
 					 aper1In + beamPipeThicknessIn, // x half width
 					 aper2In + beamPipeThicknessIn, // y half width
-					 lengthIn); // z full width (long for unambiguous intersection)
+                                         angledVolumeLength); // z full width (long for unambiguous intersection)
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
 						   bpOuterRectSolid);            // solid 2
@@ -295,7 +299,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(const G4String&      nameI
   G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box", // name
 				      aper1In + beamPipeThicknessIn + lengthSafety, // x half width
 				      aper2In + beamPipeThicknessIn + lengthSafety, // y half width
-				      lengthIn); // z full width (long for unambiguous intersection)
+                                      angledVolumeLength); // z full width (long for unambiguous intersection)
 
   allSolids.insert(contCylSolid);
   allSolids.insert(contRectSolid);

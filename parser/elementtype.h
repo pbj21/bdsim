@@ -72,7 +72,9 @@ namespace GMAD
     _DUMP          = 74,
     _CT            = 75,
     _TARGET        = 76,
-    _MUONCOOLER    = 77,
+    _RFX           = 77,
+    _RFY           = 78,
+    _MUONCOOLER    = 79,
   };
 
   /// conversion from enum to string

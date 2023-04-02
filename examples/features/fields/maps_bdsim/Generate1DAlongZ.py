@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import numpy as _np
 import pybdsim
 from subprocess import check_call as _check_call
@@ -22,7 +20,7 @@ def main():
     f.Write("1dexample-along-z.dat")
 
     # compress the result
-    _check_call(['gzip', "1dexample-along-z.dat"])
+    _check_call(['gzip', "-f", "1dexample-along-z.dat"])
     f.Write('1dexample-along-z.dat') # write again to keep original
 
     return data

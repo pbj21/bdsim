@@ -18,8 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef USE_HEPMC3
 
-#ifndef BDSHEPMC3READER_H
-#define BDSHEPMC3READER_H
+#ifndef BDSPRIMARYGENERATORHEPMC_H
+#define BDSPRIMARYGENERATORHEPMC_H
 
 #include "BDSEventGeneratorFileType.hh"
 #include "BDSPrimaryGeneratorFile.hh"
@@ -52,22 +52,22 @@ namespace HepMC3
  * @author Helena Lefebvre, Laurie Nevay
  */
 
-class BDSHepMC3Reader: public BDSPrimaryGeneratorFile
+class BDSPrimaryGeneratorFileHEPMC: public BDSPrimaryGeneratorFile
 {
 public:
   /// Do not require default constructor.
-  BDSHepMC3Reader() = delete;
+  BDSPrimaryGeneratorFileHEPMC() = delete;
   /// Constructor takes full distrType string including semicolon and
   /// eventgeneratorfile prefix. The filename is assumed to be correctly
   /// prefixed if a relative path already. The bunch definition is used
   /// for the reference coordinates and offset of the beam point.
-  BDSHepMC3Reader(const G4String& distrType,
-                  const G4String& fileNameIn,
-                  BDSBunchEventGenerator* bunchIn,
-                  G4bool loopFileIn,
-                  G4bool removeUnstableWithoutDecayIn = true,
-                  G4bool warnAboutSkippedParticlesIn  = true);
-  virtual ~BDSHepMC3Reader();
+  BDSPrimaryGeneratorFileHEPMC(const G4String& distrType,
+                               const G4String& fileNameIn,
+                               BDSBunchEventGenerator* bunchIn,
+                               G4bool loopFileIn,
+                               G4bool removeUnstableWithoutDecayIn = true,
+                               G4bool warnAboutSkippedParticlesIn  = true);
+  virtual ~BDSPrimaryGeneratorFileHEPMC();
 
   /// Accessor.
   inline HepMC3::GenEvent* GetHepMCGenEvent() const {return hepmcEvent;}

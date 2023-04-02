@@ -31,6 +31,7 @@ class BDSIntegratorSet;
 class BDSLine;
 class BDSMagnet;
 class BDSMagnetStrength;
+class BDSModulatorInfo;
 
 namespace GMAD
 {
@@ -55,7 +56,8 @@ namespace BDS
 					  G4double                outgoingFaceAngle,
 					  G4bool                  buildFringeFields,
 					  const GMAD::Element*    prevElement,
-					  const GMAD::Element*    nextElement);
+					  const GMAD::Element*    nextElement,
+					  BDSModulatorInfo*       fieldModulator = nullptr);
   
   /// Construct beamline for an rbend.  A line is returned with a single
   /// magnet as the main dipole, but can have fringefield magnets placed
@@ -69,7 +71,8 @@ namespace BDS
 			  const BDSIntegratorSet* integratorSet,
 			  G4double                incomingFaceAngle,
 			  G4double                outgoingFaceAngle,
-			  G4bool                  buildFringeFields);
+			  G4bool                  buildFringeFields,
+                          BDSModulatorInfo*       fieldModulator = nullptr);
 
   /// Utility function to calculate the number of segments an sbend should be split into.
   /// Based on aperture error tolerance - default is 1mm.
@@ -88,7 +91,8 @@ namespace BDS
 			       BDSMagnetStrength*       st,
 			       G4double                 brho,
 			       const BDSIntegratorSet*  integratorSet,
-			       BDSFieldType             dipoleFieldType);
+			       BDSFieldType             dipoleFieldType,
+                               BDSModulatorInfo*        fieldModulator = nullptr);
 
   /// Function to return a single sector bend section.
   BDSMagnet* BuildSingleSBend(const GMAD::Element*     element,
@@ -101,28 +105,29 @@ namespace BDS
 			      G4double                 brho,
 			      const BDSIntegratorSet*  integratorSet,
 			      G4bool                   yokeOnLeft,
-			      const BDSFieldInfo*      outerFieldIn);
+			      const BDSFieldInfo*      outerFieldIn,
+			      BDSModulatorInfo*        fieldModulator = nullptr);
   
-  void UpdateSegmentAngles(G4int    index,
-			   G4int    nSBends,
-			   G4double semiAngle,
-			   G4double incomingFaceAngle,
-			   G4double outgoingFaceAngle,
-			   G4double&      segmentAngleIn,
-			   G4double&      segmentAngleOut);
+  void UpdateSegmentAngles(G4int     index,
+			   G4int     nSBends,
+			   G4double  semiAngle,
+			   G4double  incomingFaceAngle,
+			   G4double  outgoingFaceAngle,
+			   G4double& segmentAngleIn,
+			   G4double& segmentAngleOut);
 
   BDSMagnetStrength* GetFringeMagnetStrength(const GMAD::Element* element,
-                             const BDSMagnetStrength*  st,
-                             G4double            fringeAngle,
-                             G4double            e1,
-                             G4double            e2,
-                             G4double            fintx,
-                             G4bool              entranceOrExit);
-
+					     const BDSMagnetStrength*  st,
+					     G4double            fringeAngle,
+					     G4double            e1,
+					     G4double            e2,
+					     G4double            fintx,
+					     G4bool              entranceOrExit);
+  
   /// Function to get the integrator type. Test for finite K1 and returns
   /// dipole or dipolequadrupole integrator as appropriate.
   BDSIntegratorType GetDipoleIntegratorType(const BDSIntegratorSet* integratorSet,
-					    const GMAD::Element*          element);
+					    const GMAD::Element*    element);
 
   /// Return whether finite angle or field for a dipole.
   G4bool ZeroStrengthDipole(const BDSMagnetStrength* st);

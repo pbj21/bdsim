@@ -14,7 +14,7 @@ vk1: vkicker, l=0.2*m, outerDiameter=0.3*m, angle=-0.1*mrad;
 mul1 : multipole, l=0.5*m , knl={ 0,0,1 } , ksl={ 0,0,0 }, outerDiameter=0.876*m;
 musp1 : muspoiler,l=0.5*m, aper1=1*cm, outerDiameter=240*cm, B=1.5;
 
-rf1 : rfcavity, l=0.13*m, gradient = 0.1 * MV / m, outerDiameter=0.3*m, material = "Copper", cavityModel = "Tesla9Cell", frequency = 8*MHz;
+rf1 : rf, l=0.13*m, gradient = 0.1 * MV / m, outerDiameter=0.3*m, material = "Copper", cavityModel = "Tesla9Cell", frequency = 8*MHz;
 Tesla9Cell: cavitymodel,
        type="elliptical",
        irisRadius = 35*mm,

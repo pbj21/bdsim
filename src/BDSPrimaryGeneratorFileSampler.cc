@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSOutputLoaderSampler.hh"
-#include "BDSROOTSamplerReader.hh"
+#include "BDSPrimaryGeneratorFileSampler.hh"
 #include "BDSParticleCoords.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSParticleCoordsFullGlobal.hh"
@@ -42,12 +42,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <utility>
 
-BDSROOTSamplerReader::BDSROOTSamplerReader(const G4String& distrType,
-                                           const G4String& fileNameIn,
-                                           BDSBunchEventGenerator* bunchIn,
-                                           G4bool loopFileIn,
-                                           G4bool removeUnstableWithoutDecayIn,
-                                           G4bool warnAboutSkippedParticlesIn):
+BDSPrimaryGeneratorFileSampler::BDSPrimaryGeneratorFileSampler(const G4String& distrType,
+                                                               const G4String& fileNameIn,
+                                                               BDSBunchEventGenerator* bunchIn,
+                                                               G4bool loopFileIn,
+                                                               G4bool removeUnstableWithoutDecayIn,
+                                                               G4bool warnAboutSkippedParticlesIn):
   BDSPrimaryGeneratorFile(loopFileIn, bunchIn),
   reader(nullptr),
   fileName(fileNameIn),
@@ -67,12 +67,12 @@ BDSROOTSamplerReader::BDSROOTSamplerReader(const G4String& distrType,
   SkipEvents(bunch->eventGeneratorNEventsSkip);
 }
 
-BDSROOTSamplerReader::~BDSROOTSamplerReader()
+BDSPrimaryGeneratorFileSampler::~BDSPrimaryGeneratorFileSampler()
 {
   delete reader;
 }
 
-void BDSROOTSamplerReader::GeneratePrimaryVertex(G4Event* anEvent)
+void BDSPrimaryGeneratorFileSampler::GeneratePrimaryVertex(G4Event* anEvent)
 {
   if (!reader)
     {throw BDSException(__METHOD_NAME__, "no file reader available");}
@@ -109,14 +109,14 @@ void BDSROOTSamplerReader::GeneratePrimaryVertex(G4Event* anEvent)
   ReadSingleEvent(currentFileEventIndex, anEvent);
 }
 
-void BDSROOTSamplerReader::RecreateAdvanceToEvent(G4int eventOffset)
+void BDSPrimaryGeneratorFileSampler::RecreateAdvanceToEvent(G4int eventOffset)
 {
   G4cout << "BDSROOTSamplerLoader::RecreateAdvanceToEvent> Advancing file to event: " << eventOffset << G4endl;
   ThrowExceptionIfRecreateOffsetTooHigh(eventOffset);
   SkipEvents(eventOffset);
 }
 
-void BDSROOTSamplerReader::ReadPrimaryParticlesFloat(G4long index)
+void BDSPrimaryGeneratorFileSampler::ReadPrimaryParticlesFloat(G4long index)
 {
   vertices.clear();
   const auto sampler = reader->SamplerDataFloat(index);
@@ -138,7 +138,7 @@ void BDSROOTSamplerReader::ReadPrimaryParticlesFloat(G4long index)
     }
 }
 
-void BDSROOTSamplerReader::ReadPrimaryParticlesDouble(G4long index)
+void BDSPrimaryGeneratorFileSampler::ReadPrimaryParticlesDouble(G4long index)
 {
   vertices.clear();
   const auto sampler = reader->SamplerDataDouble(index);
@@ -160,7 +160,7 @@ void BDSROOTSamplerReader::ReadPrimaryParticlesDouble(G4long index)
     }
 }
 
-void BDSROOTSamplerReader::ReadSingleEvent(G4long index, G4Event* anEvent)
+void BDSPrimaryGeneratorFileSampler::ReadSingleEvent(G4long index, G4Event* anEvent)
 {
   if (reader->DoublePrecision())
     {ReadPrimaryParticlesDouble(index);}
@@ -278,9 +278,23 @@ void BDSROOTSamplerReader::ReadSingleEvent(G4long index, G4Event* anEvent)
   currentVertices.clear();
 }
 
-void BDSROOTSamplerReader::SkipEvents(G4long eventOffset)
+void BDSPrimaryGeneratorFileSampler::SkipEvents(G4long nEventsToSkip)
 {
-  if (eventOffset > 0)
-    {G4cout << __METHOD_NAME__ << "skipping " << eventOffset << " into file." << G4endl;}
-  currentFileEventIndex = eventOffset;
+  if (nEventsToSkip > 0)
+    {G4cout << __METHOD_NAME__ << "skipping " << nEventsToSkip << " into file." << G4endl;}
+  else
+    {return ;}
+  G4long distrFileLoopNTimes = bunch->DistrFileLoopNTimes();
+  G4long nAvailable = nEventsInFile * distrFileLoopNTimes;
+  if ((G4long)nEventsToSkip > nAvailable)
+    {
+      G4String msg = "number of events to skip (" + std::to_string(nEventsToSkip) + ") is greater than the number of events (";
+      msg += std::to_string(nEventsInFile);
+      if (distrFileLoopNTimes > 1)
+        {msg += " x " + std::to_string(distrFileLoopNTimes) + " loops of file";}
+      msg += ") in this file.";
+      throw BDSException("BDSBunchUserFile::RecreateAdvanceToEvent>", msg);
+    }
+  G4long nToSkipSinglePass = nAvailable % nEventsToSkip;
+  currentFileEventIndex = nToSkipSinglePass;
 }

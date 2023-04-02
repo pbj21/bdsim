@@ -74,8 +74,8 @@ class BDSOutput: protected BDSOutputStructures
 public:
   /// Constructor with base file name (without extension or number suffix).
   BDSOutput(const G4String& baseFileNameIn,
-	    const G4String& fileExtentionIn,
-	    G4int           fileNumberOffset);
+            const G4String& fileExtentionIn,
+            G4int           fileNumberOffset);
   virtual ~BDSOutput(){;}
 
   /// Open a new file. This should call WriteHeader() in it.
@@ -116,29 +116,29 @@ public:
   /// and calls WriteFileEventLevel() and then clears the structures. It therefore
   /// should not be used in conjunction with FillEvent().
   void FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
-			    const BDSParticleDefinition*       particle);
+                            const BDSParticleDefinition*       particle);
   
   /// Copy event information from Geant4 simulation structures to output structures.
   void FillEvent(const BDSEventInfo*                            info,
-		 const G4PrimaryVertex*                         vertex,
-		 const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
+                 const G4PrimaryVertex*                         vertex,
+                 const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
                  const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
                  const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
-		 const BDSHitsCollectionSamplerLink*            samplerHitsLink,
-		 const BDSHitsCollectionEnergyDeposition*       energyLoss,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossFull,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
-		 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
-		 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
-		 const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
-		 const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
-		 const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
-		 const BDSTrajectoriesToStore*                  trajectories,
-		 const BDSHitsCollectionCollimator*             collimatorHits,
-		 const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
-		 const std::map<G4String, G4THitsMap<G4double>*>& scorerHitsMap,
-		 const G4int                                    turnsTaken);
+                 const BDSHitsCollectionSamplerLink*            samplerHitsLink,
+                 const BDSHitsCollectionEnergyDeposition*       energyLoss,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossFull,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
+                 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
+                 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
+                 const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
+                 const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
+                 const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
+                 const BDSTrajectoriesToStore*                  trajectories,
+                 const BDSHitsCollectionCollimator*             collimatorHits,
+                 const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
+                 const std::map<G4String, G4THitsMap<G4double>*>& scorerHitsMap,
+                 const G4int                                    turnsTaken);
 
   /// Close a file and open a new one.
   void CloseAndOpenNewFile();
@@ -219,7 +219,7 @@ private:
   /// Fill the local structure with primary vertex information. Utility function
   /// to translate from G4PrimaryVertex to simple numbers.
   void FillPrimary(const G4PrimaryVertex* vertex,
-		   const G4int            turnsTaken);
+                   const G4int            turnsTaken);
   
   /// Fill event summary information.
   void FillEventInfo(const BDSEventInfo* info);
@@ -240,11 +240,11 @@ private:
 
   /// Fill a collection of energy hits into the appropriate output structure.
   void FillEnergyLoss(const BDSHitsCollectionEnergyDeposition* loss,
-		      const LossType type);
+                      const LossType type);
 
   /// Fill a collection of energy hits in global coordinates into the appropriate output structure.
   void FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* loss,
-		      const LossType type);
+                      const LossType type);
 
   /// Fill a collection volume exit hits into the appropriate output structure.
   //void FillELossWorldExitHits(const BDSHitsCollectionVolumeExit* worldExitHits);
@@ -257,7 +257,7 @@ private:
 
   /// Fill collimator hits.
   void FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
-			  const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints);
+                          const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints);
 
   /// Fill aperture impact hits.
   void FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits);
@@ -267,7 +267,7 @@ private:
 
   /// Fill an individual scorer hits map into a particular output histogram.
   void FillScorerHitsIndividual(const G4String& hsitogramDefName,
-				const G4THitsMap<G4double>* hitMap);
+                                const G4THitsMap<G4double>* hitMap);
 
   void FillScorerHitsIndividualBLM(const G4String& histogramDefName,
                                    const G4THitsMap<G4double>* hitMap);
@@ -282,8 +282,8 @@ private:
   /// Utility function to copy out select bins from one histogram to another for 1D
   /// histograms only.
   void CopyFromHistToHist1D(const G4String& sourceName,
-			    const G4String& destinationName,
-			    const std::vector<G4int>& indices);
+                            const G4String& destinationName,
+                            const std::vector<G4int>& indices);
 
   /// No default constructor.
   BDSOutput() = delete;

@@ -65,6 +65,7 @@ Parameters::Parameters()
   setMap["frequency"] = false;
   setMap["phase"]     = false;
   setMap["tOffset"]   = false;
+  setMap["fieldModulator"] = false;
 
   setMap["kick1"]     = false;
   setMap["kick2"]     = false;
@@ -184,6 +185,7 @@ Parameters::Parameters()
   setMap["markAsCollimator"] = false;
   setMap["spec"]           = false;
   setMap["cavityModel"]    = false;
+  setMap["cavityFieldType"] = false;
 
   setMap["dicomDataPath"]  = false;
   setMap["dicomDataFile"]  = false;

@@ -75,7 +75,7 @@ public:
   void FillGeant4Side();
 #endif
 
-  ClassDef(BDSOutputROOTEventHeader,4);
+  ClassDef(BDSOutputROOTEventHeader,5);
 };
 
 #endif

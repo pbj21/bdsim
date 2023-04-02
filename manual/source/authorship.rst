@@ -3,7 +3,7 @@ Authorship
 ===========
 
 BDSIM was originally started by G.A. Blair around 2001 and has since been
-developed and maintained by a group based at Royal Holloway, University of London.
+developed and maintained by a group based at Royal Holloway, University of London ("RHUL").
 
 We also welcome contributions and additions to BDSIM. Please contact us to get
 involved!
@@ -19,6 +19,7 @@ Current Authors
 * Stephen Gibson (*RHUL*)
 * Cedric Hernalsteens(*ULB, CERN*)
 * Helena Lefebvre (*RHUL*)
+* Fabian Metzger (CERN)
 * Eliott Ramoisiaux (*ULB*)
 * Jochem Snuverink (*PSI, RHUL*)
 * Robin Tesse (ULB)

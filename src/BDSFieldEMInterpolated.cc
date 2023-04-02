@@ -28,12 +28,19 @@ BDSFieldEMInterpolated::BDSFieldEMInterpolated(const BDSInterpolator* eInterpola
 					       G4double               eScalingIn,
 					       G4double               bScalingIn):
   BDSFieldEM(offset),
+  timeVarying(false),
   eScaling(eScalingIn),
   bScaling(bScalingIn),
   smallestSpatialStep(std::numeric_limits<double>::max())
 {
   if (eInterpolator)
-    {smallestSpatialStep = std::min(smallestSpatialStep, eInterpolator->SmallestSpatialStep());}
+    {
+      smallestSpatialStep = std::min(smallestSpatialStep, eInterpolator->SmallestSpatialStep());
+      timeVarying = timeVarying | eInterpolator->TimeVarying();
+    }
   if (bInterpolator)
-    {smallestSpatialStep = std::min(smallestSpatialStep, bInterpolator->SmallestSpatialStep());}
+    {
+      smallestSpatialStep = std::min(smallestSpatialStep, bInterpolator->SmallestSpatialStep());
+      timeVarying = timeVarying | bInterpolator->TimeVarying();
+    }
 }

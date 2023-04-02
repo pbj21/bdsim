@@ -57,7 +57,9 @@ New Features
 
 **Beam**
 
-* The `square` distribution can now have an uncorrelated `Z` distribution with time by
+* New bunches feature allows offset in time for different bunches at a given repetition rate
+  or period with a certain number of events at a fixed bunch index generated. See :ref:`beam-bunches`.
+* The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
   explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
 * New bunch distribution type `halosigma` that samples a flat halo distribution
   flat in terms of sigma. This is useful for re-weighting distributions based on
@@ -72,11 +74,15 @@ New Features
 * The `eventgenerator` and `bdsimsampler` distributions now have `eventGeneratorNEventsSkip`
   in the beam command to allow skipping into the file.
 * Consistency between features between `eventgenerator` and `bdsimsampler` distribution.
+* A new executable option `--distrFileLoopNTimes=<N>` allows you to repeat an input file `N`
+  times while matching the length to replay the same input coordinates from a distribution
+  file with different physics easily.
 
 **Components**
 
 * A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
   voxelized geometries.
+* New `rfx` and `rfy` components for transverse RF fields.
 * New `target` beam line component. We could always create a block of material with a closed
   `rcol` but this is more intuitive.
 
@@ -93,6 +99,7 @@ New Features
   See :ref:`fields-transforms`.
 * "linearmag" interpolation added.
 * New ability to arbitrarily scale the yoke fields.
+* New `modulator` object to modulate RF components (see :ref:`field-modulators`).
   
 **General**
 
@@ -111,6 +118,8 @@ New Features
 * Nicer visualisation colours for charged particles. Green for neutrals is by default now at
   20% opacity as there are usually so many gammas.
 * New units: `mV`, `GV`, `nrad`, `THz`.
+* New :code:`verboseSensitivity` option to print out the sensitive detector by name at every
+  level of the hierarhcy.
 
 **Geometry**
 
@@ -132,9 +141,13 @@ New Features
   in the GDML file.
 * Beam pipe aperture may now be defined by a series of x,y points in a text file for an
   arbitrary shaped beam pipe. This may also be used as the default one.
+* New :code:`rhombus` aperture type.
 
 **Physics**
 
+* New option :code:`restoreFTPFDiffractionForAGreater10` to turn back on nucleon diffraction
+  in hadronic physics for Geant4 v11.1 onwards. See :ref:`physics-proton-diffraction`. This
+  is **on** by default.
 * New muon-splitting biasing scheme.
 * New "radioactivation" physics list.
 * New "gamma_to_mumu" physics list.
@@ -162,6 +175,16 @@ New Features
 * New type of scorermesh geometry: cylindrical.
 * Materials are now stored for each trajectory step point (optionally) as described
   by an integer ID.
+* New trajectory filter option to store only secondary particles. Can be used in combination
+  with particle type to select only secondary particles that may be the same type of particle
+  as the primary particle. The option is :code:`storeTrajectorySecondaryParticles`. The bitset
+  for which filter was passed has been accordingly extended from 9 bits to 10 bits and the new
+  filter is the the last one. This is reflected in the file header that stores the names of the
+  filters.
+* New options :code:`storeElossWorldIntegral` and :code:`storeElossworldContentsIntegral` that can
+  be used alone to store only the single total energy deposition (including weights) in the world and
+  world contents (in case of an externally provided world volume) without storing all the individual
+  hits that would use a lot of disk space.
 
 
 General Updates
@@ -212,6 +235,7 @@ General Updates
 * The material print out (:code:`bdsim --materials`) now includes aliases.
 * When using `autoScale` for a field map attached to the yoke of a magnet, the calculated scaling
   factor is now always print out for feedback.
+* The visualiser command `/bds/beamline/list` now prints the S middle coordinate in metres.
 
 Bug Fixes
 ---------
@@ -275,6 +299,9 @@ Bug Fixes
   low due to the placement of units. The integrator for tracking (which ignores the field) was
   correct and still is, but the back up field used for non-paraxial particles had the wrong
   effective k1.
+* Fix B field for the rf cavity field (`BDSFieldEMRFCavity` class). The direction of the vector was wrong
+  due to a wrong translation from radial to Cartesian coordinates. Previously there was no variation in local
+  `z`, which was wrong and has now been corrected.
 
 **Geometry**
 
@@ -294,10 +321,12 @@ Bug Fixes
 * Fixed issued where sections of an angled dipole were shorter than their containers, resulting in visual gaps
   in the geometry.
 * Compilation fixes in AWAKE module for Geant4.11.1.0.
+* Fix possible gap in angled geometry for `rectellipse` and `lhc` aperture types with strongly angled pole faces.
+* Fix erroneous error about beam pipe being too big for a magnet when no magnet geometry was selected.
 
 **Link**
 
-* Fix nullptr materials for samplers in mass world. Have to explicity use function to make it valid for developers.
+* Fix nullptr materials for samplers in mass world. Have to explicitly use function to make it valid for developers.
 
 **Output**
 
@@ -328,6 +357,8 @@ Bug Fixes
 **Sensitivity**
 
 * Fix a bug where a sampler before a dump wouldn't record any output.
+* Fix a bug where when turning off sensitive outers of magnets, an 'outer' loaded from
+  an external geometry file such as GDML would remain sensitive.
 
 **Tracking**
 
@@ -408,11 +439,11 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCoords          | N           | 3               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventHeader          | N           | 4               | 4               |
+| BDSOutputROOTEventHeader          | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventHistograms      | N           | 3               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventInfo            | N           | 6               | 6               |
+| BDSOutputROOTEventInfo            | Y           | 7               | 6               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventLoss            | N           | 5               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+

@@ -1,0 +1,23 @@
+sb1: sbend, l=1*m, angle=0.05*rad;
+d1: drift, l=10*cm;
+q1: quadrupole, l=20*cm, k1=0.2;
+
+l1: line=(d1,sb1,d1,q1,d1);
+use, l1;
+
+sample, all;
+
+! set a default definition for all elements
+option, fieldModulator="wiggly";
+
+wiggly: modulator, type="sint", frequency=10*Hz;
+
+beam, particle="e-",
+      kineticEnergy=1*GeV,
+      distrType="square",
+      envelopeT=0.2*s,
+      envelopeZ=0;
+
+! set envelopeZ so Z and T are uncorrelated
+
+option, includeFringeFields=0;

@@ -7,7 +7,5 @@ beam, eventGeneratorParticles="3222";
 ! make sure it isn't rejected by no decay table for it
 option, physicsList="all_particles decay";
 
-beam, distrFileMatchLength=0,
-      distrFileLoop=1;
-
-option, ngenerate=200;
+beam, distrFileLoop=1,
+      distrFileLoopNTimes=3;

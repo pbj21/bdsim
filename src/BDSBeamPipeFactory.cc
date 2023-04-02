@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryPointsFile.hh"
 #include "BDSBeamPipeFactoryRaceTrack.hh"
 #include "BDSBeamPipeFactoryRectEllipse.hh"
+#include "BDSBeamPipeFactoryRhombus.hh"
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBeamPipeType.hh"
 #include "BDSDebug.hh"
@@ -53,6 +54,7 @@ BDSBeamPipeFactory::BDSBeamPipeFactory()
   lhcdetailed    = new BDSBeamPipeFactoryLHCDetailed();
   rectellipse    = new BDSBeamPipeFactoryRectEllipse();
   racetrack      = new BDSBeamPipeFactoryRaceTrack();
+  rhombus        = new BDSBeamPipeFactoryRhombus();
   octagonal      = new BDSBeamPipeFactoryOctagonal();
   circularvacuum = new BDSBeamPipeFactoryCircularVacuum();
   clicpcl        = new BDSBeamPipeFactoryClicPCL();
@@ -68,6 +70,7 @@ BDSBeamPipeFactory::~BDSBeamPipeFactory()
   delete lhcdetailed;
   delete rectellipse;
   delete racetrack;
+  delete rhombus;
   delete octagonal;
   delete circularvacuum;
   delete clicpcl;
@@ -101,6 +104,8 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
       {return clicpcl; break;}
     case BDSBeamPipeType::pointsfile:
       {return pointsfile; break;}
+    case BDSBeamPipeType::rhombus:
+      {return rhombus; break;}
     default:
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "unknown type \"" << type << "\" - circular beampipe factory by default" << G4endl;

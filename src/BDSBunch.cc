@@ -57,6 +57,10 @@ BDSBunch::BDSBunch(const G4String& nameIn):
   Xp0(0.0), Yp0(0.0), Zp0(0.0), E0(0.0), P0(0.0),
   tilt(0.0),
   sigmaT(0.0), sigmaP(0.0), sigmaE(0.0), sigmaEk(0.0),
+  useBunchTiming(false),
+  currentBunchIndex(0),
+  eventsPerBunch(1), // so we don't have 0 division
+  bunchPeriod(0),
   useCurvilinear(false),
   particleDefinition(nullptr),
   particleDefinitionHasBeenUpdated(false),
@@ -104,6 +108,22 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   sigmaP = beam.sigmaP;
   sigmaE = beam.sigmaE;
   sigmaEk = beam.sigmaEk;
+  
+  // bunch offset timing parameters
+  G4bool bff = BDS::IsFinite(beam.bunchFrequency);
+  G4bool bpf = BDS::IsFinite(beam.bunchPeriod);
+  if (bff && bpf)
+    {throw BDSException(__METHOD_NAME__, "only one of \"bunchFrequency\" and \"bunchPeriod\" can be set");}
+  else if (bff || bpf)
+    {
+      useBunchTiming = true;
+      eventsPerBunch = beam.eventsPerBunch;
+      if (eventsPerBunch <= 0)
+        {throw BDSException(__METHOD_NAME__, "\"eventsPerBunch\" <= 0. Must be > 0");}
+      bunchPeriod = bpf ? beam.bunchPeriod*CLHEP::s : (1.0 / beam.bunchFrequency)*CLHEP::s;
+    }
+  else if (!bff && !bpf && beam.eventsPerBunch > 0) // eventsPerBunch > 0 implies expecting bunches but no frequency or period given
+    {throw BDSException(__METHOD_NAME__, "one of \"bunchFrequency\" or \"bunchPeriod\" must be specified if \"eventsPerBunch\" > 0");}
 
   finiteTilt   = BDS::IsFinite(tilt);
   finiteSigmaE = BDS::IsFinite(sigmaE);
@@ -192,6 +212,14 @@ void BDSBunch::SetEmittances(const BDSParticleDefinition* beamParticle,
 	 << ", Normalised (y): " << emittNormalisedY << G4endl;
 }
 
+void BDSBunch::CalculateBunchIndex(G4int eventIndex)
+{
+  if (!useBunchTiming)
+    {return;}
+  // calculate this freshly each time so it doesn't rely on incremental event indices
+  currentBunchIndex = (G4int)std::floor((G4double)eventIndex / (G4double)eventsPerBunch);
+}
+
 void BDSBunch::CheckParameters()
 {
   if (sigmaE < 0)
@@ -249,6 +277,11 @@ BDSParticleCoordsFull BDSBunch::GetNextParticleLocal()
   return local;
 }
 
+void BDSBunch::RecreateAdvanceToEvent(G4int eventOffset)
+{
+  CalculateBunchIndex(eventOffset);
+}
+
 void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/)
 {;}
 
@@ -257,10 +290,14 @@ void BDSBunch::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)
 
 BDSParticleCoordsFullGlobal BDSBunch::ApplyTransform(const BDSParticleCoordsFull& localIn) const
 {
+  BDSParticleCoordsFullGlobal result;
   if (useCurvilinear) // i.e. S0 is finite - use beam line
-    {return ApplyCurvilinearTransform(localIn);}
+    {result = ApplyCurvilinearTransform(localIn);}
   else // just general beam line offset
-    {return BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
+    {result= BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
+  if (useBunchTiming)
+    {ApplyBunchTiming(result);}
+  return result;
 }
 
 void BDSBunch::ApplyTilt(BDSParticleCoordsFull& localIn) const
@@ -273,6 +310,12 @@ void BDSBunch::ApplyTilt(BDSParticleCoordsFull& localIn) const
   localIn.y = xy.y();
   localIn.xp = xpyp.x();
   localIn.yp = xpyp.y();
+}
+
+void BDSBunch::ApplyBunchTiming(BDSParticleCoordsFullGlobal& coordsIn) const
+{
+  G4double tOffset = ((G4double)currentBunchIndex) * bunchPeriod;
+  coordsIn.global.T += tOffset;
 }
 
 BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const
@@ -301,10 +344,12 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
   G4ThreeVector cMom = G4ThreeVector(localIn.xp, localIn.yp, localIn.zp).transform(cTrans.getRotation());
   // translation contains displacement from origin already - including any local offset
   G4ThreeVector cPos = cTrans.getTranslation();
+  
+  G4double tOffset = S / CLHEP::c_light; // we assume the velocity of light for timing
 
   BDSParticleCoords global = BDSParticleCoords(cPos.x(), cPos.y(), cPos.z(),
 					       cMom.x(), cMom.y(), cMom.z(),
-					       localIn.T);
+					       localIn.T + tOffset);
 
   BDSParticleCoordsFullGlobal result = BDSParticleCoordsFullGlobal(localIn, global);
   result.beamlineIndex = beamlineIndex;

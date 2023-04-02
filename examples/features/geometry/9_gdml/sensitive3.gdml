@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box name="sbContainerSolid" x="500" y="500" z="110" lunit="mm"/>
+		<box name="box_0" x="500" y="500" z="100" lunit="mm"/>
+		<box name="box_1" x="498" y="498" z="90" lunit="mm"/>
+		<box name="box_2" x="496" y="496" z="80" lunit="mm"/>
+		<box name="box_3" x="494" y="494" z="70" lunit="mm"/>
+		<box name="box_4" x="492" y="492" z="60" lunit="mm"/>
+		<box name="box_5" x="490" y="490" z="50" lunit="mm"/>
+	</solids>
+	<structure>
+		<volume name="box_5_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_5"/>
+		</volume>
+		<volume name="box_4_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_4"/>
+			<physvol name="box_5_pv">
+				<volumeref ref="box_5_lv"/>
+			</physvol>
+		</volume>
+		<volume name="box_3_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_3"/>
+			<physvol name="box_4_pv">
+				<volumeref ref="box_4_lv"/>
+			</physvol>
+		</volume>
+		<volume name="box_2_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_2"/>
+			<physvol name="box_3_pv">
+				<volumeref ref="box_3_lv"/>
+			</physvol>
+		</volume>
+		<volume name="box_1_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_1"/>
+			<physvol name="box_2_pv">
+				<volumeref ref="box_2_lv"/>
+			</physvol>
+		</volume>
+		<volume name="box_0_lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="box_0"/>
+			<physvol name="box_1_pv">
+				<volumeref ref="box_1_lv"/>
+			</physvol>
+		</volume>
+		<volume name="sbContainerLV">
+			<materialref ref="G4_Be"/>
+			<solidref ref="sbContainerSolid"/>
+			<physvol name="box_0_pv">
+				<volumeref ref="box_0_lv"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="sbContainerLV"/>
+	</setup>
+</gdml>

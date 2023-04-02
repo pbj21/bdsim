@@ -51,6 +51,9 @@ BDSArray3DCoords::BDSArray3DCoords(G4int nXIn, G4int nYIn, G4int nZIn,
   std::vector<BDSDimensionType> allDimsV(allDims.begin(), allDims.end());
   tDimension = allDimsV[0];
   BuildDimensionIndex();
+  
+  BDSDimensionType tt = BDSDimensionType::t;
+  timeVarying = xDimensionIn == tt || yDimensionIn == tt || zDimensionIn == tt;
 }
 
 void BDSArray3DCoords::ExtractSection2x2x2(G4double x,

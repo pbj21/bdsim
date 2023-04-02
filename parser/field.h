@@ -46,6 +46,7 @@ namespace GMAD
     std::string magneticInterpolator; ///< Interpolator for the magnetic field.
     std::string electricFile;         ///< File for the electric field map.
     std::string electricInterpolator; ///< Interpolator for the electric field.
+    std::string fieldModulator;       ///< Name of field modulator object.
 
     double x; ///< Offset in x.
     double y; ///< Offset in y.

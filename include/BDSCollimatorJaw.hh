@@ -36,7 +36,7 @@ class G4VSolid;
 class BDSCollimatorJaw: public BDSCollimator
 {
 public:
-  BDSCollimatorJaw(G4String    nameIn,
+  BDSCollimatorJaw(const G4String& nameIn,
                    G4double    lengthIn,
                    G4double    horizontalWidthIn,
                    G4double    xHalfGapIn,
@@ -52,8 +52,8 @@ public:
                    G4Colour*   colourIn = nullptr);
   virtual ~BDSCollimatorJaw();
 
-  G4double getJawTiltLeft() const;
-  G4double getJawTiltRight() const;
+  inline G4double GetJawTiltLeft() const {return jawTiltLeft;}
+  inline G4double GetJawTiltRight() const {return jawTiltRight;}
 
 protected:
   /// Check and update parameters before construction. Called at the start of Build() as

@@ -18,5 +18,3 @@ option, seed=123;
 
 option, storeSamplerKineticEnergy=1;
 option, storeMinimalData=1;
-
-option, ngenerate=10;

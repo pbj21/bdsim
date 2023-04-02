@@ -90,6 +90,7 @@ private:
   G4int  verboseEventStop;
   G4bool storeTrajectory;    ///< Cache of whether to store trajectories or not.
   G4bool storeTrajectoryAll; ///< Store all trajectories irrespective of filters.
+  G4bool storeTrajectorySecondary;
   G4int  printModulo;
 
   G4int samplerCollID_plane;      ///< Collection ID for plane sampler hits.

@@ -1,0 +1,13 @@
+d1: drift, l=0.2*m, apertureType="rhombus", aper1=5*cm, aper2=3*cm;
+d2: drift, l=0.2*m, apertureType="rhombus", aper1=5*cm, aper2=3*cm, aper3=0.4*cm;
+d3: drift, l=0.2*m, apertureType="rhombus", aper1=3*cm, aper2=10*cm, aper3=0.1*cm, beampipeThickness=1*cm;
+sb1: sbend, l=0.3*m, angle=0.1, e1=0.1, apertureType="rhombus", aper1=5*cm, aper2=15*mm;
+
+l1: line = (d1, d2, sb1, d1, d3);
+!l1: line=(d2);
+
+use, period = l1;
+
+sample, all;
+
+include options.gmad;

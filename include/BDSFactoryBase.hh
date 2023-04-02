@@ -52,7 +52,7 @@ protected:
   G4double           lengthSafetyLarge;
   G4bool             checkOverlaps;
   G4bool             visDebug;
-  G4double           nSegmentsPerCircle;
+  G4int              nSegmentsPerCircle;
   G4VisAttributes*   containerVisAttr;
   G4UserLimits*      defaultUserLimits;
   /// @}

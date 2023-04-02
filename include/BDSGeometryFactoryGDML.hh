@@ -50,18 +50,21 @@ public:
   /// Main interface overrides base class method to construct a file with
   /// optional colour mapping.
   virtual BDSGeometryExternal* Build(G4String componentName,
-				     G4String fileName,
-				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
-				     G4bool                 autoColour               = true,
-				     G4double               suggestedLength          = 0,
-				     G4double               suggestedHorizontalWidth = 0,
-				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
-				     G4UserLimits*          userLimitsToAttachToAllLVs = nullptr);
+                                     G4String fileName,
+                                     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+                                     G4bool                 autoColour               = true,
+                                     G4double               suggestedLength          = 0,
+                                     G4double               suggestedHorizontalWidth = 0,
+                                     std::vector<G4String>* namedVacuumVolumes       = nullptr,
+                                     G4bool                 makeSensitive            = true,
+                                     BDSSDType              sensitivityType          = BDSSDType::energydep,
+                                     BDSSDType              vacuumSensitivityType    = BDSSDType::energydepvacuum,
+                                     G4UserLimits*          userLimitsToAttachToAllLVs = nullptr);
 
 protected:
   /// Use the GDML preprocessing scheme to prepare the preprocesseed volume names.
   virtual G4String PreprocessedName(const G4String& objectName,
-				    const G4String& acceleratorComponentName) const;
+                                    const G4String& acceleratorComponentName) const;
   
 private:
   /// Create a temporary file in the current working directory (even though the geometry file
@@ -69,15 +72,15 @@ private:
   /// a 'key' with 'replacement'. Returns the temporary file name created. Naming only allows one
   /// temporary file per component - so far, not a problem.
   void ReplaceStringInFile(const G4String& filename,
-			   const G4String& outputFileName,
-			   const G4String& key,
-			   const G4String& replacement);
+                           const G4String& outputFileName,
+                           const G4String& key,
+                           const G4String& replacement);
 
   /// Recursively append pvs and lvs from a given mother volume.  Pass by reference
   /// the output vectors
   void GetAllLogicalPhysicalAndMaterials(const G4VPhysicalVolume*         volume,
-					 std::set<G4VPhysicalVolume*>&    pvs,
-					 std::set<G4LogicalVolume*>&      lvs,
+                                         std::set<G4VPhysicalVolume*>&    pvs,
+                                         std::set<G4LogicalVolume*>&      lvs,
                                          std::map<G4String, G4Material*>& materialsGDML);
 };
 

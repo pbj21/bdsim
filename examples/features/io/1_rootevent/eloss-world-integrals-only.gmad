@@ -1,0 +1,12 @@
+d1: drift, l=0.1*m;
+l1: line=(d1);
+use, l1;
+sample, all;
+
+option, ngenerate=2,
+	physicsList="em";
+
+beam, particle="e-",
+      energy=20*MeV;
+
+option, storeElossWorldIntegral=1;

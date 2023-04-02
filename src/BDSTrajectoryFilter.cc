@@ -33,11 +33,12 @@ std::map<BDSTrajectoryFilter, std::string>* BDSTrajectoryFilter::dictionary =
    {BDSTrajectoryFilter::elossSRange,     "elossSRange"},
    {BDSTrajectoryFilter::minimumZ,        "minimumZ"},
    {BDSTrajectoryFilter::maximumR,        "maximumR"},
-   {BDSTrajectoryFilter::connect,         "connect"}
+   {BDSTrajectoryFilter::connect,         "connect"},
+   {BDSTrajectoryFilter::secondary,       "secondary"}
 });
 
 namespace BDS
 {
   BDSTrajectoryFilter BDSTrajectoryFilterEnumOfIndex(int i)
-  {return static_cast<BDSTrajectoryFilter>(i);}
+    {return static_cast<BDSTrajectoryFilter>(i);}
 }

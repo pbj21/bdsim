@@ -47,16 +47,26 @@ public:
   /// @{ Accessor.
   unsigned long long int NEventsInFile() const {return nEventsInFile;}
   unsigned long long int NEventsInFileSkipped() const {return nEventsInFileSkipped;}
+  G4int DistrFileLoopNTimes() const {return distrFileLoopNTimes;}
   /// @}
 
   void SetNEventsInFile(unsigned long long int nEventsInFileIn) {nEventsInFile = nEventsInFileIn;}
 
   void IncrementNEventsInFileSkipped() {nEventsInFileSkipped += 1;}
   void IncrementNEventsInFileSkipped(unsigned long long int plus) {nEventsInFileSkipped += plus;}
+
+  /// Pull out the relevant options and then pass through to BDSBunch::SetOptions().
+  virtual void SetOptions(const BDSParticleDefinition* beamParticle,
+                          const GMAD::Beam& beam,
+                          const BDSBunchType& distrType,
+                          G4Transform3D beamlineTransformIn = G4Transform3D::Identity,
+                          const G4double beamlineS = 0);
   
 protected:
   unsigned long long int nEventsInFile;
   unsigned long long int nEventsInFileSkipped;
+  G4bool distrFileLoop;
+  G4int distrFileLoopNTimes;
 };
 
 #endif

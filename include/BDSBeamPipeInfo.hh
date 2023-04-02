@@ -154,6 +154,9 @@ private:
 
   /// Aperture info check for CLIC PCL aperture.
   void InfoOKForClicPCL();
+
+  /// Aperture info check for Rhombus aperture.
+  void InfoOKForRhombus();
 };
 
 #endif

@@ -30,12 +30,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Based on std::map, this class stores magnet strengths. 
  *
- * As there will be one of 
- * these for every magnet and they may in future have to go up to high order 
- * normal plus skew (~40 doubles), it is more efficient to only store the required
+ * As there will be one of these for every magnet and there are many parameters
+ * (e.g. up to ~40 doubles), it is more efficient to only store the required
  * parameters. A pure quadrupole has no need of k20s, but a multipole may do. A static
- * vector contains the possible magnet strength parameters that can be checked against.
- * If a parameter is not specified in the map, its value is return as 0.
+ * vector contains the allowed keys that can be checked against before setting
+ * the value. If a (valid) key is not specified in the map, its value is returned as 0.
  *
  * Angle in rad, Field in Geant4 units. k strengths as original (ie not converted to G4).
  * 

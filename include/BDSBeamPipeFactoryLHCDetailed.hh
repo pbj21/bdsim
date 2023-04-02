@@ -88,7 +88,8 @@ private:
   virtual void BuildLogicalVolumes(const G4String& nameIn,
 				   G4Material* vacuumMaterialIn,
 				   G4Material* beamPipeMaterialIn);
-  virtual void  SetVisAttributes(G4Material* beamPipeMaterialIn);
+  virtual void  SetVisAttributes(G4Material* beamPipeMaterialIn,
+                                 G4Material* vacuumMaterialIn);
   virtual void  SetUserLimits(G4double length);
   virtual void  PlaceComponents(const G4String& nameIn);
 

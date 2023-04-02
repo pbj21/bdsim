@@ -1,4 +1,4 @@
-d1: drift, l=0.1, apertureType="rectangular";
+d1: drift, l=0.1, apertureType="rectangular", aper1=2.5*cm, aper2=2.5*cm;
 
 ! circular vacuum aperture so we can see the wire clearly
 w1: wirescanner, l=0.1*m, wireDiameter=1*mm, wireLength=2*cm,

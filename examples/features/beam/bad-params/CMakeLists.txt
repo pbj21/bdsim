@@ -20,6 +20,7 @@ simple_fail(bunch-no-emittances               "--file=no-emittances.gmad"       
 simple_fail(bunch-reference-bad-params        "--file=reference-bad.gmad"            "")
 simple_fail(bunch-bad-no-beam                 "--file=no-beam.gmad"                  "")
 simple_fail(bunch-bad-no-energy               "--file=no-energy.gmad"                "")
+simple_fail(bunch-bad-no-bunch-frequency      "--file=no-bunch-frequency.gmad"       "")
 simple_fail(bunch-bad-sigmaE-and-sigmaP       "--file=sigmaE-and-sigmaP.gmad"        "")
 simple_fail(bunch-ptc-bad-parms               "--file=ptc-bad.gmad"                  "")
 simple_fail(bunch-ring-bad-parms              "--file=ring-bad.gmad"                 "")

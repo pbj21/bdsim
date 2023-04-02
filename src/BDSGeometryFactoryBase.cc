@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactoryBase.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
@@ -46,9 +47,9 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
-								      std::map<G4String, G4Colour*>* mapping,
-								      G4bool                         autoColour,
-								      const G4String&                prefixToStripFromName)
+                                                                      std::map<G4String, G4Colour*>* mapping,
+                                                                      G4bool                         autoColour,
+                                                                      const G4String&                prefixToStripFromName)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
@@ -113,10 +114,30 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G
 }
 
 void BDSGeometryFactoryBase::ApplyUserLimits(const std::set<G4LogicalVolume*>& lvsIn,
-					     G4UserLimits* userLimits)
+                                             G4UserLimits* userLimits)
 {
   for (auto& lv : lvsIn)
     {lv->SetUserLimits(userLimits);}
+}
+
+void BDSGeometryFactoryBase::ApplySensitivity(BDSGeometryExternal* result,
+                                              const std::set<G4LogicalVolume*>& allLogicalVolumes,
+                                              BDSSDType generalSensitivity,
+                                              const std::set<G4LogicalVolume*>& vacuumLogicalVolumes,
+                                              BDSSDType vacuumSensitivity)
+{
+  std::map<G4LogicalVolume*, BDSSDType> sensitivityMapping;
+  std::set<G4LogicalVolume*> notVacuumVolumes;
+  std::set_difference(allLogicalVolumes.begin(),
+                      allLogicalVolumes.end(),
+                      vacuumLogicalVolumes.begin(),
+                      vacuumLogicalVolumes.end(),
+                      std::inserter(notVacuumVolumes, notVacuumVolumes.begin()));
+  for (auto lv : notVacuumVolumes)
+    {sensitivityMapping[lv] = generalSensitivity;}
+  for (auto lv : vacuumLogicalVolumes)
+    {sensitivityMapping[lv] = vacuumSensitivity;}
+  result->RegisterSensitiveVolume(sensitivityMapping);
 }
 
 void BDSGeometryFactoryBase::CleanUp()
@@ -125,13 +146,13 @@ void BDSGeometryFactoryBase::CleanUp()
 }
 
 G4String BDSGeometryFactoryBase:: PreprocessedName(const G4String& objectName,
-						   const G4String& /*acceleratorComponentName*/) const
+                                                   const G4String& /*acceleratorComponentName*/) const
 {return objectName;}
 
 std::set<G4LogicalVolume*> BDSGeometryFactoryBase::GetVolumes(const std::set<G4LogicalVolume*>& allLVs,
-							      std::vector<G4String>*            volumeNames,
-							      G4bool                            preprocessFile,
-							      const G4String&                   componentName) const
+                                                              std::vector<G4String>*            volumeNames,
+                                                              G4bool                            preprocessFile,
+                                                              const G4String&                   componentName) const
 {
   if (!volumeNames)
     {return std::set<G4LogicalVolume*>();}
@@ -142,9 +163,9 @@ std::set<G4LogicalVolume*> BDSGeometryFactoryBase::GetVolumes(const std::set<G4L
       // transform the names to those the preprocessor would produce
       expectedVolumeNames.resize(volumeNames->size());
       std::transform(volumeNames->begin(),
-		     volumeNames->end(),
-		     expectedVolumeNames.begin(),
-		     [&](const G4String& n){return PreprocessedName(n, componentName);});
+                     volumeNames->end(),
+                     expectedVolumeNames.begin(),
+                     [&](const G4String& n){return PreprocessedName(n, componentName);});
     }
   else
     {expectedVolumeNames = *volumeNames;}
@@ -153,10 +174,10 @@ std::set<G4LogicalVolume*> BDSGeometryFactoryBase::GetVolumes(const std::set<G4L
   for (const auto& en : expectedVolumeNames)
     {
       for (auto lv : allLVs)
-	{
-	  if (lv->GetName() == en)
-	    {volsMatched.insert(lv);}
-	}
+        {
+          if (lv->GetName() == en)
+            {volsMatched.insert(lv);}
+        }
     }
   return volsMatched;
 }
@@ -183,8 +204,8 @@ void BDSGeometryFactoryBase::ExpandExtent(const BDSExtent& ext)
 }
 
 void BDSGeometryFactoryBase::ExpandExtent(G4double x0, G4double rx,
-					  G4double y0, G4double ry,
-					  G4double z0, G4double rz)
+                                          G4double y0, G4double ry,
+                                          G4double z0, G4double rz)
 {
   xmin = std::min(x0-rx, xmin);
   xmax = std::max(x0+rx, xmax);
@@ -195,8 +216,8 @@ void BDSGeometryFactoryBase::ExpandExtent(G4double x0, G4double rx,
 }
 
 void BDSGeometryFactoryBase::ExpandExtent(G4double x0, G4double xLow, G4double xHigh,
-					  G4double y0, G4double yLow, G4double yHigh,
-					  G4double z0, G4double zLow, G4double zHigh)
+                                          G4double y0, G4double yLow, G4double yHigh,
+                                          G4double z0, G4double zLow, G4double zHigh)
 {
   xmin = std::min(x0+xLow,  xmin);
   xmax = std::max(x0+xHigh, xmax);

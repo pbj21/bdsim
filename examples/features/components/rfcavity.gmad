@@ -26,7 +26,7 @@ Tesla9Cell: cavitymodel,
 	    numberOfCells = 1;
 
 ! define field object to speficy more complex field type
-rffield: field, type="rfcavity";
+rffield: field, type="rfpillbox";
 
 lat: line = (d1, rf1, d1);
 

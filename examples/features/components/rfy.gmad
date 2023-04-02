@@ -1,0 +1,12 @@
+! default material will be copper
+! default phaseOffset is 0
+d1: drift, l=0.5;
+rf1: rfy, l=10*cm, gradient=12*MV / m, frequency=450*MHz;
+rf2: rfy, l=20*cm, gradient=-10*MV/m, frequency=90*MHz, tOffset=3.2*ns;
+rf3: rfy, l=20*cm, gradient=20*MV/m, frequency=0*MHz, phase=0.0;
+rf4: rfy, l=20*cm, gradient=-15*MV/m, frequency=0*MHz, phase=3.14159;
+
+lat: line=(d1, rf1, d1, rf2, d1, rf3, d1, rf4, d1, d1);
+use, lat;
+
+beam, particle="e-", kineticEnergy=1*GeV;

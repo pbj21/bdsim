@@ -40,9 +40,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VTouchable.hh"
 #include "Randomize.hh"
 
+
 BDSSDEnergyDeposition::BDSSDEnergyDeposition(const G4String& name,
-					     G4bool          storeExtrasIn,
-					     G4bool          killedParticleMassAddedToElossIn):
+                                             G4bool          storeExtrasIn,
+                                             G4bool          killedParticleMassAddedToElossIn):
   BDSSensitiveDetector("energy_counter/"+name),
   storeExtras(storeExtrasIn),
   killedParticleMassAddedToEloss(killedParticleMassAddedToElossIn),
@@ -72,7 +73,7 @@ void BDSSDEnergyDeposition::Initialize(G4HCofThisEvent* HCE)
 }
 
 G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
-					  G4TouchableHistory* /*th*/)
+                                          G4TouchableHistory* /*th*/)
 {
   // Get the energy deposited along the step
   G4double energy = aStep->GetTotalEnergyDeposit();
@@ -149,31 +150,31 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
       BDSStep stepLocal2 = auxNavigator->ConvertToLocal(posbefore, unitDirection);
       theInfo = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(stepLocal2.VolumeForTransform());
       if (theInfo)
-	{UpdateParams(theInfo);}
+        {UpdateParams(theInfo);}
       else
-	{
-	  // Try yet again with just a slight shift (100um is bigger than any padding space).
-	  G4ThreeVector shiftedPos = posbefore + 0.1*CLHEP::mm*unitDirection;
-	  stepLocal2 = auxNavigator->ConvertToLocal(shiftedPos, unitDirection);
-	  theInfo = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(stepLocal2.VolumeForTransform());
-	  if (theInfo)
-	    {UpdateParams(theInfo);}
-	  else
-	    {
+        {
+          // Try yet again with just a slight shift (100um is bigger than any padding space).
+          G4ThreeVector shiftedPos = posbefore + 0.1*CLHEP::mm*unitDirection;
+          stepLocal2 = auxNavigator->ConvertToLocal(shiftedPos, unitDirection);
+          theInfo = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(stepLocal2.VolumeForTransform());
+          if (theInfo)
+            {UpdateParams(theInfo);}
+          else
+            {
 #ifdef BDSDEBUG
-	      G4cerr << "No volume info for ";
-	      auto vol = stepLocal.VolumeForTransform();
-	      if (vol)
-		{G4cerr << vol->GetName() << G4endl;}
-	      else
-		{G4cerr << "Unknown" << G4endl;}
+              G4cerr << "No volume info for ";
+              auto vol = stepLocal.VolumeForTransform();
+              if (vol)
+                {G4cerr << vol->GetName() << G4endl;}
+              else
+                {G4cerr << "Unknown" << G4endl;}
 #endif
-	      // unphysical default value to allow easy identification in output
-	      sAfter        = -1000;
-	      sBefore       = -1000;
-	      beamlineIndex = -2;
-	    }
-	}
+              // unphysical default value to allow easy identification in output
+              sAfter        = -1000;
+              sBefore       = -1000;
+              beamlineIndex = -2;
+            }
+        }
     }
   
   G4double sHit = sBefore + randDist*(sAfter - sBefore);
@@ -189,29 +190,29 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
       const G4StepPoint* postPoint = aStep->GetPostStepPoint();
       const G4VProcess* postProcess = postPoint->GetProcessDefinedStep();
       if (postProcess)
-	{
-	  postStepProcessType = postProcess->GetProcessType();
-	  postStepProcessSubType = postProcess->GetProcessSubType();
-	}
+        {
+          postStepProcessType = postProcess->GetProcessType();
+          postStepProcessSubType = postProcess->GetProcessSubType();
+        }
     }
   
   //create hits and put in hits collection of the event
   BDSHitEnergyDeposition* hit = new BDSHitEnergyDeposition(energy,
-							   sHit,
-							   weight,
-							   storeExtras,
-							   preStepKineticEnergy,
-							   X, Y, Z,
-							   x, y, z,
-							   globalTime,
-							   ptype,
-							   trackID,
-							   parentID,
-							   turnsTaken,
-							   stepLength,
-							   beamlineIndex,
-							   postStepProcessType,
-							   postStepProcessSubType);
+                                                           sHit,
+                                                           weight,
+                                                           storeExtras,
+                                                           preStepKineticEnergy,
+                                                           X, Y, Z,
+                                                           x, y, z,
+                                                           globalTime,
+                                                           ptype,
+                                                           trackID,
+                                                           parentID,
+                                                           turnsTaken,
+                                                           stepLength,
+                                                           beamlineIndex,
+                                                           postStepProcessType,
+                                                           postStepProcessSubType);
   
   // don't worry, won't add 0 energy tracks as filtered at top by if statement
   hits->insert(hit);
@@ -220,7 +221,7 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
 }
 
 G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
-					       G4TouchableHistory* /*th*/)
+                                               G4TouchableHistory* /*th*/)
 {
   G4int    parentID   = track->GetParentID(); // needed later on too
   G4int    ptype      = track->GetDefinition()->GetPDGEncoding();
@@ -277,22 +278,22 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
       BDSStep stepLocal2 = auxNavigator->ConvertToLocal(shiftedPos, momGlobalUnit);
       theInfo = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(stepLocal2.VolumeForTransform());
       if (theInfo)
-	{UpdateParams(theInfo);}
+        {UpdateParams(theInfo);}
       else
-	{
+        {
 #ifdef BDSDEBUG
-	  G4cerr << "No volume info for ";
-	  auto vol = stepLocal.VolumeForTransform();
-	  if (vol)
-	    {G4cerr << vol->GetName() << G4endl;}
-	  else
-	    {G4cerr << "Unknown" << G4endl;}
+          G4cerr << "No volume info for ";
+          auto vol = stepLocal.VolumeForTransform();
+          if (vol)
+            {G4cerr << vol->GetName() << G4endl;}
+          else
+            {G4cerr << "Unknown" << G4endl;}
 #endif
-	  // unphysical default value to allow easy identification in output
-	  sAfter        = -1000;
-	  sBefore       = -1000;
-	  beamlineIndex = -2;
-	}
+          // unphysical default value to allow easy identification in output
+          sAfter        = -1000;
+          sBefore       = -1000;
+          beamlineIndex = -2;
+        }
     }
   G4double sHit = sBefore; // duplicate
 
@@ -304,34 +305,34 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
     {// physics processes
       const G4Step* aStep = track->GetStep();
       if (aStep)
-	{
-	  const G4StepPoint* postPoint = aStep->GetPostStepPoint();
-	  const G4VProcess* postProcess = postPoint->GetProcessDefinedStep();
-	  if (postProcess)
-	    {
-	      postStepProcessType = postProcess->GetProcessType();
-	      postStepProcessSubType = postProcess->GetProcessSubType();
-	    }
-	}
+        {
+          const G4StepPoint* postPoint = aStep->GetPostStepPoint();
+          const G4VProcess* postProcess = postPoint->GetProcessDefinedStep();
+          if (postProcess)
+            {
+              postStepProcessType = postProcess->GetProcessType();
+              postStepProcessSubType = postProcess->GetProcessSubType();
+            }
+        }
     }
   
   //create hits and put in hits collection of the event
   BDSHitEnergyDeposition* hit = new BDSHitEnergyDeposition(energy,
-							   sHit,
-							   weight,
-							   storeExtras,
-							   preStepKineticEnergy,
-							   X, Y, Z,
-							   x, y, z,
-							   globalTime,
-							   ptype,
-							   trackID,
-							   parentID,
-							   turnsTaken,
-							   stepLength,
-							   beamlineIndex,
-							   postStepProcessType,
-							   postStepProcessSubType);
+                                                           sHit,
+                                                           weight,
+                                                           storeExtras,
+                                                           preStepKineticEnergy,
+                                                           X, Y, Z,
+                                                           x, y, z,
+                                                           globalTime,
+                                                           ptype,
+                                                           trackID,
+                                                           parentID,
+                                                           turnsTaken,
+                                                           stepLength,
+                                                           beamlineIndex,
+                                                           postStepProcessType,
+                                                           postStepProcessSubType);
   
   // don't worry, won't add 0 energy tracks as filtered at top by if statement
   hits->insert(hit);

@@ -40,7 +40,8 @@ std::map<BDSBeamPipeType, std::string>* BDSBeamPipeType::dictionary =
    {BDSBeamPipeType::racetrack,      "racetrack"},
    {BDSBeamPipeType::octagonal,      "octagonal"},
    {BDSBeamPipeType::circularvacuum, "circularvacuum"},
-   {BDSBeamPipeType::clicpcl,        "clicpcl"}
+   {BDSBeamPipeType::clicpcl,        "clicpcl"},
+   {BDSBeamPipeType::rhombus,        "rhombus"}
 });	
 
 BDSBeamPipeType BDS::DetermineBeamPipeType(G4String apertureType)
@@ -57,10 +58,13 @@ BDSBeamPipeType BDS::DetermineBeamPipeType(G4String apertureType)
   types["octagonal"]      = BDSBeamPipeType::octagonal;
   types["circularvacuum"] = BDSBeamPipeType::circularvacuum;
   types["clicpcl"]        = BDSBeamPipeType::clicpcl;
-  types["pointsfile"]     = BDSBeamPipeType::pointsfile; // added so the error print out will be correct
+  types["pointsfile"]     = BDSBeamPipeType::pointsfile; // added only so the error print out will be correct
+  types["rhombus"]        = BDSBeamPipeType::rhombus;
 
   apertureType = BDS::LowerCase(apertureType);
-  
+
+  // string will be pointsfile:somefile.dat, so we specially
+  // detect this one as it won't match exactly
   if (BDS::StrContains(apertureType, "pointsfile"))
     {return BDSBeamPipeType::pointsfile;}
 

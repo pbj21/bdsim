@@ -77,21 +77,22 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
       {return sql; break;}
     default:
       {
-	G4cout << "Unsupported factory type " << type;
-	return nullptr;
+        G4cout << "Unsupported factory type " << type;
+        return nullptr;
       }
     }
 }
 
 BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String               componentName,
-						       const G4String&        formatAndFileName,
-						       std::map<G4String, G4Colour*>* colourMapping,
-						       G4bool                 autoColour,
-						       G4double               suggestedLength,
-						       G4double               suggestedHorizontalWidth,
-						       std::vector<G4String>* namedVacuumVolumes,
-						       G4bool                 makeSensitive,
-						       BDSSDType              sensitivityType,
+                                                       const G4String&        formatAndFileName,
+                                                       std::map<G4String, G4Colour*>* colourMapping,
+                                                       G4bool                 autoColour,
+                                                       G4double               suggestedLength,
+                                                       G4double               suggestedHorizontalWidth,
+                                                       std::vector<G4String>* namedVacuumVolumes,
+                                                       G4bool                 makeSensitive,
+                                                       BDSSDType              sensitivityType,
+                                                       BDSSDType              vacuumSensitivityType,
                                                        G4bool                 stripOuterVolumeAndMakeAssembly,
                                                        G4UserLimits*          userLimitsToAttachToAllLVs,
                                                        G4bool                 dontReloadGeometry)
@@ -131,22 +132,22 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String               co
     {return nullptr;}
   
   BDSGeometryExternal* result = factory->Build(componentName,
-					       fileName,
-					       colourMapping,
-					       autoColour,
-					       suggestedLength,
-					       suggestedHorizontalWidth,
-					       namedVacuumVolumes,
-					       userLimitsToAttachToAllLVs);
+                                               fileName,
+                                               colourMapping,
+                                               autoColour,
+                                               suggestedLength,
+                                               suggestedHorizontalWidth,
+                                               namedVacuumVolumes,
+                                               makeSensitive,
+                                               sensitivityType,
+                                               vacuumSensitivityType,
+                                               userLimitsToAttachToAllLVs);
   
   if (result)
     {
       if (stripOuterVolumeAndMakeAssembly)
         {result->StripOuterAndMakeAssemblyVolume();}
-      // Set all volumes to be sensitive.
-      if (makeSensitive)
-	{result->MakeAllVolumesSensitive(sensitivityType);}
-  
+
       // cache using optionally modified name
       auto key = std::make_pair((std::string)searchName, componentName);
       registry[key] = result;

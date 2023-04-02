@@ -3,6 +3,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURC
 simple_testing(bunch-userfile                  "--file=userfile.gmad"                  "")
 simple_testing(bunch-userfile-ngenerate        "--file=userfile2.gmad"                 "")
 simple_testing(bunch-userfile-loop             "--file=userfile-loop.gmad"             "")
+simple_testing(bunch-userfile-loop-ntimes      "--file=userfile-loop-ntimes.gmad"      "")
 simple_testing(bunch-userfile-assumed-particle "--file=userfile-assumed-particle.gmad" "")
 simple_testing(bunch-userfile-below-rest-mass  "--file=userfile-below-rest-mass.gmad"  "")
 simple_testing(bunch-userfile-blank-lines      "--file=userfile-blank-lines.gmad"      "")
@@ -31,6 +32,8 @@ simple_fail(bunch-userfile-bad-nlinesSkip     "--file=userfile-bad-skipping.gmad
 simple_fail(bunch-userfile-bad-nlinesIgnore   "--file=userfile-bad-nlinesIgnore.gmad")
 simple_fail(bunch-userfile-bad-loop           "--file=userfile-bad-loop.gmad")
 simple_fail(bunch-userfile-bad-recreate-loop  "--file=userfile-bad-recreate-loop.gmad")
+
+simple_testing(option-executable-distrFileLoopNTimes  "--file=userfile-loop-ntimes.gmad --distrFileLoopNTimes=5" "")
 
 if (USE_GZSTREAM)
   simple_testing(bunch-userfile-gz "--file=userfile-gz.gmad" "")

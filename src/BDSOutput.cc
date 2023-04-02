@@ -95,8 +95,8 @@ const std::set<G4String> BDSOutput::protectedNames = {
 };
 
 BDSOutput::BDSOutput(const G4String& baseFileNameIn,
-		     const G4String& fileExtensionIn,
-		     G4int           fileNumberOffset):
+                     const G4String& fileExtensionIn,
+                     G4int           fileNumberOffset):
   BDSOutputStructures(BDSGlobalConstants::Instance()),
   baseFileName(baseFileNameIn),
   fileExtension(fileExtensionIn),
@@ -225,42 +225,42 @@ void BDSOutput::FillModel()
     {
       const auto& smpm = BDSAcceleratorModel::Instance()->ScorerMeshPlacementsMap();
       modelOutput->Fill(collimatorIndices,
-			collimatorIndicesByName,
-			collimatorInfo,
-			collimatorNames,
+                        collimatorIndicesByName,
+                        collimatorInfo,
+                        collimatorNames,
             cavityIndices,
             cavityIndicesByName,
             cavityInfo,
             cavityNames,
-			&smpm,
-			&materialIDToNameUnique,
-			storeTrajectory);
+                        &smpm,
+                        &materialIDToNameUnique,
+                        storeTrajectory);
       WriteModel();
       ClearStructuresModel();
     }
 }
 
 void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
-			    const G4int            turnsTaken)
+                            const G4int            turnsTaken)
 {
   const G4VUserPrimaryVertexInformation* vertexInfo = vertex->GetUserInformation();
   if (const auto vertexInfoBDS = dynamic_cast<const BDSPrimaryVertexInformation*>(vertexInfo))
     {
       primary->Fill(vertexInfoBDS->primaryVertex.local,
-		    vertexInfoBDS->momentum,
-		    vertexInfoBDS->charge,
-		    vertexInfoBDS->pdgID,
-		    turnsTaken,
-		    vertexInfoBDS->primaryVertex.beamlineIndex,
-		    vertexInfoBDS->nElectrons,
-		    vertexInfoBDS->mass,
-		    vertexInfoBDS->rigidity);
+                    vertexInfoBDS->momentum,
+                    vertexInfoBDS->charge,
+                    vertexInfoBDS->pdgID,
+                    turnsTaken,
+                    vertexInfoBDS->primaryVertex.beamlineIndex,
+                    vertexInfoBDS->nElectrons,
+                    vertexInfoBDS->mass,
+                    vertexInfoBDS->rigidity);
       primaryGlobal->Fill(vertexInfoBDS->primaryVertex.global);
     }
   else if (const auto vertexInfoBDSV = dynamic_cast<const BDSPrimaryVertexInformationV*>(vertexInfo))
     {// vector version - multiple primaries at primary vertex
       primary->Fill(vertexInfoBDSV,
-		    turnsTaken);
+                    turnsTaken);
       primaryGlobal->Fill(vertexInfoBDSV);
     }
   auto nextLinkedVertex = vertex->GetNext();
@@ -269,7 +269,7 @@ void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
 }
 
 void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
-				     const BDSParticleDefinition*       particle)
+                                     const BDSParticleDefinition*       particle)
 {
   G4bool isIon = particle->IsAnIon();
   G4int  ionA  = 0;
@@ -295,25 +295,25 @@ void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
 }
 
 void BDSOutput::FillEvent(const BDSEventInfo*                            info,
-			  const G4PrimaryVertex*                         vertex,
-			  const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
+                          const G4PrimaryVertex*                         vertex,
+                          const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
                           const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
                           const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
                           const BDSHitsCollectionSamplerLink*            samplerHitsLink,
-			  const BDSHitsCollectionEnergyDeposition*       energyLoss,
-			  const BDSHitsCollectionEnergyDeposition*       energyLossFull,
-			  const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
-			  const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
-			  const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
-			  const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
-			  const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
-			  const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
-			  const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
-			  const BDSTrajectoriesToStore*                  trajectories,
-			  const BDSHitsCollectionCollimator*             collimatorHits,
-			  const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
-			  const std::map<G4String, G4THitsMap<G4double>*>& scorerHits,
-			  const G4int                                    turnsTaken)
+                          const BDSHitsCollectionEnergyDeposition*       energyLoss,
+                          const BDSHitsCollectionEnergyDeposition*       energyLossFull,
+                          const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
+                          const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
+                          const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
+                          const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
+                          const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
+                          const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
+                          const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
+                          const BDSTrajectoriesToStore*                  trajectories,
+                          const BDSHitsCollectionCollimator*             collimatorHits,
+                          const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
+                          const std::map<G4String, G4THitsMap<G4double>*>& scorerHits,
+                          const G4int                                    turnsTaken)
 {
   // Clear integrals in this class -> here instead of BDSOutputStructures as
   // looped over here -> do only once as expensive as lots of hits
@@ -420,10 +420,10 @@ G4String BDSOutput::GetNextFileName()
       G4String original = newFileName; // could have nper file number suffix too
       G4int nTimeAppended = 1;
       while (BDS::FileExists(newFileName + fileExtension)) // always test with extension
-	{// if exists increment suffix integer
-	  newFileName = original + "-" + std::to_string(nTimeAppended);
-	  nTimeAppended +=1;
-	}
+        {// if exists increment suffix integer
+          newFileName = original + "-" + std::to_string(nTimeAppended);
+          nTimeAppended +=1;
+        }
     }
 
   // add extension now we've got the base part fixed
@@ -444,8 +444,8 @@ void BDSOutput::CalculateHistogramParameters()
     {// don't access a nullptr
       if (!flatBeamline->empty())
         {
-	  G4double sMax = flatBeamline->GetLastItem()->GetSPositionEnd();
-	  nbins = (int) std::ceil(sMax / binWidth); // round up to integer # of bins
+          G4double sMax = flatBeamline->GetLastItem()->GetSPositionEnd();
+          nbins = (int) std::ceil(sMax / binWidth); // round up to integer # of bins
         }
     }
   else
@@ -489,33 +489,33 @@ void BDSOutput::CreateHistograms()
   if (storePrimaryHistograms)
     {
       histIndices1D["PhitsPE"] = Create1DHistogram("PhitsPEHisto",
-						   "Primary Hits per Element",
-						   binedges);
+                                                   "Primary Hits per Element",
+                                                   binedges);
       histIndices1D["PlossPE"] = Create1DHistogram("PlossPEHisto",
-						   "Primary Loss per Element",
-						   binedges);
+                                                   "Primary Loss per Element",
+                                                   binedges);
     }
   if (storeELossHistograms)
     {
       histIndices1D["ElossPE"] = Create1DHistogram("ElossPEHisto",
-						   "Energy Loss per Element" ,
-						   binedges);
+                                                   "Energy Loss per Element" ,
+                                                   binedges);
     }
   if (storeELossVacuumHistograms)
     {
       histIndices1D["ElossVacuum"] = Create1DHistogram("ElossVacuumHisto",
-						       "Energy Loss in Vacuum",
-						       nbins,smin,smax);
+                                                       "Energy Loss in Vacuum",
+                                                       nbins,smin,smax);
       histIndices1D["ElossVacuumPE"] = Create1DHistogram("ElossVaccumPEHisto",
-							 "Energy Loss in Vacuum per Element" ,
-							 binedges);
+                                                         "Energy Loss in Vacuum per Element" ,
+                                                         binedges);
     }
 
   if (storeApertureImpactsHistograms)
     {
       histIndices1D["PFirstAI"] = Create1DHistogram("PFirstAIHisto",
-						    "Primary aperture impacts",
-						    nbins, smin, smax);
+                                                    "Primary aperture impacts",
+                                                    nbins, smin, smax);
     }
 
   // only create tunnel histograms if we build the tunnel
@@ -529,29 +529,29 @@ void BDSOutput::CreateHistograms()
     {
       binedges = tunnelBeamline->GetEdgeSPositions();
       histIndices1D["ElossTunnel"] = Create1DHistogram("ElossTunnelHisto",
-						       "Energy Loss in Tunnel",
-						       nbins, smin,smax);
+                                                       "Energy Loss in Tunnel",
+                                                       nbins, smin,smax);
       histIndices1D["ElossTunnelPE"] = Create1DHistogram("ElossTunnelPEHisto",
-							 "Energy Loss in Tunnel per Element",
-							 binedges);
+                                                         "Energy Loss in Tunnel per Element",
+                                                         binedges);
     }
 
   if (storeCollimatorInfo && nCollimators > 0)
     {
       std::vector<G4String> collHistNames = {"CollPhitsPE",
-					     "CollPlossPE",
-					     "CollElossPE",
-					     "CollPInteractedPE"};
+                                             "CollPlossPE",
+                                             "CollElossPE",
+                                             "CollPInteractedPE"};
       std::vector<G4String> collHistDesciptions = {"Primary Hits per Coll",
-						   "Primary Loss per Coll",
-						   "Energy Loss per Collimator",
-						   "Primary Interacted per Collimator"};
+                                                   "Primary Loss per Coll",
+                                                   "Energy Loss per Collimator",
+                                                   "Primary Interacted per Collimator"};
       for (G4int i = 0; i < (G4int)collHistNames.size(); i++)
-	{
-	  histIndices1D[collHistNames[i]] = Create1DHistogram(collHistNames[i],
-							      collHistDesciptions[i],
-							      nCollimators, 0, nCollimators);
-	}
+        {
+          histIndices1D[collHistNames[i]] = Create1DHistogram(collHistNames[i],
+                                                              collHistDesciptions[i],
+                                                              nCollimators, 0, nCollimators);
+        }
     }
 
   // one unique 'scorer' - single 3d histogram 3d
@@ -559,22 +559,22 @@ void BDSOutput::CreateHistograms()
     {
       const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
       if (!BDS::IsFinite(g->XMax() - g->XMin()))
-	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in x dimension - check options, xmin and xmax");}
+        {throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in x dimension - check options, xmin and xmax");}
       if (!BDS::IsFinite(g->YMax() - g->YMin()))
-	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in y dimension - check options, ymin and ymax");}
+        {throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in y dimension - check options, ymin and ymax");}
       if (!BDS::IsFinite(g->ZMax() - g->ZMin()))
-	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in z dimension - check options, zmin and zmax");}
+        {throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in z dimension - check options, zmin and zmax");}
       if (g->NBinsX() <= 0)
-	{throw BDSException(__METHOD_NAME__, "invalid number of bins in x dimension of 3D scoring histogram - check option, nbinsx");}
+        {throw BDSException(__METHOD_NAME__, "invalid number of bins in x dimension of 3D scoring histogram - check option, nbinsx");}
       if (g->NBinsY() <= 0)
-	{throw BDSException(__METHOD_NAME__, "invalid number of bins in y dimension of 3D scoring histogram - check option, nbinsx");}
+        {throw BDSException(__METHOD_NAME__, "invalid number of bins in y dimension of 3D scoring histogram - check option, nbinsx");}
       if (g->NBinsZ() <= 0)
-	{throw BDSException(__METHOD_NAME__, "invalid number of bins in z dimension of 3D scoring histogram - check option, nbinsx");}
+        {throw BDSException(__METHOD_NAME__, "invalid number of bins in z dimension of 3D scoring histogram - check option, nbinsx");}
 
       G4int scInd = Create3DHistogram("ScoringMap", "Energy Deposition",
-						 g->NBinsX(), g->XMin()/CLHEP::m, g->XMax()/CLHEP::m,
-						 g->NBinsY(), g->YMin()/CLHEP::m, g->YMax()/CLHEP::m,
-						 g->NBinsZ(), g->ZMin()/CLHEP::m, g->ZMax()/CLHEP::m);
+                                                 g->NBinsX(), g->XMin()/CLHEP::m, g->XMax()/CLHEP::m,
+                                                 g->NBinsY(), g->YMin()/CLHEP::m, g->YMax()/CLHEP::m,
+                                                 g->NBinsZ(), g->ZMin()/CLHEP::m, g->ZMax()/CLHEP::m);
       histIndices3D["ScoringMap"] = scInd;
     }
 
@@ -583,14 +583,14 @@ void BDSOutput::CreateHistograms()
   if (!scorerHistogramDefs.empty())
     {
       for (const auto& nameDef : scorerHistogramDefs)
-	{
-	  const auto def = nameDef.second;
+        {
+          const auto def = nameDef.second;
 
       // use safe output name without any slashes in the name
       G4int histID = -1;
 
-	  if (def.nBinsE <=1)
-	    {
+          if (def.nBinsE <=1)
+            {
 
           if (def.geometryType == "box"){
               histID = Create3DHistogram(def.outputName, def.outputName,
@@ -603,12 +603,12 @@ void BDSOutput::CreateHistograms()
                                          def.nBinsPhi, 0, 2*M_PI,
                                          def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m);}
 
-	      histIndices3D[def.uniqueName] = histID;
-	      histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
-	      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
-	    }
-	  else
-	    {
+              histIndices3D[def.uniqueName] = histID;
+              histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
+              // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
+            }
+          else
+            {
 
           if (def.geometryType == "box"){
                 histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
@@ -623,11 +623,11 @@ void BDSOutput::CreateHistograms()
                                            def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m,
                                            def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);}
 
-	      histIndices4D[def.uniqueName] = histID;
-	      histIndexToUnits4D[histID] = def.primitiveScorerUnitValue;
-	    }
-	  scorerCoordinateMaps.insert(std::make_pair(def.uniqueName, def.coordinateMapper));
-	}
+              histIndices4D[def.uniqueName] = histID;
+              histIndexToUnits4D[histID] = def.primitiveScorerUnitValue;
+            }
+          scorerCoordinateMaps.insert(std::make_pair(def.uniqueName, def.coordinateMapper));
+        }
     }
   
   G4int nBLMs = BDSBLMRegistry::Instance()->NBLMs();
@@ -645,7 +645,7 @@ void BDSOutput::CreateHistograms()
       std::set<G4String> blmHistoNames;
       std::map<G4String, G4String> psFullNameToPS;
       for (const auto& scorerNameComplete : psnamesc)
-        {	  
+        {
           if (BDS::StrContains(scorerNameComplete, "blm_"))
             {
               for (const auto& scorerName : psnames)
@@ -666,7 +666,7 @@ void BDSOutput::CreateHistograms()
           G4String blmHistName = "BLM_" + hn;
           G4int hind = Create1DHistogram(blmHistName, blmHistName, nBLMs, 0, nBLMs);
           histIndices1D[blmHistName] = hind;
-	      histIndexToUnits1D[hind]   = scorerUnits[hn];
+          histIndexToUnits1D[hind]   = scorerUnits[hn];
           for (const auto& kv : psFullNameToPS)
             {
               if (hn == kv.second)
@@ -707,24 +707,24 @@ void BDSOutput::FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler
   for (const auto& hc : hits)
     {
       if (!hc)
-	{continue;} // could be nullptr
+        {continue;} // could be nullptr
       if (!(hc->entries() > 0))
-	{continue;}
+        {continue;}
       for (int i = 0; i < (int) hc->entries(); i++)
-	{
-	  const BDSHitSampler* hit = (*hc)[i];
-	  G4int samplerID = hit->samplerID;
-	  G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
-	  samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-						 storeSamplerPolarCoords, storeSamplerIon,
-						 storeSamplerRigidity, storeSamplerKineticEnergy);
-	}
+        {
+          const BDSHitSampler* hit = (*hc)[i];
+          G4int samplerID = hit->samplerID;
+          G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
+          samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+                                                 storeSamplerPolarCoords, storeSamplerIon,
+                                                 storeSamplerRigidity, storeSamplerKineticEnergy);
+        }
     }
   // extra information - do only once at the end
   if (storeSamplerIon)
     {
       for (auto& sampler : samplerTrees)
-	{sampler->FillIon();}
+        {sampler->FillIon();}
     }
 }
 
@@ -733,24 +733,24 @@ void BDSOutput::FillSamplerCylinderHitsVector(const std::vector<BDSHitsCollectio
   for (const auto& hc : hits)
     {
       if (!hc)
-	{continue;} // could be nullptr
+        {continue;} // could be nullptr
       if (!(hc->entries() > 0))
-	{continue;}
+        {continue;}
       for (int i = 0; i < (int) hc->entries(); i++)
-	{
-	  const BDSHitSamplerCylinder* hit = (*hc)[i];
-	  G4int samplerID = hit->samplerID;
-	  G4int samplerVectorIndex = samplerIDToIndexCylinder[samplerID];
-	  samplerCTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-						  storeSamplerIon, storeSamplerRigidity,
-						  storeSamplerKineticEnergy);
-	}
+        {
+          const BDSHitSamplerCylinder* hit = (*hc)[i];
+          G4int samplerID = hit->samplerID;
+          G4int samplerVectorIndex = samplerIDToIndexCylinder[samplerID];
+          samplerCTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+                                                  storeSamplerIon, storeSamplerRigidity,
+                                                  storeSamplerKineticEnergy);
+        }
     }
   // extra information - do only once at the end
   if (storeSamplerIon)
     {
       for (auto& sampler : samplerCTrees)
-	{sampler->FillIon();}
+        {sampler->FillIon();}
     }
 }
 
@@ -759,24 +759,24 @@ void BDSOutput::FillSamplerSphereHitsVector(const std::vector<BDSHitsCollectionS
   for (const auto& hc : hits)
     {
       if (!hc)
-	{continue;} // could be nullptr
+        {continue;} // could be nullptr
       if (!(hc->entries() > 0))
-	{continue;}
+        {continue;}
       for (int i = 0; i < (int) hc->entries(); i++)
-	{
-	  const BDSHitSamplerSphere* hit = (*hc)[i];
-	  G4int samplerID = hit->samplerID;
-	  G4int samplerVectorIndex = samplerIDToIndexSphere[samplerID];
-	  samplerSTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-						  storeSamplerIon, storeSamplerRigidity,
-						  storeSamplerKineticEnergy);
-	}
+        {
+          const BDSHitSamplerSphere* hit = (*hc)[i];
+          G4int samplerID = hit->samplerID;
+          G4int samplerVectorIndex = samplerIDToIndexSphere[samplerID];
+          samplerSTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+                                                  storeSamplerIon, storeSamplerRigidity,
+                                                  storeSamplerKineticEnergy);
+        }
     }
   // extra information - do only once at the end
   if (storeSamplerIon)
     {
       for (auto& sampler : samplerSTrees)
-	{sampler->FillIon();}
+        {sampler->FillIon();}
     }
 }
 
@@ -791,15 +791,15 @@ void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits)
       G4int samplerID = hit->samplerID;
       G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
       samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
-					     storeSamplerPolarCoords, storeSamplerIon,
-					     storeSamplerRigidity, storeSamplerKineticEnergy);
+                                             storeSamplerPolarCoords, storeSamplerIon,
+                                             storeSamplerRigidity, storeSamplerKineticEnergy);
     }
 
   // extra information
   if (storeSamplerIon)
     {
       for (auto& sampler : samplerTrees)
-	{sampler->FillIon();}
+        {sampler->FillIon();}
     }
 }
 
@@ -820,14 +820,14 @@ void BDSOutput::FillSamplerHitsLink(const BDSHitsCollectionSamplerLink* hits)
   for (auto& sampler : samplerTrees)
     {
       if (firstSampler) // skip primaries (1st sampler) as it always has extras filled in
-	{firstSampler = false; continue;}
+        {firstSampler = false; continue;}
       if (storeSamplerIon)
-	{sampler->FillIon();}
+        {sampler->FillIon();}
     }
 }
 
 void BDSOutput::FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* hits,
-			       const LossType lossType)
+                               const LossType lossType)
 {
   switch (lossType)
     {
@@ -846,36 +846,36 @@ void BDSOutput::FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* hi
     {
     case BDSOutput::LossType::world:
       {
-	for (G4int i=0; i < nHits; i++)
-	  {
-	    BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
-	    energyDepositedWorld += hit->TotalEnergyWeighted()/CLHEP::GeV;
-	    if (storeELossWorld)
-	      {eLossWorld->Fill(hit);}
-	  }
+        for (G4int i=0; i < nHits; i++)
+          {
+            BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
+            energyDepositedWorld += hit->TotalEnergyWeighted()/CLHEP::GeV;
+            if (storeELossWorld)
+              {eLossWorld->Fill(hit);}
+          }
         break;
       }
     case BDSOutput::LossType::worldexit:
       {
-	for (G4int i = 0; i < nHits; i++)
-	  {
-	    BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
-	    energyWorldExit += hit->TotalEnergyWeighted()/CLHEP::GeV;
-	    energyWorldExitKinetic += hit->KineticEnergyWeighted()/CLHEP::GeV;
-	    if (storeELossWorld)
-	      {eLossWorldExit->Fill(hit);}
-	  }
+        for (G4int i = 0; i < nHits; i++)
+          {
+            BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
+            energyWorldExit += hit->TotalEnergyWeighted()/CLHEP::GeV;
+            energyWorldExitKinetic += hit->KineticEnergyWeighted()/CLHEP::GeV;
+            if (storeELossWorld)
+              {eLossWorldExit->Fill(hit);}
+          }
         break;
       }
     case BDSOutput::LossType::worldcontents:
       {
-	for (G4int i = 0; i < nHits; i++)
-	  {
-	    BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
-	    energyDepositedWorldContents += hit->TotalEnergyWeighted()/CLHEP::GeV;
-	    if (storeELossWorldContents)
-	      {eLossWorldContents->Fill(hit);}
-	  }
+        for (G4int i = 0; i < nHits; i++)
+          {
+            BDSHitEnergyDepositionGlobal* hit = (*hits)[i];
+            energyDepositedWorldContents += hit->TotalEnergyWeighted()/CLHEP::GeV;
+            if (storeELossWorldContents)
+              {eLossWorldContents->Fill(hit);}
+          }
         break;
       }
     default:
@@ -884,7 +884,7 @@ void BDSOutput::FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* hi
 }
 
 void BDSOutput::FillEnergyLoss(const BDSHitsCollectionEnergyDeposition* hits,
-			       const LossType lossType)
+                               const LossType lossType)
 {
   G4int nHits            = (G4int)hits->entries();
   if (nHits == 0)
@@ -914,58 +914,58 @@ void BDSOutput::FillEnergyLoss(const BDSHitsCollectionEnergyDeposition* hits,
       G4double sHit = hit->GetSHit()/CLHEP::m;
       G4double eW   = hit->GetEnergyWeighted()/CLHEP::GeV;
       switch (lossType)
-	{
-	case BDSOutput::LossType::energy:
-	  {
-	    energyDeposited += eW;
-	    if (storeELoss)
-	      {eLoss->Fill(hit);}
-	    if (storeELossHistograms)
-	      {
-		runHistos->Fill1DHistogram(indELoss,   sHit, eW);
-		evtHistos->Fill1DHistogram(indELoss,   sHit, eW);
-		runHistos->Fill1DHistogram(indELossPE, sHit, eW);
-		evtHistos->Fill1DHistogram(indELossPE, sHit, eW);
-	      }
-	    break;
-	  }
-	case BDSOutput::LossType::vacuum:
-	  {
-	    energyDepositedVacuum += eW;
-	    if (storeELossVacuum)
-	      {eLossVacuum->Fill(hit);}
-	    if (storeELossVacuumHistograms)
-	      {
-		evtHistos->Fill1DHistogram(indELossVacuum,   sHit, eW);
-		runHistos->Fill1DHistogram(indELossVacuumPE, sHit, eW);
-	      }
-	    break;
-	  }
-	case BDSOutput::LossType::tunnel:
-	  {
-	    energyDepositedTunnel += eW;
-	    if (storeELossTunnel)
-	      {eLossTunnel->Fill(hit);}
-	    if (storeELossTunnelHistograms)
-	      {
-		runHistos->Fill1DHistogram(indELossTunnel,   sHit, eW);
-		evtHistos->Fill1DHistogram(indELossTunnel,   sHit, eW);
-		runHistos->Fill1DHistogram(indELossTunnelPE, sHit, eW);
-		evtHistos->Fill1DHistogram(indELossTunnelPE, sHit, eW);
-	      }
-	    break;
-	  }
-	default:
-	  {break;} // only to prevent compiler warning
-	}
+        {
+        case BDSOutput::LossType::energy:
+          {
+            energyDeposited += eW;
+            if (storeELoss)
+              {eLoss->Fill(hit);}
+            if (storeELossHistograms)
+              {
+                runHistos->Fill1DHistogram(indELoss,   sHit, eW);
+                evtHistos->Fill1DHistogram(indELoss,   sHit, eW);
+                runHistos->Fill1DHistogram(indELossPE, sHit, eW);
+                evtHistos->Fill1DHistogram(indELossPE, sHit, eW);
+              }
+            break;
+          }
+        case BDSOutput::LossType::vacuum:
+          {
+            energyDepositedVacuum += eW;
+            if (storeELossVacuum)
+              {eLossVacuum->Fill(hit);}
+            if (storeELossVacuumHistograms)
+              {
+                evtHistos->Fill1DHistogram(indELossVacuum,   sHit, eW);
+                runHistos->Fill1DHistogram(indELossVacuumPE, sHit, eW);
+              }
+            break;
+          }
+        case BDSOutput::LossType::tunnel:
+          {
+            energyDepositedTunnel += eW;
+            if (storeELossTunnel)
+              {eLossTunnel->Fill(hit);}
+            if (storeELossTunnelHistograms)
+              {
+                runHistos->Fill1DHistogram(indELossTunnel,   sHit, eW);
+                evtHistos->Fill1DHistogram(indELossTunnel,   sHit, eW);
+                runHistos->Fill1DHistogram(indELossTunnelPE, sHit, eW);
+                evtHistos->Fill1DHistogram(indELossTunnelPE, sHit, eW);
+              }
+            break;
+          }
+        default:
+          {break;} // only to prevent compiler warning
+        }
       
       if (useScoringMap)
-	{
-	  G4double x = hit->Getx()/CLHEP::m;
-	  G4double y = hit->Gety()/CLHEP::m;
-	  evtHistos->Fill3DHistogram(indScoringMap, x, y, sHit, eW);
-	  runHistos->Fill3DHistogram(indScoringMap, x, y, sHit, eW);
-	}
+        {
+          G4double x = hit->Getx()/CLHEP::m;
+          G4double y = hit->Gety()/CLHEP::m;
+          evtHistos->Fill3DHistogram(indScoringMap, x, y, sHit, eW);
+          runHistos->Fill3DHistogram(indScoringMap, x, y, sHit, eW);
+        }
     }
 
   if (storeCollimatorInfo &&
@@ -980,19 +980,19 @@ void BDSOutput::FillPrimaryHit(const std::vector<const BDSTrajectoryPointHit*>& 
   for (auto phit : primaryHits)
     {
       if (!phit)
-	{continue;}
+        {continue;}
       pFirstHit->Fill(phit);
       const G4double preStepSPosition = phit->point->GetPreS() / CLHEP::m;
       if (storePrimaryHistograms)
-	{
-	  runHistos->Fill1DHistogram(histIndices1D["Phits"], preStepSPosition);
-	  evtHistos->Fill1DHistogram(histIndices1D["Phits"], preStepSPosition);
-	  runHistos->Fill1DHistogram(histIndices1D["PhitsPE"], preStepSPosition);
-	  evtHistos->Fill1DHistogram(histIndices1D["PhitsPE"], preStepSPosition);
-	  
-	  if (storeCollimatorInfo && nCollimators > 0)
-	    {CopyFromHistToHist1D("PhitsPE", "CollPhitsPE", collimatorIndices);}
-	}
+        {
+          runHistos->Fill1DHistogram(histIndices1D["Phits"], preStepSPosition);
+          evtHistos->Fill1DHistogram(histIndices1D["Phits"], preStepSPosition);
+          runHistos->Fill1DHistogram(histIndices1D["PhitsPE"], preStepSPosition);
+          evtHistos->Fill1DHistogram(histIndices1D["PhitsPE"], preStepSPosition);
+          
+          if (storeCollimatorInfo && nCollimators > 0)
+            {CopyFromHistToHist1D("PhitsPE", "CollPhitsPE", collimatorIndices);}
+        }
     }
 }
 
@@ -1001,19 +1001,19 @@ void BDSOutput::FillPrimaryLoss(const std::vector<const BDSTrajectoryPointHit*>&
   for (auto ploss : primaryLosses)
     {
       if (!ploss)
-	{continue;}
+        {continue;}
       pLastHit->Fill(ploss);
       const G4double postStepSPosition = ploss->point->GetPostS() / CLHEP::m;
       if (storePrimaryHistograms)
-	{
-	  runHistos->Fill1DHistogram(histIndices1D["Ploss"], postStepSPosition);
-	  evtHistos->Fill1DHistogram(histIndices1D["Ploss"], postStepSPosition);
-	  runHistos->Fill1DHistogram(histIndices1D["PlossPE"], postStepSPosition);
-	  evtHistos->Fill1DHistogram(histIndices1D["PlossPE"], postStepSPosition);
-	  
-	  if (storeCollimatorInfo && nCollimators > 0)
-	    {CopyFromHistToHist1D("PlossPE", "CollPlossPE", collimatorIndices);}
-	}
+        {
+          runHistos->Fill1DHistogram(histIndices1D["Ploss"], postStepSPosition);
+          evtHistos->Fill1DHistogram(histIndices1D["Ploss"], postStepSPosition);
+          runHistos->Fill1DHistogram(histIndices1D["PlossPE"], postStepSPosition);
+          evtHistos->Fill1DHistogram(histIndices1D["PlossPE"], postStepSPosition);
+          
+          if (storeCollimatorInfo && nCollimators > 0)
+            {CopyFromHistToHist1D("PlossPE", "CollPlossPE", collimatorIndices);}
+        }
     }
 }
 
@@ -1024,7 +1024,7 @@ void BDSOutput::FillTrajectories(const BDSTrajectoriesToStore* trajectories)
 }
 
 void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
-				   const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints)
+                                   const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints)
 {
   G4int nHits = (G4int)hits->entries();
   for (G4int i = 0; i < nHits; i++)
@@ -1032,9 +1032,9 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
       BDSHitCollimator* hit = (*hits)[i];
       G4int collimatorIndex = hit->collimatorIndex;      
       collimators[collimatorIndex]->Fill(hit,
-					 collimatorInfo[collimatorIndex],
-					 collimatorDifferences[collimatorIndex],
-					 storeCollimatorHits);  // this includes the || storeCollimatorHitsLinks || storeCollimatorHitsIons);
+                                         collimatorInfo[collimatorIndex],
+                                         collimatorDifferences[collimatorIndex],
+                                         storeCollimatorHits);  // this includes the || storeCollimatorHitsLinks || storeCollimatorHitsIons);
     }
 
   // identify whether the primary loss point was in a collimator
@@ -1042,21 +1042,21 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
   if (!primaryLossPoints.empty())
     {
       for (auto primaryLossPoint : primaryLossPoints)
-	{
-	  if (primaryLossPoint->point->GetBeamLine() && nCollimators > 0)
-	    {
-	      G4int lossPointBLInd = primaryLossPoint->point->GetBeamLineIndex(); // always the mass world index
-	      auto result = std::find(collimatorIndices.begin(), collimatorIndices.end(), lossPointBLInd);
-	      if (result != collimatorIndices.end())
-		{
-		  G4int collIndex = (int) (result - collimatorIndices.begin());
-		  collimators[collIndex]->SetPrimaryStopped(true);
-		  collimators[collIndex]->primaryInteracted = true;
-		  // it must've interacted if it stopped - could be that we kill
-		  // secondaries and there's no energy deposition therefore not identified
-		  // as primaryInteracted=true in BDSOutputROOTEventCollimator::Fill()
-		}
-	    }
+        {
+          if (primaryLossPoint->point->GetBeamLine() && nCollimators > 0)
+            {
+              G4int lossPointBLInd = primaryLossPoint->point->GetBeamLineIndex(); // always the mass world index
+              auto result = std::find(collimatorIndices.begin(), collimatorIndices.end(), lossPointBLInd);
+              if (result != collimatorIndices.end())
+                {
+                  G4int collIndex = (int) (result - collimatorIndices.begin());
+                  collimators[collIndex]->SetPrimaryStopped(true);
+                  collimators[collIndex]->primaryInteracted = true;
+                  // it must've interacted if it stopped - could be that we kill
+                  // secondaries and there's no energy deposition therefore not identified
+                  // as primaryInteracted=true in BDSOutputROOTEventCollimator::Fill()
+                }
+            }
         }
     }
   
@@ -1064,7 +1064,7 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
   if (storeCollimatorHitsLinks || storeCollimatorHitsIons)
     {
       for (auto collimator : collimators)
-	{collimator->FillExtras(storeCollimatorHitsIons, storeCollimatorHitsLinks);}
+        {collimator->FillExtras(storeCollimatorHitsIons, storeCollimatorHitsLinks);}
     }
 
   // after all collimator hits have been filled, we summarise whether the primary
@@ -1078,7 +1078,7 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
   for (const auto collimator : collimators)
     {
       if (collimator->primaryInteracted)
-	{nCollimatorsInteracted += 1;}
+        {nCollimatorsInteracted += 1;}
     }
 }
 
@@ -1097,17 +1097,17 @@ void BDSOutput::FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits
       energyImpactingAperture += eW;
       energyImpactingApertureKinetic += (hit->preStepKineticEnergy * hit->weight ) / CLHEP::GeV;
       if (hit->parentID == 0)
-	{
-	  nPrimaryImpacts += 1;
-	  // only store one primary aperture hit in this histogram even if they were multiple
-	  if (storeApertureImpactsHistograms && nPrimaryImpacts == 1)
-	    {evtHistos->Fill1DHistogram(histIndex, hit->S / CLHEP::m);}
+        {
+          nPrimaryImpacts += 1;
+          // only store one primary aperture hit in this histogram even if they were multiple
+          if (storeApertureImpactsHistograms && nPrimaryImpacts == 1)
+            {evtHistos->Fill1DHistogram(histIndex, hit->S / CLHEP::m);}
         }
       // hits are generated in order as the particle progresses
       // through the model, so the first one in the collection
       // for the primary is the first one in S.
       if (storeApertureImpacts)
-	{apertureImpacts->Fill(hit, nPrimaryImpacts==1);}
+        {apertureImpacts->Fill(hit, nPrimaryImpacts==1);}
     }
 }
 
@@ -1130,7 +1130,7 @@ void BDSOutput::FillScorerHits(const std::map<G4String, G4THitsMap<G4double>*>& 
 }
 
 void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
-					 const G4THitsMap<G4double>* hitMap)
+                                         const G4THitsMap<G4double>* hitMap)
 {
   if (BDS::StrContains(histogramDefName, "blm_"))
     {return FillScorerHitsIndividualBLM(histogramDefName, hitMap);}
@@ -1146,14 +1146,14 @@ void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
 #if G4VERSION < 1039
       for (const auto& hit : *hitMap->GetMap())
 #else
-	for (const auto& hit : *hitMap)
+      for (const auto& hit : *hitMap)
 #endif
-	  {
-	    // convert from scorer global index to 3d i,j,k index of 3d scorer
-	    mapper.IJKLFromGlobal(hit.first, x,y,z,e);
-	    G4int rootGlobalIndex = (hist->GetBin(x + 1, y + 1, z + 1)); // convert to root system (add 1 to avoid underflow bin)
-	    evtHistos->Set3DHistogramBinContent(histIndex, rootGlobalIndex, *hit.second / unit);
-	  }
+        {
+          // convert from scorer global index to 3d i,j,k index of 3d scorer
+          mapper.IJKLFromGlobal(hit.first, x,y,z,e);
+          G4int rootGlobalIndex = (hist->GetBin(x + 1, y + 1, z + 1)); // convert to root system (add 1 to avoid underflow bin)
+          evtHistos->Set3DHistogramBinContent(histIndex, rootGlobalIndex, *hit.second / unit);
+        }
       runHistos->AccumulateHistogram3D(histIndex, evtHistos->Get3DHistogram(histIndex));
     }
   
@@ -1167,15 +1167,15 @@ void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
 #if G4VERSION < 1039
       for (const auto& hit : *hitMap->GetMap())
 #else
-	for (const auto& hit : *hitMap)
+      for (const auto& hit : *hitMap)
 #endif
-	  {
-	    // convert from scorer global index to 4d i,j,k,e index of 4d scorer
-	    mapper.IJKLFromGlobal(hit.first, x,y,z,e);
-	    evtHistos->Set4DHistogramBinContent(histIndex, x, y, z, e - 1, *hit.second / unit); // - 1 to go back to the Boost Histogram indexing (-1 for the underflow bin)
-	  }
+        {
+          // convert from scorer global index to 4d i,j,k,e index of 4d scorer
+          mapper.IJKLFromGlobal(hit.first, x,y,z,e);
+          evtHistos->Set4DHistogramBinContent(histIndex, x, y, z, e - 1, *hit.second / unit); // - 1 to go back to the Boost Histogram indexing (-1 for the underflow bin)
+        }
       runHistos->AccumulateHistogram4D(histIndex, evtHistos->Get4DHistogram(histIndex));
-    } 
+    }
 }
 
 void BDSOutput::FillScorerHitsIndividualBLM(const G4String& histogramDefName,
@@ -1214,8 +1214,8 @@ void BDSOutput::FillRunInfoAndUpdateHeader(const BDSEventInfo* info,
 }
 
 void BDSOutput::CopyFromHistToHist1D(const G4String& sourceName,
-				     const G4String& destinationName,
-				     const std::vector<G4int>& indices)
+                                     const G4String& destinationName,
+                                     const std::vector<G4int>& indices)
 {
   TH1D* sourceEvt      = evtHistos->Get1DHistogram(histIndices1D[sourceName]);
   TH1D* destinationEvt = evtHistos->Get1DHistogram(histIndices1D[destinationName]);

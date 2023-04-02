@@ -95,15 +95,15 @@ void BDSBeamPipeFactoryPointsFile::GeneratePoints(G4double, G4double, G4double, 
       auto ur = vertexNormals[i];
       beamPipeInnerEdge.emplace_back(       vacuumEdge[i] + ur*lengthSafetyLarge);
       beamPipeOuterEdge.emplace_back(       vacuumEdge[i] + ur*(lengthSafetyLarge   + beamPipeThickness));
-      containerEdge.emplace_back(           vacuumEdge[i] + ur*(2*lengthSafetyLarge + beamPipeThickness));
-      containerSubtractionEdge.emplace_back(vacuumEdge[i] + ur*(3*lengthSafetyLarge + beamPipeThickness));
+      containerEdge.emplace_back(           vacuumEdge[i] + ur*(5*lengthSafetyLarge + beamPipeThickness));
+      containerSubtractionEdge.emplace_back(vacuumEdge[i] + ur*(7*lengthSafetyLarge + beamPipeThickness));
       maximumRadius = std::max(maximumRadius, containerSubtractionEdge.back().mag());
     }
 }
 
 G4double BDSBeamPipeFactoryPointsFile::CalculateIntersectionRadius(G4double, G4double, G4double, G4double, G4double)
 {
-  return maximumRadius;
+  return maximumRadius*1.01; // 1% margin on absolute size
 }
 
 G4double BDSBeamPipeFactoryPointsFile::Determinant(const G4TwoVector& v1,

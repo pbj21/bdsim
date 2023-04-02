@@ -74,7 +74,7 @@ void BDSBunchEventGenerator::SetOptions(const BDSParticleDefinition* beamParticl
 					G4Transform3D                beamlineTransformIn,
 					const G4double               beamlineSIn)
 {
-  BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
+  BDSBunchFileBased::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   
   eventGeneratorNEventsSkip = beam.eventGeneratorNEventsSkip;
   eventGeneratorMinX  = beam.eventGeneratorMinX * CLHEP::m;

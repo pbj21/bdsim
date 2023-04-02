@@ -27,7 +27,6 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   stopTime(time_t()),
   durationWall(0),
   durationCPU(0),
-  seedStateAtStart(""),
   index(-1),
   aborted(false),
   primaryHitMachine(false),
@@ -45,7 +44,8 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   energyKilled(0),
   energyTotal(0),
   nCollimatorsInteracted(0),
-  nTracks(0)
+  nTracks(0),
+  bunchIndex(0)
 {;}
 
 BDSOutputROOTEventInfo::~BDSOutputROOTEventInfo()
@@ -76,6 +76,7 @@ void BDSOutputROOTEventInfo::Flush()
   energyTotal           = 0;
   nCollimatorsInteracted = 0;
   nTracks                = 0;
+  bunchIndex             = 0;
 }
 
 void BDSOutputROOTEventInfo::Fill(const BDSOutputROOTEventInfo* other)
@@ -106,4 +107,5 @@ void BDSOutputROOTEventInfo::Fill(const BDSOutputROOTEventInfo* other)
   energyTotal             = other->energyTotal;
   nCollimatorsInteracted  = other->nCollimatorsInteracted;
   nTracks                 = other->nTracks;
+  bunchIndex              = other->bunchIndex;
 }

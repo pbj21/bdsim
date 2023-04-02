@@ -41,6 +41,7 @@ simple_testing(io-sampler-extras-rigidity-ion-beam "--file=sc_samplerextras_rigi
 simple_testing(io-eloss-extras    "--file=sc_elossextras.gmad" "")
 simple_testing(io-eloss-extras2   "--file=sc_elossextras2.gmad" "")
 simple_testing(io-eloss-extras3   "--file=sc_elossextras3.gmad" "")
+simple_testing(io-eloss-world-integrals-only "--file=eloss-world-integrals-only.gmad" "")
 simple_testing(io-no-particledata "--file=sc_no_particle_data.gmad --ngenerate=1" "")
 simple_testing(io-no-model        "--file=sc_no_model.gmad --ngenerate=1" "")
 simple_testing(io-no-eloss        "--file=sc_no_eloss.gmad --ngenerate=1" "")

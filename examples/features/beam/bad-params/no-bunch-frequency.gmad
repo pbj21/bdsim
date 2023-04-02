@@ -1,0 +1,7 @@
+include ../gauss.gmad;
+
+! neither bunchFrequency or bunchPeriod are specified, one of
+! which is required
+beam,  eventsPerBunch=10;
+
+option, ngenerate=30;

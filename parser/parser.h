@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "field.h"
 #include "fastlist.h"
 #include "material.h"
+#include "modulator.h"
 #include "options.h"
 #include "parameters.h"
 #include "physicsbiasing.h"
@@ -109,11 +110,13 @@ namespace GMAD
     /// removes sublines from the beamline into one LINE.
     void expand_line(FastList<Element>& target,
                      const std::string& name,
-                     std::string        start = "",
-                     std::string        end   = "");
+                     const std::string& start = "",
+                     const std::string& end   = "");
 
     /// Expand the main beamline as defined by the use command.
-    void expand_line(const std::string& name, std::string start, std::string end);
+    void expand_line(const std::string& name,
+                     const std::string& start,
+                     const std::string& end);
 
     /// Find the sequence defined in the parser and expand it if not already
     /// done so. Cache result in map of fastlists.
@@ -227,35 +230,26 @@ namespace GMAD
     Options options;
     /// Beamline
     FastList<Element>   beamline_list;
-    /// List of parser defined atoms
+    /// @{ List of parser defined instances of that object.
     FastList<Atom>   atom_list;
-    FastList<NewColour> colour_list; ///< List of parser defined colours.
-    FastList<Crystal> crystal_list;  ///< List of parser defined crystals.
+    FastList<NewColour> colour_list;
+    FastList<Crystal> crystal_list;
     FastList<CoolingChannel> coolingchannel_list;
-    /// List of parser defined fields
     FastList<Field>  field_list;
-    /// List of parser defined materials
     FastList<Material> material_list;
-    /// List of parser defined query objects
     FastList<Query> query_list;
-    /// List of parser defined regions
     FastList<Region> region_list;
-    /// List of parser defined tunnels
     FastList<Tunnel> tunnel_list;
-    /// List of parser defined cross section biasing objects
     FastList<PhysicsBiasing> xsecbias_list;
-    /// List of parser defined placements.
     FastList<Placement> placement_list;
-    /// List of parser defined rf cavity models
     FastList<CavityModel> cavitymodel_list;
-    /// List of parser defined sampler placements.
     FastList<SamplerPlacement> samplerplacement_list;
     FastList<Scorer> scorer_list;
     FastList<ScorerMesh> scorermesh_list;
-    /// List of parser defined apertures.
     FastList<Aperture> aperture_list;
-    /// List of parser defined blms.
     FastList<BLMPlacement> blm_list;
+    FastList<Modulator> modulator_list;
+    /// @}
 
   private:
     // *****************
@@ -271,39 +265,27 @@ namespace GMAD
     /// vector of defined lines for memory management
     std::vector<std::list<Element>*> allocated_lines;
 
-    /// Parameters to copy to Element
+    /// @{ The one instance we fill before appending to a list.
     Parameters params;
-    /// Atom instance;
     Atom atom;
-    NewColour  colour; ///< NewColour instance.
-    Crystal crystal;   ///< Crystal instance.
+    NewColour colour;
+    Crystal crystal;
     CoolingChannel coolingchannel;
-    /// Field instance;
     Field field;
-    /// Material instance;
     Material material;
-    /// PhysicsBiasing instance 
     PhysicsBiasing xsecbias;
-    /// Placement instance
     Placement placement;
-    /// Query instance
     Query query;
-    /// Region instance;
     Region region;
-    /// Tunnel instance
     Tunnel tunnel;
-    /// RF Cavity model instance
     CavityModel cavitymodel;
-    /// Sampler placement instance
     SamplerPlacement samplerplacement;
-    /// Scorer instance.
     Scorer scorer;
-    /// ScorerMesh instance.
     ScorerMesh scorermesh;
-    /// Aperture instance.
     Aperture aperture;
-    /// BLM instance.
     BLMPlacement blm;
+    Modulator modulator;
+    /// @}
     
     /// Find object by name in list
     template <class C>

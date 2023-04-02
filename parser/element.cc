@@ -84,6 +84,7 @@ void Element::PublishMembers()
   publish("frequency", &Element::frequency);
   publish("phase",     &Element::phase);
   publish("tOffset",   &Element::tOffset);
+  publish("fieldModulator", &Element::fieldModulator);
 
   // rmatrix elements, only 4x4
   publish("kick1",     &Element::kick1);
@@ -246,6 +247,7 @@ void Element::PublishMembers()
   publish("markAsCollimator",    &Element::markAsCollimator);
   publish("spec",                &Element::spec);
   publish("cavityModel",         &Element::cavityModel);
+  publish("cavityFieldType",     &Element::cavityFieldType);
 
   publish("dicomDataPath",       &Element::dicomDataPath);
   publish("dicomDataFile",       &Element::dicomDataFile);
@@ -419,10 +421,13 @@ void Element::print(int ident) const
     case ElementType::_TKICKER:
     case ElementType::_UNDULATOR:
     case ElementType::_RF:
+    case ElementType::_RFX:
+    case ElementType::_RFY:
       {
         std::cout << "scaling = " << scaling << std::endl;
         if (scalingFieldOuter != 1)
           {std::cout << "scalingFieldOuter = " << scalingFieldOuter << std::endl;}
+	    std::cout << "fieldModulator = \"" << fieldModulator << "\"" << std::endl;
         break;
       }
     case ElementType::_MUONCOOLER:
@@ -474,6 +479,7 @@ void Element::flush()
   frequency = 0;
   phase     = 0;
   tOffset   = 0;
+  fieldModulator = "";
 
   // rmatrix
   kick1 = 0;
@@ -610,6 +616,7 @@ void Element::flush()
   markAsCollimator = false;
   spec = "";
   cavityModel = "";
+  cavityFieldType = "constantinz";
   
   dicomDataFile = "";
   dicomDataPath = "";

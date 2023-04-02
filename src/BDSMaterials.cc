@@ -1066,14 +1066,14 @@ G4Material* BDSMaterials::GetMaterial(G4String material) const
 
       // search predefined + parser materials
       if (materialNames.count(material) == 1)
-	{return materials.at(material);}
+        {return materials.at(material);}
       else if (aliasNames.count(material) == 1)
-	{return aliases.at(material);}
+        {return aliases.at(material);}
       else
         {
           // search aliases
-	  if (externalMaterialNames.count(material) == 1)
-	    {return externalMaterials.at(material);}
+          if (externalMaterialNames.count(material) == 1)
+            {return externalMaterials.at(material);}
           else
             {// can't find it -> warn and exit
               ListMaterials();
@@ -1095,7 +1095,7 @@ void BDSMaterials::CheckForConflictingMaterialsAfterLoad(const G4String& geometr
       G4String name = mat->GetName();
       auto search = nameCount.find(name);
       if (search == nameCount.end())
-	{nameCount[name] = 0;}
+        {nameCount[name] = 0;}
       nameCount[name] += 1;
       check = check || nameCount[name] > 1; // flag for efficiency - don't loop again if we don't need to
     }
@@ -1103,16 +1103,19 @@ void BDSMaterials::CheckForConflictingMaterialsAfterLoad(const G4String& geometr
   if (check)
     {
       for (const auto& nc: nameCount)
-	{
-	  if (nc.second > 1)
-	    {
-	      G4String msg = "the material \"" + nc.first + "\" has been defined more\n";
-	      msg += "than once now and will cause the wrong material to be used for any future usages.\n";
-	      msg += "Error caused by GDML file \""+geometryFileName+"\" in component \""+componentName+"\"\n";
-	      msg += "This is most likely due to a material name in the GDML file conflicting with a predefined one in BDSIM.";
-	      throw BDSException(__METHOD_NAME__, msg);
-	    }
-	}
+        {
+          if (nc.second > 1)
+            {
+              G4String msg = "the material \"" + nc.first + "\" has been defined more\n";
+              msg += "than once now and will cause the wrong material to be used for any future usages.\n";
+              msg += "Error caused by GDML file \""+geometryFileName+"\" in component \""+componentName+"\"\n";
+              msg += "This is most likely due to a material name in the GDML file conflicting with a predefined one in BDSIM.";
+              if (BDS::StartsWith(BDS::LowerCase(nc.first), "g4_"))
+                {BDS::Warning(msg);} // only warn for a NIST one as ultimately it won't be that different even if redefined from reloading
+              else
+                {throw BDSException(__METHOD_NAME__, msg);}
+            }
+        }
     }
 }
 
@@ -1133,12 +1136,12 @@ void BDSMaterials::CacheMaterialsFromGDML(const std::map<G4String, G4Material*>&
         {continue;} // a Geant4 material or a BDSIM one
 
       if (externalMaterialNames.count(nameLower) == 1)
-	{
-	  G4String msg = "the material \""+kv.first+"\" is already defined and has\n";
-	  msg += "already been loaded from a previous GDML file(s) and is ambiguous.\n";
-	  msg += "Please prepend with the BDSIM element used to load the file to be explicit.";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
+        {
+          G4String msg = "the material \""+kv.first+"\" is already defined and has\n";
+          msg += "already been loaded from a previous GDML file(s) and is ambiguous.\n";
+          msg += "Please prepend with the BDSIM element used to load the file to be explicit.";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
       
       // it's ok for a GDML material to have a material name the same as a BDSIM
       // alias as only the real name will conflict
@@ -1160,16 +1163,16 @@ void BDSMaterials::AddElement(G4Element* element, const G4String& symbol)
 }
 
 void BDSMaterials::AddElement(const G4String& name,
-			      const G4String& symbol,
-			      G4double Z,
-			      G4double A)
+                              const G4String& symbol,
+                              G4double Z,
+                              G4double A)
 {
   G4Element* tmpElement = new G4Element(name, symbol, Z, A*CLHEP::g/CLHEP::mole);
   AddElement(tmpElement, symbol);
 }
 
 void BDSMaterials::DensityCheck(G4double  density,
-				const G4String& materialName) const
+                                const G4String& materialName) const
 {
   if (density > 1e2)
     {// so greater than 100g / cm3, the densest natural material is around 23g/cm3
@@ -1206,7 +1209,7 @@ void BDSMaterials::PrintBasicMaterialMassFraction(G4Material* material) const
   for (G4int i = 0; i < (G4int)material->GetNumberOfElements(); i++)
     {
       G4cout << (*(material->GetElementVector()))[i]->GetName() << "\t "
-	     << (material->GetFractionVector()[i])/CLHEP::perCent << " %"  << G4endl;
+             << (material->GetFractionVector()[i])/CLHEP::perCent << " %"  << G4endl;
     }
 }
 
@@ -1228,7 +1231,7 @@ void BDSMaterials::ListMaterials() const
     {
       G4cout << "Extra defined elements are:" << G4endl;
       for (const auto& element : elements)
-	{G4cout << std::left << std::setw(12) << element.second->GetName() << " - " << element.second->GetSymbol() << G4endl;}
+        {G4cout << std::left << std::setw(12) << element.second->GetName() << " - " << element.second->GetSymbol() << G4endl;}
       G4cout << G4endl;
     }
   
@@ -1238,19 +1241,19 @@ void BDSMaterials::ListMaterials() const
       G4cout << material.first;
       G4String realName = material.second->GetName();
       if (realName != material.first)
-	{G4cout << " (" << material.second->GetName() << ")" << G4endl;}
+        {G4cout << " (" << material.second->GetName() << ")" << G4endl;}
       else
-	{G4cout << G4endl;}
+        {G4cout << G4endl;}
 
       auto aliasSearch = materialToAliases.find(material.second);
       if (aliasSearch != materialToAliases.end())
-	{
-	  const auto v = aliasSearch->second;
-	  G4cout << "Aliases: ";
-	  for (const auto& n : v)
-	    {G4cout << "\"" << n << "\" ";}
-	  G4cout << G4endl;
-	}
+        {
+          const auto v = aliasSearch->second;
+          G4cout << "Aliases: ";
+          for (const auto& n : v)
+            {G4cout << "\"" << n << "\" ";}
+          G4cout << G4endl;
+        }
     }
   G4cout << G4endl;
   G4cout << "All aliases: (alias, real name)" << G4endl;
@@ -1309,19 +1312,19 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
     {
       G4State itsState;
       if      (it.state=="solid")
-	{itsState = kStateSolid;}
+        {itsState = kStateSolid;}
       else if (it.state=="liquid")
-	{itsState = kStateLiquid;}
+        {itsState = kStateLiquid;}
       else if (it.state=="gas")
-	{itsState = kStateGas;}
+        {itsState = kStateGas;}
       else
-	{
-	  G4cout << "Unknown material state "<< it.state 
-		 << ", setting it to default (solid)"
-		 << G4endl;
-	  it.state="solid";
-	  itsState = kStateSolid;
-	}
+        {
+          G4cout << "Unknown material state "<< it.state 
+                 << ", setting it to default (solid)"
+                 << G4endl;
+          it.state="solid";
+          itsState = kStateSolid;
+        }
       
 #ifdef BDSDEBUG  
       G4cout << "---->adding Material, ";
@@ -1329,46 +1332,46 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
 #endif
       
       if(it.Z != 0)
-	{
-	  AddMaterial(it.name,
-		      it.Z,
-		      it.A,
-		      it.density,
-		      itsState,
-		      it.temper,
-		      it.pressure);
-	}
+        {
+          AddMaterial(it.name,
+                      it.Z,
+                      it.A,
+                      it.density,
+                      itsState,
+                      it.temper,
+                      it.pressure);
+        }
       else if(!(it.components.empty()))
-	{
-	  std::list<G4String> tempComponents;
-	  for (const auto& jt : it.components)
-	    {tempComponents.emplace_back(G4String(jt));}
-	  
-	  if(it.componentsWeights.size()==it.components.size())
-	    {
-	      AddMaterial(it.name,
-			  it.density,
-			  itsState,
-			  it.temper,
-			  it.pressure,
-			  tempComponents,
-			  it.componentsWeights);
-	    }
-	  else if(it.componentsFractions.size()==it.components.size())
-	    {
-	      AddMaterial(it.name,
-			  it.density,
-			  itsState,
-			  it.temper,
-			  it.pressure,
-			  tempComponents,
-			  it.componentsFractions);
-	    }
-	  else
-	    {throw BDSException(__METHOD_NAME__, "Badly defined material - number of components is not equal to number of weights or mass fractions!");}
-	}
+        {
+          std::list<G4String> tempComponents;
+          for (const auto& jt : it.components)
+            {tempComponents.emplace_back(G4String(jt));}
+          
+          if(it.componentsWeights.size()==it.components.size())
+            {
+              AddMaterial(it.name,
+                          it.density,
+                          itsState,
+                          it.temper,
+                          it.pressure,
+                          tempComponents,
+                          it.componentsWeights);
+            }
+          else if(it.componentsFractions.size()==it.components.size())
+            {
+              AddMaterial(it.name,
+                          it.density,
+                          itsState,
+                          it.temper,
+                          it.pressure,
+                          tempComponents,
+                          it.componentsFractions);
+            }
+          else
+            {throw BDSException(__METHOD_NAME__, "Badly defined material - number of components is not equal to number of weights or mass fractions!");}
+        }
       else
-	{throw BDSException(__METHOD_NAME__, "Badly defined material - need more information!");}
+        {throw BDSException(__METHOD_NAME__, "Badly defined material - need more information!");}
     }
   if (verbose || debug)
     {G4cout << "size of material list: "<< BDSParser::Instance()->GetMaterials().size() << G4endl;}

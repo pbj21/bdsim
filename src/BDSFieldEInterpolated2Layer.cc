@@ -50,3 +50,8 @@ G4ThreeVector BDSFieldEInterpolated2Layer::GetField(const G4ThreeVector& positio
   else
     {return mainField->GetFieldTransformed(position, t);}
 }
+
+G4bool BDSFieldEInterpolated2Layer::TimeVarying() const
+{
+  return mainField->TimeVarying() || subField->TimeVarying();
+}

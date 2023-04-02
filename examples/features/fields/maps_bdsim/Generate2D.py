@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
@@ -37,8 +35,8 @@ def main():
     fd.Write('2dexample_dp.dat')
 
     # compress the result
-    _check_call(['gzip', "2dexample.dat"])
-    _check_call(['gzip', "2dexample_dp.dat"])
+    _check_call(['gzip', "-f", "2dexample.dat"])
+    _check_call(['gzip', "-f", "2dexample_dp.dat"])
     f.Write('2dexample.dat') # write again to keep original
     
     #Plot(data)

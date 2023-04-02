@@ -108,8 +108,7 @@ G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material,
   G4String prefixToStripFromNameLower = BDS::LowerCase(prefixToStripFromName);
   if (!prefixToStripFromName.empty() && BDS::StrContains(materialName, prefixToStripFromNameLower))
     {materialName.erase(0, prefixToStripFromName.size());}
-  
-  //G4cout << "final material name " << materialName << G4endl;
+
   auto search = defines.find(materialName);
   if (search != defines.end())
     {return search->second;}

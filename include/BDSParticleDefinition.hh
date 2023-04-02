@@ -20,6 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSPARTICLEDEFINITION_H
 #include "BDSIonDefinition.hh"
 
+#include "CLHEP/Units/PhysicalConstants.h"
+
 #include "globals.hh"
 
 #include <ostream>
@@ -88,6 +90,10 @@ public:
   /// this matches the contents of the class.
   void UpdateG4ParticleDefinition(G4ParticleDefinition* particleIn) {particle = particleIn;}
 
+
+  /// Utility function to update quantities by adding on dEK (can be negative).
+  void ApplyChangeInKineticEnergy(G4double dEk);
+
   /// @{ Accessor.
   inline G4ParticleDefinition* ParticleDefinition() const {return particle;}
   inline BDSIonDefinition*     IonDefinition()      const {return ionDefinition;}
@@ -103,6 +109,8 @@ public:
   inline G4double FFact()         const {return ffact;}
   inline G4bool   IsAnIon()       const {return ionDefinition != nullptr;}
   inline G4bool   NElectrons()    const {return ionDefinition != nullptr ? ionDefinition->NElectrons() : 0;}
+  inline G4double Velocity()      const {return Beta() * CLHEP::c_light;}
+  inline G4bool   Forwards()      const {return forwards;}
   /// @}
 
   /// Safely access the PDG ID of the particle. If the physics table isn't ready then we might
@@ -140,6 +148,7 @@ private:
   G4double beta;           ///< Relativistic beta.
   G4double brho;           ///< Particle rigidity.
   G4double ffact;          ///< Flip factor.
+  G4bool   forwards;       ///< In case of change of direction.
 };
 
 #endif

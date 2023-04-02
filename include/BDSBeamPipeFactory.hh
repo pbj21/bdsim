@@ -95,6 +95,7 @@ private:
   BDSBeamPipeFactoryBase* lhcdetailed;
   BDSBeamPipeFactoryBase* rectellipse;
   BDSBeamPipeFactoryBase* racetrack;
+  BDSBeamPipeFactoryBase* rhombus;
   BDSBeamPipeFactoryBase* octagonal;
   BDSBeamPipeFactoryBase* circularvacuum;
   BDSBeamPipeFactoryBase* clicpcl;

@@ -42,6 +42,8 @@ public:
   /// Return the interpolated field value at a given point.
   virtual G4ThreeVector GetField(const G4ThreeVector& position,
 				 const G4double       t = 0) const;
+  
+  virtual G4bool TimeVarying() const;
 
 private:
   BDSFieldEInterpolated* mainField;

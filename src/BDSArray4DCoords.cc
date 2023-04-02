@@ -52,7 +52,8 @@ BDSArray4DCoords::BDSArray4DCoords(G4int nXIn, G4int nYIn, G4int nZIn, G4int nTI
   yDimension(yDimensionIn),
   zDimension(zDimensionIn),
   tDimension(tDimensionIn),
-  dimensions{0,1,2,3}
+  dimensions{0,1,2,3},
+  timeVarying(true)
 {
   // There are 1 fewer differences than the points.
   if (nX > 1)

@@ -1,0 +1,4 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+beam, distrFileLoop=1,
+      distrFileLoopNTimes=3;

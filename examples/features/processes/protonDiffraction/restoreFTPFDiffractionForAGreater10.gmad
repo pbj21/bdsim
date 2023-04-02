@@ -1,0 +1,16 @@
+option, restoreFTPFDiffractionForAGreater10=1;
+
+t1: target, l=30*cm, material="C";
+l1: line=(t1);
+use, l1;
+
+beam, particle="proton",
+      energy=7*TeV;
+      
+option, minimumKineticEnergy=1*GeV,
+        defaultRangeCut=10*cm,
+        physicsList="g4FTFP_BERT";
+
+option, storeMinimalData=1;
+
+sample, all;

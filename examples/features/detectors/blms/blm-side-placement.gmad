@@ -1,10 +1,5 @@
 d1: drift, l=10*cm;
-MQY4R1B1: quadrupole,
-	  apertureType="rectellipse",
-	  l=1*m,
-	  magnetGeometryType="lhcleft",
-	  outerDiameter=0.5;
-
+MQY4R1B1: quadrupole, l=1*m, magnetGeometryType="lhcleft", aper1=2*cm;
 l1: line=(MQY4R1B1,d1,MQY4R1B1);
 use, l1;
 

@@ -50,7 +50,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& placements,
-					 const BDSBeamline* parentBeamLine,
+                                         const BDSBeamline* parentBeamLine,
                                          BDSComponentFactory* componentFactory)
 {
   if (placements.empty())
@@ -64,7 +64,7 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       // if a sequence is specified, it's a beam line and will be constructed
       // elsewhere - skip it!
       if (!placement.sequence.empty())
-	{continue;}
+        {continue;}
       
       BDSAcceleratorComponent* comp;
       G4bool hasAField = false;
@@ -72,68 +72,70 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       G4double chordLength;
       
       if (placement.name.empty())
-	{
-	  G4cerr << "Problem with unnamed placement, its contents are:" << G4endl;
-	  placement.print();
-	  throw BDSException(__METHOD_NAME__, "a placement must be defined with a name");
-	}
+        {
+          G4cerr << "Problem with unnamed placement, its contents are:" << G4endl;
+          placement.print();
+          throw BDSException(__METHOD_NAME__, "a placement must be defined with a name");
+        }
       
       G4bool elementSpecified  = !placement.bdsimElement.empty();
       G4bool geometrySpecified = !placement.geometryFile.empty();
       if (elementSpecified && geometrySpecified)
-	{
-	  G4String msg = "only one of \"geometryFile\" or \"bdsimElemenet\" can be specified in placement \"" + placement.name + "\"";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
+        {
+          G4String msg = "only one of \"geometryFile\" or \"bdsimElemenet\" can be specified in placement \"" + placement.name + "\"";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
       else if (!elementSpecified && !geometrySpecified)
-	{
-	  G4String msg = "at least one of \"geometryFile\" or \"bdsimElemenet\" must be specified in placement \"" + placement.name + "\"";
-	  throw BDSException(__METHOD_NAME__, msg);
-	}
+        {
+          G4String msg = "at least one of \"geometryFile\" or \"bdsimElemenet\" must be specified in placement \"" + placement.name + "\"";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
       
       if (geometrySpecified)
-	{// it's a geometryFile + optional field map placement
-	  hasAField = !placement.fieldAll.empty();
-	  BDSFieldInfo* fieldRecipe = nullptr;
-	  if (hasAField)
-	    {
-	      fieldRecipe = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(placement.fieldAll)));
-	      fieldRecipe->SetUsePlacementWorldTransform(true);
-	    }
-	  
-	  auto geom = BDSGeometryFactory::Instance()->BuildGeometry(placement.name,
-								    placement.geometryFile,
-								    nullptr,
-								    placement.autoColour,
-								    0, 0,
-								    nullptr,
-								    placement.sensitive,
-								    BDSSDType::energydep,
-								    placement.stripOuterVolume,
-                                                              nullptr,
-                                                              placement.dontReloadGeometry);
-	  
-	  chordLength = geom->GetExtent().DZ();
-	  comp = new BDSSimpleComponent(placement.name + "_" + geom->GetName(), geom, chordLength);
+        {// it's a geometryFile + optional field map placement
+          hasAField = !placement.fieldAll.empty();
+          BDSFieldInfo* fieldRecipe = nullptr;
+          if (hasAField)
+            {
+              fieldRecipe = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(placement.fieldAll)));
+              fieldRecipe->SetUsePlacementWorldTransform(true);
+            }
+          
+          auto geom = BDSGeometryFactory::Instance()->BuildGeometry(placement.name,
+                                                                    placement.geometryFile,
+                                                                    nullptr,
+                                                                    placement.autoColour,
+                                                                    0,
+                                                                    0,
+                                                                    nullptr,
+                                                                    placement.sensitive,
+                                                                    BDSSDType::energydep,
+                                                                    BDSSDType::energydepvacuum,
+                                                                    placement.stripOuterVolume,
+                                                                    nullptr,
+                                                                    placement.dontReloadGeometry);
+          
+          chordLength = geom->GetExtent().DZ();
+          comp = new BDSSimpleComponent(placement.name + "_" + geom->GetName(), geom, chordLength);
       
-	  if (hasAField)
-	    {
-	      comp->SetField(fieldRecipe);
-	      fieldPlacementName = comp->GetName() + "_" + fieldRecipe->NameOfParserDefinition();
-	    }
-	}
+          if (hasAField)
+            {
+              comp->SetField(fieldRecipe);
+              fieldPlacementName = comp->GetName() + "_" + fieldRecipe->NameOfParserDefinition();
+            }
+        }
       else
-	{// it's a bdsim-built component
-	  const GMAD::Element* element = BDSParser::Instance()->GetPlacementElement(placement.bdsimElement);
-	  if (!element)
-	    {throw BDSException(__METHOD_NAME__, "no such element definition by name \"" + placement.bdsimElement + "\" found for placement.");}
-	  comp = componentFactory->CreateComponent(element, nullptr, nullptr); // note no current arc length for RF time offset
-	  hasAField = comp->HasAField();
-	  if (hasAField)
-	    {comp->SetFieldUsePlacementWorldTransform();}
-	  fieldPlacementName = comp->GetName() + "_field";
-	  chordLength = comp->GetChordLength();
-	}
+        {// it's a bdsim-built component
+          const GMAD::Element* element = BDSParser::Instance()->GetPlacementElement(placement.bdsimElement);
+          if (!element)
+            {throw BDSException(__METHOD_NAME__, "no such element definition by name \"" + placement.bdsimElement + "\" found for placement.");}
+          comp = componentFactory->CreateComponent(element, nullptr, nullptr); // note no current arc length for RF time offset
+          hasAField = comp->HasAField();
+          if (hasAField)
+            {comp->SetFieldUsePlacementWorldTransform();}
+          fieldPlacementName = comp->GetName() + "_field";
+          chordLength = comp->GetChordLength();
+        }
       
       comp->Initialise();
       
@@ -149,28 +151,28 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       G4RotationMatrix* rm   = new G4RotationMatrix(transform.getRotation());
       
       BDSBeamlineElement* el = new BDSBeamlineElement(comp,
-						      startPos,
-						      midPos,
-						      endPos,
-						      rm,
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      startPos,
-						      midPos,
-						      endPos,
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      -1,-1,-1);
+                                                      startPos,
+                                                      midPos,
+                                                      endPos,
+                                                      rm,
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      startPos,
+                                                      midPos,
+                                                      endPos,
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      -1,-1,-1);
 
       placementBL->AddBeamlineElement(el);
   
       if (hasAField)
-	{
-	  G4VSolid* containerSolidClone = comp->GetContainerSolid()->Clone();
-	  G4LogicalVolume* lv = new G4LogicalVolume(containerSolidClone, nullptr, fieldPlacementName+"_lv");
-	  fieldPlacements.emplace_back(BDSPlacementToMake(transform, lv, fieldPlacementName+"_pv"));
-	}
+        {
+          G4VSolid* containerSolidClone = comp->GetContainerSolid()->Clone();
+          G4LogicalVolume* lv = new G4LogicalVolume(containerSolidClone, nullptr, fieldPlacementName+"_lv");
+          fieldPlacements.emplace_back(BDSPlacementToMake(transform, lv, fieldPlacementName+"_pv"));
+        }
     }
   
   BDSAcceleratorModel::Instance()->RegisterPlacementFieldPlacements(fieldPlacements);

@@ -58,17 +58,18 @@ public:
   /// the geometry file for the extent information. Assign a default sensitivity to
   /// every volume recursively.
   BDSGeometryExternal* BuildGeometry(G4String               componentName,
-				     const G4String&        formatAndFilePath,
-				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
-				     G4bool                 autoColour               = true,
-				     G4double               suggestedLength          = 0,
-				     G4double               suggestedHorizontalWidth = 0,
-				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
-				     G4bool                 makeSensitive            = true,
-				     BDSSDType              sensitivityType          = BDSSDType::energydep,
-				     G4bool                 stripOuterVolumeAndMakeAssembly = false,
-				     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr,
-				     G4bool                 dontReloadGeometry       = false);
+                                     const G4String&        formatAndFilePath,
+                                     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+                                     G4bool                 autoColour               = true,
+                                     G4double               suggestedLength          = 0,
+                                     G4double               suggestedHorizontalWidth = 0,
+                                     std::vector<G4String>* namedVacuumVolumes       = nullptr,
+                                     G4bool                 makeSensitive            = true,
+                                     BDSSDType              sensitivityType          = BDSSDType::energydep,
+                                     BDSSDType              vacuumSensitivityType    = BDSSDType::energydepvacuum,
+                                     G4bool                 stripOuterVolumeAndMakeAssembly = false,
+                                     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr,
+                                     G4bool                 dontReloadGeometry       = false);
  
 private:
   /// Private accessor as singleton

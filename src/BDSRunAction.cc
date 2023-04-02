@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSRunAction.hh"
 #include "BDSSamplerPlacementRecord.hh"
 #include "BDSSamplerRegistry.hh"
+#include "BDSWarning.hh"
 
 #include "parser/beamBase.h"
 #include "parser/optionsBase.h"
@@ -58,9 +59,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSRunAction::BDSRunAction(BDSOutput*      outputIn,
                            BDSBunch*       bunchGeneratorIn,
-			   G4bool          usingIonsIn,
-			   BDSEventAction* eventActionIn,
-			   const G4String& trajectorySamplerIDIn):
+                           G4bool          usingIonsIn,
+                           BDSEventAction* eventActionIn,
+                           const G4String& trajectorySamplerIDIn):
   output(outputIn),
   starttime(time(nullptr)),
   info(nullptr),
@@ -105,7 +106,7 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   
   // Output feedback
   G4cout << __METHOD_NAME__ << "Run " << aRun->GetRunID()
-	 << " start. Time is " << asctime(localtime(&starttime)) << G4endl;
+         << " start. Time is " << asctime(localtime(&starttime)) << G4endl;
 
   output->InitialiseGeometryDependent();
   output->NewFile();
@@ -161,6 +162,11 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
       nEventsInOriginalDistrFile = beg->NEventsInFile();
       if (nEventsDistrFileSkipped > 0)
         {G4cout << __METHOD_NAME__ << nEventsDistrFileSkipped << " events were skipped as no particles passed the filters in them." << G4endl;}
+      if (nEventsDistrFileSkipped == nEventsInOriginalDistrFile)
+        {
+          G4String msg = "no events were simulated at all as none contained any particles that passed the filters.";
+          BDS::Warning(__METHOD_NAME__, msg);
+        }
     }
   output->FillRun(info, nEventsRequested, nEventsInOriginalDistrFile, nEventsDistrFileSkipped);
   output->CloseFile();
@@ -181,10 +187,10 @@ void BDSRunAction::PrintAllProcessesForAllParticles() const
       G4cout << "Particle: \"" << particle->GetParticleName() << "\", defined processes are: " << G4endl;
       G4ProcessManager* pManager = particle->GetProcessManager();
       if (!pManager)
-	{continue;}
+        {continue;}
       G4ProcessVector* processList = pManager->GetProcessList();
       if (!processList)
-	{continue;}
+        {continue;}
       for (G4int i = 0; i < (G4int)processList->size(); i++)
         {G4cout << "\"" << (*processList)[i]->GetProcessName() << "\"" << G4endl;}
       G4cout << G4endl;
@@ -208,14 +214,14 @@ void BDSRunAction::SetTrajectorySamplerIDs() const
         {
           if (samplerInfo.UniqueName() == tok)
             {
-	      samplerIDs.push_back(i);
-	      found = true;
-	      break;
-	    }
-	  i++;
+              samplerIDs.push_back(i);
+              found = true;
+              break;
+            }
+          i++;
         }
       if (!found)
-	{throw BDSException(__METHOD_NAME__, "Error: sampler \"" + tok + "\" named in the option storeTrajectorySamplerID was not found.");}
+        {throw BDSException(__METHOD_NAME__, "Error: sampler \"" + tok + "\" named in the option storeTrajectorySamplerID was not found.");}
     }
 
   eventAction->SetSamplerIDsForTrajectories(samplerIDs);
@@ -232,6 +238,6 @@ void BDSRunAction::CheckTrajectoryOptions() const
   for (const auto& range : sRangeToStore)
     {
       if (range.first > maxS)
-	{throw BDSException(__METHOD_NAME__, "S coordinate " + std::to_string(range.first / CLHEP::m) + "m in option storeTrajectoryElossSRange is beyond the length of the beam line (2m margin).");}
+        {throw BDSException(__METHOD_NAME__, "S coordinate " + std::to_string(range.first / CLHEP::m) + "m in option storeTrajectoryElossSRange is beyond the length of the beam line (2m margin).");}
     }
 }

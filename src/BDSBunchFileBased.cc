@@ -18,11 +18,26 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchFileBased.hh"
 
+#include "parser/beam.h"
+
 BDSBunchFileBased::BDSBunchFileBased(const G4String& distributionName):
   BDSBunch(distributionName),
   nEventsInFile(0),
-  nEventsInFileSkipped(0)
+  nEventsInFileSkipped(0),
+  distrFileLoop(false),
+  distrFileLoopNTimes(0)
 {;}
 
 BDSBunchFileBased::~BDSBunchFileBased() 
 {;}
+
+void BDSBunchFileBased::SetOptions(const BDSParticleDefinition* beamParticle,
+                                   const GMAD::Beam& beam,
+                                   const BDSBunchType& distrType,
+                                   G4Transform3D beamlineTransformIn,
+                                   const G4double beamlineSIn)
+{
+  BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
+  distrFileLoop = beam.distrFileLoop;
+  distrFileLoopNTimes = beam.distrFileLoopNTimes;
+}

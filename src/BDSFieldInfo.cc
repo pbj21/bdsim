@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorType.hh"
 #include "BDSInterpolatorType.hh"
 #include "BDSMagnetStrength.hh"
+#include "BDSModulatorInfo.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -66,6 +67,7 @@ BDSFieldInfo::BDSFieldInfo():
   magneticSubFieldName(""),
   electricSubFieldName(""),
   usePlacementWorldTransform(false),
+  modulatorInfo(nullptr),
   transformBeamline(nullptr),
   extraInfo(nullptr),
   nameOfParserDefinition("")
@@ -121,6 +123,7 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   magneticSubFieldName(magneticSubFieldNameIn),
   electricSubFieldName(electricSubFieldNameIn),
   usePlacementWorldTransform(false),
+  modulatorInfo(nullptr),
   transformBeamline(nullptr),
   extraInfo(nullptr),
   nameOfParserDefinition("")
@@ -170,6 +173,7 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   magneticSubFieldName(other.magneticSubFieldName),
   electricSubFieldName(other.electricSubFieldName),
   usePlacementWorldTransform(other.usePlacementWorldTransform),
+  modulatorInfo(other.modulatorInfo),
   transformBeamline(nullptr),
   extraInfo(nullptr),
   nameOfParserDefinition(other.nameOfParserDefinition)
@@ -250,7 +254,10 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
   out << "Second field on left " << info.secondFieldOnLeft        << G4endl;
   out << "Magnetic Sub Field   " << info.magneticSubFieldName     << G4endl;
   out << "Electric Sub Field   " << info.electricSubFieldName     << G4endl;
+  if (info.modulatorInfo)
+    {out << "Modulator            " << *(info.modulatorInfo) << G4endl;}
   out << "Use Placement World Transform " << info.usePlacementWorldTransform << G4endl;
+
   if (info.magnetStrength)
     {out << "Magnet strength:     " << *(info.magnetStrength)      << G4endl;}
   if (info.stepLimit)

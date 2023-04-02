@@ -1,0 +1,19 @@
+d1: drift, l=5*m;
+
+rf1: rfx, l=50*cm, gradient=5*MV/m, frequency=30*MHz;
+rf2: rfy, l=50*cm, gradient=10*MV/m, frequency=30*MHz, phase=pi/2;
+
+du: dump, l=1*m, horizontalWidth=1*m;
+
+l1: line=(d1, rf1, d1, rf2, d1, d1, du);
+use, l1;
+sample, range=d1[3];
+
+beam, particle="e-",
+      energy=1*GeV,
+      distrType="square",
+      envelopeT = 10/30e6,
+      envelopeZ = 0;
+! explicitly set envelopeZ so it uncorrelated with T
+
+option, aper1=20*cm;

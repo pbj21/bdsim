@@ -20,8 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetStrength.hh"
 #include "BDSUtilities.hh"
 
-#include "globals.hh"
 #include "G4ThreeVector.hh"
+#include "G4Types.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSFieldESinusoid::BDSFieldESinusoid(BDSMagnetStrength const* strength,
 				     G4double                 brho):
   BDSFieldESinusoid((*strength)["efield"],
+		    G4ThreeVector( (*strength)["ex"], (*strength)["ey"], (*strength)["ez"]),
 		    (*strength)["frequency"],
 		    (*strength)["phase"])
 {
@@ -38,9 +39,11 @@ BDSFieldESinusoid::BDSFieldESinusoid(BDSMagnetStrength const* strength,
 }
 
 BDSFieldESinusoid::BDSFieldESinusoid(G4double eFieldAmplitudeIn,
+                                     const G4ThreeVector& unitDirectionIn,
 				     G4double frequencyIn,
 				     G4double phaseOffsetIn):
   eField(eFieldAmplitudeIn),
+  unitDirection(unitDirectionIn.unit()),
   angularFrequency(CLHEP::twopi*frequencyIn),
   phase(phaseOffsetIn)
 {
@@ -50,7 +53,7 @@ BDSFieldESinusoid::BDSFieldESinusoid(G4double eFieldAmplitudeIn,
 G4ThreeVector BDSFieldESinusoid::GetField(const G4ThreeVector& /*position*/,
 					  const G4double       t) const
 {
-  G4double eZ = eField*std::cos(angularFrequency*t + phase);
-  G4ThreeVector field = G4ThreeVector(0, 0, eZ);
+  G4double ef = eField * std::cos(angularFrequency*t + phase);
+  G4ThreeVector field = unitDirection * ef;
   return field;
 }

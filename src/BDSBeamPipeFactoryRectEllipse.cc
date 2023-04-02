@@ -252,7 +252,8 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(const G4String&   
   G4VSolid* vacRectSolid = new G4Box(nameIn + "_vacuum_box", // name
 				     aper1In,                // x half width
 				     aper2In,                // y half width
-				     angledVolumeLength);    // long length for unambiguous intersection
+				     1.1*angledVolumeLength);    // long length for unambiguous intersection
+
   //intersection of both of these gives the desired shape
   G4VSolid* longVacuumSolid = new G4IntersectionSolid(nameIn + "_vacuum_long_solid", // name
 						      vacCylSolid,                   // solid 1
@@ -298,7 +299,7 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(const G4String&   
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box",  // name
 					 aper1In + lengthSafetyLarge, // x half width
 					 aper2In + lengthSafetyLarge, // y half width
-					 angledVolumeLength);         // long length for unambiguous intersection
+					 1.1*angledVolumeLength);         // long length for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
@@ -310,12 +311,12 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(const G4String&   
   G4VSolid* bpOuterCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid", // name
 						   aper3In + extraWidth,             // horizontal semi-axis
 						   aper4In + extraWidth,             // vertical semi-axis
-						   lengthIn);                        // length
+                                                   angledVolumeLength);                        // length
   //beampipe outer edge box solid (rectangular cross-section)
   G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
 					 aper1In + extraWidth,       // x half width
 					 aper2In + extraWidth,       // y half width
-					 angledVolumeLength);        // long length for unambiguous intersection
+					 1.1*angledVolumeLength);        // long length for unambiguous intersection
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
 						   bpOuterRectSolid);            // solid 2
@@ -348,7 +349,7 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(const G4String&   
   G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box",                   // name
 				      aper1In + extraWidth + lengthSafetyLarge, // x half width
 				      aper2In + extraWidth + lengthSafetyLarge, // y half width
-				      lengthIn); // z full width (long for unambiguous intersection)
+                                      1.1*angledVolumeLength); // z full width (long for unambiguous intersection)
   //intersection of both of these gives the desired shape
   G4VSolid* longContainerSolid = new G4IntersectionSolid(nameIn + "_long_container_solid", // name
 							 contCylSolid,                     // solid 1

@@ -1675,7 +1675,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G
   G4double inXO = poleHalfWidth - lsl;
 
   // create an ellipse with no angle, then shear it to match the angle
-  G4int nSegments = ceil((G4double)nSegmentsPerCircle / 4.0);
+  G4int nSegments = std::ceil((G4double)nSegmentsPerCircle / 4.0);
   G4double increment = CLHEP::halfpi/nSegments;
   G4double epWidth = buildVertically ? coilHeight : coilWidth;
   for (G4double t = -CLHEP::pi; t <= -CLHEP::halfpi + 1e-9; t += increment)

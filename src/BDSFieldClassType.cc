@@ -78,7 +78,9 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
     case BDSFieldType::emap2d:
     case BDSFieldType::emap3d:
     case BDSFieldType::emap4d:
-    case BDSFieldType::rf:
+    case BDSFieldType::rfconstantinx:
+    case BDSFieldType::rfconstantiny:
+    case BDSFieldType::rfconstantinz:
       {return BDSFieldClassType::electric;}
     case BDSFieldType::none:
     case BDSFieldType::ebfieldzero:
@@ -86,7 +88,7 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
     case BDSFieldType::ebmap2d:
     case BDSFieldType::ebmap3d:
     case BDSFieldType::ebmap4d:
-    case BDSFieldType::rfcavity:
+    case BDSFieldType::rfpillbox:
     case BDSFieldType::muoncooler:
       {return BDSFieldClassType::electromagnetic;}
     case BDSFieldType::teleporter:

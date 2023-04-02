@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParticleDefinition.hh"
 #include "BDSPhysicalConstants.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "G4ParticleDefinition.hh"
 
@@ -53,7 +54,8 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
   gamma(1.0),
   beta(1.0),
   brho(std::numeric_limits<double>::max()),// if zero charge infinite magnetic rigidity
-  ffact(ffactIn)
+  ffact(ffactIn),
+  forwards(true)
 {
   charge = particle->GetPDGCharge();
   if (ionDefinition) // may be nullptr
@@ -87,7 +89,8 @@ BDSParticleDefinition::BDSParticleDefinition(const G4String&   nameIn,
   gamma(1.0),
   beta(1.0),
   brho(std::numeric_limits<double>::max()),// if zero charge infinite magnetic rigidity
-  ffact(ffactIn)
+  ffact(ffactIn),
+  forwards(true)
 {
   if (ionDefinitionIn)
     {ionDefinition = new BDSIonDefinition(*ionDefinitionIn);}
@@ -152,7 +155,8 @@ BDSParticleDefinition::BDSParticleDefinition(const BDSParticleDefinition& other)
   gamma(other.gamma),
   beta(other.beta),
   brho(other.brho),
-  ffact(other.ffact)
+  ffact(other.ffact),
+  forwards(other.forwards)
 {
   if (other.ionDefinition)
     {ionDefinition = new BDSIonDefinition(*other.ionDefinition);}
@@ -172,7 +176,8 @@ BDSParticleDefinition::BDSParticleDefinition(BDSParticleDefinition&& other) noex
   gamma(other.gamma),
   beta(other.beta),
   brho(other.brho),
-  ffact(other.ffact)
+  ffact(other.ffact),
+  forwards(other.forwards)
 {
   ionDefinition = other.ionDefinition;
   other.ionDefinition = nullptr;
@@ -198,6 +203,7 @@ BDSParticleDefinition& BDSParticleDefinition::operator=(BDSParticleDefinition&& 
       beta     = other.beta;
       brho     = other.brho;
       ffact    = other.ffact;
+      forwards = other.forwards;
     }
   return *this;
 }
@@ -228,6 +234,7 @@ std::ostream& operator<<(std::ostream& out, const BDSParticleDefinition& def)
   out << "Momentum:        " << std::setprecision(pre) << def.momentum/CLHEP::GeV          << " GeV" << G4endl;
   out << "Gamma:           " << std::setprecision(pre) << def.gamma                                  << G4endl;
   out << "Beta:            " << std::setprecision(pre) << def.beta                                   << G4endl;
+  out << "FFact:           " << std::setprecision(pre) << def.ffact                                  << G4endl;
   out << "Rigidity (Brho): " << std::setprecision(pre) << def.brho/(CLHEP::tesla*CLHEP::m) << " T*m" << G4endl;
   return out;
 }
@@ -257,4 +264,16 @@ void BDSParticleDefinition::CalculateLorentzFactors()
   gamma = totalEnergy / mass;
 
   beta = std::sqrt(1 - (1./std::pow(gamma,2)) );
+}
+
+void BDSParticleDefinition::ApplyChangeInKineticEnergy(G4double dEk)
+{
+  G4double newEk = kineticEnergy + dEk;
+  if (newEk < 0)
+    {
+      forwards = !forwards;
+      newEk = std::abs(newEk);
+      BDS::Warning(__METHOD_NAME__, "particle change of direction");
+    }
+  SetEnergies(0,newEk,0);
 }

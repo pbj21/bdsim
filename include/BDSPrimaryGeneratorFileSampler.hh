@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSROOTSAMPLERREADER_H
-#define BDSROOTSAMPLERREADER_H
+#ifndef BDSPRIMARYGENERATORFILESAMPLER_H
+#define BDSPRIMARYGENERATORFILESAMPLER_H
 
 #include "BDSPrimaryGeneratorFile.hh"
 
@@ -41,22 +41,22 @@ class G4VSolid;
  * @author Laurie Nevay
  */
 
-class BDSROOTSamplerReader: public BDSPrimaryGeneratorFile
+class BDSPrimaryGeneratorFileSampler: public BDSPrimaryGeneratorFile
 {
 public:
   /// Do not require default constructor.
-  BDSROOTSamplerReader() = delete;
+  BDSPrimaryGeneratorFileSampler() = delete;
   /// Constructor takes full distrType string including semicolon and
   /// eventgeneratorfile prefix. The filename is assumed to be correctly
   /// prefixed if a relative path already. The bunch definition is used
   /// for the reference coordinates and offset of the beam point.
-  BDSROOTSamplerReader(const G4String& distrType,
-                       const G4String& fileNameIn,
-                       BDSBunchEventGenerator* bunchIn,
-                       G4bool loopFileIn,
-                       G4bool removeUnstableWithoutDecayIn = true,
-		       G4bool warnAboutSkippedParticlesIn  = true);
-  virtual ~BDSROOTSamplerReader();
+  BDSPrimaryGeneratorFileSampler(const G4String& distrType,
+                                 const G4String& fileNameIn,
+                                 BDSBunchEventGenerator* bunchIn,
+                                 G4bool loopFileIn,
+                                 G4bool removeUnstableWithoutDecayIn = true,
+                                 G4bool warnAboutSkippedParticlesIn  = true);
+  virtual ~BDSPrimaryGeneratorFileSampler();
 
   /// Read the next non-empty sampler entry from the file.
   virtual void GeneratePrimaryVertex(G4Event* anEvent);
@@ -71,8 +71,8 @@ public:
   };
 
   /// Just advance to a different event index. Have a function to put the
-  /// implementation in one place and be similar to BDSHepMC3Reader.
-  void SkipEvents(G4long eventOffset);
+  /// implementation in one place and be similar to BDSPrimaryGeneratorFileHEPMC.
+  void SkipEvents(G4long nEventsToSkip);
   
 protected:
   /// Read sampler hits and put into primary vertices if they pass filters.

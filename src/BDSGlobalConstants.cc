@@ -148,6 +148,7 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
   trajectoryFiltersSet[BDSTrajectoryFilter::elossSRange]     = options.HasBeenSet("storeTrajectoryElossSRange");
   trajectoryFiltersSet[BDSTrajectoryFilter::minimumZ]        = options.HasBeenSet("trajCutGTZ");
   trajectoryFiltersSet[BDSTrajectoryFilter::maximumR]        = options.HasBeenSet("trajCutLTR");
+  trajectoryFiltersSet[BDSTrajectoryFilter::secondary]       = options.HasBeenSet("storeTrajectorySecondaryParticles");
 
   if (StoreMinimalData())
     {
@@ -192,13 +193,18 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
 	    {*no.second = false;}
 	}
     }
+  
+  // TBC
+  if (options.HasBeenSet("fieldModulator"))
+    {throw BDSException(__METHOD_NAME__, "the option \"fieldModulator\" cannot be used currently - in development");}
+  
 
   // uproot
   if (options.uprootCompatible == 1)
-  {
-    options.samplersSplitLevel = 1;
-    options.modelSplitLevel = 2;
-  }
+    {
+      options.samplersSplitLevel = 1;
+      options.modelSplitLevel = 2;
+    }
 
 #if G4VERSION_NUMBER > 1079
   if (options.HasBeenSet("scintYieldFactor"))

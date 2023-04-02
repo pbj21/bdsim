@@ -38,12 +38,12 @@ BDSBeamPipeFactoryClicPCL::BDSBeamPipeFactoryClicPCL():
 {;}
 
 void BDSBeamPipeFactoryClicPCL::GenerateClicPCL(std::vector<G4TwoVector>& vec,
-						G4double aper1,
-						G4double aper2,
-						G4double aper3,
-						G4double aper4,
-						G4int    pointsPerTwoPi,
-						G4double margin)
+                                                G4double aper1,
+                                                G4double aper2,
+                                                G4double aper3,
+                                                G4double aper4,
+                                                G4int    pointsPerTwoPi,
+                                                G4double margin)
 {
   G4double a1 = aper1 + margin;
   G4double a2 = aper2 + margin;
@@ -58,11 +58,11 @@ void BDSBeamPipeFactoryClicPCL::GenerateClicPCL(std::vector<G4TwoVector>& vec,
 }
 
 void BDSBeamPipeFactoryClicPCL::GeneratePoints(G4double aper1,
-					       G4double aper2,
-					       G4double aper3,
-					       G4double aper4,
-					       G4double beamPipeThickness,
-					       G4int    pointsPerTwoPi)
+                                               G4double aper2,
+                                               G4double aper3,
+                                               G4double aper4,
+                                               G4double beamPipeThickness,
+                                               G4int    pointsPerTwoPi)
 {
   G4double bpInMargin  = lengthSafetyLarge;
   G4double bpOutMargin = bpInMargin + beamPipeThickness;
@@ -80,10 +80,10 @@ void BDSBeamPipeFactoryClicPCL::GeneratePoints(G4double aper1,
 }
 
 G4double BDSBeamPipeFactoryClicPCL::CalculateIntersectionRadius(G4double aper1,
-								G4double aper2,
-								G4double aper3,
-								G4double aper4,
-								G4double beamPipeThickness)
+                                                                G4double aper2,
+                                                                G4double aper3,
+                                                                G4double aper4,
+                                                                G4double beamPipeThickness)
 {
   G4double bottom = std::max(std::abs(aper3), aper1);
   G4double top    = std::max(aper1, aper2);
@@ -107,17 +107,17 @@ void BDSBeamPipeFactoryClicPCL::CleanUp()
 }
 
 BDSBeamPipe* BDSBeamPipeFactoryClicPCL::CommonFinalConstruction(const G4String& nameIn,
-								G4Material* vacuumMaterialIn,
-								G4Material* beamPipeMaterialIn,
-								G4double    lengthIn)
+                                                                G4Material* vacuumMaterialIn,
+                                                                G4Material* beamPipeMaterialIn,
+                                                                G4double    lengthIn)
 {
   BDSBeamPipeFactoryBase::CommonConstruction(nameIn, vacuumMaterialIn,
-					     beamPipeMaterialIn, lengthIn);
+                                             beamPipeMaterialIn, lengthIn);
 
   // record extents
   BDSExtent ext = BDSExtent(-extentX,     extentX,
-			    extentYLow,   extentYHigh,
-			    -lengthIn*0.5,lengthIn*0.5);
+                            extentYLow,   extentYHigh,
+                            -lengthIn*0.5,lengthIn*0.5);
   
   // calculate radius if a tube were to be place around it
   G4double containerRadius = ext.MaximumAbsTransverse();

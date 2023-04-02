@@ -1,0 +1,11 @@
+m1: modulator, type="sint",
+	       frequency = 1*MHz,
+	       phase = pi/2,
+	       tOffset = 1.2,
+	       amplitudeOffset=1.0,
+	       amplitudeScale=1e-3;
+print, m1;
+
+! extend and change properties
+m1: tOffset=1.0, type="none";
+print, m1;

@@ -1,109 +1,164 @@
 ! aper types
+! 1 param
 ap1 = "circular";
-ap2 = "elliptical";
+ap2 = "circularvacuum";
+
+! 2 param
 ap3 = "elliptical";
-ap4 = "octagonal";
-ap5 = "racetrack";
-ap6 = "rectangular";
-ap7 = "rectellipse";
+ap4 = "rectangular";
+
+! 3 param
+ap5 = "lhc";
+ap6 = "rhombus";
+ap7 = "racetrack";
+
+! 4 param
+ap8 = "octagonal";
+ap9 = "rectellipse";
+ap10 = "clicpcl";
+
+! file based
+ap11 = "pointsfile:12_points.dat";
+ap12 = "pointsfile:14_points_triangle.dat";
+
 
 ! wide apertures
-hw = 0.5; ! horizontal width
+hw = 0.5; ! aperture horizontal width
 a1 = hw * 0.3;
 a2 = a1 * 0.5;
+a3a = a1;
+a3b = 0.2*a1;
+a3c = 0.8*a1;
+a3d = 1.2*a1;
+a3e = 4.0*a1;
+a4a = 0.8*a2;
+a4b = 1.2*a2;
+a4 = a2 * 0.5;
 
 ! smaller drift apertures between dipole
 da1 = a1 * 0.5;
 da2 = a2 * 0.5;
+da3a = da1;
+da3b = da1*0.2;
+da3c = da1*0.8;
+da3d = da1*1.2;
+da3e = da1*4.0;
+da4a = da2*0.8;
+da4b = da1*1.2;
 
 ! poleface angle
 pfAngle = pi/12;
 
-D18_1: drift, l=0.3, apertureType=ap1, aper1 = da1, aper2 = da2;
-BM1_1: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap1;
-D19_1: drift, l=0.2, apertureType=ap1, aper1 = da1, aper2 = da2;
-BM2_1: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap1;
-D20_1: drift, l=0.2, apertureType=ap1, aper1 = da1, aper2 = da2;
-BM3_1: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap1;
-D21_1: drift, l=0.2, apertureType=ap1, aper1 = da1, aper2 = da2;
-BM4_1: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap1;
-D22_1: drift, l=0.2, apertureType=ap1, aper1 = da1, aper2 = da2;
+benda: sbend, angle=-0.5, e1=-pfAngle,  fint=0.5, hgap=0.25, l=1*m;
+bendb: sbend, angle=0.5,  e2=-pfAngle,  fint=0.5, hgap=0.25, l=1*m;
+bendc: sbend, angle=0.5,  e1=-pfAngle,  fint=0.5, hgap=0.25, l=1*m;
+bendd: sbend, angle=-0.5, e2=-pfAngle,  fint=0.5, hgap=0.25, l=1*m;
 
-D18_2: drift, l=0.3, apertureType=ap2, aper1 = da1, aper2 = da2;
-BM1_2: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap2;
-D19_2: drift, l=0.2, apertureType=ap2, aper1 = da1, aper2 = da2;
-BM2_2: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap2;
-D20_2: drift, l=0.2, apertureType=ap2, aper1 = da1, aper2 = da2;
-BM3_2: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap2;
-D21_2: drift, l=0.2, apertureType=ap2, aper1 = da1, aper2 = da2;
-BM4_2: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap2;
-D22_2: drift, l=0.2, apertureType=ap2, aper1 = da1, aper2 = da2;
+! circular
+d1: drift, l=0.2, apertureType=ap1, aper1=da1;
+b1a: benda, apertureType=ap1, aper1=a1;
+b1b: bendb, apertureType=ap1, aper1=a1;
+b1c: bendc, apertureType=ap1, aper1=a1;
+b1d: bendd, apertureType=ap1, aper1=a1;
 
-D18_3: drift, l=0.3, apertureType=ap3, aper1 = da1, aper2 = da2;
-BM1_3: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap3;
-D19_3: drift, l=0.2, apertureType=ap3, aper1 = da1, aper2 = da2;
-BM2_3: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap3;
-D20_3: drift, l=0.2, apertureType=ap3, aper1 = da1, aper2 = da2;
-BM3_3: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap3;
-D21_3: drift, l=0.2, apertureType=ap3, aper1 = da1, aper2 = da2;
-BM4_3: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap3;
-D22_3: drift, l=0.2, apertureType=ap3, aper1 = da1, aper2 = da2;
+! circularvacuum
+d2: drift, l=0.2, apertureType=ap2, aper1=da1;
+b2a: benda, apertureType=ap2, aper1=a1;
+b2b: bendb, apertureType=ap2, aper1=a1;
+b2c: bendc, apertureType=ap2, aper1=a1;
+b2d: bendd, apertureType=ap2, aper1=a1;
 
-D18_4: drift, l=0.3, apertureType=ap4, aper1 = da1, aper2 = da2;
-BM1_4: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap4;
-D19_4: drift, l=0.2, apertureType=ap4, aper1 = da1, aper2 = da2;
-BM2_4: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap4;
-D20_4: drift, l=0.2, apertureType=ap4, aper1 = da1, aper2 = da2;
-BM3_4: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap4;
-D21_4: drift, l=0.2, apertureType=ap4, aper1 = da1, aper2 = da2;
-BM4_4: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap4;
-D22_4: drift, l=0.2, apertureType=ap4, aper1 = da1, aper2 = da2;
+! elliptical
+d3: drift, l=0.2, apertureType=ap3, aper1=da1, aper2=da2;
+b3a: benda, apertureType=ap3, aper1=a1, aper2=a2;
+b3b: bendb, apertureType=ap3, aper1=a1, aper2=a2;
+b3c: bendc, apertureType=ap3, aper1=a1, aper2=a2;
+b3d: bendd, apertureType=ap3, aper1=a1, aper2=a2;
 
-D18_5: drift, l=0.3, apertureType=ap5, aper1 = da1, aper2 = da2;
-BM1_5: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap5;
-D19_5: drift, l=0.2, apertureType=ap5, aper1 = da1, aper2 = da2;
-BM2_5: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap5;
-D20_5: drift, l=0.2, apertureType=ap5, aper1 = da1, aper2 = da2;
-BM3_5: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap5;
-D21_5: drift, l=0.2, apertureType=ap5, aper1 = da1, aper2 = da2;
-BM4_5: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap5;
-D22_5: drift, l=0.2, apertureType=ap5, aper1 = da1, aper2 = da2;
+! rectangular
+d4: drift, l=0.2, apertureType=ap4, aper1=da1, aper2=da2;
+b4a: benda, apertureType=ap4, aper1=a1, aper2=a2;
+b4b: bendb, apertureType=ap4, aper1=a1, aper2=a2;
+b4c: bendc, apertureType=ap4, aper1=a1, aper2=a2;
+b4d: bendd, apertureType=ap4, aper1=a1, aper2=a2;
 
-D18_6: drift, l=0.3, apertureType=ap6, aper1 = da1, aper2 = da2;
-BM1_6: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap6;
-D19_6: drift, l=0.2, apertureType=ap6, aper1 = da1, aper2 = da2;
-BM2_6: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap6;
-D20_6: drift, l=0.2, apertureType=ap6, aper1 = da1, aper2 = da2;
-BM3_6: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap6;
-D21_6: drift, l=0.2, apertureType=ap6, aper1 = da1, aper2 = da2;
-BM4_6: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap6;
-D22_6: drift, l=0.2, apertureType=ap6, aper1 = da1, aper2 = da2;
+! lhc
+d5: drift, l=0.2, apertureType=ap5, aper1=da1, aper2=da2, aper3=da3a;
+b5a: benda, apertureType=ap5, aper1=a1, aper2=a2, aper3=a3a;
+b5b: bendb, apertureType=ap5, aper1=a1, aper2=a2, aper3=a3a;
+b5c: bendc, apertureType=ap5, aper1=a1, aper2=a2, aper3=a3a;
+b5d: bendd, apertureType=ap5, aper1=a1, aper2=a2, aper3=a3a;
 
-D18_7: drift, l=0.3, apertureType=ap7, aper1 = da1, aper2 = da2;
-BM1_7: sbend, angle=-0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap7;
-D19_7: drift, l=0.2, apertureType=ap7, aper1 = da1, aper2 = da2;
-BM2_7: sbend, angle=0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap7;
-D20_7: drift, l=0.2, apertureType=ap7, aper1 = da1, aper2 = da2;
-BM3_7: sbend, angle=0.5, e1=-pfAngle, fint=0.5,  hgap=0.025, l=1.0, apertureType=ap7;
-D21_7: drift, l=0.2, apertureType=ap7, aper1 = da1, aper2 = da2;
-BM4_7: sbend, angle=-0.5, e2=-pfAngle,  fintx=0.5, hgap=0.025, l=1.0, apertureType=ap7;
-D22_7: drift, l=0.2, apertureType=ap7, aper1 = da1, aper2 = da2;
+! rhombus
+d6: drift, l=0.2, apertureType=ap6, aper1=da1, aper2=da2, aper3=da3b;
+b6a: benda, apertureType=ap6, aper1=a1, aper2=a2, aper3=a3b;
+b6b: bendb, apertureType=ap6, aper1=a1, aper2=a2, aper3=a3b;
+b6c: bendc, apertureType=ap6, aper1=a1, aper2=a2, aper3=a3b;
+b6d: bendd, apertureType=ap6, aper1=a1, aper2=a2, aper3=a3b;
+
+! racetrack
+d7: drift, l=0.2, apertureType=ap7, aper1=da1, aper2=da2, aper3=da3c;
+b7a: benda, apertureType=ap7, aper1=a1, aper2=a2, aper3=a3c;
+b7b: bendb, apertureType=ap7, aper1=a1, aper2=a2, aper3=a3c;
+b7c: bendc, apertureType=ap7, aper1=a1, aper2=a2, aper3=a3c;
+b7d: bendd, apertureType=ap7, aper1=a1, aper2=a2, aper3=a3c;
+
+! octagonal
+d8: drift, l=0.2, apertureType=ap8, aper1=da1, aper2=da2, aper3=da3c, aper4=da4a;
+b8a: benda, apertureType=ap8, aper1=a1, aper2=a2, aper3=a3c, aper4=a4a;
+b8b: bendb, apertureType=ap8, aper1=a1, aper2=a2, aper3=a3c, aper4=a4a;
+b8c: bendc, apertureType=ap8, aper1=a1, aper2=a2, aper3=a3c, aper4=a4a;
+b8d: bendd, apertureType=ap8, aper1=a1, aper2=a2, aper3=a3c, aper4=a4a;
+
+! rectellipse
+d9: drift, l=0.2, apertureType=ap9, aper1=da1, aper2=da2, aper3=da3d, aper4=da4b;
+b9a: benda, apertureType=ap9, aper1=a1, aper2=a2, aper3=a3d, aper4=a4b;
+b9b: bendb, apertureType=ap9, aper1=a1, aper2=a2, aper3=a3d, aper4=a4b;
+b9c: bendc, apertureType=ap9, aper1=a1, aper2=a2, aper3=a3d, aper4=a4b;
+b9d: bendd, apertureType=ap9, aper1=a1, aper2=a2, aper3=a3d, aper4=a4b;
+
+! clicpcl
+d10: drift, l=0.2, apertureType=ap10, aper1=0.3*da1, aper2=0.3*da2, aper3=0.3*da3e, aper4=0.3*da4a;
+b10a: benda, apertureType=ap10, aper1=0.3*a1, aper2=0.3*a2, aper3=0.3*a3e, aper4=0.3*a4a;
+b10b: bendb, apertureType=ap10, aper1=0.3*a1, aper2=0.3*a2, aper3=0.3*a3e, aper4=0.3*a4a;
+b10c: bendc, apertureType=ap10, aper1=0.3*a1, aper2=0.3*a2, aper3=0.3*a3e, aper4=0.3*a4a;
+b10d: bendd, apertureType=ap10, aper1=0.3*a1, aper2=0.3*a2, aper3=0.3*a3e, aper4=0.3*a4a;
+
+! pointsfile
+d11: drift, l=0.2, apertureType=ap11;
+b11a: benda, apertureType=ap11;
+b11b: bendb, apertureType=ap11;
+b11c: bendc, apertureType=ap11;
+b11d: bendd, apertureType=ap11;
+
+! pointsfile2
+d12: drift, l=0.2, apertureType=ap12;
+b12a: benda, apertureType=ap12;
+b12b: bendb, apertureType=ap12;
+b12c: bendc, apertureType=ap12;
+b12d: bendd, apertureType=ap12;
 
 
-l1: line = (D18_1, BM1_1, D19_1, BM2_1, D20_1, BM3_1, D21_1, BM4_1, D22_1);
-l2: line = (D18_2, BM1_2, D19_2, BM2_2, D20_2, BM3_2, D21_2, BM4_2, D22_2);
-l3: line = (D18_3, BM1_3, D19_3, BM2_3, D20_3, BM3_3, D21_3, BM4_3, D22_3);
-l4: line = (D18_4, BM1_4, D19_4, BM2_4, D20_4, BM3_4, D21_4, BM4_4, D22_4);
-l5: line = (D18_5, BM1_5, D19_5, BM2_5, D20_5, BM3_5, D21_5, BM4_5, D22_5);
-l6: line = (D18_6, BM1_6, D19_6, BM2_6, D20_6, BM3_6, D21_6, BM4_6, D22_6);
-l7: line = (D18_7, BM1_7, D19_7, BM2_7, D20_7, BM3_7, D21_7, BM4_7, D22_7);
 
-l_all: line = (l1,l2, l3, l4, l5, l6, l7);
+l1: line=(d1,b1a,d1,b1b,d1,b1c,d1,b1d,d1);
+l2: line=(d2,b2a,d2,b2b,d2,b2c,d2,b2d,d2);
+l3: line=(d3,b3a,d3,b3b,d3,b3c,d3,b3d,d3);
+l4: line=(d4,b4a,d4,b4b,d4,b4c,d4,b4d,d4);
+l5: line=(d5,b5a,d5,b5b,d5,b5c,d5,b5d,d5);
+l6: line=(d6,b6a,d6,b6b,d6,b6c,d6,b6d,d6);
+l7: line=(d7,b7a,d7,b7b,d7,b7c,d7,b7d,d7);
+l8: line=(d8,b8a,d8,b8b,d8,b8c,d8,b8d,d8);
+l9: line=(d9,b9a,d9,b9b,d9,b9c,d9,b9d,d9);
+l10: line=(d10,b10a,d10,b10b,d10,b10c,d10,b10d,d10);
+l11: line=(d11,b11a,d11,b11b,d11,b11c,d11,b11d,d11);
+l12: line=(d12,b12a,d12,b12b,d12,b12c,d12,b12d,d12);
+
+
+! 11 doesn't work with this level of angles given the star shape
+! where it turns back in on itself
+l_all: line = (l1,l2, l3, l4, l5, l6, l7, l8, l9, l10, l12);
 
 use, period=l_all;
-
-! aperture for optics only
-option, outerDiameter=hw, aper1=a1*m, aper2=a2*m;
 
 option, magnetGeometryType="None",
         checkOverlaps=1,

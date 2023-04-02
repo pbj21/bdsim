@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSHitSampler.hh"
 #include "BDSHitThinThing.hh"
 #include "BDSOutput.hh"
+#include "BDSModulator.hh"
 #include "BDSNavigatorPlacements.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSSamplerPlacementRecord.hh"
@@ -45,6 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoriesToStore.hh"
 #include "BDSTrajectory.hh"
 #include "BDSTrajectoryFilter.hh"
+#include "BDSTrajectoryPointHit.hh"
 #include "BDSTrajectoryPrimary.hh"
 #include "BDSUtilities.hh"
 #include "BDSWrapperMuonSplitting.hh"
@@ -62,7 +64,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4THitsMap.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4TrajectoryPoint.hh"
-#include "BDSTrajectoryPointHit.hh"
 #include "G4TransportationManager.hh"
 
 #include <algorithm>
@@ -98,7 +99,6 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   stops(0),
   cpuStartTime(std::clock_t()),
   primaryAbsorbedInCollimator(false),
-  seedStateAtStart(""),
   currentEventIndex(0),
   eventInfo(nullptr),
   nTracks(0)
@@ -109,6 +109,7 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   verboseEventStop          = BDS::VerboseEventStop(verboseEventStart, globals->VerboseEventContinueFor());
   storeTrajectory           = globals->StoreTrajectory();
   storeTrajectoryAll        = globals->StoreTrajectoryAll();
+  storeTrajectorySecondary  = globals->StoreTrajectorySecondaryParticles();
   trajectoryFilterLogicAND  = globals->TrajectoryFilterLogicAND();
   trajectoryEnergyThreshold = globals->StoreTrajectoryEnergyThreshold();
   trajectoryCutZ            = globals->TrajCutGTZ();
@@ -142,6 +143,8 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   BDSStackingAction::energyKilled = 0;
   primaryAbsorbedInCollimator = false; // reset flag
   currentEventIndex = evt->GetEventID();
+
+  BDSModulator::SetEventIndex(currentEventIndex);
   
   // reset navigators to ensure no mis-navigating and that events are truly independent
   BDSAuxiliaryNavigator::ResetNavigatorStates();
@@ -332,7 +335,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   if (HCE)
     {
       for (const auto& nameIndex : scorerCollectionIDs)
-	{scorerHits[nameIndex.first] = dynamic_cast<G4THitsMap<G4double>*>(HCE->GetHC(nameIndex.second));}
+        {scorerHits[nameIndex.first] = dynamic_cast<G4THitsMap<G4double>*>(HCE->GetHC(nameIndex.second));}
     }
   // primary hit something? we infer this by seeing if there are any energy
   // deposition hits at all - if there are, the primary must have 'hit' something.
@@ -343,23 +346,23 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   if (eCounterHits)
     {
       if (verboseThisEvent)
-	{G4cout << std::left << std::setw(nChar) << "Energy deposition hits: " << eCounterHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "Energy deposition hits: " << eCounterHits->entries() << G4endl;}
       if (eCounterHits->entries() > 0)
-	{eventInfo->SetPrimaryHitMachine(true);}
+        {eventInfo->SetPrimaryHitMachine(true);}
     }
   if (eCounterFullHits)
     {
       if (verboseThisEvent)
-	{G4cout << std::left << std::setw(nChar) << "Energy deposition full hits: " << eCounterFullHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "Energy deposition full hits: " << eCounterFullHits->entries() << G4endl;}
       if (eCounterFullHits->entries() > 0)
-	{eventInfo->SetPrimaryHitMachine(true);}
+        {eventInfo->SetPrimaryHitMachine(true);}
     }
   if (eCounterTunnelHits)
     {
       if (verboseThisEvent)
-	{G4cout << std::left << std::setw(nChar) << "Tunnel energy deposition hits: " << eCounterTunnelHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "Tunnel energy deposition hits: " << eCounterTunnelHits->entries() << G4endl;}
       if (eCounterTunnelHits->entries() > 0)
-	{eventInfo->SetPrimaryHitMachine(true);}
+        {eventInfo->SetPrimaryHitMachine(true);}
     }
 
   // collimator hits if any
@@ -371,13 +374,13 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       if (eCounterVacuumHits)
         {G4cout << std::left << std::setw(nChar) << "Vacuum energy deposition hits: " << eCounterVacuumHits->entries() << G4endl;}
       if (eCounterWorldHits)
-	{G4cout << std::left << std::setw(nChar) << "World energy deposition hits: " << eCounterWorldHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "World energy deposition hits: " << eCounterWorldHits->entries() << G4endl;}
       if (eCounterWorldContentsHits)
-	{G4cout << std::left << std::setw(nChar) << "World contents energy deposition hits: " << eCounterWorldContentsHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "World contents energy deposition hits: " << eCounterWorldContentsHits->entries() << G4endl;}
       if (worldExitHits)
-	{G4cout << std::left << std::setw(nChar) << "World exit hits: " << worldExitHits->entries() << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "World exit hits: " << worldExitHits->entries() << G4endl;}
       if (collimatorHits)
-	{G4cout << std::left << std::setw(nChar) << "Collimator hits: " << collimatorHits->entries()  << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "Collimator hits: " << collimatorHits->entries()  << G4endl;}
     }
   
   // primary hits and losses
@@ -397,32 +400,32 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   primaryHits = BDSHitThinThing::ResolvePossibleEarlierThinHits(primaryTrajectories, thinThingHits);
 
   BDSTrajectoriesToStore* interestingTrajectories = IdentifyTrajectoriesForStorage(evt,
-										   verboseEventBDSIM || verboseThisEvent,
-										   eCounterHits,
-										   eCounterFullHits,
+                                                                                   verboseEventBDSIM || verboseThisEvent,
+                                                                                   eCounterHits,
+                                                                                   eCounterFullHits,
                                                                                    allSamplerHits,
-										   nChar);
+                                                                                   nChar);
 
   output->FillEvent(eventInfo,
-		    evt->GetPrimaryVertex(),
+                    evt->GetPrimaryVertex(),
                     allSamplerHits,
-		    allSamplerCylinderHits,
-		    allSamplerSphereHits,
-		    nullptr,
-		    eCounterHits,
-		    eCounterFullHits,
-		    eCounterVacuumHits,
-		    eCounterTunnelHits,
-		    eCounterWorldHits,
-		    eCounterWorldContentsHits,
-		    worldExitHits,
-		    primaryHits,
-		    primaryLosses,
-		    interestingTrajectories,
-		    collimatorHits,
-		    apertureImpactHits,
+                    allSamplerCylinderHits,
+                    allSamplerSphereHits,
+                    nullptr,
+                    eCounterHits,
+                    eCounterFullHits,
+                    eCounterVacuumHits,
+                    eCounterTunnelHits,
+                    eCounterWorldHits,
+                    eCounterWorldContentsHits,
+                    worldExitHits,
+                    primaryHits,
+                    primaryLosses,
+                    interestingTrajectories,
+                    collimatorHits,
+                    apertureImpactHits,
                     scorerHits,
-		    BDSGlobalConstants::Instance()->TurnsTaken());
+                    BDSGlobalConstants::Instance()->TurnsTaken());
   
   // if events per ntuples not set (default 0) - only write out at end
   G4int evntsPerNtuple = BDSGlobalConstants::Instance()->NumberOfEventsPerNtuple();
@@ -460,11 +463,11 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 }
 
 BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4Event* evt,
-								       G4bool verbose,
-								       BDSHitsCollectionEnergyDeposition* eCounterHits,
-								       BDSHitsCollectionEnergyDeposition* eCounterFullHits,
-								       const std::vector<BDSHitsCollectionSampler*>& allSamplerHits,
-								       G4int nChar) const
+                                                                       G4bool verbose,
+                                                                       BDSHitsCollectionEnergyDeposition* eCounterHits,
+                                                                       BDSHitsCollectionEnergyDeposition* eCounterFullHits,
+                                                                       const std::vector<BDSHitsCollectionSampler*>& allSamplerHits,
+                                                                       G4int nChar) const
 {
   auto flagsCache(G4cout.flags());
   G4TrajectoryContainer* trajCont = evt->GetTrajectoryContainer();
@@ -481,194 +484,201 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
       std::map<int, BDSTrajectory*> trackIDMap;
       std::map<BDSTrajectory*, int> depthMap;
       for (auto iT1 : *trajVec)
-	{
-	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
-	  
-	  // fill track ID map
-	  trackIDMap[traj->GetTrackID()] = traj;
-	  
-	  // fill depth map
-	  G4int depth = traj->GetParentID() == 0 ? 0 : depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;
-	  traj->SetDepth(depth);
-	  if (traj->GetParentID() == 0) 
-	    {depthMap[traj] = 0;}
-	  else
-	    {depthMap[traj] = depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;}
-	}
+        {
+          BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
+          
+          // fill track ID map
+          trackIDMap[traj->GetTrackID()] = traj;
+          
+          // fill depth map
+          G4int depth = traj->GetParentID() == 0 ? 0 : depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;
+          traj->SetDepth(depth);
+          if (traj->GetParentID() == 0) 
+            {depthMap[traj] = 0;}
+          else
+            {depthMap[traj] = depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;}
+        }
       
       // fill parent pointer - this can only be done once the map in the previous loop has been made
       for (auto iT1 : *trajVec) 
-	{
-	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
-	  // the parent ID may be 0 and therefore it may not be in the map but the [] operator
-	  // will default-construct it giving therefore a nullptr
-	  traj->SetParent(trackIDMap[iT1->GetParentID()]);
-	}
+        {
+          BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
+          // the parent ID may be 0 and therefore it may not be in the map but the [] operator
+          // will default-construct it giving therefore a nullptr
+          traj->SetParent(trackIDMap[iT1->GetParentID()]);
+        }
       
       // loop over trajectories and determine if it should be stored
       // keep tallies of how many will and won't be stored
       G4int nYes = 0;
       G4int nNo  = 0;
       for (auto iT1 : *trajVec)
-	{
-	  std::bitset<BDS::NTrajectoryFilters> filters;
-	  
-	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
-	  G4int parentID = traj->GetParentID();
-	  
-	  // always store primaries
-	  if (parentID == 0)
-	    {filters[BDSTrajectoryFilter::primary] = true;}
-	  
-	  // check on energy (if energy threshold is not negative)
-	  if (trajectoryEnergyThreshold >= 0 &&
-	      traj->GetInitialKineticEnergy() > trajectoryEnergyThreshold)
-	    {filters[BDSTrajectoryFilter::energyThreshold] = true;}
-	  
-	  // check on particle if not empty string
-	  if (!trajParticleNameToStore.empty() || !trajParticleIDToStore.empty())
-	    {
-	      G4String particleName  = traj->GetParticleName();
-	      G4int particleID       = traj->GetPDGEncoding();
-	      G4String particleIDStr = G4String(std::to_string(particleID));
-	      std::size_t found1     = trajParticleNameToStore.find(particleName);
-	      bool        found2     = (std::find(trajParticleIDIntToStore.begin(), trajParticleIDIntToStore.end(), particleID)
+        {
+          std::bitset<BDS::NTrajectoryFilters> filters;
+          
+          BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
+          G4int parentID = traj->GetParentID();
+          
+          // always store primaries
+          if (parentID == 0)
+            {filters[BDSTrajectoryFilter::primary] = true;}
+          else
+            {
+              if (storeTrajectorySecondary)
+                {filters[BDSTrajectoryFilter::secondary] = true;}
+            }
+          
+          // check on energy (if energy threshold is not negative)
+          if (trajectoryEnergyThreshold >= 0 &&
+              traj->GetInitialKineticEnergy() > trajectoryEnergyThreshold)
+            {filters[BDSTrajectoryFilter::energyThreshold] = true;}
+          
+          // check on particle if not empty string
+          if (!trajParticleNameToStore.empty() || !trajParticleIDToStore.empty())
+            {
+              G4String particleName  = traj->GetParticleName();
+              G4int particleID       = traj->GetPDGEncoding();
+              G4String particleIDStr = G4String(std::to_string(particleID));
+              std::size_t found1     = trajParticleNameToStore.find(particleName);
+              bool        found2     = (std::find(trajParticleIDIntToStore.begin(), trajParticleIDIntToStore.end(), particleID)
                                     != trajParticleIDIntToStore.end());
-	      if ((found1 != std::string::npos) || found2)
-		{filters[BDSTrajectoryFilter::particle] = true;}
-	    }
-	  
-	  // check on trajectory tree depth (trajDepth = 0 means only primaries)
-	  if (depthMap[traj] <= trajDepth || storeTrajectoryAll) // all means to infinite trajDepth really
-	    {filters[BDSTrajectoryFilter::depth] = true;}
-	  
-	  // check on coordinates (and TODO momentum)
-	  // clear out trajectories that don't reach point TrajCutGTZ or greater than TrajCutLTR
-	  BDSTrajectoryPoint* trajEndPoint = static_cast<BDSTrajectoryPoint*>(traj->GetPoint(traj->GetPointEntries() - 1));
-	  
-	  // end point greater than some Z
-	  if (trajEndPoint->GetPosition().z() > trajectoryCutZ)
-	    {filters[BDSTrajectoryFilter::minimumZ] = true;}
-	  
-	  // less than maximum R
-	  if (trajEndPoint->PostPosR() < trajectoryCutR)
-	    {filters[BDSTrajectoryFilter::maximumR] = true;}
-	  
-	  filters.any() ? nYes++ : nNo++;
-	  interestingTraj.insert(std::pair<BDSTrajectory*, bool>(traj, filters.any()));
-	  trajectoryFilters.insert(std::pair<BDSTrajectory*, std::bitset<BDS::NTrajectoryFilters> >(traj, filters)); 
-	}
+              if ((found1 != std::string::npos) || found2)
+                {filters[BDSTrajectoryFilter::particle] = true;}
+            }
+          
+          // check on trajectory tree depth (trajDepth = 0 means only primaries)
+          if (depthMap[traj] <= trajDepth || storeTrajectoryAll) // all means to infinite trajDepth really
+            {filters[BDSTrajectoryFilter::depth] = true;}
+          
+          // check on coordinates (and TODO momentum)
+          // clear out trajectories that don't reach point TrajCutGTZ or greater than TrajCutLTR
+          BDSTrajectoryPoint* trajEndPoint = static_cast<BDSTrajectoryPoint*>(traj->GetPoint(traj->GetPointEntries() - 1));
+          
+          // end point greater than some Z
+          if (trajEndPoint->GetPosition().z() > trajectoryCutZ)
+            {filters[BDSTrajectoryFilter::minimumZ] = true;}
+          
+          // less than maximum R
+          if (trajEndPoint->PostPosR() < trajectoryCutR)
+            {filters[BDSTrajectoryFilter::maximumR] = true;}
+          
+          filters.any() ? nYes++ : nNo++;
+          interestingTraj.insert(std::pair<BDSTrajectory*, bool>(traj, filters.any()));
+          trajectoryFilters.insert(std::pair<BDSTrajectory*, std::bitset<BDS::NTrajectoryFilters> >(traj, filters)); 
+        }
       
       // loop over energy hits to connect trajectories
       if (!trajSRangeToStore.empty())
-	{
-	  if (eCounterHits)
-	    {
-	      G4int nHits = (G4int)eCounterHits->entries();
-	      BDSHitEnergyDeposition* hit;
-	      for (G4int i = 0; i < nHits; i++)
-		{
-		  hit = (*eCounterHits)[i];
-		  double dS = hit->GetSHit();
-		  for (const auto& v : trajSRangeToStore)
-		    {		
-		      if ( dS >= v.first && dS <= v.second) 
-			{
-			  BDSTrajectory* trajToStore = trackIDMap[hit->GetTrackID()];
-			  if (!interestingTraj[trajToStore])
-			    {// was marked as not storing - update counters
-			      nYes++;
-			      nNo--;
-			    }
-			  interestingTraj[trajToStore] = true;
-			  trajectoryFilters[trajToStore][BDSTrajectoryFilter::elossSRange] = true;
-			  break;
-			}
-		    }
-		}
-	    }
-	  if (eCounterFullHits)
-	    {
-	      G4int nHits = (G4int)eCounterFullHits->entries();
-	      BDSHitEnergyDeposition* hit;
-	      for (G4int i = 0; i < nHits; i++)
-		{
-		  hit = (*eCounterFullHits)[i];
-		  double dS = hit->GetSHit();
-		  for (const auto& v : trajSRangeToStore)
-		    {		
-		      if ( dS >= v.first && dS <= v.second) 
-			{
-			  BDSTrajectory* trajToStore = trackIDMap[hit->GetTrackID()];
-			  if (!interestingTraj[trajToStore])
-			    {// was marked as not storing - update counters
-			      nYes++;
-			      nNo--;
-			    }
-			  interestingTraj[trajToStore] = true;
-			  trajectoryFilters[trajToStore][BDSTrajectoryFilter::elossSRange] = true;
-			  break;
-			}
-		    }
-		}
-	    }
-	}
+        {
+          if (eCounterHits)
+            {
+              G4int nHits = (G4int)eCounterHits->entries();
+              BDSHitEnergyDeposition* hit;
+              for (G4int i = 0; i < nHits; i++)
+                {
+                  hit = (*eCounterHits)[i];
+                  double dS = hit->GetSHit();
+                  for (const auto& v : trajSRangeToStore)
+                    {           
+                      if ( dS >= v.first && dS <= v.second) 
+                        {
+                          BDSTrajectory* trajToStore = trackIDMap[hit->GetTrackID()];
+                          if (!interestingTraj[trajToStore])
+                            {// was marked as not storing - update counters
+                              nYes++;
+                              nNo--;
+                            }
+                          interestingTraj[trajToStore] = true;
+                          trajectoryFilters[trajToStore][BDSTrajectoryFilter::elossSRange] = true;
+                          break;
+                        }
+                    }
+                }
+            }
+          if (eCounterFullHits)
+            {
+              G4int nHits = (G4int)eCounterFullHits->entries();
+              BDSHitEnergyDeposition* hit;
+              for (G4int i = 0; i < nHits; i++)
+                {
+                  hit = (*eCounterFullHits)[i];
+                  double dS = hit->GetSHit();
+                  for (const auto& v : trajSRangeToStore)
+                    {           
+                      if ( dS >= v.first && dS <= v.second) 
+                        {
+                          BDSTrajectory* trajToStore = trackIDMap[hit->GetTrackID()];
+                          if (!interestingTraj[trajToStore])
+                            {// was marked as not storing - update counters
+                              nYes++;
+                              nNo--;
+                            }
+                          interestingTraj[trajToStore] = true;
+                          trajectoryFilters[trajToStore][BDSTrajectoryFilter::elossSRange] = true;
+                          break;
+                        }
+                    }
+                }
+            }
+        }
       
       // loop over samplers to connect trajectories
       for (const auto& SampHC : allSamplerHits)
-	{
-	  if (!trajectorySamplerID.empty() && SampHC)
-	    {
-	      for (G4int i = 0; i < (G4int)SampHC->entries(); i++)
-		{
-		  G4int samplerIndex = (*SampHC)[i]->samplerID;
-		  BDSSamplerPlacementRecord info = BDSSamplerRegistry::Instance()->GetInfo(samplerIndex);
-		  if (std::find(trajectorySamplerID.begin(), trajectorySamplerID.end(), samplerIndex) !=
-		      trajectorySamplerID.end())
-		    {
-		      BDSTrajectory* trajToStore = trackIDMap[(*SampHC)[i]->trackID];
-		      if (!interestingTraj[trajToStore])
-			{// was marked as not storing - update counters
-			  nYes++;
-			  nNo--;
-			}
-		      interestingTraj[trajToStore] = true;
-		      trajectoryFilters[trajToStore][BDSTrajectoryFilter::sampler] = true;
-		    }
-		}
-	    }
-	}
+        {
+          if (!trajectorySamplerID.empty() && SampHC)
+            {
+              for (G4int i = 0; i < (G4int)SampHC->entries(); i++)
+                {
+                  G4int samplerIndex = (*SampHC)[i]->samplerID;
+                  BDSSamplerPlacementRecord info = BDSSamplerRegistry::Instance()->GetInfo(samplerIndex);
+                  if (std::find(trajectorySamplerID.begin(), trajectorySamplerID.end(), samplerIndex) !=
+                      trajectorySamplerID.end())
+                    {
+                      BDSTrajectory* trajToStore = trackIDMap[(*SampHC)[i]->trackID];
+                      if (!interestingTraj[trajToStore])
+                        {// was marked as not storing - update counters
+                          nYes++;
+                          nNo--;
+                        }
+                      interestingTraj[trajToStore] = true;
+                      trajectoryFilters[trajToStore][BDSTrajectoryFilter::sampler] = true;
+                    }
+                }
+            }
+        }
       
       // If we're using AND logic (default OR) with the filters, loop over and update whether
       // we should really store the trajectory or not. Importantly, we do this before the connect
       // trajectory step as that flags yet more trajectories (that connect each one) back to the
       // primary
       if (trajectoryFilterLogicAND)
-	{
-	  for (auto& trajFlag : interestingTraj)
-	    {
-	      if (trajFlag.second) // if we're going to store it check the logic
-		{
-		  // use bit-wise AND filters matched for this trajectory with filters set
-		  // if count of 1s the same, then trajectory should be stored, therefore if
-		  // not the same, it should be set to false.
-		  auto filterMatch = trajectoryFilters[trajFlag.first] & trajFiltersSet;
-		  if (filterMatch.count() != trajFiltersSet.count())
-		    {trajFlag.second = false;}
-		}
-	    }	  
-	}
+        {
+          for (auto& trajFlag : interestingTraj)
+            {
+              if (trajFlag.second) // if we're going to store it check the logic
+                {
+                  // Use bit-wise AND ('&') on the filters matched for this trajectory with the
+                  // filters set. If count of 1s the same, then trajectory should be stored,
+                  // therefore if not the same, it should be set to false.
+                  auto filterMatch = trajectoryFilters[trajFlag.first] & trajFiltersSet;
+                  if (filterMatch.count() != trajFiltersSet.count())
+                    {trajFlag.second = false;}
+                }
+            }     
+        }
       
       // Connect trajectory graphs
       if (trajConnect && trackIDMap.size() > 1)
         {
           for (auto i : interestingTraj)
-            if (i.second)
-              {ConnectTrajectory(interestingTraj, i.first, trajectoryFilters);}
+            {
+              if (i.second)
+                {ConnectTrajectory(interestingTraj, i.first, trajectoryFilters);}
+            }
         }
       // Output interesting trajectories
       if (verbose)
-	{G4cout << std::left << std::setw(nChar) << "Trajectories for storage: " << nYes << " out of " << nYes + nNo << G4endl;}
+        {G4cout << std::left << std::setw(nChar) << "Trajectories for storage: " << nYes << " out of " << nYes + nNo << G4endl;}
     }
   G4cout.flags(flagsCache);
   return new BDSTrajectoriesToStore(interestingTraj, trajectoryFilters);
@@ -693,5 +703,5 @@ void BDSEventAction::RegisterPrimaryTrajectory(const BDSTrajectoryPrimary* traje
 {
   G4int trackID = trajectoryIn->GetTrackID();
   if (primaryTrajectoriesCache.find(trackID) == primaryTrajectoriesCache.end())
-  {primaryTrajectoriesCache[trackID] = trajectoryIn;}
+    {primaryTrajectoriesCache[trackID] = trajectoryIn;}
 }

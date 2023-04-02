@@ -102,6 +102,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 					{ "file", 1, 0, 0 },
 					{ "distrFile", 1, 0, 0 },
 					{ "distrFileNLinesSkip", 1, 0, 0 },
+                                        { "distrFileLoopNTimes", 1, 0, 0 },
                                         { "E0", 1, 0, 0},
                                         { "P0", 1, 0, 0},
                                         { "Ek0", 1, 0, 0},
@@ -274,6 +275,13 @@ void BDSExecOptions::Parse(int argc, char **argv)
 		conversion = BDS::IsInteger(optarg, result);
 		beam.set_value("nlinesSkip", result);
 	      }
+            else if ( !strcmp(optionName, "distrFileLoopNTimes") )
+              {
+                int result = 0;
+                conversion = BDS::IsInteger(optarg, result);
+                beam.set_value("distrFileLoopNTimes", result);
+                beam.set_value("distrFileLoop", true);
+              }
 	    else if (!strcmp(optionName, "E0") )
 	      {
 		double result = 1;
@@ -436,7 +444,8 @@ void BDSExecOptions::Usage() const
 	<<"--colours                    : list available colours included in bdsim"          << G4endl
 	<<"                               by default"                                        << G4endl
 	<<"--distrFile=<filename>       : file to use for bunch distribution"                << G4endl
-	<<"--distrfileNLinesSkip=N      : skip N lines in the file (userfile)"               << G4endl
+	<<"--distrFileNLinesSkip=N      : skip N lines in the file (userfile)"               << G4endl
+        <<"--distrFileLoopNTimes=N      : repeat the distribution file N times"              << G4endl
 	<<"--exportGeometryTo=<filename.extension> : export the fully constructed geometry"  << G4endl
 	<<"                               to a file. Only gdml extension supported."         << G4endl
 	<<"--E0=N                       : set E0 for the bunch for this run (GeV only)"      << G4endl

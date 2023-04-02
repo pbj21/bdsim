@@ -73,7 +73,9 @@ public:
   inline G4double ZStep() const {return zStep;}
   inline G4double TStep() const {return tStep;}
   /// @}
-  
+
+  /// Access the smallest spatial step between any two points in any dimension.
+  /// Includes time dimension and assumes the speed of light for the distance.
   inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
 
   /// Whether the spatial coordinates lie outside the range of the array or not.
@@ -226,6 +228,10 @@ public:
   inline BDSDimensionType FourthDimension() const {return tDimension;}
   /// @}
 
+  /// Whether the array depends on the time coordinate. Can be determined
+  /// differently for each derived class.
+  virtual G4bool TimeVarying() const {return timeVarying;}
+  
   /// Return the index to be used in array arguments for a given spatial dimension.
   /// e.g. DimensionIndex((spatial) z) -> index 0 for 1D array holding spatial z.
   G4int DimensionIndex(BDSDimensionType spatialDimension) const;
@@ -262,6 +268,7 @@ protected:
   BDSDimensionType zDimension;
   BDSDimensionType tDimension;
   std::array<G4int, 4> dimensions;
+  G4bool timeVarying;
   
 private:
   static void CheckStep(G4double step, const G4String& name);

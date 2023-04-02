@@ -54,11 +54,18 @@ namespace GMAD
       bool        distrFileFromExecOptions; ///< Required to know how to build the absolute path properly
       bool        distrFileMatchLength;
       bool        distrFileLoop;
+      int         distrFileLoopNTimes;
       bool        removeUnstableWithoutDecay;
       ///@}
       int         nlinesIgnore; ///< Ignore first lines in the input bunch file.
       int         nlinesSkip;   ///< Number of event lines to skip after the ignore lines.
 
+      /// @{ Bunch offsets in time
+      double bunchFrequency;
+      double bunchPeriod;
+      int    eventsPerBunch;
+      /// @}
+      
       ///@{ initial beam centroid
       double X0, Y0, Z0, S0;
       double Xp0, Yp0, Zp0;

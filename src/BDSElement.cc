@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
+#include "BDSSDType.hh"
 
 #include "G4String.hh"
 #include "G4Types.hh"
@@ -34,14 +35,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class G4LogicalVolume;
 
 BDSElement::BDSElement(const G4String& nameIn,
-		       G4double        arcLengthIn,
-		       G4double        horizontalWidthIn,
-		       const G4String& geometryIn,
-		       G4double        angleIn,
-		       std::vector<G4String>* namedVacuumVolumesIn,
-		       G4bool          autoColourGeometryIn,
-		       G4bool          markAsCollimatorIn,
-		       G4bool          stripOuterVolumeIn):
+                       G4double        arcLengthIn,
+                       G4double        horizontalWidthIn,
+                       const G4String& geometryIn,
+                       G4double        angleIn,
+                       std::vector<G4String>* namedVacuumVolumesIn,
+                       G4bool          autoColourGeometryIn,
+                       G4bool          markAsCollimatorIn,
+                       G4bool          stripOuterVolumeIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, markAsCollimatorIn ? "element-collimator" : "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),
@@ -71,12 +72,18 @@ void BDSElement::BuildContainerLogicalVolume()
   // factory and built and attached in the Initialise() method of the base class. However, before Initialise()
   // is called, the member fieldInfo will be set. We pass it in here to make sure we don't reuse the same
   // geometry when a different field is required.
-  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName,
-							   nullptr, autoColourGeometry,
-							   chordLength, horizontalWidth,
-							   &namedVacuumVolumes, true,
-							   sensitivityToAttach, stripOuterVolume,
-							   userLimits);
+  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name,
+                                                           geometryFileName,
+                                                           nullptr,
+                                                           autoColourGeometry,
+                                                           chordLength,
+                                                           horizontalWidth,
+                                                           &namedVacuumVolumes,
+                                                           true,
+                                                           sensitivityToAttach,
+                                                           BDSSDType::energydepvacuum,
+                                                           stripOuterVolume,
+                                                           userLimits);
   
   if (!geometry)
     {throw BDSException(__METHOD_NAME__, "Error loading geometry in component \"" + name + "\"");}
@@ -97,7 +104,7 @@ void BDSElement::BuildContainerLogicalVolume()
     {// label volumes as belonging to a collimator
       auto collimatorVolumeSet = BDSAcceleratorModel::Instance()->VolumeSet("collimators");
       for (auto vol : GetAcceleratorMaterialLogicalVolumes())
-	{collimatorVolumeSet->insert(vol);}
+        {collimatorVolumeSet->insert(vol);}
     }
   
   // set placement offset from geom so it's placed correctly in the beam line
@@ -121,8 +128,8 @@ void BDSElement::BuildContainerLogicalVolume()
       G4cerr << std::setprecision(15); // precise print out to aid user
       G4cerr.setf( std::ios::fixed, std:: ios::floatfield );
       G4cerr << "BDSElement> The loaded geometry is larger than the specified length"
-	     << " of the element, which will cause overlaps!" << G4endl
-	     << "Calculated extent along z of geometry: " << extLength << " mm" << G4endl;
+             << " of the element, which will cause overlaps!" << G4endl
+             << "Calculated extent along z of geometry: " << extLength << " mm" << G4endl;
       G4cerr << "Arc length    " << arcLength   << " mm"  << G4endl;
       G4cerr << "Bending angle " << angle       << " rad" << G4endl;
       G4cerr << "Chord length  " << chordLength << " mm"  << G4endl;

@@ -118,6 +118,7 @@ public:
   inline G4int    VerboseSteppingEventContinueFor() const {return G4int (options.verboseSteppingEventContinueFor);}
   inline G4bool   VerboseSteppingPrimaryOnly()      const {return G4bool(options.verboseSteppingPrimaryOnly);}
   inline G4int    VerboseImportanceSampling()       const {return G4int (options.verboseImportanceSampling);}
+  inline G4bool   VerboseSensitivity()              const {return G4bool(options.verboseSensitivity);}
   inline G4bool   Circular()               const {return G4bool  (options.circular);}
   inline G4int    Seed()                   const {return G4int   (options.seed);}
   inline G4bool   SeedSet()                const {return G4bool  (options.HasBeenSet("seed"));}
@@ -182,6 +183,7 @@ public:
   inline G4bool   UseGammaToMuMu()           const {return G4bool  (options.useGammaToMuMu);}
   inline G4bool   UsePositronToMuMu()        const {return G4bool  (options.usePositronToMuMu);}
   inline G4bool   UsePositronToHadrons()     const {return G4bool  (options.usePositronToHadrons);}
+  inline G4bool   RestoreFTPFDiffractionForAGreater10() const {return G4bool(options.restoreFTPFDiffractionForAGreater10);}
   inline G4bool   BeamPipeIsInfiniteAbsorber() const {return G4bool(options.beamPipeIsInfiniteAbsorber);}
   inline G4bool   CollimatorsAreInfiniteAbsorbers() const {return G4bool(options.collimatorsAreInfiniteAbsorbers);}
   inline G4bool   TunnelIsInfiniteAbsorber() const {return G4bool  (options.tunnelIsInfiniteAbsorber);}
@@ -201,6 +203,7 @@ public:
   inline G4double DeltaOneStep()             const {return G4double(options.deltaOneStep)*CLHEP::m;}
   inline G4double MinimumEpsilonStep()       const {return G4double(options.minimumEpsilonStep);}
   inline G4double MaximumEpsilonStep()       const {return G4double(options.maximumEpsilonStep);}
+  inline G4String FieldModulator()           const {return G4String(options.fieldModulator);}
   inline G4double MaxTime()                  const {return G4double(options.maximumTrackingTime)*CLHEP::s;}
   inline G4double MaxStepLength()            const {return G4double(options.maximumStepLength)*CLHEP::m;}
   inline G4double MaxTrackLength()           const {return G4double(options.maximumTrackLength)*CLHEP::m;}
@@ -239,7 +242,9 @@ public:
   inline G4bool   StoreELossTunnel()         const {return G4bool  (options.storeElossTunnel);}
   inline G4bool   StoreELossTunnelHistograms()const{return G4bool  (options.storeElossTunnelHistograms);}
   inline G4bool   StoreELossWorld()          const {return G4bool  (options.storeElossWorld);}
+  inline G4bool   StoreELossWorldIntegral()  const {return G4bool  (options.storeElossWorldIntegral);}
   inline G4bool   StoreELossWorldContents()  const {return G4bool  (options.storeElossWorldContents);}
+  inline G4bool   StoreELossWorldContentsIntegral()  const {return G4bool  (options.storeElossWorldContentsIntegral);}
   inline G4bool   StoreELossTurn()           const {return G4bool  (options.storeElossTurn || options.circular);}
   inline G4bool   StoreELossLinks()          const {return G4bool  (options.storeElossLinks);}
   inline G4bool   StoreELossLocal()          const {return G4bool  (options.storeElossLocal);}
@@ -257,6 +262,7 @@ public:
   inline G4bool   StoreTrajectoryStepPointLast()const{return G4bool(options.storeTrajectoryStepPointLast);}
   inline G4String StoreTrajectoryParticle()  const {return G4String(options.storeTrajectoryParticle);}
   inline G4String StoreTrajectoryParticleID()const {return G4String(options.storeTrajectoryParticleID);}
+  inline G4bool   StoreTrajectorySecondaryParticles() const {return options.storeTrajectorySecondaryParticles;}
   inline G4double StoreTrajectoryEnergyThreshold() const {return G4double (options.storeTrajectoryEnergyThreshold*CLHEP::GeV);}
   inline G4bool   StoreTrajectoryKineticEnergy()  const {return G4bool(options.storeTrajectoryKineticEnergy);}
   inline G4bool   StoreTrajectoryMomentumVector() const {return G4bool(options.storeTrajectoryMomentumVector);}

@@ -1,0 +1,11 @@
+m1: modulator, type="sint",
+	       frequency = 1*MHz,
+	       phase = pi/2,
+	       tOffset = 1.2,
+	       amplitudeOffset=1.0,
+	       amplitudeScale=1e-3;
+
+print, m1;
+
+d1: drift, l=0.5*m, aper1=4*cm, fieldModulator="m1";
+print, d1;

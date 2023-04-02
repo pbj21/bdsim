@@ -53,6 +53,7 @@ public:
   GMAD::BeamBase BeamBaseClass();
   GMAD::Beam     Beam();
 
+  /// Access the seed state for a given event index in the file (0 counting).
   G4String SeedState(G4int eventNumber = 0);
   
 protected:

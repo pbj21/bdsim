@@ -15,6 +15,7 @@ Basic Examples
 
    examples/airwatertarget
    examples/beamLoss
+   examples/beamDump
    examples/collimation-simple
    examples/simpleMachine
    examples/model-model.rst

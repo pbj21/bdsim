@@ -98,6 +98,7 @@ private:
   BDSMagnetOuterFactoryBase* lhcright;
   BDSMagnetOuterFactoryBase* lhcleft;
   /// @}
+  G4bool sensitiveOuter; ///< Cache of global option.
 };
 
 
