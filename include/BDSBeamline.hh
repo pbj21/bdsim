@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -74,14 +74,14 @@ public:
   /// Versatile basic constructor that allows a finite position and rotation to be applied
   /// at the beginning of the beamline in global coordinates. Remember the maximum
   /// extents of the beamline will also be displaced. The default constructor is in effect
-  /// achieved via defaults
+  /// achieved via defaults.
   BDSBeamline(const G4ThreeVector& initialGlobalPosition = G4ThreeVector(0,0,0),
-	      G4RotationMatrix*    initialGlobalRotation = nullptr,
-	      G4double             initialS              = 0.0);
+              G4RotationMatrix*    initialGlobalRotation = nullptr,
+              G4double             initialSIn            = 0.0);
 
   /// Constructor with transform instance that uses other constructor.
   explicit BDSBeamline(G4Transform3D initialTransform,
-		       G4double      initialS         = 0.0);
+                       G4double      initialSIn       = 0.0);
   
   ~BDSBeamline();
 
@@ -90,8 +90,8 @@ public:
   /// AddSingleComponent(BDSAcceleratorComponent* component) to each component
   /// Returns vector of components added
   void AddComponent(BDSAcceleratorComponent*  component,
-		    BDSTiltOffset*  tiltOffset  = nullptr,
-		    BDSSamplerInfo* samplerInfo = nullptr);
+                    BDSTiltOffset*  tiltOffset  = nullptr,
+                    BDSSamplerInfo* samplerInfo = nullptr);
 
   /// Apply a Transform3D rotation and translation to the reference
   /// coordinates. Special method for the special case of unique component
@@ -179,13 +179,13 @@ public:
   /// to global coordinates. 0,0 transverse position by default. Optionally returns
   /// the index of the found element in the beam line (by reference variable).
   G4Transform3D GetGlobalEuclideanTransform(G4double s,
-					    G4double x = 0,
-					    G4double y = 0,
-					    G4int* indexOfFoundElement = nullptr) const;
+                                            G4double x = 0,
+                                            G4double y = 0,
+                                            G4int* indexOfFoundElement = nullptr) const;
 
   /// Return the element in this beam line according to a given s coordinate.
   const BDSBeamlineElement* GetElementFromGlobalS(G4double S,
-						  G4int* indexOfFoundElement = nullptr) const;
+                                                  G4int* indexOfFoundElement = nullptr) const;
   
   /// Returns an iterator to the beamline element at s.
   const_iterator FindFromS(G4double S) const;
@@ -193,6 +193,9 @@ public:
   /// Get the global s position of each element all in one - used for histograms.
   /// For convenience, s positions are converted to metres in this function.
   std::vector<G4double> GetEdgeSPositions() const;
+
+  G4double GetSMinimum() const {return sInitial;}
+  G4double GetSMaximum() const {return sMaximum;}
 
   /// Return a pointer to the previous element. First this beamline is
   /// searched for the vector. If there is no such element or no previous
@@ -218,13 +221,13 @@ public:
   void PrintMemoryConsumption() const;
 
   BDSBeamlineElement* ProvideEndPieceElementBefore(BDSSimpleComponent* endPiece,
-						   G4int    index) const;
+                                                   G4int    index) const;
   /// Calculate the placements for an end piece w.r.t. a particlar beam line element
   /// The optional flip flag is used for when the 'before' piece is used again and
   /// must be rotated.
   BDSBeamlineElement* ProvideEndPieceElementAfter(BDSSimpleComponent* endPiece,
-						  G4int               index,
-						  G4bool              flip = false) const;
+                                                  G4int               index,
+                                                  G4bool              flip = false) const;
 
   /// Whether the supplied index will lie within the beam line vector.
   G4bool IndexOK(G4int index) const;
@@ -246,12 +249,15 @@ private:
   /// Add a single component and calculate its position and rotation with respect
   /// to the beginning of the beamline. Returns pointer to the component added.
   void AddSingleComponent(BDSAcceleratorComponent* component,
-			  BDSTiltOffset*           tiltOffset  = nullptr,
-			  BDSSamplerInfo*          samplerInfo = nullptr);
+                          BDSTiltOffset*           tiltOffset  = nullptr,
+                          BDSSamplerInfo*          samplerInfo = nullptr);
   
   /// Register the fully created element to a map of names vs element pointers. Used to
   /// look up transforms by name.
   void RegisterElement(BDSBeamlineElement* element);
+
+  G4double sInitial; ///< Cache the initial S so we can tell if a requested S is too low.
+  G4double sMaximum;
 
   /// Sum of all chord lengths
   G4double totalChordLength;

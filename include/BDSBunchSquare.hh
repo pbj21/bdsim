@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -20,10 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSBUNCHSQUARE_H 
 
 #include "BDSBunch.hh"
-
-namespace CLHEP {
-  class RandFlat;
-}
 
 /**
  * @brief A bunch distribution that produces an uncorrelated uniform
@@ -57,9 +53,7 @@ protected:
   G4double envelopeT;
   G4double envelopeE;
   G4double envelopeZ;
-  G4bool   useEnvelopeZ;
-  
-  CLHEP::RandFlat* flatGen;
+  G4bool   correlatedZWithT;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -44,13 +44,20 @@ public:
   BDSBunchFileBased(BDSBunchFileBased&) = delete;
   /// @}
 
+  /// Customise the beginning of run action to allow file looping always
+  /// when in interactive mode, i.e. not batch mode.
+  virtual void BeginOfRunAction(G4int numberOfEvents,
+                                G4bool batchMode);
+
   /// @{ Accessor.
+  unsigned long long int NOriginalEvents() const {return nOriginalEvents;}
   unsigned long long int NEventsInFile() const {return nEventsInFile;}
   unsigned long long int NEventsInFileSkipped() const {return nEventsInFileSkipped;}
   G4int DistrFileLoopNTimes() const {return distrFileLoopNTimes;}
   /// @}
 
   void SetNEventsInFile(unsigned long long int nEventsInFileIn) {nEventsInFile = nEventsInFileIn;}
+  void SetNOriginalEvents(unsigned long long int nOriginalEventsIn) {nOriginalEvents = nOriginalEventsIn;}
 
   void IncrementNEventsInFileSkipped() {nEventsInFileSkipped += 1;}
   void IncrementNEventsInFileSkipped(unsigned long long int plus) {nEventsInFileSkipped += plus;}
@@ -63,8 +70,9 @@ public:
                           const G4double beamlineS = 0);
   
 protected:
-  unsigned long long int nEventsInFile;
-  unsigned long long int nEventsInFileSkipped;
+  unsigned long long int nOriginalEvents; ///< nOriginalEvents from upstream file if skimmed - need to pass through.
+  unsigned long long int nEventsInFile;   ///< The number of entries in the file loaded.
+  unsigned long long int nEventsInFileSkipped; ///< Number that are skipped as we go through the file due to filters.
   G4bool distrFileLoop;
   G4int distrFileLoopNTimes;
 };

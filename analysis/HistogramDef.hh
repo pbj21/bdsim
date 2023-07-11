@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HISTOGRAMDEF_H
 #define HISTOGRAMDEF_H
 
+#include <iostream>
 #include <string>
 
 #include "Rtypes.h" // for classdef
@@ -37,15 +38,24 @@ public:
 
   /// Use this constructor.
   HistogramDef(const std::string& treeNameIn,
-	       const std::string& histNameIn,
-	       int                nDimensionsIn,
+               const std::string& histNameIn,
+               int                nDimensionsIn,
                const std::string& variable,
-	       const std::string& selectionIn = "1",
-	       bool               perEnetry   = true);
+               const std::string& selectionIn = "1",
+               bool               perEnetry   = true);
   virtual ~HistogramDef(){;};
 
   /// Copy this instance. Virtual to be overridden in derived classes.
-  virtual HistogramDef* Clone() const {return new HistogramDef(*this);}
+  virtual HistogramDef* Clone() const = 0;
+
+  /// Print out the definition in the original syntax
+  friend std::ostream& operator<< (std::ostream &out, const HistogramDef& s);
+
+  /// Provide the binning string in the original input format for feedback.
+  virtual std::string GetBinningString() const = 0;
+
+  /// Get the first string that defines the histogram in rebdsim for feedback.
+  virtual std::string GetHistogramString() const = 0;
   
   std::string treeName;
   std::string histName;

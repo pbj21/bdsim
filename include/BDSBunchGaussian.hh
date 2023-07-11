@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -61,7 +61,8 @@ public:
 
   /// Called at the beginning of a run. Override here to call PreGenerateEvents that
   /// will generate all coordinates and subtract the sample mean.
-  virtual void BeginOfRunAction(G4int numberOfEvents);
+  virtual void BeginOfRunAction(G4int numberOfEvents,
+                                G4bool batchMode);
 
   /// Either draw from the vector of already created points or fire fresh
   /// from the matrix.

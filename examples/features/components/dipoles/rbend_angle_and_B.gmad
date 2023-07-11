@@ -1,0 +1,13 @@
+d1: drift, l=0.5;
+rb1 : rbend, l=0.5*m, angle = 0.1, B=-20*T;
+
+l1: line=(d1,rb1,d1);
+use, l1;
+
+beam, particle="proton", momentum=10*GeV;
+
+option, includeFringeFields=0;
+
+option, maximumStepLength=5*cm;
+
+q1: query, nx=50, ny=50, xmin=-50*cm, xmax=30*cm, ymin=-30*cm, ymax=30*cm, queryMagneticField=1, referenceElement="rb1";

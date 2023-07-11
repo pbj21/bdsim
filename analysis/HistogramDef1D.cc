@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -19,6 +19,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BinSpecification.hh"
 #include "HistogramDef1D.hh"
 
+#include <string>
+
 ClassImp(HistogramDef1D)
 
 HistogramDef1D::HistogramDef1D():
@@ -26,14 +28,28 @@ HistogramDef1D::HistogramDef1D():
 {;}
 
 HistogramDef1D::HistogramDef1D(const std::string& treeNameIn,
-			       const std::string& histNameIn,
-			       const BinSpecification& xBinningIn,
-			       const std::string& variableIn,
-			       const std::string& selectionIn,
-			       bool               perEntryIn):
+                               const std::string& histNameIn,
+                               const BinSpecification& xBinningIn,
+                               const std::string& variableIn,
+                               const std::string& selectionIn,
+                               bool               perEntryIn):
   HistogramDef(treeNameIn, histNameIn, 1, variableIn, selectionIn, perEntryIn),
   xBinning(xBinningIn)
 {;}
 
 HistogramDef1D::~HistogramDef1D()
 {;}
+
+std::string HistogramDef1D::GetBinningString() const
+{
+  std::string result = "{" + std::to_string(xBinning.n) + "} {" + xBinning.GetBinString() + "}";
+  return result;
+}
+
+std::string HistogramDef1D::GetHistogramString() const
+{
+  std::string result = perEntry ? "Histogram1D" : "SimpleHistogram1D";
+  if (xBinning.isLogSpaced)
+    {result += "Log";}
+  return result;
+}

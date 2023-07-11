@@ -1,0 +1,14 @@
+InputFilePath	../../data/shower.root
+OutputFileName	ana_spectra.root
+VerboseSpectra true
+
+# test selection build up
+
+#Object   Sampler Name  # Bins  Binning    Particles               Selection
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  1
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  PrimaryFirstHit.S>3.5
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  c1.weight
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  c1.weight*3.0
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  c1.weight*2.0*(PrimaryFirstHit.S>3.5)
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  3/c1.weight*2.0*(PrimaryFirstHit.S>3.5)
+Spectra         c1      30      {0:200}    {total,11,-11,22,2212}  3/c1.weight*2.0*(PrimaryFirstHit.S>3.5&&PrimaryLastHit.S>3.5)

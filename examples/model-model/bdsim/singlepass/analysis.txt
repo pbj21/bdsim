@@ -1,0 +1,9 @@
+Spectra  detector  {180} {0:450} {13,-13} detector.weight
+Spectra  detector  {90}  {0:450} {13,-13} detector.weight
+Spectra  detector  {45}  {0:450} {13,-13} detector.weight
+
+Histogram2D Event  XYDistribution+13  {50,50} {-2:2,-2:2} detector.y:detector.x detector.weight*(detector.partID==13)
+Histogram2D Event  XYDistribution-13  {50,50} {-2:2,-2:2} detector.y:detector.x detector.weight*(detector.partID==-13)
+
+Histogram2D Event  XYDistribution2+13  {100,100} {-2:2,-2:2} detector.y:detector.x detector.weight*(detector.partID==13)
+Histogram2D Event  XYDistribution2-13  {100,100} {-2:2,-2:2} detector.y:detector.x detector.weight*(detector.partID==-13)

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -86,7 +86,7 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   BDSAuxiliaryNavigator::ResetNavigatorStates();
   
   // Bunch generator beginning of run action (optional mean subtraction).
-  bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed());
+  bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed(), BDSGlobalConstants::Instance()->Batch());
   nEventsRequested = aRun->GetNumberOfEventToBeProcessed();
 
   SetTrajectorySamplerIDs();
@@ -154,12 +154,16 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
   
   // Write output
   // In the case of a file-based bunch generator, it will have cached these numbers - get them.
+  unsigned long long int nOriginalEvents = nEventsRequested; // default for normal bunch class
   unsigned long long int nEventsDistrFileSkipped = 0;
   unsigned long long int nEventsInOriginalDistrFile = 0;
+  unsigned int distrFileLoopNTimes = 1;
   if (auto beg = dynamic_cast<BDSBunchFileBased*>(bunchGenerator))
     {
+      nOriginalEvents = beg->NOriginalEvents();
       nEventsDistrFileSkipped = beg->NEventsInFileSkipped();
       nEventsInOriginalDistrFile = beg->NEventsInFile();
+      distrFileLoopNTimes = (unsigned int)beg->DistrFileLoopNTimes();
       if (nEventsDistrFileSkipped > 0)
         {G4cout << __METHOD_NAME__ << nEventsDistrFileSkipped << " events were skipped as no particles passed the filters in them." << G4endl;}
       if (nEventsDistrFileSkipped == nEventsInOriginalDistrFile)
@@ -168,7 +172,7 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
           BDS::Warning(__METHOD_NAME__, msg);
         }
     }
-  output->FillRun(info, nEventsRequested, nEventsInOriginalDistrFile, nEventsDistrFileSkipped);
+  output->FillRun(info, nOriginalEvents, nEventsRequested, nEventsInOriginalDistrFile, nEventsDistrFileSkipped, distrFileLoopNTimes);
   output->CloseFile();
   info->Flush();
 

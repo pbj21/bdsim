@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -252,6 +252,7 @@ void Beam::PublishMembers()
   publish("envelopeE", &Beam::envelopeE);
   publish("envelopeR", &Beam::envelopeR);
   publish("envelopeRp",&Beam::envelopeRp);
+  publish("zFromT",    &Beam::zFromT);
 
   // options for beam distrType="gaussmatrix"
   publish("sigma11",&Beam::sigma11);

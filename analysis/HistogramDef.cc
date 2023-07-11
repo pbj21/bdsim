@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -18,6 +18,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "HistogramDef.hh"
 
+#include <iostream>
+#include <string>
+
 ClassImp(HistogramDef)
 
 HistogramDef::HistogramDef():
@@ -30,11 +33,11 @@ HistogramDef::HistogramDef():
 {;}
 
 HistogramDef::HistogramDef(const std::string& treeNameIn,
-			   const std::string& histNameIn,
-			   int                nDimensionsIn,
-			   const std::string& variableIn,
-			   const std::string& selectionIn,
-			   bool               perEntryIn):
+                           const std::string& histNameIn,
+                           int                nDimensionsIn,
+                           const std::string& variableIn,
+                           const std::string& selectionIn,
+                           bool               perEntryIn):
   treeName(treeNameIn),
   histName(histNameIn),
   nDimensions(nDimensionsIn),
@@ -42,3 +45,11 @@ HistogramDef::HistogramDef(const std::string& treeNameIn,
   selection(selectionIn),
   perEntry(perEntryIn)
 {;}
+
+std::ostream& operator<< (std::ostream& out, const HistogramDef& s)
+{
+  std::string hs = s.GetHistogramString();
+  std::string bs = s.GetBinningString();
+  out << hs << " " << s.treeName << " " << s.histName << " " << bs << " " << s.variable << " " << s.selection << "\n";
+  return out;
+}

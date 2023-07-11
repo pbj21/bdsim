@@ -1,0 +1,17 @@
+option, physicsList="g4FTFP_BERT";
+
+! we pick a particle that's not a regular one in BDSIM but is available
+! through the physics list
+
+! in this test, it will only be found in Geant4 (not bdsim's list of common ones)
+! and it has to be matched with mixed case - tests the check of mixed case search
+
+beam,  particle="J/psi",
+       energy=50.0 * GeV;
+
+include options.gmad;
+include fodo.gmad;
+
+option, ngenerate=1;
+
+option, physicsVerbose=1;

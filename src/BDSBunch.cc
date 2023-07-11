@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -80,10 +80,10 @@ BDSBunch::~BDSBunch()
 }
 
 void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
-			  const GMAD::Beam& beam,
-			  const BDSBunchType& /*distrType*/,
-			  G4Transform3D beamlineTransformIn,
-			  G4double beamlineSIn)
+                          const GMAD::Beam& beam,
+                          const BDSBunchType& /*distrType*/,
+                          G4Transform3D beamlineTransformIn,
+                          G4double beamlineSIn)
 {
   particleDefinition = new BDSParticleDefinition(*beamParticle); // copy it so this instance owns it
 
@@ -167,17 +167,17 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
       G4cout << __METHOD_NAME__ << "using curvilinear transform" << G4endl;
 #endif
       if (BDS::IsFinite(Z0))
-	{throw BDSException(__METHOD_NAME__, "both Z0 and S0 are defined - please define only one!");}
+        {throw BDSException(__METHOD_NAME__, "both Z0 and S0 are defined - please define only one!");}
       useCurvilinear = true;
     } 
 }
 
 void BDSBunch::SetEmittances(const BDSParticleDefinition* beamParticle,
-			     const GMAD::Beam& beam,
-			     G4double&         emittGeometricX,
-			     G4double&         emittGeometricY,
-			     G4double&         emittNormalisedX,
-			     G4double&         emittNormalisedY)
+                             const GMAD::Beam& beam,
+                             G4double&         emittGeometricX,
+                             G4double&         emittGeometricY,
+                             G4double&         emittNormalisedX,
+                             G4double&         emittNormalisedY)
 {
   std::set<std::string> keysDesignX = {"emitx", "emitnx"};
   G4int nSetDesignX = BDS::NBeamParametersSet(beam, keysDesignX);
@@ -207,9 +207,9 @@ void BDSBunch::SetEmittances(const BDSParticleDefinition* beamParticle,
     }
 
   G4cout << __METHOD_NAME__ << "Geometric (x): " << emittGeometricX
-	 << ", Normalised (x): " << emittNormalisedX << G4endl;
+         << ", Normalised (x): " << emittNormalisedX << G4endl;
   G4cout << __METHOD_NAME__ << "Geometric (y): " << emittGeometricY
-	 << ", Normalised (y): " << emittNormalisedY << G4endl;
+         << ", Normalised (y): " << emittNormalisedY << G4endl;
 }
 
 void BDSBunch::CalculateBunchIndex(G4int eventIndex)
@@ -250,7 +250,7 @@ BDSParticleCoordsFullGlobal BDSBunch::GetNextParticleValid(G4int maxTries)
       
       // ensure total energy is greater than the rest mass
       if ((coords.local.totalEnergy - particleDefinition->Mass()) > 0)
-	{break;}
+        {break;}
     }
   if (n >= maxTries)
     {throw BDSException(__METHOD_NAME__, "unable to generate coordinates above rest mass after 100 attempts.");}
@@ -272,8 +272,8 @@ BDSParticleCoordsFullGlobal BDSBunch::GetNextParticle()
 BDSParticleCoordsFull BDSBunch::GetNextParticleLocal()
 {
   BDSParticleCoordsFull local(X0,  Y0,  Z0,
-			      Xp0, Yp0, Zp0,
-			      T0, S0, E0, /*weight=*/1.0);
+                              Xp0, Yp0, Zp0,
+                              T0, S0, E0, /*weight=*/1.0);
   return local;
 }
 
@@ -282,7 +282,8 @@ void BDSBunch::RecreateAdvanceToEvent(G4int eventOffset)
   CalculateBunchIndex(eventOffset);
 }
 
-void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/)
+void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/,
+                                G4bool /*batchMode*/)
 {;}
 
 void BDSBunch::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)
@@ -327,19 +328,23 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
     {// initialise cache of beam line pointer
       beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
       if (!beamline)
-	{throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
+        {throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
     }
 
   // 'c' for curvilinear
   G4int beamlineIndex = 0;
   G4double S = S0 + localIn.z;
-  if (S < 0)
-    {throw BDSException(__METHOD_NAME__, "Negative S detected for particle.");}
+  G4double sMin = beamline->GetSMinimum();
+  G4double sMax = beamline->GetSMaximum();
+  if (S < sMin - 1*CLHEP::m)
+    {throw BDSException(__METHOD_NAME__, "S less than minimum S (" + std::to_string(sMin) + ") - 1m for particle.");}
+  if (S > sMax + 1*CLHEP::m)
+    {throw BDSException(__METHOD_NAME__, "S greater than maximum S (" + std::to_string(sMax) + ") + 1m for particle.");}
   
   G4Transform3D cTrans = beamline->GetGlobalEuclideanTransform(S,
-							       localIn.x,
-							       localIn.y,
-							       &beamlineIndex);
+                                                               localIn.x,
+                                                               localIn.y,
+                                                               &beamlineIndex);
   // rotate the momentum vector
   G4ThreeVector cMom = G4ThreeVector(localIn.xp, localIn.yp, localIn.zp).transform(cTrans.getRotation());
   // translation contains displacement from origin already - including any local offset
@@ -348,8 +353,8 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
   G4double tOffset = S / CLHEP::c_light; // we assume the velocity of light for timing
 
   BDSParticleCoords global = BDSParticleCoords(cPos.x(), cPos.y(), cPos.z(),
-					       cMom.x(), cMom.y(), cMom.z(),
-					       localIn.T + tOffset);
+                                               cMom.x(), cMom.y(), cMom.z(),
+                                               localIn.T + tOffset);
 
   BDSParticleCoordsFullGlobal result = BDSParticleCoordsFullGlobal(localIn, global);
   result.beamlineIndex = beamlineIndex;
@@ -382,8 +387,8 @@ void BDSBunch::UpdateIonDefinition()
   G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
   BDSIonDefinition* ionDefinition = particleDefinition->IonDefinition();
   G4ParticleDefinition* ionParticleDef = ionTable->GetIon(ionDefinition->Z(),
-							  ionDefinition->A(),
-							  ionDefinition->ExcitationEnergy());
+                                                          ionDefinition->A(),
+                                                          ionDefinition->ExcitationEnergy());
   particleDefinition->UpdateG4ParticleDefinition(ionParticleDef);
   // Note we don't need to take care of electrons here. These are automatically
   // allocated by Geant4 when it converts the primary vertex to a dynamic particle

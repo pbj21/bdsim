@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -145,9 +145,11 @@ public:
 
   /// Copy run information to output structure.
   void FillRun(const BDSEventInfo* info,
+               unsigned long long int nOriginalEventsIn,
                unsigned long long int nEventsRequestedIn,
                unsigned long long int nEventsInOriginalDistrFileIn,
-               unsigned long long int nEventsDistrFileSkippedIn);
+               unsigned long long int nEventsDistrFileSkippedIn,
+               unsigned int distrFileLoopNTimesIn);
   
   /// Test whether a sampler name is invalid or not.
   static G4bool InvalidSamplerName(const G4String& samplerName);
@@ -275,9 +277,11 @@ private:
   /// Fill run level summary information. This also updates the header information for
   /// writing at the end of a file.
   void FillRunInfoAndUpdateHeader(const BDSEventInfo* info,
+                                  unsigned long long int nOriginalEventsIn,
                                   unsigned long long int nEventsRequestedIn,
                                   unsigned long long int nEventsInOriginalDistrFileIn,
-                                  unsigned long long int nEventsDistrFileSkippedIn);
+                                  unsigned long long int nEventsDistrFileSkippedIn,
+                                  unsigned int distrFileLoopNTimesIn);
 
   /// Utility function to copy out select bins from one histogram to another for 1D
   /// histograms only.

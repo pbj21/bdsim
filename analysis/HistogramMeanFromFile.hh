@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -51,7 +51,7 @@ public:
 
   /// Add a new set of histograms to the running total. Assume
   /// exact same structure in BDSOutputROOTEventHistogams input.
-  void Accumulate(BDSOutputROOTEventHistograms* hNew);
+  void Accumulate(BDSOutputROOTEventHistograms* hNew, bool warnAboutZeroEntries = false);
 
   /// Finish calculation.
   void Terminate();

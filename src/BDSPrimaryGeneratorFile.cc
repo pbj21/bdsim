@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -92,7 +92,8 @@ G4bool BDSPrimaryGeneratorFile::OKToLoopFile() const
 BDSPrimaryGeneratorFile* BDSPrimaryGeneratorFile::ConstructGenerator(const GMAD::Beam& beam,
                                                                      BDSBunch* bunchIn,
                                                                      G4bool recreate,
-                                                                     G4int eventOffset)
+                                                                     G4int eventOffset,
+                                                                     G4bool batchMode)
 {
   BDSPrimaryGeneratorFile* generatorFromFile = nullptr;
   
@@ -109,13 +110,14 @@ BDSPrimaryGeneratorFile* BDSPrimaryGeneratorFile::ConstructGenerator(const GMAD:
       BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
       if (!beg)
         {throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
+      G4bool shouldLoopFile = beam.distrFileLoop || !batchMode;
       if (useEventGeneratorFile)
         {
 #ifdef USE_HEPMC3
           generatorFromFile = new BDSPrimaryGeneratorFileHEPMC(beam.distrType,
                                                                filename,
                                                                beg,
-                                                               beam.distrFileLoop,
+                                                               shouldLoopFile,
                                                                beam.removeUnstableWithoutDecay,
                                                                beam.eventGeneratorWarnSkippedParticles);
 #else
@@ -127,7 +129,7 @@ BDSPrimaryGeneratorFile* BDSPrimaryGeneratorFile::ConstructGenerator(const GMAD:
           generatorFromFile = new BDSPrimaryGeneratorFileSampler(beam.distrType,
                                                                  filename,
                                                                  beg,
-                                                                 beam.distrFileLoop,
+                                                                 shouldLoopFile,
                                                                  beam.removeUnstableWithoutDecay,
                                                                  beam.eventGeneratorWarnSkippedParticles);
           

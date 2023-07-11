@@ -5,8 +5,9 @@ beam,  particle="e-",
        envelopeY  = 0.002*mm, 
        envelopeXp = 0.09*0.005,
        envelopeYp = 0.09*0.005,
-       envelopeT  = 1e-9;
-       envelopeE  = 1e-5;
+       envelopeT  = 1e-8,
+       envelopeE  = 1e-5,
+       envelopeZ   = 1*m;
 
 include options.gmad
 include fodo.gmad;

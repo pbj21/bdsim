@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBH4DBase.hh"
 
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -40,15 +41,15 @@ HistogramAccumulator::HistogramAccumulator():
 {;}
 
 HistogramAccumulator::HistogramAccumulator(TH1* baseHistogram,
-					   const std::string& resultHistNameIn,
-					   const std::string& resultHistTitleIn):
+                                           const std::string& resultHistNameIn,
+                                           const std::string& resultHistTitleIn):
   HistogramAccumulator(baseHistogram, (int)baseHistogram->GetDimension(), resultHistNameIn, resultHistTitleIn)
 {;}
 
 HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
-					   int                nDimensionsIn,
-					   const std::string& resultHistNameIn,
-					   const std::string& resultHistTitleIn):
+                                           int                nDimensionsIn,
+                                           const std::string& resultHistNameIn,
+                                           const std::string& resultHistTitleIn):
   nDimensions(nDimensionsIn),
   n(0),
   terminated(false),
@@ -64,32 +65,32 @@ HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
     {
     case 1:
       {
-	mean     = dynamic_cast<TH1D*>(baseHistogram->Clone(meanName.c_str()));
-	variance = dynamic_cast<TH1D*>(baseHistogram->Clone(variName.c_str()));
-	result   = dynamic_cast<TH1D*>(baseHistogram->Clone(resultHistName.c_str()));
-	break;
+        mean     = dynamic_cast<TH1D*>(baseHistogram->Clone(meanName.c_str()));
+        variance = dynamic_cast<TH1D*>(baseHistogram->Clone(variName.c_str()));
+        result   = dynamic_cast<TH1D*>(baseHistogram->Clone(resultHistName.c_str()));
+        break;
       }
     case 2:
       {
-	mean     = dynamic_cast<TH2D*>(baseHistogram->Clone(meanName.c_str()));
-	variance = dynamic_cast<TH2D*>(baseHistogram->Clone(variName.c_str()));
-	result   = dynamic_cast<TH2D*>(baseHistogram->Clone(resultHistName.c_str()));
-	break;
+        mean     = dynamic_cast<TH2D*>(baseHistogram->Clone(meanName.c_str()));
+        variance = dynamic_cast<TH2D*>(baseHistogram->Clone(variName.c_str()));
+        result   = dynamic_cast<TH2D*>(baseHistogram->Clone(resultHistName.c_str()));
+        break;
       }
     case 3:
       {
-	mean     = dynamic_cast<TH3D*>(baseHistogram->Clone(meanName.c_str()));
-	variance = dynamic_cast<TH3D*>(baseHistogram->Clone(variName.c_str()));
-	result   = dynamic_cast<TH3D*>(baseHistogram->Clone(resultHistName.c_str()));
-	break;
+        mean     = dynamic_cast<TH3D*>(baseHistogram->Clone(meanName.c_str()));
+        variance = dynamic_cast<TH3D*>(baseHistogram->Clone(variName.c_str()));
+        result   = dynamic_cast<TH3D*>(baseHistogram->Clone(resultHistName.c_str()));
+        break;
       }
     case 4:
       {
 #ifdef USE_BOOST
-	mean     = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(meanName.c_str());
-	variance = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(variName.c_str());
-	result   = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(resultHistName.c_str());
-	break;
+        mean     = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(meanName.c_str());
+        variance = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(variName.c_str());
+        result   = dynamic_cast<BDSBH4DBase*>(baseHistogram)->Clone(resultHistName.c_str());
+        break;
 #endif
       }
     default:
@@ -98,7 +99,7 @@ HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
   if (mean && variance && result)
     {// technically these could be nullptr
       if (nDimensions != 4)
-	{
+        {
           // empty contents
           mean->Reset();
           variance->Reset();
@@ -107,9 +108,9 @@ HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
           result->SetTitle(resultHistTitle.c_str());
           mean->SetTitle(meanName.c_str());
           variance->SetTitle(variName.c_str());
-	}
+        }
       else
-	{
+        {
 #ifdef USE_BOOST
           // empty contents
           static_cast<BDSBH4DBase*>(mean)->Reset_BDSBH4D();
@@ -120,7 +121,7 @@ HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
           static_cast<BDSBH4DBase*>(mean)->SetTitle(meanName.c_str());
           static_cast<BDSBH4DBase*>(variance)->SetTitle(variName.c_str());
 #endif
-	}
+        }
     }
 }
 
@@ -132,104 +133,111 @@ HistogramAccumulator::~HistogramAccumulator()
   // leak result here as ROOT annoyingly requires this to be left
 }
 
-void HistogramAccumulator::Accumulate(TH1* newValue)
+void HistogramAccumulator::Accumulate(TH1* newValue, bool warnAboutZeroEntries)
 {
   // temporary variables
   double newMean = 0;
   double newVari = 0;
   const double error   = 0; // needed to pass reference to unused parameter
   const unsigned long nEntriesToAccumulate = 1;
+
+  if (newValue->GetEntries() == 0)
+    {
+      if (warnAboutZeroEntries)
+        {std::cout << "Histogram has no entries: \"" << newValue->GetName() << "\"" << std::endl;}
+      return; // can't accumulate nothing
+    }
   
   n++;
   switch (nDimensions)
     {
     case 1:
       {
-	TH1D* h1  = dynamic_cast<TH1D*>(mean);
-	TH1D* h1e = dynamic_cast<TH1D*>(variance);
-	TH1D* ht  = dynamic_cast<TH1D*>(newValue);
-	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
-	  {
-	    AccumulateSingleValue(h1->GetBinContent(j),
-				  h1e->GetBinContent(j),
-				  ht->GetBinContent(j),
-				  error, n, nEntriesToAccumulate,
-				  newMean, newVari);
-	    h1->SetBinContent(j, newMean);
-	    h1e->SetBinContent(j, newVari);
-	  }
-	break;
+        TH1D* h1  = dynamic_cast<TH1D*>(mean);
+        TH1D* h1e = dynamic_cast<TH1D*>(variance);
+        TH1D* ht  = dynamic_cast<TH1D*>(newValue);
+        for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
+          {
+            AccumulateSingleValue(h1->GetBinContent(j),
+                                  h1e->GetBinContent(j),
+                                  ht->GetBinContent(j),
+                                  error, n, nEntriesToAccumulate,
+                                  newMean, newVari);
+            h1->SetBinContent(j, newMean);
+            h1e->SetBinContent(j, newVari);
+          }
+        break;
       }
     case 2:
       {
-	TH2D* h1  = dynamic_cast<TH2D*>(mean);
-	TH2D* h1e = dynamic_cast<TH2D*>(variance);
-	TH2D* ht  = dynamic_cast<TH2D*>(newValue);
-	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
-	  {
-	    for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)
-	      {
-		AccumulateSingleValue(h1->GetBinContent(j,k),
-				      h1e->GetBinContent(j,k),
-				      ht->GetBinContent(j,k),
-				      error, n, nEntriesToAccumulate,
-				      newMean, newVari);
-		h1->SetBinContent(j, k, newMean);
-		h1e->SetBinContent(j, k, newVari);
-	      }
-	  }
-	break;
+        TH2D* h1  = dynamic_cast<TH2D*>(mean);
+        TH2D* h1e = dynamic_cast<TH2D*>(variance);
+        TH2D* ht  = dynamic_cast<TH2D*>(newValue);
+        for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
+          {
+            for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)
+              {
+                AccumulateSingleValue(h1->GetBinContent(j,k),
+                                      h1e->GetBinContent(j,k),
+                                      ht->GetBinContent(j,k),
+                                      error, n, nEntriesToAccumulate,
+                                      newMean, newVari);
+                h1->SetBinContent(j, k, newMean);
+                h1e->SetBinContent(j, k, newVari);
+              }
+          }
+        break;
       }
     case 3:
       {
-	TH3D* h1  = dynamic_cast<TH3D*>(mean);
-	TH3D* h1e = dynamic_cast<TH3D*>(variance);
-	TH3D* ht  = dynamic_cast<TH3D*>(newValue);
-	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
-	  {
-	    for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)
-	      {
-		for (int l = 0; l <= h1->GetNbinsZ() + 1; ++l)
-		  {
-		    AccumulateSingleValue(h1->GetBinContent(j,k,l),
-					  h1e->GetBinContent(j,k,l),
-					  ht->GetBinContent(j,k,l),
-					  error, n, nEntriesToAccumulate,
-					  newMean, newVari);
-		    h1->SetBinContent(j, k, l, newMean);
-		    h1e->SetBinContent(j, k, l, newVari);
-		  }
-	      }
-	  }
-	break;
+        TH3D* h1  = dynamic_cast<TH3D*>(mean);
+        TH3D* h1e = dynamic_cast<TH3D*>(variance);
+        TH3D* ht  = dynamic_cast<TH3D*>(newValue);
+        for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
+          {
+            for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)
+              {
+                for (int l = 0; l <= h1->GetNbinsZ() + 1; ++l)
+                  {
+                    AccumulateSingleValue(h1->GetBinContent(j,k,l),
+                                          h1e->GetBinContent(j,k,l),
+                                          ht->GetBinContent(j,k,l),
+                                          error, n, nEntriesToAccumulate,
+                                          newMean, newVari);
+                    h1->SetBinContent(j, k, l, newMean);
+                    h1e->SetBinContent(j, k, l, newVari);
+                  }
+              }
+          }
+        break;
       }
     case 4:
       {
 #ifdef USE_BOOST
-	BDSBH4DBase* h1  = dynamic_cast<BDSBH4DBase*>(mean);
-	BDSBH4DBase* h1e = dynamic_cast<BDSBH4DBase*>(variance);
-	BDSBH4DBase* ht  = dynamic_cast<BDSBH4DBase*>(newValue);
-	for (int j = -1; j <= h1->GetNbinsX(); ++j)
-	  {
-	    for (int k = -1; k <= h1->GetNbinsY(); ++k)
-	      {
-		for (int l = -1; l <= h1->GetNbinsZ(); ++l)
-		  {
-		    for (int e = -1; e <= h1->GetNbinsE(); ++e)
-		      {
-			AccumulateSingleValue(h1->At(j,k,l,e),
-					      h1e->At(j,k,l,e),
-					      ht->At(j,k,l,e),
-					      error, n, nEntriesToAccumulate,
-					      newMean, newVari);
-			h1->Set_BDSBH4D(j,k,l,e, newMean);
-			h1e->Set_BDSBH4D(j,k,l,e, newVari);
-		      }
-		    
-		  }
-	      }
-	  }
-	break;
+        BDSBH4DBase* h1  = dynamic_cast<BDSBH4DBase*>(mean);
+        BDSBH4DBase* h1e = dynamic_cast<BDSBH4DBase*>(variance);
+        BDSBH4DBase* ht  = dynamic_cast<BDSBH4DBase*>(newValue);
+        for (int j = -1; j <= h1->GetNbinsX(); ++j)
+          {
+            for (int k = -1; k <= h1->GetNbinsY(); ++k)
+              {
+                for (int l = -1; l <= h1->GetNbinsZ(); ++l)
+                  {
+                    for (int e = -1; e <= h1->GetNbinsE(); ++e)
+                      {
+                        AccumulateSingleValue(h1->At(j,k,l,e),
+                                              h1e->At(j,k,l,e),
+                                              ht->At(j,k,l,e),
+                                              error, n, nEntriesToAccumulate,
+                                              newMean, newVari);
+                        h1->Set_BDSBH4D(j,k,l,e, newMean);
+                        h1e->Set_BDSBH4D(j,k,l,e, newVari);
+                      }
+                    
+                  }
+              }
+          }
+        break;
 #endif
       }
     default:
@@ -253,78 +261,78 @@ TH1* HistogramAccumulator::Terminate()
     {
     case 1:
       {
-	for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
-	  {
-	    mn  = mean->GetBinContent(j);
-	    var = variance->GetBinContent(j);
-	    err = n > 1 ? factor*std::sqrt(var) : 0;
-	    result->SetBinContent(j, mn);
-	    result->SetBinError(j,   err);
-	  }
-	break;
+        for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
+          {
+            mn  = mean->GetBinContent(j);
+            var = variance->GetBinContent(j);
+            err = n > 1 ? factor*std::sqrt(var) : 0;
+            result->SetBinContent(j, mn);
+            result->SetBinError(j,   err);
+          }
+        break;
       }
     case 2:
       {
-	for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
-	  {
-	    for (int k = 0; k <= result->GetNbinsY() + 1; ++k)
-	      {
-		mn  = mean->GetBinContent(j,k);
-		var = variance->GetBinContent(j, k);
-		err = n > 1 ? factor*std::sqrt(var) : 0;
-		result->SetBinContent(j, k, mn);
-		result->SetBinError(j, k,   err);
-	      }
-	  }
-	break;
+        for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
+          {
+            for (int k = 0; k <= result->GetNbinsY() + 1; ++k)
+              {
+                mn  = mean->GetBinContent(j,k);
+                var = variance->GetBinContent(j, k);
+                err = n > 1 ? factor*std::sqrt(var) : 0;
+                result->SetBinContent(j, k, mn);
+                result->SetBinError(j, k,   err);
+              }
+          }
+        break;
       }
     case 3:
       {
-	for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
-	  {
-	    for (int k = 0; k <= result->GetNbinsY() + 1; ++k)
-	      {
-		for (int l = 0; l <= result->GetNbinsZ() + 1; ++l)
-		  {
-		    mn  = mean->GetBinContent(j,k,l);
-		    var = variance->GetBinContent(j, k, l);
-		    err = n > 1 ? factor*std::sqrt(var) : 0;
-		    result->SetBinContent(j,k,l, mn);
-		    result->SetBinError(j,k,l,   err);
-		  }
-	      }
-	  }
-	break;
+        for (int j = 0; j <= result->GetNbinsX() + 1; ++j)
+          {
+            for (int k = 0; k <= result->GetNbinsY() + 1; ++k)
+              {
+                for (int l = 0; l <= result->GetNbinsZ() + 1; ++l)
+                  {
+                    mn  = mean->GetBinContent(j,k,l);
+                    var = variance->GetBinContent(j, k, l);
+                    err = n > 1 ? factor*std::sqrt(var) : 0;
+                    result->SetBinContent(j,k,l, mn);
+                    result->SetBinError(j,k,l,   err);
+                  }
+              }
+          }
+        break;
       }
     case 4:
       {
 #ifdef USE_BOOST
-	auto histCast = dynamic_cast<BDSBH4DBase*>(result);
-	auto mnCast   = dynamic_cast<BDSBH4DBase*>(mean);
-	auto varCast  = dynamic_cast<BDSBH4DBase*>(variance);
-	auto resCast  = dynamic_cast<BDSBH4DBase*>(result);
-	int nBinsX = histCast->GetNbinsX();
-	int nBinsY = histCast->GetNbinsY();
-	int nBinsZ = histCast->GetNbinsZ();
-	int nBinsE = histCast->GetNbinsE();
-	for (int j = -1; j <= nBinsX; ++j)
-	  {
-	    for (int k = -1; k <= nBinsY; ++k)
-	      {
-		for (int l = -1; l <= nBinsZ; ++l)
-		  {
-		    for (int e = -1; e <= nBinsE; ++e)
-		      {
-			mn  = mnCast->At(j, k, l, e);
-			var = varCast->At(j, k, l, e);
-			err = n > 1 ? factor*std::sqrt(var) : 0;
-			resCast->Set_BDSBH4D(j, k, l, e, mn);
-			resCast->SetError_BDSBH4D(j, k, l, e, err);
-		      }
-		  }
-	      }
-	  }
-	break;
+        auto histCast = dynamic_cast<BDSBH4DBase*>(result);
+        auto mnCast   = dynamic_cast<BDSBH4DBase*>(mean);
+        auto varCast  = dynamic_cast<BDSBH4DBase*>(variance);
+        auto resCast  = dynamic_cast<BDSBH4DBase*>(result);
+        int nBinsX = histCast->GetNbinsX();
+        int nBinsY = histCast->GetNbinsY();
+        int nBinsZ = histCast->GetNbinsZ();
+        int nBinsE = histCast->GetNbinsE();
+        for (int j = -1; j <= nBinsX; ++j)
+          {
+            for (int k = -1; k <= nBinsY; ++k)
+              {
+                for (int l = -1; l <= nBinsZ; ++l)
+                  {
+                    for (int e = -1; e <= nBinsE; ++e)
+                      {
+                        mn  = mnCast->At(j, k, l, e);
+                        var = varCast->At(j, k, l, e);
+                        err = n > 1 ? factor*std::sqrt(var) : 0;
+                        resCast->Set_BDSBH4D(j, k, l, e, mn);
+                        resCast->SetError_BDSBH4D(j, k, l, e, err);
+                      }
+                  }
+              }
+          }
+        break;
 #endif
       }
     default:
@@ -339,13 +347,13 @@ TH1* HistogramAccumulator::Terminate()
 }
 
 void HistogramAccumulator::AccumulateSingleValue(double         oldMean,
-						 double         oldVari,
-						 double         x,
-						 double       /*xVari*/,
-						 unsigned long  nEntriesAccumulated,
-						 unsigned long/*nEntriesToAccumulate*/,
-						 double&        newMean,
-						 double&        newVari) const
+                                                 double         oldVari,
+                                                 double         x,
+                                                 double       /*xVari*/,
+                                                 unsigned long  nEntriesAccumulated,
+                                                 unsigned long/*nEntriesToAccumulate*/,
+                                                 double&        newMean,
+                                                 double&        newVari) const
 {
   newMean = oldMean + ((x - oldMean) / (double)nEntriesAccumulated);
   newVari = oldVari + ((x - oldMean) * (x - newMean));

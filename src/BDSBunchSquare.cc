@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -35,21 +35,17 @@ BDSBunchSquare::BDSBunchSquare():
   envelopeT(0.0),
   envelopeE(0.0),
   envelopeZ(0.0),
-  useEnvelopeZ(false)
-{
-  flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine());
-}
+  correlatedZWithT(false)
+{;}
 
 BDSBunchSquare::~BDSBunchSquare()
-{
-  delete flatGen;
-}
+{;}
 
 void BDSBunchSquare::SetOptions(const BDSParticleDefinition* beamParticle,
-				const GMAD::Beam& beam,
-				const BDSBunchType& distrType,
-				G4Transform3D beamlineTransformIn,
-				const G4double beamlineSIn)
+                                const GMAD::Beam& beam,
+                                const BDSBunchType& distrType,
+                                G4Transform3D beamlineTransformIn,
+                                const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   envelopeX  = beam.envelopeX  * CLHEP::m;
@@ -59,7 +55,7 @@ void BDSBunchSquare::SetOptions(const BDSParticleDefinition* beamParticle,
   envelopeT  = beam.envelopeT  * CLHEP::s;
   envelopeE  = beam.envelopeE  * CLHEP::GeV;
   envelopeZ  = beam.envelopeZ  * CLHEP::m;
-  useEnvelopeZ = beam.HasBeenSet("envelopeZ");
+  correlatedZWithT = beam.zFromT;
 }
 
 void BDSBunchSquare::CheckParameters()
@@ -82,21 +78,22 @@ void BDSBunchSquare::CheckParameters()
 }
 
 BDSParticleCoordsFull BDSBunchSquare::GetNextParticleLocal()
-{  
-  G4double x  = X0  + envelopeX  * (1-2*flatGen->shoot());
-  G4double y  = Y0  + envelopeY  * (1-2*flatGen->shoot());
-  G4double xp = Xp0 + envelopeXp * (1-2*flatGen->shoot());
-  G4double yp = Yp0 + envelopeYp * (1-2*flatGen->shoot());
+{
+  G4double x  = X0  + envelopeX  * (1-2*G4RandFlat::shoot());
+  G4double y  = Y0  + envelopeY  * (1-2*G4RandFlat::shoot());
+  G4double xp = Xp0 + envelopeXp * (1-2*G4RandFlat::shoot());
+  G4double yp = Yp0 + envelopeYp * (1-2*G4RandFlat::shoot());
   G4double zp = CalculateZp(xp,yp,Zp0);
-  G4double dt = envelopeT * (1.-2.*flatGen->shoot());
+  G4double dt = envelopeT * (1.-2.*G4RandFlat::shoot());
   G4double t  = T0 + dt;
   G4double dz;
-  if (useEnvelopeZ)
-    {dz = envelopeZ * (1.-2*flatGen->shoot());}
-  else
+  if (correlatedZWithT)
     {dz = dt * CLHEP::c_light;}
+  else
+    {dz = envelopeZ * (1.-2*G4RandFlat::shoot());}
+
   G4double z  = Z0 + dz;
-  G4double E  = E0 + envelopeE * (1 - 2*flatGen->shoot());
+  G4double E  = E0 + envelopeE * (1 - 2*G4RandFlat::shoot());
   
   return BDSParticleCoordsFull(x,y,z,xp,yp,zp,t,S0+dz,E,/*weight=*/1.0);
 }

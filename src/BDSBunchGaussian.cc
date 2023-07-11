@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -43,9 +43,9 @@ namespace {
     CLHEP::HepSymMatrix D = S.similarityT(U);   // D = U.T() S U = Sdiag
     for (G4int i = 1; i <= S.num_row(); i++)
       {
-	G4double s2 = D(i,i);
-	if ( s2 <= 0 )
-	  {return false;}
+        G4double s2 = D(i,i);
+        if ( s2 <= 0 )
+          {return false;}
       }
     return true;
   }
@@ -68,10 +68,10 @@ BDSBunchGaussian::~BDSBunchGaussian()
 }
 
 void BDSBunchGaussian::SetOptions(const BDSParticleDefinition* beamParticle,
-				  const GMAD::Beam& beam,
-				  const BDSBunchType& distrType,
-				  G4Transform3D beamlineTransformIn,
-				  const G4double beamlineSIn)
+                                  const GMAD::Beam& beam,
+                                  const BDSBunchType& distrType,
+                                  G4Transform3D beamlineTransformIn,
+                                  const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
 
@@ -95,7 +95,8 @@ void BDSBunchGaussian::SetOptions(const BDSParticleDefinition* beamParticle,
   meansGM[5] = 1;
 }
 
-void BDSBunchGaussian::BeginOfRunAction(G4int numberOfEvents)
+void BDSBunchGaussian::BeginOfRunAction(G4int numberOfEvents,
+                                        G4bool /*batchMode*/)
 {
   if (!offsetSampleMean)
     {return;}
@@ -108,8 +109,8 @@ void BDSBunchGaussian::BeginOfRunAction(G4int numberOfEvents)
 }
 
 CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine& anEngine,
-							  const CLHEP::HepVector& mu,
-							  CLHEP::HepSymMatrix& sigma)
+                                                          const CLHEP::HepVector& mu,
+                                                          CLHEP::HepSymMatrix& sigma)
 {
   /// check if sigma matrix is positive definite
   /// if not add small offset and cout warning
@@ -124,37 +125,37 @@ CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine
       G4double small_error = 1e-50;
       
       for (G4int i=0; i<6; i++)
-	{
-	  if (sigma[i][i]==0)
-	    {sigma[i][i] += small_error;}
-	}
+        {
+          if (sigma[i][i]==0)
+            {sigma[i][i] += small_error;}
+        }
       
       if (!isPositiveDefinite(sigma))
-	{
-	  G4cout << __METHOD_NAME__ << "WARNING bunch generator sigma matrix is still not positive definite" << G4endl;
-	  G4cout << sigma << G4endl;
-	  G4cout << __METHOD_NAME__ << "adding a small error to all elements" << G4endl;
-	  for (G4int i=0; i<6; i++)
-	    {
-	      for (G4int j=0; j<6; j++)
-		{
-		  if (sigma[i][j]==0)
-		    {sigma[i][j] += small_error;}
-		}
-	    }
-	  if (!isPositiveDefinite(sigma))
-	    {
-	      G4cout << sigma << G4endl;
-	      throw BDSException(__METHOD_NAME__, "bunch generator sigma matrix is still not positive definite, giving up");
-	    }
-	}
+        {
+          G4cout << __METHOD_NAME__ << "WARNING bunch generator sigma matrix is still not positive definite" << G4endl;
+          G4cout << sigma << G4endl;
+          G4cout << __METHOD_NAME__ << "adding a small error to all elements" << G4endl;
+          for (G4int i=0; i<6; i++)
+            {
+              for (G4int j=0; j<6; j++)
+                {
+                  if (sigma[i][j]==0)
+                    {sigma[i][j] += small_error;}
+                }
+            }
+          if (!isPositiveDefinite(sigma))
+            {
+              G4cout << sigma << G4endl;
+              throw BDSException(__METHOD_NAME__, "bunch generator sigma matrix is still not positive definite, giving up");
+            }
+        }
     }
 
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "mean "  << G4endl
-	 << mu    << G4endl
-	 << __METHOD_NAME__ << "sigma " << G4endl
-	 << sigma << G4endl;
+         << mu    << G4endl
+         << __METHOD_NAME__ << "sigma " << G4endl
+         << sigma << G4endl;
 #endif
   G4cout << __METHOD_NAME__ << "confirmed: positive definite matrix" << G4endl;
   return new CLHEP::RandMultiGauss(anEngine,mu,sigma); 

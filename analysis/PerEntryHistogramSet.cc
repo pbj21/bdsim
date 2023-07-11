@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -36,8 +36,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 //ClassImp(PerEntryHistogramSet)
 
 PerEntryHistogramSet::PerEntryHistogramSet(const HistogramDefSet* definitionIn,
-					   Event*                 eventIn,
-					   TChain*                chainIn):
+                                           Event*                 eventIn,
+                                           TChain*                chainIn):
   baseDefinition(definitionIn->baseDefinition),
   event(eventIn),
   chain(chainIn),
@@ -78,8 +78,8 @@ void PerEntryHistogramSet::CreatePerEntryHistogram(long long int pdgID)
   HistogramDef* def = baseDefinition->Clone();
   def->histName  = "Top" + std::to_string(topN) + "_Spectra_" + def->histName + "_" + std::to_string(pdgID);
   def->selection = HistogramDefSet::AddPDGFilterToSelection(ParticleSpec(pdgID,RBDS::SpectraParticles::all),
-							    def->selection,
-							    branchName);
+                                                            def->selection,
+                                                            branchName);
 
   PerEntryHistogram* hist = new PerEntryHistogram(def, chain);
   hist->AddNEmptyEntries(nEntries); // update to current number of events
@@ -101,7 +101,7 @@ void PerEntryHistogramSet::CheckSampler()
     {
       sampler = event->GetSampler(branchName + "."); // cache sampler
       if (!sampler)
-        {throw RBDSException("cannot find sampler \"" + branchName + "\" or Model tree was not stored");}
+        {throw RBDSException("Cannot find sampler \"" + branchName + "\" or Model tree was not stored");}
     }
 }
 
@@ -146,35 +146,35 @@ void PerEntryHistogramSet::Write(TDirectory* dir)
   if (what == HistogramDefSet::writewhat::all)
     {
       for (auto hist : allPerEntryHistograms)
-	{hist->Write(dir);}
+        {hist->Write(dir);}
     }
   else
     {
       // form a (sorted) vector of desired pdgIDs
       std::vector<long long int> desiredPDGIDs;
       switch (what)
-	{
-	case HistogramDefSet::writewhat::all:
-	  {std::copy(allPDGIDs.begin(), allPDGIDs.end(), std::back_inserter(desiredPDGIDs)); break;}
-	case HistogramDefSet::writewhat::topN:
-	  {desiredPDGIDs = TopN(topN);        break;}
-	case HistogramDefSet::writewhat::ions:
-	  {std::copy(ions.begin(), ions.end(), std::back_inserter(desiredPDGIDs)); break;}
-	case HistogramDefSet::writewhat::topNIons:
-	  {desiredPDGIDs = TopNIons(topN);    break;}
-	case HistogramDefSet::writewhat::particles:
-	  {std::copy(nonIons.begin(), nonIons.end(), std::back_inserter(desiredPDGIDs)); break;}
-	case HistogramDefSet::writewhat::topNParticles:
-	  {desiredPDGIDs = TopNNonIons(topN); break;}
-	} 
+        {
+        case HistogramDefSet::writewhat::all:
+          {std::copy(allPDGIDs.begin(), allPDGIDs.end(), std::back_inserter(desiredPDGIDs)); break;}
+        case HistogramDefSet::writewhat::topN:
+          {desiredPDGIDs = TopN(topN);        break;}
+        case HistogramDefSet::writewhat::ions:
+          {std::copy(ions.begin(), ions.end(), std::back_inserter(desiredPDGIDs)); break;}
+        case HistogramDefSet::writewhat::topNIons:
+          {desiredPDGIDs = TopNIons(topN);    break;}
+        case HistogramDefSet::writewhat::particles:
+          {std::copy(nonIons.begin(), nonIons.end(), std::back_inserter(desiredPDGIDs)); break;}
+        case HistogramDefSet::writewhat::topNParticles:
+          {desiredPDGIDs = TopNNonIons(topN); break;}
+        } 
 
       for (auto pdgID : desiredPDGIDs)
-	{histogramsByPDGID.at(pdgID)->Write(dir);}
+        {histogramsByPDGID.at(pdgID)->Write(dir);}
     }
 }
 
 std::vector<long long int> PerEntryHistogramSet::TopUtility(const std::set<long long int>& s,
-							 size_t n) const
+                                                            size_t n) const
 {
   // map the pdg id to the total number (inc weight) of that particle histogrammed (per event)
   std::map<long long int, double> integrals;

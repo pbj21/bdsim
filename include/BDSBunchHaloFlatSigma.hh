@@ -1,14 +1,14 @@
-/*
-Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
-University of London 2001 - 2022.
+/* 
+Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
-BDSIM is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
+BDSIM is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published 
 by the Free Software Foundation version 3 of the License.
 
-BDSIM is distributed in the hope that it will be useful, but
+BDSIM is distributed in the hope that it will be useful, but 
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -31,11 +31,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <numeric>
 #include <vector>
-
-namespace CLHEP
-{
-  class RandFlat;
-}
 
 namespace GMAD
 {
@@ -125,8 +120,7 @@ class EllipsePointGenerator
 {
 public:
   EllipsePointGenerator(G4double actionIn,
-                        const TwissPair& tp,
-                        CLHEP::RandFlat* flatRandomGeneratorIn);
+                        const TwissPair& tp);
   ~EllipsePointGenerator() = default;
   
   PhaseSpaceCoord GetRandomPointOnEllipse() const;
@@ -137,7 +131,6 @@ private:
   
   G4double action;
   TwissPair twisspair;
-  CLHEP::RandFlat* flatRandomGenerator;
   std::vector<G4double> angles;
   std::vector<G4double> pathLengths;
 };
@@ -179,8 +172,6 @@ private:
   G4double haloNSigmaXOuter;
   G4double haloNSigmaYInner;
   G4double haloNSigmaYOuter;
-
-  CLHEP::RandFlat* flatGen;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -89,7 +89,8 @@ public:
   /// An action that is called at the beginning of a run when we know the number of
   /// events that'll be generated. By default this is nothing, but can be used to
   /// calculate sample mean offsets in some derived classes.
-  virtual void BeginOfRunAction(G4int numberOfEvents);
+  virtual void BeginOfRunAction(G4int numberOfEvents,
+                                G4bool batchMode);
 
   /// Access the beam particle definition.
   inline virtual const BDSParticleDefinition* ParticleDefinition() const {return particleDefinition;}

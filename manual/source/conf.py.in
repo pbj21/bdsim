@@ -245,7 +245,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'bdsim', u'BDSIM Documentation',
-     [u'Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London, 2001 - 2022'], 1)
+     [u'Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London, 2001 - @CURRENT_YEAR@'], 1)
 ]
 
 # If true, show URL addresses after external links.

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -136,37 +136,37 @@ int main(int argc, char* argv[])
     {
       f = new TFile(file.c_str());
       if (RBDS::IsREBDSIMOrCombineOutputFile(f))
-	{
-	  std::cout << "Accumulating> " << file << std::endl;
-	  for (const auto& hist : histograms)
-	    {
-	      std::string histPath = hist.path + hist.name; // histPath has trailing '/'
+        {
+          std::cout << "Accumulating> " << file << std::endl;
+          for (const auto& hist : histograms)
+            {
+              std::string histPath = hist.path + hist.name; // histPath has trailing '/'
 
-	      TH1* h = dynamic_cast<TH1*>(f->Get(histPath.c_str()));
+              TH1* h = dynamic_cast<TH1*>(f->Get(histPath.c_str()));
 
-	      if (!h)
-		{RBDS::WarningMissingHistogram(histPath, file); continue;}
-	      hist.accumulator->Accumulate(h);
-	    }
-	  
-	  Header* h = new Header();
-	  TTree* ht = (TTree*)f->Get("Header");
-	  h->SetBranchAddress(ht);
-	  ht->GetEntry(0);
-	  nOriginalEvents += h->header->nOriginalEvents;
-    // Here we exploit the fact that the 0th entry of the header tree has no data for these
-    // two variables. There may however, only ever be 1 entry for older data. We add it up anyway.
-    for (int i = 0; i < (int)ht->GetEntries(); i++)
-      {
-        ht->GetEntry(i);
-        nEventsInFile += h->header->nEventsInFile;
-        nEventsInFileSkipped += h->header->nEventsInFileSkipped;
-        nEventsRequested += h->header->nEventsRequested;
-      }
-	  delete h;
-	}
+              if (!h)
+                {RBDS::WarningMissingHistogram(histPath, file); continue;}
+              hist.accumulator->Accumulate(h, true);
+            }
+          
+          Header* h = new Header();
+          TTree* ht = (TTree*)f->Get("Header");
+          h->SetBranchAddress(ht);
+          ht->GetEntry(0);
+          nOriginalEvents += h->header->nOriginalEvents;
+          // Here we exploit the fact that the 0th entry of the header tree has no data for these
+          // two variables. There may however, only ever be 1 entry for older data. We add it up anyway.
+          for (int i = 0; i < (int)ht->GetEntries(); i++)
+            {
+              ht->GetEntry(i);
+              nEventsInFile += h->header->nEventsInFile;
+              nEventsInFileSkipped += h->header->nEventsInFileSkipped;
+              nEventsRequested += h->header->nEventsRequested;
+            }
+          delete h;
+        }
       else
-	{std::cout << "Skipping " << file << " as not a rebdsim output file" << std::endl;}
+        {std::cout << "Skipping " << file << " as not a rebdsim output file" << std::endl;}
       f->Close();
       delete f;
     }
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
       result->SetDirectory(hist.outputDir);
       hist.outputDir->Add(result);
       delete hist.accumulator; // this removes temporary histograms from the file
-	}
+    }
 
   headerOut->nOriginalEvents = nOriginalEvents;
   headerOut->nEventsInFile = nEventsInFile;

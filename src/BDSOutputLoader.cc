@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
   dataVersion(-1),
+  nOriginalEvents(0),
   badFilePath(true),
   rootEventFile(false),
   localBeam(nullptr),
@@ -59,7 +60,7 @@ BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
     {// check it's a rootevent file - TBC - use analysis IsBDSIMFile after restructure
       rootEventFile = file->GetListOfKeys()->Contains("Event");
       if (!rootEventFile)
-	{throw BDSException(__METHOD_NAME__, "Not a BDSIM rootevent output format ROOT file");}
+        {throw BDSException(__METHOD_NAME__, "Not a BDSIM rootevent output format ROOT file");}
     }
 
   // extract data version
@@ -70,6 +71,7 @@ BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
   headerTree->SetBranchAddress("Header.", &headerLocal);
   headerTree->GetEntry(0);
   dataVersion = headerLocal->dataVersion;
+  nOriginalEvents = headerLocal->nOriginalEvents;
   delete headerLocal;
 
   beamTree = dynamic_cast<TTree*>(file->Get("Beam"));

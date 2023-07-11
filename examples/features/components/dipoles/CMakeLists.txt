@@ -3,6 +3,10 @@ simple_testing(component-sbend               "--file=sbend.gmad"           ${OVE
 simple_testing_long(component-sbend-poleface "--file=sbend_poleface.gmad"  ${OVERLAP_CHECK})
 simple_testing_long(component-sbend-fringe   "--file=sbend_fringe.gmad"    ${OVERLAP_CHECK})
 
+# test both B and angle specified
+simple_testing(component-sbend-angle-and-b   "--file=sbend_angle_and_B.gmad" ${OVERLAP_CHECK})
+simple_testing(component-rbend-angle-and-b   "--file=rbend_angle_and_B.gmad" ${OVERLAP_CHECK})
+
 # with 'bdsimtwo' integrator set - different geometry constructed
 simple_testing(component-sbend-rodrigues               "--file=sbend_rodrigues.gmad"           ${OVERLAP_CHECK})
 simple_testing_long(component-sbend-rodrigues-poleface "--file=sbend_rodrigues_poleface.gmad"  ${OVERLAP_CHECK})

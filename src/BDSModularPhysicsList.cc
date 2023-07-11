@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -262,6 +262,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   for (const auto& kv : physicsConstructors)
     {incompatible.insert(std::make_pair(kv.first, std::vector<G4String>()));}
   incompatible["annihi_to_mumu"] = {"em_extra"};
+  incompatible["muon"] = {"em_extra"};
   incompatible["muon_inelastic"] = {"em_extra", "muon"};
   incompatible["em"]     = {"em_ss", "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_ss"]  = {"em",    "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
@@ -271,6 +272,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   incompatible["em_3"]   = {"em",    "em_ss",  "em_wvi", "em_1", "em_2", "em_4"};
   incompatible["em_4"]   = {"em",    "em_ss",  "em_wvi", "em_1", "em_2", "em_3"};
   incompatible["em_livermore"] = {"em_livermore_polarised"};
+  incompatible["em_extra"] = {"muon", "muon_inelastic"};
   incompatible["ftfp_bert"]    = {"ftfp_bert_hp", "qgsp_bert", "qgsp_bert_hp", "qgsp_bic", "qgsp_bic_hp"};
   incompatible["ftfp_bert_hp"] = {"ftfp_bert",    "qgsp_bert", "qgsp_bert_hp", "qgsp_bic", "qgsp_bic_hp"};
   incompatible["gamma_to_mumu"] = {"em_extra"};
@@ -362,11 +364,11 @@ void BDSModularPhysicsList::ParsePhysicsList(const G4String& physListName)
       // search aliases
       auto result = aliasToOriginal.find(name);
       if (result != aliasToOriginal.end())
-	{
-	  G4cout << __METHOD_NAME__ << "alias \"" << name << "\" forwarding to \""
-		 << result->second << "\"" << G4endl;
-	  name = result->second; // overwrite name with the correct one
-	}
+        {
+          G4cout << __METHOD_NAME__ << "alias \"" << name << "\" forwarding to \""
+                 << result->second << "\"" << G4endl;
+          name = result->second; // overwrite name with the correct one
+        }
       physicsListNames.push_back(name);
     }
 
@@ -378,19 +380,19 @@ void BDSModularPhysicsList::ParsePhysicsList(const G4String& physListName)
     {
       auto result = physicsConstructors.find(name);
       if (result != physicsConstructors.end())
-	{
-	  G4cout << __METHOD_NAME__ << "Constructing \"" << result->first << "\" physics list" << G4endl;
-	  CheckIncompatiblePhysics(name);
-	  auto mem = result->second;
-	  (this->*mem)(); // call the function pointer in this instance of the class
-	}
+        {
+          G4cout << __METHOD_NAME__ << "Constructing \"" << result->first << "\" physics list" << G4endl;
+          CheckIncompatiblePhysics(name);
+          auto mem = result->second;
+          (this->*mem)(); // call the function pointer in this instance of the class
+        }
       else
-	{
-	  G4cout << "\"" << name << "\" is not a valid physics list. Available ones are: " << G4endl;
-	  for (const auto& listName : physicsLists)
-	    {G4cout << "\"" << listName << "\"" << G4endl;}
-	  throw BDSException(__METHOD_NAME__, "Invalid physics list.");
-	}
+        {
+          G4cout << "\"" << name << "\" is not a valid physics list. Available ones are: " << G4endl;
+          for (const auto& listName : physicsLists)
+            {G4cout << "\"" << listName << "\"" << G4endl;}
+          throw BDSException(__METHOD_NAME__, "Invalid physics list.");
+        }
     }
 
   //Always load cuts and limits.
@@ -467,14 +469,14 @@ void BDSModularPhysicsList::CheckIncompatiblePhysics(const G4String& singlePhysi
   for (const auto& key : forbidden)
     {// for each forbidden physics list, check if it's activated
       if (physicsActivated.at(key))
-	{
-	  G4cerr << __METHOD_NAME__ << "Incompatible physics list \"" << singlePhysicsIn
-		 << "\" being used with already used \"" << key << "\"" << G4endl;
-	  G4cout << "\"" << singlePhysicsIn << "\" cannot be used with the following:" << G4endl;
-	  for (const auto& v : forbidden)
-	    {G4cout << "\"" << v << "\"" << G4endl;}
-	  throw BDSException(__METHOD_NAME__, "Incompatible physics list.");
-	}
+        {
+          G4cerr << __METHOD_NAME__ << "Incompatible physics list \"" << singlePhysicsIn
+                 << "\" being used with already used \"" << key << "\"" << G4endl;
+          G4cout << "\"" << singlePhysicsIn << "\" cannot be used with the following:" << G4endl;
+          for (const auto& v : forbidden)
+            {G4cout << "\"" << v << "\"" << G4endl;}
+          throw BDSException(__METHOD_NAME__, "Incompatible physics list.");
+        }
     }
 }
 
@@ -511,10 +513,10 @@ void BDSModularPhysicsList::Cherenkov()
   if (!physicsActivated["cherenkov"])
     {
       constructors.push_back(new BDSPhysicsCherenkov(BDSGlobalConstants::Instance()->MaximumPhotonsPerStep(),
-						     BDSGlobalConstants::Instance()->MaximumBetaChangePerStep()));
+                                                     BDSGlobalConstants::Instance()->MaximumBetaChangePerStep()));
       physicsActivated["cherenkov"] = true;
       if (!physicsActivated["em"])
-	{Em();} // requires em physics to work (found empirically)
+        {Em();} // requires em physics to work (found empirically)
     }
 }
 
@@ -588,11 +590,11 @@ void BDSModularPhysicsList::EmExtra()
 #if G4VERSION_NUMBER > 1039
       G4bool useLENDGammaNuclear = BDSGlobalConstants::Instance()->UseLENDGammaNuclear();
       if (useLENDGammaNuclear)
-	{
-	  BDS::CheckLowEnergyNeutronDataExists("em_extra");
-	  constructor->LENDGammaNuclear(true);
-	  G4cout << __METHOD_NAME__ << "G4EmExtraPhysics> LEND gamma nuclear : " << BDS::BoolToString(useMuonNuclear) << G4endl;
-	}
+        {
+          BDS::CheckLowEnergyNeutronDataExists("em_extra");
+          constructor->LENDGammaNuclear(true);
+          G4cout << __METHOD_NAME__ << "G4EmExtraPhysics> LEND gamma nuclear : " << BDS::BoolToString(useMuonNuclear) << G4endl;
+        }
       G4bool useElectroNuclear = BDSGlobalConstants::Instance()->UseElectroNuclear();
       constructor->ElectroNuclear(useElectroNuclear);
 #endif
@@ -630,7 +632,7 @@ void BDSModularPhysicsList::EmLowEP()
       physicsActivated["em_low_ep"] = true;
     }
 }
-							  
+
 void BDSModularPhysicsList::EmPenelope()
 {
   ConstructAllLeptons();
@@ -928,12 +930,12 @@ void BDSModularPhysicsList::NeutronTrackingCut()
       physicsActivated["neutron_tracking_cut"] = true;
     }
 }
-							  
+
 void BDSModularPhysicsList::Optical()
 {
   if (!physicsActivated["optical"])
     {
-      opticalPhysics = new G4OpticalPhysics();		  
+      opticalPhysics = new G4OpticalPhysics();
       constructors.push_back(opticalPhysics);
       physicsActivated["optical"] = true;
     }
@@ -1075,24 +1077,24 @@ void BDSModularPhysicsList::DNA()
     {
       // only one DNA physics list possible
       if (BDS::StrContains(temporaryName, "option"))
-	{
-	  if (BDS::StrContains(temporaryName, "1"))
-	    {constructors.push_back(new G4EmDNAPhysics_option1());}
-	  if (BDS::StrContains(temporaryName, "2"))
-	    {constructors.push_back(new G4EmDNAPhysics_option2());}
-	  if (BDS::StrContains(temporaryName, "3"))
-	    {constructors.push_back(new G4EmDNAPhysics_option3());}
-	  if (BDS::StrContains(temporaryName, "4"))
-	    {constructors.push_back(new G4EmDNAPhysics_option4());}
-	  if (BDS::StrContains(temporaryName, "5"))
-	    {constructors.push_back(new G4EmDNAPhysics_option5());}
-	  if (BDS::StrContains(temporaryName, "6"))
-	    {constructors.push_back(new G4EmDNAPhysics_option6());}
-	  if (BDS::StrContains(temporaryName, "7"))
-	    {constructors.push_back(new G4EmDNAPhysics_option7());}
-	}
+        {
+          if (BDS::StrContains(temporaryName, "1"))
+            {constructors.push_back(new G4EmDNAPhysics_option1());}
+          if (BDS::StrContains(temporaryName, "2"))
+            {constructors.push_back(new G4EmDNAPhysics_option2());}
+          if (BDS::StrContains(temporaryName, "3"))
+            {constructors.push_back(new G4EmDNAPhysics_option3());}
+          if (BDS::StrContains(temporaryName, "4"))
+            {constructors.push_back(new G4EmDNAPhysics_option4());}
+          if (BDS::StrContains(temporaryName, "5"))
+            {constructors.push_back(new G4EmDNAPhysics_option5());}
+          if (BDS::StrContains(temporaryName, "6"))
+            {constructors.push_back(new G4EmDNAPhysics_option6());}
+          if (BDS::StrContains(temporaryName, "7"))
+            {constructors.push_back(new G4EmDNAPhysics_option7());}
+        }
       else
-	{constructors.push_back(new G4EmDNAPhysics());}
+        {constructors.push_back(new G4EmDNAPhysics());}
       
       physicsActivated["dna"] = true;
     }

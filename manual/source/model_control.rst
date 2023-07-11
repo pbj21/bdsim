@@ -133,13 +133,13 @@ The beam particle may be specified by name
 as it is in Geant4 (exactly) or by its PDG ID. The follow are available by default:
 
 * `e-` or `e+`
-* `proton` or `antiproton`
+* `proton` or `anti_proton`
 * `gamma`
 * `neutron`
 * `mu-` or `mu+`
 * `pi-` or `pi+` or `pi0`
 * `photon` or `gamma`
-* `kaon-`, `kaon+` or `kaon0L`
+* `kaon-`, `kaon+`, `kaon0L`, `kaon0S`, `kaon0` (a `kaon0` immediately 'decay's into either `kaon0S` or `kaon0L` in Geant4)
 * `nu_e`, `nu_mu`, `nu_tau`, `anti_nu_e`, `anti_nu_mu`, `anti_nu_tau`
 
 In fact, the user may specify any particle that is available through the physics list
@@ -200,8 +200,8 @@ Examples: ::
          energy=100*GeV,
 	 beamParticleName="e+";
 
-This specifies that the magnet field strengths are calculated with respect to a 100 GeV electron
-and the beam tracked is a 100 GeV positron beam (along with any other relevant distribution
+This (above) specifies that the magnet field strengths are calculated with respect to a 100 GeV electron
+but the beam fired into the model is a 100 GeV positron beam (along with any other relevant distribution
 parameters). ::
 
    beam, particle="e-",
@@ -209,14 +209,14 @@ parameters). ::
 	 beamParticleName="e+",
 	 E0=20*GeV;
 
-This specified that the magnet field strengths are calculated with respect to a 100 GeV electron
-and the beam tracked is a 20 GeV positron beam. ::
+This (above) specifies that the magnet field strengths are calculated with respect to a 100 GeV electron
+and the beam fired into the model is a 20 GeV positron beam. ::
 
   beam, particle="e-",
         momentum=20.3*GeV,
 	beamParticleName="proton";
 
-This defines a machine designed with respect to an electron beam with 20.3 GeV of momentum but
+This (above) defines a machine designed with respect to an electron beam with 20.3 GeV of momentum but
 uses a beam of protons with the exact same momentum (kinetic energy and total energy are calculated
 from this value given the proton's mass).
 
@@ -709,8 +709,7 @@ i.e. the possible values `x` values range from `-envelopeX` to `+envelopeX`. The
 energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 
 * All parameters from `reference`_ distribution are used as centroids.
-* `Z` is by default correlated with `T`. `T` is sampled, then `Z` calculated from :math:`c * t`.
-* To create an uncorrelated `Z` distribution, `envelopeZ` should be set explicitly.
+* All dimensions are uncorrelated.
 * Default values of envelopes are 0.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
@@ -733,6 +732,10 @@ energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 | `envelopeZ`                      | (Optional) maximum position in Z [m]                  |
 +----------------------------------+-------------------------------------------------------+
 
+Since BDSIM v1.7.0, the behaviour changed so that `z` is uncorrelated with `t`. In the previous
+behaviour, `t` was sampled uniformly, then `z` calculated from :math:`c * t`. To restore this
+behaviour, the parameter `zFromT` can be used. e.g. :code:`beam, zFromT=1;`.
+
 Examples: ::
 
   beam, particle="e-",
@@ -744,26 +747,14 @@ Examples: ::
 	envelopeYp=1e-3,
 	envelopeT=10*ns;
 
-For a `square` distribution with no z offset but still an offset in time: ::
-
-  beam, particle="e-",
-        kineticEnergy=1*GeV,
-	distrType="square",
-	envelopeX=1*cm,
-	envelopeXp=1e-3,
-	envelopeY=1*cm,
-	envelopeYp=1e-3,
-	envelopeT=10*ns,
-	envelopeZ=0;
-
-We set `envelopeZ` which means the distribution will be uncorrelated in `Z` with `T`, but
-also to 0 so it has no variation in `Z`.
 
 ring
 ****
 
-The ring distribution randomly and uniformly fills a ring in `x` and `y` between two radii. For
+The ring distribution randomly and uniformly distributes particles around a circle in `x` and `y`. Then,
+for a given x,y the radius is randomly and uniformly in density distributed in that annulus. For
 all other parameters, the `reference`_ coordinates are used, i.e. `xp`, `yp` etc.
+
 
 * All parameters from `reference`_ distribution are used as centroids.
 
@@ -2409,6 +2400,15 @@ produce a muon in their "post step change", the splitting is invoked. In this ca
 #) The original muon(s) plus the new ones are added to the final "post step change", each with
    a weight of original weight / N muons.
 
+Schematically, this would look like:
+
+.. figure:: figures/muonsplitting.pdf
+            :width: 70%
+            :align: center
+
+            Schematic of a :math:`\pi^+` decay to a muon and a muon neutrino.
+
+   
 .. note:: This can safely be used in combination with BDSIM's cross-section biasing. The weights
 	  are compounded and no special action needs to be taken.
 

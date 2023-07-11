@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -81,7 +81,7 @@ public:
 
   /// Attach the relevant general and vacuum sensitivity to each volume.
   virtual void ApplySensitivity(BDSGeometryExternal* result,
-                                const std::set<G4LogicalVolume*>& allLogicalVolumes,
+                                const std::set<G4LogicalVolume*>& allLogicalVolumesIn,
                                 BDSSDType generalSensitivity,
                                 const std::set<G4LogicalVolume*>& vacuumLogicalVolumes,
                                 BDSSDType vacuumSensitivity);

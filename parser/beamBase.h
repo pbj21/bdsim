@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -99,6 +99,7 @@ namespace GMAD
       double envelopeX, envelopeXp, envelopeY, envelopeYp, envelopeZ, envelopeZp;
       double envelopeT, envelopeE;
       double envelopeR, envelopeRp;
+      bool   zFromT;
       ///@}
       
       ///@{ for the gaussian sigma matrix distribution

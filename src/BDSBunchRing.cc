@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -33,27 +33,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBunchRing::BDSBunchRing():
   BDSBunch("ring"),
   rMin(0),
-  rMax(0),
-  rDif(0)
-{
-  flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine());  
-}
+  rMax(0)
+{;}
 
 BDSBunchRing::~BDSBunchRing()
-{
-  delete flatGen;
-}
+{;}
 
 void BDSBunchRing::SetOptions(const BDSParticleDefinition* beamParticle,
-			      const GMAD::Beam& beam,
-			      const BDSBunchType& distrType,
-			      G4Transform3D beamlineTransformIn,
-			      const G4double beamlineSIn)
+                              const GMAD::Beam& beam,
+                              const BDSBunchType& distrType,
+                              G4Transform3D beamlineTransformIn,
+                              const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   rMin = beam.Rmin * CLHEP::m;
   rMax = beam.Rmax * CLHEP::m;
-  rDif = rMax - rMin;
 }
 
 void BDSBunchRing::CheckParameters()
@@ -69,11 +63,10 @@ void BDSBunchRing::CheckParameters()
 
 BDSParticleCoordsFull BDSBunchRing::GetNextParticleLocal()
 {
-  G4double r   = std::sqrt(flatGen->shoot(std::pow(rMin,2), std::pow(rMax,2)));
-  G4double phi = 2 * CLHEP::pi * flatGen->shoot();
+  G4double r   = std::sqrt(G4RandFlat::shoot(std::pow(rMin,2), std::pow(rMax,2)));
+  G4double phi = 2 * CLHEP::pi * G4RandFlat::shoot();
   G4double x   = X0 + r * std::sin(phi);
   G4double y   = Y0 + r * std::cos(phi);
   
   return BDSParticleCoordsFull(x,y,Z0,Xp0,Yp0,Zp0,T0,S0,E0,/*weight=*/1.0);
 }
-

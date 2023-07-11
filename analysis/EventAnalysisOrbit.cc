@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -37,17 +37,18 @@ EventAnalysisOrbit::EventAnalysisOrbit():
 {;}
 
 EventAnalysisOrbit::EventAnalysisOrbit(Event*   eventIn,
-				       TChain*  chainIn,
-				       bool     perEntryAnalysis,
-				       bool     processSamplersIn,
-				       bool     debugIn,
-				       double   printModuloFraction,
-				       bool     emittanceOnTheFlyIn,
-				       long int eventStartIn,
-				       long int eventEndIn):
+                                       TChain*  chainIn,
+                                       bool     perEntryAnalysis,
+                                       bool     processSamplersIn,
+                                       bool     debugIn,
+                                       bool     printOutIn,
+                                       double   printModuloFraction,
+                                       bool     emittanceOnTheFlyIn,
+                                       long int eventStartIn,
+                                       long int eventEndIn):
   EventAnalysis(eventIn, chainIn, perEntryAnalysis, processSamplersIn,
-		debugIn, printModuloFraction, emittanceOnTheFlyIn,
-		eventStartIn, eventEndIn)
+                debugIn, printOutIn, printModuloFraction, emittanceOnTheFlyIn,
+                eventStartIn, eventEndIn)
 {;}
 
 void EventAnalysisOrbit::Clear()
@@ -81,14 +82,14 @@ void EventAnalysisOrbit::ExtractOrbit(int index)
       std::cout << "\rSampler #" << std::setw(6) << counter << " of " << nSamplers;
       std::cout.flush();
       if (s->s->n > 0)
-	{// valid entry on that sampler
-	  ss.push_back(s->s->S);
-	  x.push_back(s->s->x[0]);
-	  xp.push_back(s->s->xp[0]);
-	  y.push_back(s->s->y[0]);
-	  yp.push_back(s->s->yp[0]);
+        {// valid entry on that sampler
+          ss.push_back(s->s->S);
+          x.push_back(s->s->x[0]);
+          xp.push_back(s->s->xp[0]);
+          y.push_back(s->s->y[0]);
+          yp.push_back(s->s->yp[0]);
           elementName.push_back(s->s->samplerName);
-	}
+        }
       counter++;
     }
   std::cout << std::endl;

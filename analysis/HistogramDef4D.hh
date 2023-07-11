@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -39,17 +39,23 @@ public:
   
   /// Use this constructor.
   HistogramDef4D(const std::string& treeNameIn,
-		 const std::string& histNameIn,
-		 const BinSpecification& xBinningIn,
-		 const BinSpecification& yBinningIn,
-		 const BinSpecification& zBinningIn,
-		 const BinSpecification& eBinningIn,
-		 const std::string&      variableIn,
-		 const std::string&      eScaleIn,
-		 const std::string&      selectionIn = "1",
-		 bool                    perEntryIn  = true);
+                 const std::string& histNameIn,
+                 const BinSpecification& xBinningIn,
+                 const BinSpecification& yBinningIn,
+                 const BinSpecification& zBinningIn,
+                 const BinSpecification& eBinningIn,
+                 const std::string&      variableIn,
+                 const std::string&      eScaleIn,
+                 const std::string&      selectionIn = "1",
+                 bool                    perEntryIn  = true);
   
   virtual ~HistogramDef4D();
+
+  /// Return n bins and ranges.
+  virtual std::string GetBinningString() const;
+
+  /// Get the first string that defines the histogram in rebdsim for feedback.
+  virtual std::string GetHistogramString() const;
 
   BinSpecification eBinning;
   std::string eScale;

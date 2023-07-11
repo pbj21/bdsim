@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -36,17 +36,17 @@ class HeaderAnalysis
 public:
   /// Constructor intended for use to construct a model analysis object.
   HeaderAnalysis(const std::vector<std::string>& filenamesIn,
-		 Header* headerIn,
-		 TChain* chainIn);
+                 Header* headerIn,
+                 TChain* chainIn);
   virtual ~HeaderAnalysis() noexcept;
 
   /// Add up nOriginalEvents from each file in the chain and also nEventsInFile
-  /// and nEventsInFileSkipped so we have the total numbers. Only adds nOriginalEvents
-  /// from the first entry in each file, but adds the other two from all entries in the
-  /// header tree assuming that only the 2nd entry is filled.
+  /// and nEventsInFileSkipped so we have the total numbers. Use the second entry
+  /// of the header in each file, if it exists. Will reset incoming variables to 0.
   unsigned long long int CountNOriginalEvents(unsigned long long int& nEventsInFileIn,
                                               unsigned long long int& nEventsInFileSkippedIn,
-                                              unsigned long long int& nEventsRequestedIn);
+                                              unsigned long long int& nEventsRequestedIn,
+                                              unsigned int& distrFileLoopNTimesIn);
 
 protected:
   std::vector<std::string> filenames;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -100,6 +100,7 @@ private:
     G4String max;
   };
   std::map<BDSDimensionType, DimensionKeys> dimKeyMap;
+  std::map<BDSDimensionType, G4double> dimUnitsMap;
 };
 
 #endif

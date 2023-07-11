@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -45,10 +45,10 @@ BDSBunchTwiss::BDSBunchTwiss():
 {;}
 
 void BDSBunchTwiss::SetOptions(const BDSParticleDefinition* beamParticle,
-			       const GMAD::Beam& beam,
-			       const BDSBunchType& distrType,
-			       G4Transform3D beamlineTransformIn,
-			       const G4double beamlineSIn)
+                               const GMAD::Beam& beam,
+                               const BDSBunchType& distrType,
+                               G4Transform3D beamlineTransformIn,
+                               const G4double beamlineSIn)
 {
   // Fill means and class BDSBunch::SetOptions
   BDSBunchGaussian::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);

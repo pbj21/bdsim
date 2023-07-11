@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -52,6 +52,7 @@ public:
 		bool     perEntryAnalysis    = true,
 		bool     processSamplersIn   = true,
 		bool     debugIn             = false,
+    bool     printOutIn          = true,
 		double   printModuloFraction = 0.01,
 		bool     emittanceOnTheFlyIn = false,
 		long int eventStartIn        = 0,
@@ -99,11 +100,13 @@ private:
   /// Process each sampler analysis object.
   void ProcessSamplers(bool firstTime = false);
 
+  bool printOut;          ///< Whether to print out at all per-event.
   int  printModulo;       ///< Cache of print modulo fraction
   bool processSamplers;   ///< Whether to process samplers.
   bool emittanceOnTheFly; ///< Whether to calculate emittance fresh at each sampler.
   long int eventStart;    ///< Event index to start analysis from.
   long int eventEnd;      ///< Event index to end analysis at.
+  long int nEventsToProcess; ///< Difference between start and stop.
 
   /// Cache of all per entry histogram sets.
   std::vector<PerEntryHistogramSet*> perEntryHistogramSets;
@@ -111,7 +114,7 @@ private:
   /// Map of simple histograms created per histogram set for writing out.
   std::map<HistogramDefSet*, std::vector<TH1*> > simpleSetHistogramOutputs;
   
-  ClassDef(EventAnalysis,1);
+  ClassDef(EventAnalysis,2);
 };
 
 #endif

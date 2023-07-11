@@ -1,0 +1,12 @@
+! longer for now so we clearly see the angle
+a = pi/6;
+bend: element, l=1200*mm, geometryFile="gdml:cuttubs.gdml", angle=pi/6;
+!, e1=-a/2, e2=-a/2;
+d1: drift, l=0.5*m, aper1=5*cm;
+l1: line=(d1,bend,d1);
+use, l1;
+
+beam, particle = "proton",
+      energy = 1*GeV;
+
+option, checkOverlaps=1;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -53,7 +53,7 @@ BDSDimensionType BDS::DetermineDimensionType(G4String dimensionType)
       G4String msg = "\"" + dimensionType + "\" is not a valid dimension\n";
       msg += "Available dimensions are:\n";
       for (const auto& it : types)
-	{msg += "\"" + it.first + "\"\n";}
+        {msg += "\"" + it.first + "\"\n";}
       throw BDSException(__METHOD_NAME__, msg);
     }
   

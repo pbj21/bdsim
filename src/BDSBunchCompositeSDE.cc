@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -40,10 +40,10 @@ BDSBunchCompositeSDE::~BDSBunchCompositeSDE()
 }
 
 void BDSBunchCompositeSDE::SetOptions(const BDSParticleDefinition* beamParticle,
-				     const GMAD::Beam& beam,
-				     const BDSBunchType& distrType,
-				     G4Transform3D beamlineTransformIn,
-				     G4double beamlineSIn)
+                                     const GMAD::Beam& beam,
+                                     const BDSBunchType& distrType,
+                                     G4Transform3D beamlineTransformIn,
+                                     G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn,beamlineSIn);
   
@@ -70,7 +70,7 @@ void BDSBunchCompositeSDE::SetOptions(const BDSParticleDefinition* beamParticle,
   for (auto d : dims)
     {
       if (d == BDSBunchType::composite || d == BDSBunchType::compositesde)
-	{throw BDSException(__METHOD_NAME__, "s,y,z distributions cannot be 'composite'");}
+        {throw BDSException(__METHOD_NAME__, "s,y,z distributions cannot be 'composite'");}
     }
 
   // here we don't have generatePrimariesOnly bool but this will be overridden with the
@@ -110,8 +110,8 @@ BDSParticleCoordsFull BDSBunchCompositeSDE::GetNextParticleLocal()
   // TODO - the weight only comes from the e distribution here... should it be product of all?
   BDSParticleCoordsFull result(s.x,  s.y,  s.z,
                                d.xp, d.yp, d.zp,
-			       e.T, s.s,
-			       e.totalEnergy,
-			       e.weight);
+                               e.T, s.s,
+                               e.totalEnergy,
+                               e.weight);
   return result;
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -33,10 +33,10 @@ BDSBunchSigmaMatrix::BDSBunchSigmaMatrix():
 {;}
 
 void BDSBunchSigmaMatrix::SetOptions(const BDSParticleDefinition* beamParticle,
-				     const GMAD::Beam& beam,
-				     const BDSBunchType& distrType,
-				     G4Transform3D beamlineTransformIn,
-				     const G4double beamlineSIn)
+                                     const GMAD::Beam& beam,
+                                     const BDSBunchType& distrType,
+                                     G4Transform3D beamlineTransformIn,
+                                     const G4double beamlineSIn)
 {
   // Fill means and class BDSBunch::SetOptions
   BDSBunchGaussian::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
@@ -45,46 +45,46 @@ void BDSBunchSigmaMatrix::SetOptions(const BDSParticleDefinition* beamParticle,
     {
     case BDSBunchType::gaussmatrix:
       {
-	sigmaGM[0][0] = beam.sigma11; 
-	sigmaGM[0][1] = beam.sigma12;
-	sigmaGM[0][2] = beam.sigma13;
-	sigmaGM[0][3] = beam.sigma14;
-	sigmaGM[0][4] = beam.sigma15;
-	sigmaGM[0][5] = beam.sigma16;  
-	sigmaGM[1][1] = beam.sigma22;
-	sigmaGM[1][2] = beam.sigma23;
-	sigmaGM[1][3] = beam.sigma24;
-	sigmaGM[1][4] = beam.sigma25;
-	sigmaGM[1][5] = beam.sigma26;  
-	sigmaGM[2][2] = beam.sigma33;
-	sigmaGM[2][3] = beam.sigma34;
-	sigmaGM[2][4] = beam.sigma35;
-	sigmaGM[2][5] = beam.sigma36;  
-	sigmaGM[3][3] = beam.sigma44;
-	sigmaGM[3][4] = beam.sigma45;
-	sigmaGM[3][5] = beam.sigma46;  
-	sigmaGM[4][4] = beam.sigma55;
-	sigmaGM[4][5] = beam.sigma56;  
-	sigmaGM[5][5] = beam.sigma66;
-	if (BDS::IsFinite(beam.sigma55))
-	  {finiteSigmaT = true;}
-	if (BDS::IsFinite(beam.sigma66))
-	  {finiteSigmaE = true;}
-	break;
+        sigmaGM[0][0] = beam.sigma11; 
+        sigmaGM[0][1] = beam.sigma12;
+        sigmaGM[0][2] = beam.sigma13;
+        sigmaGM[0][3] = beam.sigma14;
+        sigmaGM[0][4] = beam.sigma15;
+        sigmaGM[0][5] = beam.sigma16;  
+        sigmaGM[1][1] = beam.sigma22;
+        sigmaGM[1][2] = beam.sigma23;
+        sigmaGM[1][3] = beam.sigma24;
+        sigmaGM[1][4] = beam.sigma25;
+        sigmaGM[1][5] = beam.sigma26;  
+        sigmaGM[2][2] = beam.sigma33;
+        sigmaGM[2][3] = beam.sigma34;
+        sigmaGM[2][4] = beam.sigma35;
+        sigmaGM[2][5] = beam.sigma36;  
+        sigmaGM[3][3] = beam.sigma44;
+        sigmaGM[3][4] = beam.sigma45;
+        sigmaGM[3][5] = beam.sigma46;  
+        sigmaGM[4][4] = beam.sigma55;
+        sigmaGM[4][5] = beam.sigma56;  
+        sigmaGM[5][5] = beam.sigma66;
+        if (BDS::IsFinite(beam.sigma55))
+          {finiteSigmaT = true;}
+        if (BDS::IsFinite(beam.sigma66))
+          {finiteSigmaE = true;}
+        break;
       }
     case BDSBunchType::gauss:
       {
-	sigmaGM[0][0] = std::pow(beam.sigmaX, 2);
-	sigmaGM[1][1] = std::pow(beam.sigmaXp,2);
-	sigmaGM[2][2] = std::pow(beam.sigmaY, 2);
-	sigmaGM[3][3] = std::pow(beam.sigmaYp,2);
-	sigmaGM[4][4] = std::pow(sigmaT, 2); // these are made slightly finite in BDSBunchGaussian
-	sigmaGM[5][5] = std::pow(sigmaE, 2); // if 0 to ensure +ve definiteness
-	break;
+        sigmaGM[0][0] = std::pow(beam.sigmaX, 2);
+        sigmaGM[1][1] = std::pow(beam.sigmaXp,2);
+        sigmaGM[2][2] = std::pow(beam.sigmaY, 2);
+        sigmaGM[3][3] = std::pow(beam.sigmaYp,2);
+        sigmaGM[4][4] = std::pow(sigmaT, 2); // these are made slightly finite in BDSBunchGaussian
+        sigmaGM[5][5] = std::pow(sigmaE, 2); // if 0 to ensure +ve definiteness
+        break;
       }
     default:
       {// here to cover compiler warnings - guarantee from our BDSBunchFactory this won't happen
-	break;
+        break;
       }
     }
 #ifdef BDSDEBUG

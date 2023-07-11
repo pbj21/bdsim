@@ -599,6 +599,9 @@ Particles can be specified in several ways:
 +---------------------+-------------------------------------------------------------------------+
 | {top10particles} \* | Similar to top10 but only for non-ions.                                 |
 +---------------------+-------------------------------------------------------------------------+
+| {total,11,-11,22}   | The keyword 'total' will make a histogram that accepts all particles    |
+|                     | for total. The total histogram is written out with PDG ID               |
++---------------------+-------------------------------------------------------------------------+
 
 .. warning:: (\*) The `topN` syntax cannot be used with simple histograms (e.g. with the syntax
 	     SimpleSpectra) because we need to perform per-event analysis to build up a set of
@@ -615,6 +618,9 @@ Particles can be specified in several ways:
 	     specific PDG IDs should be given.
 
 .. note:: No white space should be in the particle specification.
+
+.. note:: The total histogram, if requested, is written out with PDG ID 0.
+
 
 Logarithmic Binning
 -------------------
@@ -636,6 +642,7 @@ a 1D histogram with thirty logarithmically spaced bins from 1e-3 to 1e3, the fol
 would be used::
 
   Histogram1DLog Event. EnergySpectrum {30} {-3:3} Eloss.energy 1
+
 
 Uneven Binning
 --------------
@@ -729,13 +736,18 @@ The following (case-insensitive) options may be specified in the top part.
 | OpticsFileName             | The name of a separate text file copy of the         |
 |                            | optical functions output                             |
 +----------------------------+------------------------------------------------------+
+| PrintOut                   | Whether there is any per-event print out at all. The |
+|                            | default is True.                                     |
++----------------------------+------------------------------------------------------+
 | PrintModuloFraction        | The fraction of events to print out (default 0.01).  |
 |                            | If you require print out for every event, set this   |
 |                            | to 0.                                                |
 +----------------------------+------------------------------------------------------+
 | ProcessSamplers            | Whether to load the sampler data or not              |
 +----------------------------+------------------------------------------------------+
-
+| VerboseSpectra             | Print out the full expanded definition of any        |
+|                            | spectra that have been defined.                      |
++----------------------------+------------------------------------------------------+
 
 
 Variables In Data
@@ -743,6 +755,7 @@ Variables In Data
 
 See :ref:`basic-data-inspection` for how to view the data and make the most basic
 on-the-fly histograms.
+
 
 .. _rebdsim-combine-tool:
 
@@ -761,6 +774,7 @@ in comparison to the analysis. `rebdsimCombine` is used as follows: ::
 
 where `<result.root>` is the desired name of the merged output file and `<fileX.root>` etc.
 are input files to be merged. This workflow is shown schematically in the figure below.
+
 
 .. _rebdsim-histo-merge-tool:
 
@@ -791,6 +805,7 @@ across all events.  This can only operate on BDSIM output files, not `rebdsim`
 output files.
 
 * The output file name is optional and will default to :code:`inputfilename_histos.root.`
+
 
 .. _rebdsim-optics-tool:
   
@@ -827,6 +842,7 @@ cavities are used, then the emittance on the fly option should be used.::
 
 See :ref:`optical-validation` for more details.
 
+
 .. _rebdsim-orbit-tool:
 
 rebdsimOrbit - Orbit Extraction
@@ -846,8 +862,14 @@ that can be loaded with the pybdsim Python utility.
 
 .. _output-analysis-efficiency:
 
-Speed & Efficiency
-==================
+Data Workflows - Speed & Efficiency
+===================================
+
+It is easily possible to generate problematic quantities of data with such a simulation
+as BDSIM. Here, we discuss some common workflows with data.
+
+Speed Tips
+----------
 
 Whilst the ROOT file IO is very efficient, the sheer volume of data to process can
 easily result in slow running analysis. To combat this, only the minimal variables
@@ -871,6 +893,7 @@ each entry.
 `rebdsim` 'turns off' the loading of all data and only loads what is necessary for the
 given analysis.
 
+
 .. _output-analysis-scaling-up:
 
 Scaling Up - Parallelising Analysis
@@ -878,16 +901,36 @@ Scaling Up - Parallelising Analysis
 
 For high-statistics studies, it's common to run multiple instances of BDSIM with different
 seeds (different seeds ensures different results) on a high throughout the computer cluster.
-There are two possible strategies to efficiently scale the statistics and analysis; both
-produce numerically identical output but make different use of computing resources. The
-more data stored per event in the output files, the longer it takes to load it from disk and
-the longer the analysis. Similarly, the more events simulated, the longer the analysis will
-take. Of course either strategy can be used.
+Key parameters to consider are:
+
+#. the total number of events being analysed
+#. the total volume (Mb, Gb, Tb) of data being analysed
+
+There is a minimum time per event for analysis on the order of 1 ms. Depending on the quantity
+of data stored per event, the data may take longer to load. It may also take longer to analyse
+if many histograms are requested.
+
+Generally, on a single computer, simulation and analysis can become slow at anywhere
+from 50,000 to 10,000,000 events. Also, ~ 1 - 10 Gb is probably the practical limit for
+quick analysis on a laptop.
+
+In contrast, sometimes, the simulation itself is slow but the output data is quite small.
+
+Below are 3 example strategies that can be used and for which tools are included. These are:
+
+#. :ref:`output-analysis-strategy-low-data-vol`
+#. :ref:`output-analysis-strategy-high-data-vol`
+#. :ref:`output-analysis-strategy-skimming`
+
+
+.. _output-analysis-strategy-low-data-vol:
 
 Low-Data Volume
 ---------------
 
-If the overall output data volume is relatively low, we recommend analysing all of the
+* *e.g. simulation slow, output data low volume*
+
+If the overall output data volume is relatively low, it is recommend to analyse all of the
 output files at once with `rebdsim`. In the analysis configuration file,
 the `InputFilePath` should be specified as `"*.root"` to match all the root files
 in the current directory.
@@ -909,8 +952,12 @@ This is shown schematically in the figure below.
 This strategy works best for a relatively low number of events and data volume (example
 numbers might be < 10000 events and < 10 GB of data).
 
+.. _output-analysis-strategy-high-data-vol:
+
 High-Data Volume
 ----------------
+
+* *e.g. simulation slow, output data high volume*
 
 In this case, it is better to analyse each output file with `rebdsim` separately and then
 combine the results. In the case of per-event histograms, `rebdsim` provides the mean
@@ -929,8 +976,13 @@ file. This is numerically equivalent to analysing all the data in one execution 
 	    into a final output identical to what would have been produced from analysing
 	    all data at once, but in vastly reduced time.
 
+
+.. _output-analysis-strategy-skimming:
+            
 Raw Data Reduction
 ------------------
+
+* *e.g. a 2 stage simulation where only ~ 1% of data from the first is passed to the second stage*
 
 In the case where you want raw BDSIM data but want to reduce it to a select number of events
 meeting some criteria, two tools can be used. Firstly, `bdskim` to skim a data file according
@@ -954,7 +1006,104 @@ correctly later on to get the correct physical rate.
 	    BDSIM are executed in a script that then executes `bdskim` with a suitable
 	    selection file. Only the output files from `bdskim` are then combined
 	    into a final output.
-	    
+
+Normalisation
+*************
+
+If skimming is used, we must know the original number of events simulated so we can
+correctly normalise any results for the original per-event rate. The header in each
+BDSIM and REBDSIM output file contains several numbers that provide this information.
+
+The default histograms from rebdsim are per-event normalised. Only "SimpleHistograms"
+are unnormalised.
+
+These are also documented in :ref:`output-header-tree`.
+
++---------------------------+--------------------------+---------------------------------------+
+| **Variable Name**         | **Type**                 | **Description**                       |
++===========================+==========================+=======================================+
+| skimmedFile               | bool                     | Whether the file's Event tree is      |
+|                           |                          | made of skimmed events.               |
++---------------------------+--------------------------+---------------------------------------+
+| nOriginalEvents (\*)      | unsigned long long int   | If a skimmed file, this is the number |
+|                           |                          | of events in the original file.       |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsRequested (\*)     | unsigned long long int   | Number of events requested to be      |
+|                           |                          | simulated from the file.              |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsInFile (\*)        | unsigned long long int   | Number of events in the input         |
+|                           |                          | distribution file.                    |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsInFileSkipped (\*) | unsigned long long int   | Number of events from the             |
+|                           |                          | distribution file that were skipped   |
+|                           |                          | due to filters.                       |
++---------------------------+--------------------------+---------------------------------------+
+| distrFileLoopNTimes       | unsigned int             | Number of times to replay a given     |
+|                           |                          | distribution file.                    |
++---------------------------+--------------------------+---------------------------------------+
+
+* (\*) This variable may only be filled in the second entry of the tree as they are only
+  available at the end of a run and ROOT does not permit overwriting an entry. The first entry
+  to the header tree is written when the file is opened and must be there in case of a crash
+  or the BDSIM instance was killed.
+            
+
+As an example, the following 2-stage simulation is described:
+
+#. BDSIM is used to simulate a high energy proton on a target with only muons recorded in a sampler
+   after the target
+#. The output from the first stage is skimmed as only (as an example) **1%** of data has a relevant
+   muon in the sampler.
+#. The files are combined 10 to 1 with bdsimCombine as each file now only has very few events. Each
+   resultant file has approximately 10x the 1% of events.
+#. The skimmed-then-combined output (in BDSIM raw format) is then loaded as an input distribution into the second
+   stage simulation model of the rest of the beamline. Some filters are used in loading the events
+   that results in **2%** of these remaining events being discarded. Additionally, each file is
+   looped 5 times to repeat the same input particles with a different physics outcome to improve statistics.
+#. Histograms are made on the second stage simulation.
+#. Finally, the histograms are combined together from all simulations to form a single result set of histograms.
+
+.. note:: The example fractions are not specific and are just fictional example numbers to allow
+          you to follow the calculation.
+
+* In some cases the variable is just copied from one file to another. 
+* The following table is an example of how the described numbers would evolve in the header **after**
+  each step described. It represents the **most complicated** workflow possible, to show the evolution
+  of the numbers.
+
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+| **After**                | **File Format** | **nOriginalEvents** | **nEventsRequested**  | **nEventsInFile** | **nEventsInFileSkipped**           | **distrFileLoopNTimes** | **TTree / TH1 Entries**      |
++==========================+=================+=====================+=======================+===================+====================================+=========================+==============================+
+| bdsim                    | BDSIM Raw       | N                   | N                     | 0                 | 0                                  | 1                       | N                            |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+| bdskim (1%)              | BDSIM Raw       | N                   | N                     | 0                 | 0                                  | 1                       | 0.01 x N                     |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+| bdsimCombine (10 files)  | BDSIM Raw       | 10 x N              | 10 x N                | 0                 | 0                                  | 1                       | 10 x 0.01 x N                |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+| bdsim (5 loops of file)\ | BDSIM Raw       | 10 x N              | 5 x 10 x 0.01 x N     | 10 x 0.01 x N     | 0.02 x 10 x 0.01 x N               | 5                       | 5 x 10 x 0.01 x N x 0.98     |
+| (2% rejected on load)    |                 |                     |                       |                   |                                    |                         |                              |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+ 
+| rebdsim                  | REBDSIM         | 10 x N              | 5 x 10 x 0.01 x N     | 10 x 0.01 x N     | 5 x 0.02 x 10 x 0.01 x N           | 5                       | 5 x 10 x 0.01 x N x 0.98     |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+| rebdsimCombine (J files) | REBDSIM         | J x 10 x N          | J x 5 x 10 x 0.01 x N | J x 0.01 x N      | J x 5 x 0.02 x 10 x 0.01 x N       | 5                       | J x 5 x 10 x 0.01 x N x 0.98 |
++--------------------------+-----------------+---------------------+-----------------------+-------------------+------------------------------------+-------------------------+------------------------------+
+
+.. note:: For J, it is not strictly J times but the sum over J. In the table, there is an assumption
+          there is the exact same number of events and skimmed events in each file, whereas, in reality,
+          it will be slightly different. These numbers are purely for illustrative purposes.
+
+
+The final per-entry histograms at the end of this workflow have :math:`J \times 5 \times 10 \times 0.01 \times N \times 0.98`
+entries, where one entry represents one event. The histograms must be multiplied by:
+
+.. math::
+
+   \mathrm{scaling} = \frac{5 \times 10 \times 0.01 \times N \times 0.98}{N}
+
+to recover the original rate per proton on target in this simulation. This is done automatically
+by rebdsim. rebdsimCombine just adds together the already correctly normalised histograms.
+
+  
 .. _output-user-analysis:
 
 User Analysis
@@ -970,6 +1119,7 @@ library can be used interactively in Python and ROOT to load the data manually.
 A custom analysis can also be put in files the same as rebdsim would produce
 and then rebdsimCombine can be used on them. This allows us to scale up a custom
 analysis to any size. See :ref:`custom-analysis-rebdsim-file`.
+
 
 Analysis in Python
 ------------------
@@ -999,6 +1149,7 @@ This can also be conveniently achieved with pybdsim: ::
 
 This raises a Python exception if the libraries aren't found correctly. This is done
 automatically when any BDSIM output file is loaded using the ROOT libraries.
+
 
 IPython
 *******
@@ -1128,8 +1279,8 @@ ROOT.
 accumulators (things that accumulate) are building up the average as they go.
 
 The :code:`HistogramAccumulator` class wraps a ROOT TH1D or TH2D or TH3D object and
-calcualtes a rolling average. The class is available in our rebdsim library which is
-imported automatially when loading a data file with pybdsim. However, one can explicitly
+calculates a rolling average. The class is available in our rebdsim library which is
+imported automatically when loading a data file with pybdsim. However, one can explicitly
 load it with: ::
 
   >>> import pybdsim
@@ -1137,7 +1288,7 @@ load it with: ::
 
 * HistogramAccumulator can be found in :code:`bdsim/analysis/HistogramAccumulator.hh`.
 * It works on TH1D, TH2D, TH3D histograms.
-* You do not need to speciy the number of dimensions of the histogram - it's automatic.
+* You do not need to specify the number of dimensions of the histogram - it's automatic.
 
 This is the basic usage of HistogramAccumulator in Python: ::
 
@@ -1159,7 +1310,7 @@ This is the basic usage of HistogramAccumulator in Python: ::
 
 
 .. note:: We need a basic ROOT histogram to base the accumulator off of. It needs to have a
-	  differnet name, but it can have the same title. The first argument, the object name,
+	  different name, but it can have the same title. The first argument, the object name,
 	  is the one used when writing to a file and ROOT uses this internally to identify it
 	  so it **must** be unique. Here, we append the suffix "BASE" onto its name for the
 	  simple histogram, and we give the accumulator the desired name without this suffix
@@ -1180,6 +1331,7 @@ An example in a loop: ::
   >>> outfile = pybdsim.Data.CreateEmptyRebdsimFile("somehistograms.root", d.header.nOriginalEvents)
   >>> pybdsim.Data.WriteROOTHistogramsToDirectory(outfile, "Event/PerEntryHistograms", [result])
   >>> outfile.Close()
+
 
 .. _custom-analysis-rebdsim-file:
 
@@ -1205,6 +1357,7 @@ match the layout of a regular rebdsim file. e.g. :
 
 * :code:`Event/PerEntryHistograms` for average histograms
 * :code:`Event/SimpleHistograms` for regular histograms that aren't averaged or event-normalised.
+
 
 REBDSIM In Python
 *****************
@@ -1300,6 +1453,7 @@ classes provided by the library::
 The header (".hh") files in :code:`<bdsim>/analysis` provide the contents and abilities
 of each class.
 
+
 Raw Data Loading
 ****************
 
@@ -1314,6 +1468,7 @@ sets the branch address on them (links them to the open file). For example::
   root> TTree* evtTree = dl->GetEventTree();
 
 Here, a file is loaded and by default all data is loaded in the file.
+
 
 REBDSIM Histogram Loading
 *************************
@@ -1367,6 +1522,7 @@ One may manually loop over the events in a macro::
 This would loop over all entries and print the number of energy deposition hits per
 event.
 
+
 Sampler Data
 ************
 
@@ -1391,6 +1547,7 @@ The following classes are used for data loading and can be found in `bdsim/analy
 * Options.hh
 * Run.hh
 
+
 .. _numerical-methods:
 
 Numerical Methods
@@ -1399,6 +1556,7 @@ Numerical Methods
 Algorithms used to accurately calculate quantities are described here. These are
 documented explicitly as a simple implementation of the mathematical formulae
 would result in an inaccurate answer in some cases.
+
 
 Numerically Stable Calculation of Mean \& Variance
 --------------------------------------------------

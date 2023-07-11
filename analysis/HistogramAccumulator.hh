@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -82,7 +82,7 @@ public:
   /// Loop over the bins in a histogram and accumulate that bin from a new
   /// histogram ("newValue"). newValue is assumed to be the exact same as
   /// the baseHistogram the instance of this class was constructed with.
-  virtual void Accumulate(TH1* newValue);
+  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
 
   /// Write the result to the result histogram. Calculate the standard error
   /// on the mean from the variance for the error in each bin.

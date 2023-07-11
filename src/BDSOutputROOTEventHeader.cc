@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -35,7 +35,7 @@ ClassImp(BDSOutputROOTEventHeader)
 
 BDSOutputROOTEventHeader::BDSOutputROOTEventHeader()
 {
-  Flush();
+  FlushLocal();
 }
 
 BDSOutputROOTEventHeader::~BDSOutputROOTEventHeader()
@@ -59,6 +59,7 @@ void BDSOutputROOTEventHeader::FlushLocal()
   nEventsRequested = 0;
   nEventsInFileSkipped = 0;
   nEventsInFile = 0;
+  distrFileLoopNTimes = 0;
   
 #ifndef __ROOTDOUBLE__
   doublePrecisionOutput = false;

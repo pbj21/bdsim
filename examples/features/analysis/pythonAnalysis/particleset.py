@@ -1,7 +1,7 @@
 import pybdsim
 import ROOT
 
-def DeterminePDGSet(filename="../../data/shower1.root"):
+def DeterminePDGSet(filename="../../data/shower.root"):
     """
     Print out the set of particle PDG IDs
     from the "c1" sampler of data file.
@@ -61,4 +61,4 @@ def AnalyseFile(filename, outfilename):
         
 
 if __name__ == "__main__":
-    AnalyseFile("../../data/shower1.root","pyParticleSetTest.root")
+    AnalyseFile("../../data/shower.root", "pyParticleSetTest.root")

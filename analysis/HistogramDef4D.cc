@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -18,6 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BinSpecification.hh"
 #include "HistogramDef4D.hh"
+
+#include <string>
 
 ClassImp(HistogramDef4D)
 
@@ -44,3 +46,19 @@ HistogramDef4D::HistogramDef4D(const std::string&      treeNameIn,
 
 HistogramDef4D::~HistogramDef4D()
 {;}
+
+std::string HistogramDef4D::GetBinningString() const
+{
+  std::string result = "{" + std::to_string(xBinning.n) + "," + std::to_string(yBinning.n) + ",";
+  result += std::to_string(zBinning.n) + "," + std::to_string(eBinning.n) + "} {";
+  result += xBinning.GetBinString() + "," + yBinning.GetBinString() + "," + zBinning.GetBinString() + "," + eBinning.GetBinString() +"}";
+  return result;
+}
+
+std::string HistogramDef4D::GetHistogramString() const
+{
+  std::string result = perEntry ? "Histogram3D" : "SimpleHistogram3D";
+  if (xBinning.isLogSpaced || yBinning.isLogSpaced || zBinning.isLogSpaced || eBinning.isLogSpaced)
+    {result += xBinning.GetLogString() + yBinning.GetLogString() + zBinning.GetLogString() + eBinning.GetLogString();}
+  return result;
+}

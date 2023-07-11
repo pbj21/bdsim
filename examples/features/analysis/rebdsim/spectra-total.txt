@@ -1,0 +1,9 @@
+InputFilePath	../../data/shower.root
+OutputFileName	ana_spectra_all.root
+VerboseSpectra  true
+
+#Object   Sampler Name  # Bins  Binning     Particles    Selection
+Spectra   	c1	20	{0:200}     {total,22}   1
+Spectra   	c1	20	{0:200}     {total,22}   PrimaryFirstHit.S>0.4
+SpectraLog   	c1	30	{-4:2}      {total,22}   1
+SpectraTE   	c1	20	{0:200}     {total,22}   1

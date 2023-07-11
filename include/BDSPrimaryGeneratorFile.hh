@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -59,7 +59,8 @@ public:
   static BDSPrimaryGeneratorFile* ConstructGenerator(const GMAD::Beam& beam,
                                                      BDSBunch* bunchIn,
                                                      G4bool recreate,
-                                                     G4int eventOffset);
+                                                     G4int eventOffset,
+                                                     G4bool batchMode);
 
   /// Return false if not able to generate a primary vertex.
   G4bool GeneratePrimaryVertexSafe(G4Event* event);

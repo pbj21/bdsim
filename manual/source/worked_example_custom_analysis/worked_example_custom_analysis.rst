@@ -165,23 +165,23 @@ are created as in the earlier part of this example but are a per-event average. 
           for p,h in baseHistograms.items():
               h.Reset()
         
-	  # now loop over the trajectories stored for this event
+          # now loop over the trajectories stored for this event
 	  for i in range(event.Trajectory.n):
-	  # get the particle ID of the trajectory
-	  partID = event.Trajectory.partID[i]
-          if partID not in particles:
-              continue # skip ones we don't want to histogram
+	      # get the particle ID of the trajectory
+              partID = event.Trajectory.partID[i]
+              if partID not in particles:
+                  continue # skip ones we don't want to histogram
 
-          # i-th trajectory and the 0th (ie first) point of the trajectory position vector
-          originPos = event.Trajectory.XYZ[i][0]
-          x,z = originPos[0],originPos[2]
-          weight = event.Trajectory.postWeights[i][0]
+              # i-th trajectory and the 0th (ie first) point of the trajectory position vector
+              originPos = event.Trajectory.XYZ[i][0]
+              x,z = originPos[0],originPos[2]
+              weight = event.Trajectory.postWeights[i][0]
 
-          baseHistograms[partID].Fill(z, x, weight)
+              baseHistograms[partID].Fill(z, x, weight)
 
           # at the end of the event we 'accumulate' one event
           for p,h in baseHistograms.items():
-	    accumulators[p].Accumulate(h)
+	      accumulators[p].Accumulate(h)
 
       # now we terminate the accumulators - ie normalise to the number of events
       results = {}

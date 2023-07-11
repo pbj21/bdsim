@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #include "BDSPhysicsCutsAndLimits.hh"
 #include "BDSPhysicsEMDissociation.hh"
+#include "BDSPhysicsMuonSplitting.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
 #include "BDSWarning.hh"
@@ -53,9 +54,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4IonTable.hh"
 #include "G4KaonMinus.hh"
 #include "G4KaonPlus.hh"
-#include "G4MuonMinus.hh"
+#include "G4KaonZero.hh"
 #include "G4KaonZeroLong.hh"
+#include "G4KaonZeroShort.hh"
 #include "G4LeptonConstructor.hh"
+#include "G4MuonMinus.hh"
 #include "G4MuonPlus.hh"
 #include "G4NeutrinoE.hh"
 #include "G4NeutrinoMu.hh"
@@ -138,46 +141,46 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
           throw BDSException(__METHOD_NAME__, "Unknown Geant4 physics list \"" + geant4PhysicsList + "\"");
         }
       else
-	{
-	  result = factory.GetReferencePhysList(geant4PhysicsList);
-	  if (g->G4PhysicsUseBDSIMRangeCuts())
-	    {BDS::SetRangeCuts(result);}
-	  if (g->MinimumKineticEnergy() > 0 || g->G4PhysicsUseBDSIMCutsAndLimits())
-	    {
-	      G4cout << "\nAdding cuts and limits physics process to Geant4 reference physics list" << G4endl;
-	      G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
-	      G4cout << "This is done by default for the functionality of BDSIM tracking and should not affect the physics greatly.\n";
-	      G4cout << "See the BDSIM manual about Geant4 reference physics lists for details." << G4endl;
-	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits(g->ParticlesToExcludeFromCutsAsSet()));
-	    }
-	  else if (!g->G4PhysicsUseBDSIMCutsAndLimits() && g->Circular())
-	    {
-	      G4String message = "g4PhysicsUseBDSIMCutsAndLimits turned off but using a circular machine - circular mechanics will be broken";
-	      BDS::Warning(__METHOD_NAME__, message);
-	    }
-	}
+        {
+          result = factory.GetReferencePhysList(geant4PhysicsList);
+          if (g->G4PhysicsUseBDSIMRangeCuts())
+            {BDS::SetRangeCuts(result);}
+          if (g->MinimumKineticEnergy() > 0 || g->G4PhysicsUseBDSIMCutsAndLimits())
+            {
+              G4cout << "\nAdding cuts and limits physics process to Geant4 reference physics list" << G4endl;
+              G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
+              G4cout << "This is done by default for the functionality of BDSIM tracking and should not affect the physics greatly.\n";
+              G4cout << "See the BDSIM manual about Geant4 reference physics lists for details." << G4endl;
+              result->RegisterPhysics(new BDSPhysicsCutsAndLimits(g->ParticlesToExcludeFromCutsAsSet()));
+            }
+          else if (!g->G4PhysicsUseBDSIMCutsAndLimits() && g->Circular())
+            {
+              G4String message = "g4PhysicsUseBDSIMCutsAndLimits turned off but using a circular machine - circular mechanics will be broken";
+              BDS::Warning(__METHOD_NAME__, message);
+            }
+        }
     }
   else if (completePhysics)
     {// we test one by one for the exact name of very specific physics lists
       if (BDS::StrContains(physicsListNameLower, "channelling"))
-	{
-	  G4cout << "Constructing \"" << physicsListNameLower << "\" complete physics list" << G4endl;
+        {
+          G4cout << "Constructing \"" << physicsListNameLower << "\" complete physics list" << G4endl;
 #if G4VERSION_NUMBER > 1039
-	  G4bool useEMD  = BDS::StrContains(physicsListNameLower, "emd");
-	  G4bool regular = BDS::StrContains(physicsListNameLower, "regular");
-	  G4bool em4     = BDS::StrContains(physicsListNameLower, "em4");
-	  G4bool emss    = BDS::StrContains(physicsListNameLower, "emss");
-	  // we don't assign 'result' variable or proceed as that would result in the
-	  // range cuts being set for a complete physics list that we wouldn't use
-	  auto r = BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
-	  r->SetVerboseLevel(verbosity);
-	  return r;
+          G4bool useEMD  = BDS::StrContains(physicsListNameLower, "emd");
+          G4bool regular = BDS::StrContains(physicsListNameLower, "regular");
+          G4bool em4     = BDS::StrContains(physicsListNameLower, "em4");
+          G4bool emss    = BDS::StrContains(physicsListNameLower, "emss");
+          // we don't assign 'result' variable or proceed as that would result in the
+          // range cuts being set for a complete physics list that we wouldn't use
+          auto r = BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
+          r->SetVerboseLevel(verbosity);
+          return r;
 #else
-	  throw BDSException(__METHOD_NAME__, "Channel physics is not supported with Geant4 versions less than 10.4");
+          throw BDSException(__METHOD_NAME__, "Channel physics is not supported with Geant4 versions less than 10.4");
 #endif
-	}
+        }
       else
-	{throw BDSException(__METHOD_NAME__, "Unknown 'complete' physics list \"" + physicsList + "\"");}
+        {throw BDSException(__METHOD_NAME__, "Unknown 'complete' physics list \"" + physicsList + "\"");}
     }
   else
     {
@@ -242,10 +245,10 @@ void BDS::ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
 }
 
 void BDS::ConstructDesignAndBeamParticle(const GMAD::Beam& beamDefinition,
-					 G4double ffact,
-					 BDSParticleDefinition*& designParticle,
-					 BDSParticleDefinition*& beamParticle,
-					 G4bool& beamDifferentFromDesignParticle)
+                                         G4double ffact,
+                                         BDSParticleDefinition*& designParticle,
+                                         BDSParticleDefinition*& beamParticle,
+                                         G4bool& beamDifferentFromDesignParticle)
 {
   if (beamDefinition.particle.empty())
     {throw BDSException("Beam> no \"particle\" specified (required).");}
@@ -270,18 +273,18 @@ void BDS::ConstructDesignAndBeamParticle(const GMAD::Beam& beamDefinition,
     {// at least one specified so use all of the beam particle ones
       BDS::ConflictingParametersSet(beamDefinition, keysParticle, nSetParticle, false);
       beamParticle = BDS::ConstructParticleDefinition(beamParticleName,
-						      beamDefinition.E0  * CLHEP::GeV,
-						      beamDefinition.Ek0 * CLHEP::GeV,
-						      beamDefinition.P0  * CLHEP::GeV,
-						      ffact);
+                                                      beamDefinition.E0  * CLHEP::GeV,
+                                                      beamDefinition.Ek0 * CLHEP::GeV,
+                                                      beamDefinition.P0  * CLHEP::GeV,
+                                                      ffact);
     }
   else if (beamDefinition.beamParticleName != beamDefinition.particle && !beamDefinition.beamParticleName.empty())
     {// different particle name but no extra E0, Ek0 or P0 -> therefore use general beam defaults
       beamParticle = BDS::ConstructParticleDefinition(beamParticleName,
-						      beamDefinition.beamEnergy        * CLHEP::GeV,
-						      beamDefinition.beamKineticEnergy * CLHEP::GeV,
-						      beamDefinition.beamMomentum      * CLHEP::GeV,
-						      ffact);
+                                                      beamDefinition.beamEnergy        * CLHEP::GeV,
+                                                      beamDefinition.beamKineticEnergy * CLHEP::GeV,
+                                                      beamDefinition.beamMomentum      * CLHEP::GeV,
+                                                      ffact);
     }
   else
     {
@@ -299,11 +302,13 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
   G4String particleName = BDS::LowerCase(particleNameIn);
 
   std::map<G4String, G4String> commonSubstitutions = { {"photon", "gamma"},
-						       {"electron", "e-"},
-						       {"positron", "e+"},
+                                                       {"electron", "e-"},
+                                                       {"positron", "e+"},
                                                        {"pion+", "pi+"},
                                                        {"pion-", "pi-"},
-                                                       {"pion0", "pi0"} };
+                                                       {"pion0", "pi0"},
+                                                       {"antiproton", "anti_proton"},
+                                                       {"anti-proton", "anti_proton"} };
 
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   std::regex ionParticle("(ion\\s).*");
@@ -319,7 +324,7 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
       mass += ionDef->NElectrons()*G4Electron::Definition()->GetPDGMass();
       G4double charge = ionDef->Charge(); // correct even if overridden
       particleDefB = new BDSParticleDefinition(particleName, mass, charge,
-					       totalEnergyIn, kineticEnergyIn, momentumIn, ffact, ionDef, ionPDGID);
+                                               totalEnergyIn, kineticEnergyIn, momentumIn, ffact, ionDef, ionPDGID);
       delete ionDef;
     }
   else
@@ -352,12 +357,16 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
             {throw BDSException(__METHOD_NAME__,"PDG ID \"" + particleName + "not found in particle table");}
         }
       catch (const std::logic_error&) // else, usual way by string search
-        {particleDef = particleTable->FindParticle(particleName);}
+        {
+          particleDef = particleTable->FindParticle(particleName);
+          if (!particleDef)
+            {particleDef = particleTable->FindParticle(particleNameIn);} // try with original case
+        }
       if (!particleDef)
-	{
-	  BDS::PrintDefinedParticles();
-	  throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found.");
-	}
+        {
+          BDS::PrintDefinedParticles();
+          throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found.");
+        }
       particleDefB = new BDSParticleDefinition(particleDef, totalEnergyIn, kineticEnergyIn, momentumIn, ffact);
     }
   return particleDefB;
@@ -365,9 +374,11 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
 
 void BDS::ConstructBeamParticleG4(const G4String& name)
 {
+  // note, we compare to the lower case name here, not the Geant4 one as
+  // we will already have converted to lower case when this is used
   if (name == "proton")
     {G4Proton::ProtonDefinition();}
-  else if (name == "antiproton")
+  else if (name == "anti_proton")
     {G4AntiProton::AntiProtonDefinition();}
   else if (name == "e-")
     {G4Electron::ElectronDefinition();}
@@ -391,8 +402,12 @@ void BDS::ConstructBeamParticleG4(const G4String& name)
     {G4KaonMinus::KaonMinusDefinition();}
   else if (name == "kaon+")
     {G4KaonPlus::KaonPlusDefinition();}
-  else if (name == "kaon0L")
+  else if (name == "kaon0")
+    {G4KaonZero::KaonZeroDefinition();}
+  else if (name == "kaon0l")
     {G4KaonZeroLong::KaonZeroLongDefinition();}
+  else if (name == "kaon0s")
+    {G4KaonZeroShort::KaonZeroShortDefinition();}
   else if (name == "nu_e")
     {G4NeutrinoE::NeutrinoEDefinition();}
   else if (name == "anti_nu_e")
@@ -407,7 +422,7 @@ void BDS::ConstructBeamParticleG4(const G4String& name)
     {G4AntiNeutrinoTau::AntiNeutrinoTauDefinition();}
   else
     {
-      G4String msg = "Unknown common particle type \"" + name;
+      G4String msg = "Unknown common beam particle type \"" + name;
       msg += "\" - if it doesn't work, include all \"all_particles\" in the physicsList option.";
       BDS::Warning(__METHOD_NAME__, msg);
     }
@@ -444,7 +459,7 @@ void BDS::ConstructExtendedParticleSet()
 void BDS::PrintPrimaryParticleProcesses(const G4String& primaryParticleName)
 {
   G4cout << "Register physics processes by name for the primary particle \""
-	 << primaryParticleName << "\":" << G4endl;
+         << primaryParticleName << "\":" << G4endl;
 
   auto particle = G4ParticleTable::GetParticleTable()->FindParticle(primaryParticleName);
   if (!particle)
@@ -471,9 +486,9 @@ G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMA
       particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
       
       if (particle)
-	{particlesToBias.insert(particle);}
+        {particlesToBias.insert(particle);}
       else
-	{throw BDSException(__METHOD_NAME__, "Unknown particle type for biasing: \"" + particleName + "\"");}
+        {throw BDSException(__METHOD_NAME__, "Unknown particle type for biasing: \"" + particleName + "\"");}
     }
   
   if (particlesToBias.empty()) // nothing valid to bias
@@ -489,6 +504,30 @@ G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMA
   return physBias;
 }
 
+void BDS::BuildMuonBiasing(G4VModularPhysicsList* physicsList)
+{
+  auto globals = BDSGlobalConstants::Instance();
+  G4int muonSplittingFactor = globals->MuonSplittingFactor();
+  if (muonSplittingFactor > 1)
+    {
+      G4int muonSplittingFactor2 = globals->MuonSplittingFactor2();
+      G4double muonSplittingThresholdParentEk = globals->MuonSplittingThresholdParentEk();
+      G4double muonSplittingThresholdParentEk2 = globals->MuonSplittingThresholdParentEk2();
+      G4cout << "BDSPhysicsMuonSplitting -> using muon splitting wrapper -> factor of: " << muonSplittingFactor << G4endl;
+      if (muonSplittingThresholdParentEk > 0)
+        {G4cout << "BDSPhysicsMuonSplitting -> minimum parent kinetic energy: " << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;}
+      if (muonSplittingFactor2 > 1)
+        {
+          G4cout << "BDSPhysicsMuonSplitting -> factor #2: " << muonSplittingFactor2 << " for muons above "
+                 << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;
+        }
+      G4bool excludeW1P = globals->MuonSplittingExcludeWeight1Particles();
+      physicsList->RegisterPhysics(new BDSPhysicsMuonSplitting(muonSplittingFactor,  muonSplittingThresholdParentEk,
+                                                               muonSplittingFactor2, muonSplittingThresholdParentEk2,
+                                                               excludeW1P, globals->MuonSplittingExclusionWeight()));
+    }
+}
+
 void BDS::PrintDefinedParticles()
 {
   G4cout << __METHOD_NAME__ << "Defined particles: " << G4endl;
@@ -501,9 +540,9 @@ void BDS::PrintDefinedParticles()
 
 #if G4VERSION_NUMBER > 1039
 G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(G4bool useEMD,
-						       G4bool regular,
-						       G4bool em4,
-						       G4bool emss)
+                                                       G4bool regular,
+                                                       G4bool em4,
+                                                       G4bool emss)
 {
   G4VModularPhysicsList* physlist = new FTFP_BERT();
   physlist->RegisterPhysics(new G4IonElasticPhysics()); // not included by default in FTFP_BERT
@@ -606,14 +645,14 @@ void BDS::CheckAndSetEnergyValidityRange()
       G4double elHigh = setEnergyLimitHigh ? energyLimitHigh : defaultEnergyLimitHigh;
       table->SetEnergyRange(elLow, elHigh);
       if (setEnergyLimitLow)
-	{
-	  G4cout << __METHOD_NAME__ << "set EM physics low energy limit:  "
-		 << elLow/CLHEP::MeV  << " MeV" << G4endl;
-	}
+        {
+          G4cout << __METHOD_NAME__ << "set EM physics low energy limit:  "
+                 << elLow/CLHEP::MeV  << " MeV" << G4endl;
+        }
       if (setEnergyLimitHigh)
-	{
-	  G4cout << __METHOD_NAME__ << "set high energy limit: "
-		 << elHigh/CLHEP::TeV << " TeV" << G4endl;
+        {
+          G4cout << __METHOD_NAME__ << "set high energy limit: "
+                 << elHigh/CLHEP::TeV << " TeV" << G4endl;
       if (elHigh > G4EmParameters::Instance()->MaxKinEnergy())
         {
           G4cout << __METHOD_NAME__ << "set EM physics Ek limit to " << elHigh/CLHEP::TeV << " TeV" << G4endl;
@@ -627,7 +666,7 @@ void BDS::CheckAndSetEnergyValidityRange()
           G4HadronicParameters::Instance()->SetMaxEnergy(elHigh);
         }
 #endif
-	}
+        }
     }
 }
 

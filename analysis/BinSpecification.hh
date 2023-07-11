@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BINSPECIFICATION_H
 #include "Rtypes.h"
 
+#include <string>
 #include <vector>
 
 /**
@@ -41,8 +42,8 @@ public:
   BinSpecification();
   /// Linearly spaced bins.
   BinSpecification(double lowIn,
-		   double highIn,
-		   int    nIn);
+                   double highIn,
+                   int    nIn);
 
   /// Uneven binning - suitable for logarithmic etc.
   explicit BinSpecification(const std::vector<double>& edgesIn);
@@ -51,11 +52,19 @@ public:
   BinSpecification(BinSpecification&& other) noexcept;
   
   ~BinSpecification();
+
+  /// Return the filename or the binning.
+  std::string GetBinString() const;
+
+  /// Utility function.
+  inline std::string GetLogString() const {return isLogSpaced ? "Log" : "Lin";}
   
   double low;
   double high;
   int    n;
   std::vector<double>* edges;
+  bool   isLogSpaced;
+  std::string edgesFileName;
 };
   
 #endif

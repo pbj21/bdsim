@@ -6,7 +6,7 @@ SimpleHistogram1D   Event. PrimaryYSimple        {20}        {-5e-8:5e-8}     Pr
 Histogram2D         Event. PrimaryXY             {20,20}     {-1:1,-1:1}      Primary.y:Primary.x                        1
 SimpleHistogram2D   Event. PrimaryXYSimple       {10,10}     {-1:1,-1:1}      Primary.y:Primary.x                        1
 Histogram1DLog      Event. EventDuration         {30}        {-4:2}           Summary.durationCPU                        1
-Histogram3D         Event. D2XYEnergy            {20,20,30}  {-3:3,-3:3,0:1}  d2_1.x:d2_1.y:d1_1.energy                  1
+Histogram3D         Event. D2XYEnergy            {20,20,30}  {-3:3,-3:3,0:1}  d2a_1.x:d2a_1.y:d1_1.energy                  1
 Histogram1DLog      Event. EnergySpectrum        {50}        {-9:-1}          Eloss.energy                               1
 Histogram1D         Event. EnergyLossManual      {30}        {0:10}           Eloss.S                                    Eloss.energy*Eloss.weight
 Histogram1D         Event. TunnelLossManual      {30}        {0:10}           ElossTunnel.S                              ElossTunnel.energy*ElossTunnel.weight

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -121,15 +121,15 @@ void BDSGeometryFactoryBase::ApplyUserLimits(const std::set<G4LogicalVolume*>& l
 }
 
 void BDSGeometryFactoryBase::ApplySensitivity(BDSGeometryExternal* result,
-                                              const std::set<G4LogicalVolume*>& allLogicalVolumes,
+                                              const std::set<G4LogicalVolume*>& allLogicalVolumesIn,
                                               BDSSDType generalSensitivity,
                                               const std::set<G4LogicalVolume*>& vacuumLogicalVolumes,
                                               BDSSDType vacuumSensitivity)
 {
   std::map<G4LogicalVolume*, BDSSDType> sensitivityMapping;
   std::set<G4LogicalVolume*> notVacuumVolumes;
-  std::set_difference(allLogicalVolumes.begin(),
-                      allLogicalVolumes.end(),
+  std::set_difference(allLogicalVolumesIn.begin(),
+                      allLogicalVolumesIn.end(),
                       vacuumLogicalVolumes.begin(),
                       vacuumLogicalVolumes.end(),
                       std::inserter(notVacuumVolumes, notVacuumVolumes.begin()));

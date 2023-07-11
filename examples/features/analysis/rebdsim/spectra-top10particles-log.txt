@@ -1,4 +1,4 @@
-InputFilePath	../../data/shower1.root
+InputFilePath	../../data/shower.root
 OutputFileName	ana_spectra_top10particles_log.root
 
 #Object   Sampler Name  # Bins  Binning    Particles               Selection

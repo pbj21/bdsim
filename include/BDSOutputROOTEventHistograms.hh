@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -138,7 +138,7 @@ private:
   std::vector<TH3D*> histograms3D;
   std::vector<BDSBH4DBase*> histograms4D;
 
-  ClassDef(BDSOutputROOTEventHistograms,3);
+  ClassDef(BDSOutputROOTEventHistograms,4);
 };
 
 #endif

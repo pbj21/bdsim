@@ -1,28 +1,29 @@
-Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London 2001 - 2021
+Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London 2001 - 2023
 
 General Information
 ===================
 
-BDSIM version 1.6.develop, program for radiation transport in accelerators
+BDSIM version 1.7.develop, program for radiation transport in accelerators
 
 The official web site is:
 	http://www.pp.rhul.ac.uk/bdsim
 
 Currently maintained and developed by:
 
-Laurie Nevay          <laurie.nevay@rhul.ac.uk> (main contact)
-Andrey Abramov        <andrey.abramov.2012@live.rhul.ac.uk>
-Stewart Boogert       <stewart.boogert@rhul.ac.uk>
-Stephen Gibson        <stephen.gibson@rhul.ac.uk>
-Will Shields          <william.shields.2010@live.rhul.ac.uk>
+Laurie Nevay          <laurie.nevay@cern.ch> (main contact)
+Will Shields          <william.shields@rhul.ac.uk>
+Stewart Boogert       <stewart.boogert@cockcroft.ac.uk>
+Andrey Abramov        <andrey.abramov@cern.ch>
+Stuart Walker         <stuart.walker@desy.de>
 Jochem Snuverink      <jochem.snuverink@psi.ch>
-Stuart Walker         <stuart.walker.2011@live.rhul.ac.uk>
+
 
 Originally started by G.A. Blair. See manual for full authorship.
 
 History
 =======
 
+v1.7.0  04.04.23
 v1.6.0  16.12.21
 v1.5.1  21.12.21
 v1.5.0  16.12.20

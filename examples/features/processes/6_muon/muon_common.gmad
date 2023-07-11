@@ -7,7 +7,7 @@ sample, all;
 
 option, defaultRangeCut = 10*m,
 	ngenerate=10,
-        physicsList="em em_extra decay hadronic_elastic QGSP_BERT muon";
+        physicsList="em decay hadronic_elastic qgsp_bert muon";
 
 option, minimumKineticEnergy=10*GeV;
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -41,10 +41,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 Analysis::Analysis(const std::string& treeNameIn,
-		   TChain*            chainIn,
-		   const std::string& mergedHistogramNameIn,
-		   bool               perEntryAnalysis,
-		   bool               debugIn):
+                   TChain*            chainIn,
+                   const std::string& mergedHistogramNameIn,
+                   bool               perEntryAnalysis,
+                   bool               debugIn):
   treeName(treeNameIn),
   chain(chainIn),
   mergedHistogramName(mergedHistogramNameIn),
@@ -93,7 +93,7 @@ void Analysis::SimpleHistograms()
     {
       auto definitions = Config::Instance()->HistogramDefinitionsSimple(treeName);
       for (auto definition : definitions)
-	    {FillHistogram(definition);}
+            {FillHistogram(definition);}
     }
 }
 

@@ -11,6 +11,8 @@ option, minimumKineticEnergy=1*GeV,
         defaultRangeCut=10*cm,
         physicsList="g4FTFP_BERT";
 
+option, worldMaterial="vacuum";
+
 option, storeMinimalData=1;
 
 sample, all;

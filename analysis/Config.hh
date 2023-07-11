@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -62,7 +62,7 @@ private:
   /// Copy of definition used to identify only 'per entry' histogram definitions. Doesn't own.
   std::map<std::string, std::vector<HistogramDef*> > histoDefsPerEntry;
 
-  /// Sets of histogram definitions per particle.  Only for event branch.
+  /// Sets of histogram definitions per particle. Only for event branch.
   std::vector<HistogramDefSet*> eventHistoDefSetsSimple;
   std::vector<HistogramDefSet*> eventHistoDefSetsPerEntry;
   
@@ -130,7 +130,9 @@ public:
   inline std::string CalculateOpticalFunctionsFileName() const {return optionsString.at("opticslfilename");}
   inline bool   Debug() const                     {return optionsBool.at("debug");}
   inline bool   CalculateOpticalFunctions() const {return optionsBool.at("calculateoptics");}
+  inline bool   EmittanceOnTheFly() const         {return optionsBool.at("emittanceonthefly");}
   inline bool   ProcessSamplers() const           {return optionsBool.at("processsamplers");}
+  inline bool   PrintOut() const                  {return optionsBool.at("printout");}
   inline double PrintModuloFraction() const       {return optionsNumber.at("printmodulofraction");}
   /// @}
   /// @{ Whether per entry loading is needed. Alternative is only TTree->Draw().
@@ -140,6 +142,10 @@ public:
   inline bool   PerEntryOption() const {return optionsBool.at("perentryoption");}
   inline bool   PerEntryModel()  const {return optionsBool.at("perentrymodel");}
   /// @}
+
+  /// Print out the per event and simple histogram set definitions as these
+  /// are (assumed to be) spectra definitions that people might want to see expanded.
+  void PrintHistogramSetDefinitions() const;
   
  protected:
   /// Private constructor for singleton pattern.

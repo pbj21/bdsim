@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -36,20 +36,16 @@ BDSBunchBox::BDSBunchBox():
   envelopeZp(0.0),
   envelopeT(0.0),
   envelopeE(0.0)
-{
-  flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine());
-}
+{;}
 
 BDSBunchBox::~BDSBunchBox()
-{
-  delete flatGen;
-}
+{;}
 
 void BDSBunchBox::SetOptions(const BDSParticleDefinition* beamParticle,
-			     const GMAD::Beam& beam,
-			     const BDSBunchType& distrType,
-			     G4Transform3D beamlineTransformIn,
-			     const G4double beamlineSIn)
+                             const GMAD::Beam& beam,
+                             const BDSBunchType& distrType,
+                             G4Transform3D beamlineTransformIn,
+                             const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   envelopeX  = beam.envelopeX  * CLHEP::m;
@@ -85,20 +81,20 @@ void BDSBunchBox::CheckParameters()
 
 BDSParticleCoordsFull BDSBunchBox::GetNextParticleLocal()
 {
-  G4double x  = X0  + envelopeX  * (1-2*flatGen->shoot());
-  G4double y  = Y0  + envelopeY  * (1-2*flatGen->shoot());
-  G4double z  = Z0  + envelopeZ  * (1-2*flatGen->shoot());
-  G4double xp = envelopeXp * (1-2*flatGen->shoot());
-  G4double yp = envelopeYp * (1-2*flatGen->shoot());
-  G4double zp = envelopeZp * (1-2*flatGen->shoot());
+  G4double x  = X0  + envelopeX  * (1-2*G4RandFlat::shoot());
+  G4double y  = Y0  + envelopeY  * (1-2*G4RandFlat::shoot());
+  G4double z  = Z0  + envelopeZ  * (1-2*G4RandFlat::shoot());
+  G4double xp = envelopeXp * (1-2*G4RandFlat::shoot());
+  G4double yp = envelopeYp * (1-2*G4RandFlat::shoot());
+  G4double zp = envelopeZp * (1-2*G4RandFlat::shoot());
   G4ThreeVector dir(xp,yp,zp);
   dir = dir.unit();
   xp = dir.x();
   yp = dir.y();
   zp = dir.z();
   
-  G4double t  = T0 + envelopeT * (1.- 2.*flatGen->shoot());
-  G4double E  = E0 + envelopeE * (1 - 2.*flatGen->shoot());
+  G4double t  = T0 + envelopeT * (1.- 2.*G4RandFlat::shoot());
+  G4double E  = E0 + envelopeE * (1 - 2.*G4RandFlat::shoot());
   
   return BDSParticleCoordsFull(x,y,z,xp,yp,zp,t,S0+z,E,/*weight=*/1.0);
 }

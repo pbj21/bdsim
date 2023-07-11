@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -52,8 +52,6 @@ public:
 protected:
   G4double rMin;
   G4double rMax;
-  G4double rDif;
-  CLHEP::RandFlat* flatGen;
 };
 
 #endif

@@ -1,0 +1,4 @@
+include job-bmm-sp.gmad;
+
+option, muonSplittingFactor=30,
+	muonSplittingThresholdParentEk=20*GeV;

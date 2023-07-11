@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -44,53 +44,62 @@ ClassImp(EventAnalysis)
 EventAnalysis::EventAnalysis():
   Analysis("Event.", nullptr, "EventHistogramsMerged"),
   event(nullptr),
+  printOut(false),
   printModulo(1),
   processSamplers(false),
   emittanceOnTheFly(false),
   eventStart(0),
-  eventEnd(-1)
+  eventEnd(-1),
+  nEventsToProcess(0)
 {;}
 
 EventAnalysis::EventAnalysis(Event*   eventIn,
-			     TChain*  chainIn,
-			     bool     perEntryAnalysis,
-			     bool     processSamplersIn,
-			     bool     debugIn,
-			     double   printModuloFraction,
-			     bool     emittanceOnTheFlyIn,
-			     long int eventStartIn,
-			     long int eventEndIn,
-			     const std::string& primaryParticleName):
+                             TChain*  chainIn,
+                             bool     perEntryAnalysis,
+                             bool     processSamplersIn,
+                             bool     debugIn,
+                             bool     printOutIn,
+                             double   printModuloFraction,
+                             bool     emittanceOnTheFlyIn,
+                             long int eventStartIn,
+                             long int eventEndIn,
+                             const std::string& primaryParticleName):
   Analysis("Event.", chainIn, "EventHistogramsMerged", perEntryAnalysis, debugIn),
   event(eventIn),
+  printOut(printOutIn),
   printModulo(1),
   processSamplers(processSamplersIn),
   emittanceOnTheFly(emittanceOnTheFlyIn),
   eventStart(eventStartIn),
-  eventEnd(eventEndIn)
+  eventEnd(eventEndIn),
+  nEventsToProcess(eventEndIn - eventStartIn)
 {
+  // check we get this right for print out normalisation
+  if (eventEndIn == -1)
+    {nEventsToProcess = (long int)chainIn->GetEntries();}
+
   if (processSamplers)
     {// Create sampler analyses if needed
       // Analyse the primary sampler in the optics too.
       SamplerAnalysis* sa = nullptr;
       SamplerAnalysis* pa = nullptr;
       if (event->UsePrimaries())
-	{
-	  sa = new SamplerAnalysis(event->GetPrimaries());
-	  samplerAnalyses.push_back(sa);
-	  pa = sa;
-	}
+        {
+          sa = new SamplerAnalysis(event->GetPrimaries());
+          samplerAnalyses.push_back(sa);
+          pa = sa;
+        }
       
       for (const auto& sampler : event->Samplers)
-	{
-	  sa = new SamplerAnalysis(sampler, debug);
-	  samplerAnalyses.push_back(sa);
-	}
+        {
+          sa = new SamplerAnalysis(sampler, debug);
+          samplerAnalyses.push_back(sa);
+        }
       if (!event->UsePrimaries())
-	{
-	  if (!samplerAnalyses.empty())
-	    {pa = samplerAnalyses[0];}
-	}
+        {
+          if (!samplerAnalyses.empty())
+            {pa = samplerAnalyses[0];}
+        }
       
       chain->GetEntry(0);
       if (!primaryParticleName.empty())
@@ -98,7 +107,7 @@ EventAnalysis::EventAnalysis(Event*   eventIn,
       else if (pa)
         {SamplerAnalysis::UpdateMass(pa);}
       else
-	{throw RBDSException("No samplers and no particle name - unable to calculate optics without mass of particle");}
+        {throw RBDSException("No samplers and no particle name - unable to calculate optics without mass of particle");}
     }
   
   SetPrintModuloFraction(printModuloFraction);
@@ -108,17 +117,17 @@ void EventAnalysis::Execute()
 {
   std::cout << "Analysis on \"" << treeName << "\" beginning" << std::endl;
   if (perEntry || processSamplers)
-  {
-    // ensure new histograms are added to file
-    // crucial for draw command to work as it identifies the histograms by name
-    TH1::AddDirectory(kTRUE);
-    TH2::AddDirectory(kTRUE);
-    TH3::AddDirectory(kTRUE);
-    BDSBH4DBase::AddDirectory(kTRUE);
-    PreparePerEntryHistograms();
-    PreparePerEntryHistogramSets();
-    Process();
-  }
+    {
+      // ensure new histograms are added to file
+      // crucial for draw command to work as it identifies the histograms by name
+      TH1::AddDirectory(kTRUE);
+      TH2::AddDirectory(kTRUE);
+      TH3::AddDirectory(kTRUE);
+      BDSBH4DBase::AddDirectory(kTRUE);
+      PreparePerEntryHistograms();
+      PreparePerEntryHistogramSets();
+      Process();
+    }
   SimpleHistograms();
   Terminate();
   std::cout << "Analysis on \"" << treeName << "\" complete" << std::endl;
@@ -126,7 +135,7 @@ void EventAnalysis::Execute()
 
 void EventAnalysis::SetPrintModuloFraction(double fraction)
 {
-  printModulo = (int)std::ceil((double)entries * fraction);
+  printModulo = (int)std::ceil((double)nEventsToProcess * fraction);
   if (printModulo <= 0)
     {printModulo = 1;}
 }
@@ -152,7 +161,7 @@ void EventAnalysis::Process()
   if (eventEnd > entries)
     {
       std::cerr << "EventEnd " << eventEnd << " > entries (" << entries
-		<< ") in file(s) -> curtailing to # of entries!" << std::endl;
+                << ") in file(s) -> curtailing to # of entries!" << std::endl;
       eventEnd = entries;
     }
   bool firstLoop = true;
@@ -163,20 +172,20 @@ void EventAnalysis::Process()
 
       chain->GetEntry(i);
       // event analysis feedback
-      if (i % printModulo == 0)
-	{
-	  std::cout << "\rEvent #" << std::setw(8) << i << " of " << entries;
-	  if (!debug)
-	    {std::cout.flush();}
-	  else
-	    {std::cout << std::endl;}
-	}
+      if (i % printModulo == 0 && printOut)
+        {
+          std::cout << "\rEvent #" << std::setw(8) << i << " of " << entries;
+          if (!debug)
+            {std::cout.flush();}
+          else
+            {std::cout << std::endl;}
+        }
 
       // merge histograms stored per event in the output
       if(firstLoop)
-	{histoSum = new HistogramMeanFromFile(event->Histos);}
+        {histoSum = new HistogramMeanFromFile(event->Histos);}
       else
-	{histoSum->Accumulate(event->Histos);}
+        {histoSum->Accumulate(event->Histos);}
 
       // per event histograms
       AccumulatePerEntryHistograms(i);
@@ -185,24 +194,24 @@ void EventAnalysis::Process()
       UserProcess();
 
       if(debug)
-	{
-	  std::cout << __METHOD_NAME__ << i << std::endl;
-	  if (processSamplers)
-	    {
-	      std::cout << __METHOD_NAME__ << "Vector lengths" << std::endl;
-	      std::cout << __METHOD_NAME__ << "primaries=" << event->Primary->n << std::endl;
-	      std::cout << __METHOD_NAME__ << "eloss="     << event->Eloss->n << std::endl;
-	      std::cout << __METHOD_NAME__ << "nprimary="  << event->PrimaryFirstHit->n << std::endl;
-	      std::cout << __METHOD_NAME__ << "nlast="     << event->PrimaryLastHit->n << std::endl;
-	      std::cout << __METHOD_NAME__ << "ntunnel="   << event->TunnelHit->n << std::endl;
-	      std::cout << __METHOD_NAME__ << "ntrajectory=" << event->Trajectory->n << std::endl;
-	    }
-	}
+        {
+          std::cout << __METHOD_NAME__ << i << std::endl;
+          if (processSamplers)
+            {
+              std::cout << __METHOD_NAME__ << "Vector lengths" << std::endl;
+              std::cout << __METHOD_NAME__ << "primaries=" << event->Primary->n << std::endl;
+              std::cout << __METHOD_NAME__ << "eloss="     << event->Eloss->n << std::endl;
+              std::cout << __METHOD_NAME__ << "nprimary="  << event->PrimaryFirstHit->n << std::endl;
+              std::cout << __METHOD_NAME__ << "nlast="     << event->PrimaryLastHit->n << std::endl;
+              std::cout << __METHOD_NAME__ << "ntunnel="   << event->TunnelHit->n << std::endl;
+              std::cout << __METHOD_NAME__ << "ntrajectory=" << event->Trajectory->n << std::endl;
+            }
+        }
       
       if (processSamplers)
-	{ProcessSamplers(firstLoop);}
+        {ProcessSamplers(firstLoop);}
       if (firstLoop)
-	{firstLoop = false;} // set to false on first pass of loop
+        {firstLoop = false;} // set to false on first pass of loop
     }
   std::cout << "\rSampler analysis complete                           " << std::endl;
 }
@@ -223,10 +232,10 @@ void EventAnalysis::Terminate()
       //vector of emittance values and errors: emitt_x, emitt_y, err_emitt_x, err_emitt_y
       std::vector<double> emittance = {0,0,0,0};
       for (auto& samplerAnalysis : samplerAnalyses)
-	{
-	  emittance = samplerAnalysis->Terminate(emittance, !emittanceOnTheFly);
-	  opticalFunctions.push_back(samplerAnalysis->GetOpticalFunctions());
-	}
+        {
+          emittance = samplerAnalysis->Terminate(emittance, !emittanceOnTheFly);
+          opticalFunctions.push_back(samplerAnalysis->GetOpticalFunctions());
+        }
     }
 }
 
@@ -356,7 +365,7 @@ void EventAnalysis::ProcessSamplers(bool firstTime)
   if (processSamplers)
     {
       for (auto s : samplerAnalyses)
-	{s->Process(firstTime);}
+        {s->Process(firstTime);}
     }
 }
 
@@ -365,7 +374,7 @@ void EventAnalysis::Initialise()
   if (processSamplers)
     {
       for (auto s : samplerAnalyses)
-	{s->Initialise();}
+        {s->Initialise();}
     }
 }
 
@@ -376,7 +385,7 @@ void EventAnalysis::PreparePerEntryHistogramSets()
     {
       auto setDefinitions  = c->EventHistogramSetDefinitionsPerEntry();
       for (const auto& def : setDefinitions)
-	{perEntryHistogramSets.push_back(new PerEntryHistogramSet(def, event, chain));}
+        {perEntryHistogramSets.push_back(new PerEntryHistogramSet(def, event, chain));}
     }
 }
 

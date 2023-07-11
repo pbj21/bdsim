@@ -1,5 +1,7 @@
-Debug						0
+Debug  0
+PrintOut false
 InputFilePath					../../data/sample1.root
+
 # Object	treeName	Histogram Name           # Bins     Binning	       Variable                 Selection
 SimpleHistogram1D    Beam.    X0                       {10}        {-1e-3:1e-3}     Beam.GMAD::BeamBase.X0         1
 Histogram1D          Beam.    X0PE                     {10}        {-1e-3:1e-3}     Beam.GMAD::BeamBase.X0         1

@@ -1,0 +1,4 @@
+include square.gmad;
+
+! test this option - use the old behaviour of z calculated from t
+beam, zFromT=1;

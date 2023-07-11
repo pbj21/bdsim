@@ -1,0 +1,37 @@
+universe = vanilla
+
+executable = bdsimjob-sp2.sh
+
+# use some variables for various paths
+basedir   = /afs/cern.ch/user/l/lnevay/work/public/bdsim/examples/model-model
+studyname = mucompare-wsplit
+outputdir = /eos/user/l/lnevay/studies/$(studyname)
+logdir    = /afs/cern.ch/user/l/lnevay/work/private/logs/$(studyname)/log
+modeldir  = $(basedir)/bdsim/singlepass
+seed      = $(ProcID) + 0
+seedV     = $INT(seed)
+
+# make the output directory including one for the logs 
+include command : mkdir -p $(logdir)
+include command : mkdir -p $(outputdir)
+
+arguments = $(modeldir)/job-bmm-sp-w-muon-splitting.gmad $(outputdir) $(seedV) $(modeldir)/analysis.txt 5000
+
+# direct logging and screen out
+output = $(logdir)/$(ProcId).out
+error  = $(logdir)/$(ProcId).out
+log    = $(logdir)/$(ProcId).log
+
+# resources
+#request_cpus = 1
+#request_disk = 500MB
+request_memory = 1000MB
+
+#ShouldTransferFiles = YES
+#when_to_transfer_output = ON_EXIT
+
+# queue name
++JobFlavour = "microcentury"
+
+# submit N jobs
+queue 100

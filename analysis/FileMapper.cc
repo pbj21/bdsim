@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -42,8 +42,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 bool RBDS::GetFileType(TFile*       file,
-		       std::string& fileType,
-		       int*         dataVersion)
+                       std::string& fileType,
+                       int*         dataVersion)
 {
   // check if valid file at all
   if (file->IsZombie())
@@ -64,7 +64,7 @@ bool RBDS::GetFileType(TFile*       file,
 }
 
 bool RBDS::IsBDSIMOutputFile(TFile* file,
-			     int* dataVersion)
+                             int* dataVersion)
 {
   if (!file)
     {return false;}
@@ -81,7 +81,7 @@ bool RBDS::IsBDSIMOutputFile(TFile* file,
 }
 
 bool RBDS::IsBDSIMOutputFile(const std::string& filePath,
-			     int* dataVersion)
+                             int* dataVersion)
 {
   TFile* f = new TFile(filePath.c_str());
   bool result = IsBDSIMOutputFile(f, dataVersion);
@@ -145,14 +145,14 @@ int RBDS::DetermineDimensionality(TH1* h)
 }
 
 void RBDS::WarningMissingHistogram(const std::string& histName,
-				   const std::string& fileName)
+                                   const std::string& fileName)
 {
   std::cout << "No histogram \"" << histName << "\" in file " << fileName << std::endl;
 }
 
 HistogramMap::HistogramMap(TFile* file,
-			   TFile* output,
-			   bool   debugIn):
+                           TFile* output,
+                           bool   debugIn):
   debug(debugIn)
 {
   TDirectory* rootDir = static_cast<TDirectory*>(file);
@@ -162,8 +162,8 @@ HistogramMap::HistogramMap(TFile* file,
 }
 
 void HistogramMap::MapDirectory(TDirectory* dir,
-				TFile*      output,
-				const std::string& dirPath)
+                                TFile*      output,
+                                const std::string& dirPath)
 {
   // to safely return to where we were and not affect other code
   // cache the current directory
@@ -189,70 +189,69 @@ void HistogramMap::MapDirectory(TDirectory* dir,
       std::string className  = std::string(dirObject->ClassName());
 
       if (className == "TDirectory" || className == "TDirectoryFile")
-	{
-	  TDirectory* subDir = dynamic_cast<TDirectory*>(dirObject);
-    if (!subDir)
-      {continue;} // shouldn't happen but protect against bad dynamic cast access
-	  MapDirectory(subDir, output, dirPath + "/" + objectName); // recursion!
-	}
+        {
+          TDirectory* subDir = dynamic_cast<TDirectory*>(dirObject);
+          if (!subDir)
+            {continue;} // shouldn't happen but protect against bad dynamic cast access
+          MapDirectory(subDir, output, dirPath + "/" + objectName); // recursion!
+        }
       else if (dirObject->InheritsFrom("TH1") || dirObject->InheritsFrom("BDSBH4DBase"))
-	{
-	  TH1* h = dynamic_cast<TH1*>(dirObject);
-    if (!h)
-      {continue;} // shouldn't happen but protect against bad dynamic cast access
-	  int nDim;
-	  bool BDSBH4Dtype = false;
-	  
-	  if (dirObject->InheritsFrom("BDSBH4DBase"))
-      {
-	      nDim = 4;
-	      BDSBH4Dtype = true;
-	    }
-	  else
-	    {nDim = RBDS::DetermineDimensionality(h);}
-	  
-	  if (debug)
-	    {gDirectory->pwd();}
-	  
-	  std::string histPath = dirPath + "/";
-	  histPath.erase(0,1); // erase leading '/'
-	  std::string histName  = std::string(h->GetName());
-	  std::string histTitle = std::string(h->GetTitle());
-	  TDirectory* outDir = output->GetDirectory(histPath.c_str());
-	  if (!outDir)
-	    {output->mkdir(histPath.c_str());} // this returns the parent dir for some stupid reason
-	  // instead get the directory from the output, knowing it now exists
-	  outDir = output->GetDirectory(histPath.c_str());
-	  output->cd(histPath.c_str()); // change into it so new histograms are added to it
-
-	  // create appropriate type of merge
-	  HistogramAccumulator* acc = nullptr;
-	  RBDS::MergeType mergeType = RBDS::DetermineMergeType(dir->GetName());
-	  switch (mergeType)
-	    {
-	    case RBDS::MergeType::meanmerge:
-	      {
-		acc = new HistogramAccumulatorMerge(h, nDim, histName, histTitle);
-		break;
-	      }
-	    case RBDS::MergeType::sum:
-	      {
-		acc = new HistogramAccumulatorSum(h, nDim, histName, histTitle);
-		break;
-	      }
-      case RBDS::MergeType::none:
-	    default:
-	      {continue; break;}
-	    }
-	  
-	  RBDS::HistogramPath path = {histPath, histName, acc, outDir, BDSBH4Dtype};
-	  histograms.push_back(path);
-	  std::cout << "Found histogram> " << histPath << histName << std::endl;
-	}
+        {
+          TH1* h = dynamic_cast<TH1*>(dirObject);
+          if (!h)
+            {continue;} // shouldn't happen but protect against bad dynamic cast access
+          int nDim;
+          bool BDSBH4Dtype = false;
+          
+          if (dirObject->InheritsFrom("BDSBH4DBase"))
+            {
+              nDim = 4;
+              BDSBH4Dtype = true;
+            }
+          else
+            {nDim = RBDS::DetermineDimensionality(h);}
+          
+          if (debug)
+            {gDirectory->pwd();}
+          
+          std::string histPath = dirPath + "/";
+          histPath.erase(0,1); // erase leading '/'
+          std::string histName  = std::string(h->GetName());
+          std::string histTitle = std::string(h->GetTitle());
+          TDirectory* outDir = output->GetDirectory(histPath.c_str());
+          if (!outDir)
+            {output->mkdir(histPath.c_str());} // this returns the parent dir for some stupid reason
+          // instead get the directory from the output, knowing it now exists
+          outDir = output->GetDirectory(histPath.c_str());
+          output->cd(histPath.c_str()); // change into it so new histograms are added to it
+          
+          // create appropriate type of merge
+          HistogramAccumulator* acc = nullptr;
+          RBDS::MergeType mergeType = RBDS::DetermineMergeType(dir->GetName());
+          switch (mergeType)
+            {
+            case RBDS::MergeType::meanmerge:
+              {
+                acc = new HistogramAccumulatorMerge(h, nDim, histName, histTitle);
+                break;
+              }
+            case RBDS::MergeType::sum:
+              {
+                acc = new HistogramAccumulatorSum(h, nDim, histName, histTitle);
+                break;
+              }
+            case RBDS::MergeType::none:
+            default:
+              {continue; break;}
+            }
+          
+          RBDS::HistogramPath path = {histPath, histName, acc, outDir, BDSBH4Dtype};
+          histograms.push_back(path);
+          std::cout << "Found histogram> " << histPath << histName << std::endl;
+        }
       else
-	{continue;} // don't care about other objects
+        {continue;} // don't care about other objects
     }
-
   originalDir->cd();
 }
 

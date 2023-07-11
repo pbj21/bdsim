@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -2893,15 +2893,15 @@ void BDSComponentFactory::CalculateAngleAndFieldRBend(const Element* el,
   
   if (BDS::IsFinite(el->B) && el->angleSet)
     {// both are specified and should be used - under or overpowered dipole by design
+      // the angle and the length are set, so we ignore the beam definition and its bending radius
       field = el->B * CLHEP::tesla;
-      // note, angle must be finite for this part to be used so we're protected against
-      // infinite bending radius and therefore nan arcLength.
       angle = el->angle * CLHEP::rad;
-      G4double bendingRadius = brho / field;
-
       // protect against bad calculation from 0 angle and finite field
       if (BDS::IsFinite(angle))
-        {arcLengthLocal = bendingRadius * angle;}
+        {
+          G4double radiusOfCurvatureOfDipole = 0.5 * chordLength / std::sin(0.5 * angle);
+          arcLengthLocal = radiusOfCurvatureOfDipole * angle;
+        }
       else
         {arcLengthLocal = chordLength;}
     }

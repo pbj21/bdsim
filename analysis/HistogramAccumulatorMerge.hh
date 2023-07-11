@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -57,7 +57,7 @@ public:
 
   /// This method must be overridden as the information passed to the
   /// AccumualteSingleValue is different.
-  virtual void Accumulate(TH1* newValue);
+  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
 
 protected:
 

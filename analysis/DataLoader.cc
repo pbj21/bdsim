@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -45,11 +45,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 ClassImp(DataLoader)
 
 DataLoader::DataLoader(const std::string& fileName,
-		       bool        debugIn,
-		       bool        processSamplersIn,
-		       bool        allBranchesOnIn,
-		       const RBDS::BranchMap* branchesToTurnOnIn,
-		       bool        backwardsCompatibleIn):
+                       bool        debugIn,
+                       bool        processSamplersIn,
+                       bool        allBranchesOnIn,
+                       const RBDS::BranchMap* branchesToTurnOnIn,
+                       bool        backwardsCompatibleIn):
   debug(debugIn),
   processSamplers(processSamplersIn),
   allBranchesOn(allBranchesOnIn),
@@ -130,7 +130,7 @@ void DataLoader::BuildInputFileList(std::string inputPath)
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
       for(unsigned int i=0;i<glob_result.gl_pathc;++i)
-	{fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
+        {fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
       globfree(&glob_result);
     }
   // single file
@@ -145,7 +145,7 @@ void DataLoader::BuildInputFileList(std::string inputPath)
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
       for (unsigned int i=0; i<glob_result.gl_pathc; ++i)
-	{fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
+        {fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
       globfree(&glob_result);
     }
 
@@ -159,16 +159,16 @@ void DataLoader::BuildInputFileList(std::string inputPath)
   for (const auto& fn : fileNamesTemp)
     {
       if (backwardsCompatible)
-	{fileNames.push_back(fn);} // don't check if header -> old files don't have this
+        {fileNames.push_back(fn);} // don't check if header -> old files don't have this
       else if (RBDS::IsBDSIMOutputFile(fn, fileDataVersion))
-	{
-	  int value = fileDataVersion ? *fileDataVersion : -1;
-	  std::cout << "Loading> \"" << fn << "\" : data version " << value << std::endl;
-	  fileNames.push_back(fn);
-	  dataVersion = fileDataVersion ? std::min(dataVersion, *fileDataVersion) : dataVersion;
-	}
+        {
+          int value = fileDataVersion ? *fileDataVersion : -1;
+          std::cout << "Loading> \"" << fn << "\" : data version " << value << std::endl;
+          fileNames.push_back(fn);
+          dataVersion = fileDataVersion ? std::min(dataVersion, *fileDataVersion) : dataVersion;
+        }
       else
-	{std::cout << fn << " is not a BDSIM output file - skipping!" << std::endl;}
+        {std::cout << fn << " is not a BDSIM output file - skipping!" << std::endl;}
     }
   delete fileDataVersion;
   
@@ -193,7 +193,7 @@ void DataLoader::BuildTreeNameList()
   if(debug)
     {
       for (const auto& tr : treeNames)
-	{std::cout << "DataLoader::BuildTreeNameList> " <<  tr << std::endl;}
+        {std::cout << "DataLoader::BuildTreeNameList> " <<  tr << std::endl;}
     }
 }
 
@@ -241,15 +241,15 @@ void DataLoader::BuildEventBranchNameList()
   if(debug)
     {
       for (const auto& n : branchNames)
-	{std::cout << "DataLoader::BuildEventBranchNameList> Non-sampler : " << n << std::endl;}
+        {std::cout << "DataLoader::BuildEventBranchNameList> Non-sampler : " << n << std::endl;}
       for (const auto& n : samplerNames)
-	{std::cout << "DataLoader::BuildEventBranchNameList> Sampler     : " << n << std::endl;}
+        {std::cout << "DataLoader::BuildEventBranchNameList> Sampler     : " << n << std::endl;}
       for (const auto& n : samplerCNames)
-	{std::cout << "DataLoader::BuildEventBranchNameList> SamplerC    : " << n << std::endl;}
+        {std::cout << "DataLoader::BuildEventBranchNameList> SamplerC    : " << n << std::endl;}
       for (const auto& n : samplerSNames)
         {std::cout << "DataLoader::BuildEventBranchNameList> SamplerS    : " << n << std::endl;}
       for (const auto& n : collimatorNames)
-	{std::cout << "DataLoader::BuildEventBranchNameList> Collimator  : " << n << std::endl;}
+        {std::cout << "DataLoader::BuildEventBranchNameList> Collimator  : " << n << std::endl;}
     }
 }
 
@@ -270,7 +270,7 @@ void DataLoader::ChainTrees()
 }
 
 void DataLoader::SetBranchAddress(bool allOn,
-				  const RBDS::BranchMap* bToTurnOn)
+                                  const RBDS::BranchMap* bToTurnOn)
 {
   if (dataVersion > 6)
     {par->SetBranchAddress(parChain);}
@@ -284,19 +284,19 @@ void DataLoader::SetBranchAddress(bool allOn,
   if (bToTurnOn)
     {
       if (bToTurnOn->find("Event.") != bToTurnOn->end())
-	{evtBranches = &(*bToTurnOn).at("Event.");}
+        {evtBranches = &(*bToTurnOn).at("Event.");}
       if (evtBranches) // technically could be nullptr
-	{
-	  for (const auto& bName: *evtBranches)
-	    {
-	      if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
-		{samplerNames.push_back(bName + "."); continue;}
-	      if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
-		{samplerCNames.push_back(bName + "."); continue;}
-	      if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
-		{ samplerSNames.push_back(bName + "."); continue;}
-	    }
-	}
+        {
+          for (const auto& bName: *evtBranches)
+            {
+              if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
+                {samplerNames.push_back(bName + "."); continue;}
+              if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
+                {samplerCNames.push_back(bName + "."); continue;}
+              if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
+                { samplerSNames.push_back(bName + "."); continue;}
+            }
+        }
     }
   evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames, &samplerCNames, &samplerSNames);
 
@@ -304,7 +304,7 @@ void DataLoader::SetBranchAddress(bool allOn,
   if (bToTurnOn)
     {
       if (bToTurnOn->find("Run.") != bToTurnOn->end())
-	{runBranches = &(*bToTurnOn).at("Run.");}
+        {runBranches = &(*bToTurnOn).at("Run.");}
     }
   run->SetBranchAddress(runChain, allOn, runBranches);
 }

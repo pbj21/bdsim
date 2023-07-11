@@ -1,0 +1,11 @@
+d1: drift, l=0.5;
+sb1 : sbend, l=0.5*m, angle = 0.1, B=-20*T;
+
+l1: line=(d1,sb1,d1);
+use, l1;
+
+beam, particle="proton", momentum=10*GeV;
+
+option, includeFringeFields=0;
+
+option, maximumStepLength=5*cm;

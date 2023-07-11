@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -91,17 +91,17 @@ void BDSBunchSixTrackLink::UpdateGeant4ParticleDefinition(G4int pdgID)
       G4ParticleTable::G4PTblEncodingDictionary* encoding = G4ParticleTable::fEncodingDictionary;
       auto search = encoding->find(pdgID);
       if (search != encoding->end())
-	{newParticleDefinition = search->second;}
+        {newParticleDefinition = search->second;}
       else
-	{throw BDSException(__METHOD_NAME__,"PDG ID \"" + std::to_string(pdgID) + "not found in particle table");}
+        {throw BDSException(__METHOD_NAME__,"PDG ID \"" + std::to_string(pdgID) + "not found in particle table");}
     }
   else
     {
       G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
       BDSIonDefinition* ionDefinition = particleDefinition->IonDefinition();
       newParticleDefinition = ionTable->GetIon(ionDefinition->Z(),
-					       ionDefinition->A(),
-					       ionDefinition->ExcitationEnergy());
+                                               ionDefinition->A(),
+                                               ionDefinition->ExcitationEnergy());
     }
   particleDefinition->UpdateG4ParticleDefinition(newParticleDefinition);
   // Note we don't need to take care of electrons here. These are automatically
@@ -124,8 +124,8 @@ void BDSBunchSixTrackLink::UpdateIonDefinition()
   G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
   BDSIonDefinition* ionDefinition = currentParticleDefinition->IonDefinition();
   G4ParticleDefinition* ionParticleDef = ionTable->GetIon(ionDefinition->Z(),
-							  ionDefinition->A(),
-							  ionDefinition->ExcitationEnergy());
+                                                          ionDefinition->A(),
+                                                          ionDefinition->ExcitationEnergy());
   currentParticleDefinition->UpdateG4ParticleDefinition(ionParticleDef);
   // Note we don't need to take care of electrons here. These are automatically
   // allocated by Geant4 when it converts the primary vertex to a dynamic particle

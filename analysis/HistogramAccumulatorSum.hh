@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -50,7 +50,7 @@ public:
   virtual ~HistogramAccumulatorSum(){;}
 
   /// Use TH1::Add which works on 1,2 and 3D histograms.
-  virtual void Accumulate(TH1* newValue);
+  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
 
   /// Simply return the result as it's already the correct result.
   virtual TH1* Terminate();

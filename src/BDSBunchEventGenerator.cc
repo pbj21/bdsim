@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -69,10 +69,10 @@ BDSBunchEventGenerator::~BDSBunchEventGenerator()
 {;}
 
 void BDSBunchEventGenerator::SetOptions(const BDSParticleDefinition* beamParticle,
-					const GMAD::Beam&            beam,
-					const BDSBunchType&          distrType,
-					G4Transform3D                beamlineTransformIn,
-					const G4double               beamlineSIn)
+                                        const GMAD::Beam&            beam,
+                                        const BDSBunchType&          distrType,
+                                        G4Transform3D                beamlineTransformIn,
+                                        const G4double               beamlineSIn)
 {
   BDSBunchFileBased::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   
@@ -130,44 +130,44 @@ void BDSBunchEventGenerator::ParseAcceptedParticleIDs()
       std::string particleIDStr;
       std::stringstream ss(acceptedParticlesString);
       while (ss >> particleIDStr)
-	{
-	  try
-	    {// try and see if it's an integer and therefore PDG ID, if not search by string
-	      // we try this because std::stoi can throw a std::invalid_argument or
-	      // std::out_of_range exception, both of which inherit std::logic_error
-	      int particleID = std::stoi(particleIDStr);
-	      // we don't use the G4ParticleTable->FindParticle(int) because it unnecessarily
-	      // checks for physics readiness and throws an exception. here we just inspect
-	      // the encoding dictionary ourselves. it's all typedeffed but it's
-	      // std::map<G4int, G4ParticleDefinition*>
-	      G4ParticleTable::G4PTblEncodingDictionary* encoding = G4ParticleTable::fEncodingDictionary;
-	      auto search = encoding->find(particleID);
-	      if (search != encoding->end())
-		{acceptedParticles.insert(particleID);}
-	      else
-		{throw BDSException(__METHOD_NAME__,"PDG ID \"" + particleIDStr + "\" not found in particle table");}
-	    }
-	  catch (const std::logic_error&) // else, usual way by string search
-	    {
-	      G4ParticleDefinition* particleDef = particleTable->FindParticle(particleIDStr);
-	      if (!particleDef)
-		{
-		  BDS::PrintDefinedParticles();
-		  throw BDSException(__METHOD_NAME__, "Particle \"" + particleIDStr + "\" not found.");      
-		}
-	      else
-		{acceptedParticles.insert(particleDef->GetPDGEncoding());}
-	    }	
-	}
+        {
+          try
+            {// try and see if it's an integer and therefore PDG ID, if not search by string
+              // we try this because std::stoi can throw a std::invalid_argument or
+              // std::out_of_range exception, both of which inherit std::logic_error
+              int particleID = std::stoi(particleIDStr);
+              // we don't use the G4ParticleTable->FindParticle(int) because it unnecessarily
+              // checks for physics readiness and throws an exception. here we just inspect
+              // the encoding dictionary ourselves. it's all typedeffed but it's
+              // std::map<G4int, G4ParticleDefinition*>
+              G4ParticleTable::G4PTblEncodingDictionary* encoding = G4ParticleTable::fEncodingDictionary;
+              auto search = encoding->find(particleID);
+              if (search != encoding->end())
+                {acceptedParticles.insert(particleID);}
+              else
+                {throw BDSException(__METHOD_NAME__,"PDG ID \"" + particleIDStr + "\" not found in particle table");}
+            }
+          catch (const std::logic_error&) // else, usual way by string search
+            {
+              G4ParticleDefinition* particleDef = particleTable->FindParticle(particleIDStr);
+              if (!particleDef)
+                {
+                  BDS::PrintDefinedParticles();
+                  throw BDSException(__METHOD_NAME__, "Particle \"" + particleIDStr + "\" not found.");      
+                }
+              else
+                {acceptedParticles.insert(particleDef->GetPDGEncoding());}
+            }   
+        }
     }
   else
     {testOnParticleType = false;}
 }
 
 G4bool BDSBunchEventGenerator::AcceptParticle(const BDSParticleCoordsFull& coords,
-					      G4double rpOriginal,
-					      G4double kineticEnergy,
-					      G4int    pdgID)
+                                              G4double rpOriginal,
+                                              G4double kineticEnergy,
+                                              G4int    pdgID)
 {
   if (firstTime)
     {ParseAcceptedParticleIDs(); firstTime = false;}

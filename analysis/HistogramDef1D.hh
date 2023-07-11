@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -39,16 +39,22 @@ public:
 
   /// Use this constructor.
   HistogramDef1D(const std::string&      treeNameIn,
-		 const std::string&      histNameIn,
-		 const BinSpecification& xBinningIn,
-		 const std::string&      variableIn,
-		 const std::string&      selectionIn = "1",
-		 bool                    perEntryIn  = true);
+                 const std::string&      histNameIn,
+                 const BinSpecification& xBinningIn,
+                 const std::string&      variableIn,
+                 const std::string&      selectionIn = "1",
+                 bool                    perEntryIn  = true);
   
   virtual ~HistogramDef1D();
     
   /// Copy this instance. Virtual to be overridden in derived classes.
   virtual HistogramDef* Clone() const {return new HistogramDef1D(*this);}
+
+  /// Return n bins and ranges.
+  virtual std::string GetBinningString() const;
+
+  /// Get the first string that defines the histogram in rebdsim for feedback.
+  virtual std::string GetHistogramString() const;
 
   BinSpecification xBinning;
 

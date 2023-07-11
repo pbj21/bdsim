@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -61,6 +61,7 @@ BDSPrimaryGeneratorFileSampler::BDSPrimaryGeneratorFileSampler(const G4String& d
   reader = new BDSOutputLoaderSampler(fileName, samplerName);
   nEventsInFile = reader->NEventsInFile();
   bunch->SetNEventsInFile(nEventsInFile);
+  bunch->SetNOriginalEvents(reader->NOriginalEvents());
   G4cout << __METHOD_NAME__ << nEventsInFile << " events found in file" << G4endl;
   if (!bunch)
     {throw BDSException(__METHOD_NAME__, "must be constructed with a valid BDSBunchEventGenerator instance");}

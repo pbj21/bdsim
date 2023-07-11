@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBH4DBase.hh"
 
 #include <cmath>
+#include <iostream>
 #include <string>
 
 ClassImp(HistogramAccumulatorMerge)
@@ -43,12 +44,19 @@ HistogramAccumulatorMerge::HistogramAccumulatorMerge(TH1*               baseHist
 		       resultHistTitleIn)
 {;}
 
-void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
+void HistogramAccumulatorMerge::Accumulate(TH1* newValue, bool warnAboutZeroEntries)
 {
   // temporary variables
   double newMean = 0;
   double newVari = 0;
   double var     = 0;
+
+  if (newValue->GetEntries() == 0)
+    {
+      if (warnAboutZeroEntries)
+        {std::cout << "Histogram has no entries: \"" << newValue->GetName() << "\"" << std::endl;}
+      return; // can't accumulate nothing
+    }
 
   // Want the number of events accumulated so far. We purposively set the entries
   // in the mean histogram as the number of events accumulated, not the number of

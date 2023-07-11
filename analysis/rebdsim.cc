@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -81,87 +81,73 @@ int main(int argc, char *argv[])
     {
       Config::Instance(configFilePath, inputFilePath, outputFileName);
       config = Config::Instance();
-    }
-  catch (const RBDSException& error)
-    {std::cerr << error.what() << std::endl; exit(1);}
-  catch (const std::exception& error)
-    {std::cerr << error.what() << std::endl; exit(1);}
-  
-  bool allBranches = config->AllBranchesToBeActivated();
-  const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
-  
-  bool debug = config->Debug();
-  DataLoader* dl = nullptr;
-  try
-    {
-      dl = new DataLoader(config->InputFilePath(),
-			  debug,
-			  config->ProcessSamplers(),
-			  allBranches,
-			  branchesToActivate,
-			  config->GetOptionBool("backwardscompatible"));
-    }
-  catch (const RBDSException& error)
-    {std::cerr << error.what() << std::endl; exit(1);}
-  catch (const std::exception& error)
-    {std::cerr << error.what() << std::endl; exit(1);}
-
-  auto filenames = dl->GetFileNames();
-  HeaderAnalysis* ha = new HeaderAnalysis(filenames,
-                                          dl->GetHeader(),
-                                          dl->GetHeaderTree());
-  unsigned long long int nEventsInFileTotal;
-  unsigned long long int nEventsInFileSkippedTotal;
-  unsigned long long int nEventsRequested;
-  unsigned long long int nOriginalEvents = ha->CountNOriginalEvents(nEventsInFileTotal, nEventsInFileSkippedTotal, nEventsRequested);
-  delete ha;
-  
-  BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
-						  dl->GetBeamTree(),
-						  config->PerEntryBeam(),
-						  debug);
-  EventAnalysis*   evtAnalysis;
-  try
-    {
+      
+      bool allBranches = config->AllBranchesToBeActivated();
+      const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
+      
+      bool debug = config->Debug();
+      DataLoader* dl = new DataLoader(config->InputFilePath(),
+                                      debug,
+                                      config->ProcessSamplers(),
+                                      allBranches,
+                                      branchesToActivate,
+                                      config->GetOptionBool("backwardscompatible"));
+      
+      auto filenames = dl->GetFileNames();
+      HeaderAnalysis* ha = new HeaderAnalysis(filenames,
+                                              dl->GetHeader(),
+                                              dl->GetHeaderTree());
+      unsigned long long int nEventsRequested = 0;
+      unsigned long long int nEventsInFileTotal = 0;
+      unsigned long long int nEventsInFileSkippedTotal = 0;
+      unsigned int distrFileLoopNTimes = 0;
+      unsigned long long int nOriginalEvents = ha->CountNOriginalEvents(nEventsInFileTotal,
+                                                                        nEventsInFileSkippedTotal,
+                                                                        nEventsRequested,
+                                                                        distrFileLoopNTimes);
+      delete ha;
+      
+      BeamAnalysis* beaAnalysis = new BeamAnalysis(dl->GetBeam(),
+                                                   dl->GetBeamTree(),
+                                                   config->PerEntryBeam(),
+                                                   debug);
+      EventAnalysis* evtAnalysis;
       evtAnalysis = new EventAnalysis(dl->GetEvent(),
-				      dl->GetEventTree(),
-				      config->PerEntryEvent(),
-				      config->ProcessSamplers(),
-				      debug,
-				      config->PrintModuloFraction(),
-				      config->GetOptionBool("emittanceonthefly"),
-				      (long int) config->GetOptionNumber("eventstart"),
-				      (long int) config->GetOptionNumber("eventend"));
-    }
-  catch (const RBDSException& error)
-    {std::cerr << error.what() << std::endl; exit(1);}
-  RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
-						 dl->GetRunTree(),
-						 config->PerEntryRun(),
-						 debug);
-  OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl->GetOptions(),
-						     dl->GetOptionsTree(),
-						     config->PerEntryOption(),
-						     debug);
-  ModelAnalysis*   modAnalysis = new ModelAnalysis(dl->GetModel(),
-						   dl->GetModelTree(),
-						   config->PerEntryModel(),
-						   debug);
-
-  std::vector<Analysis*> analyses = {beaAnalysis,
-				     evtAnalysis,
-				     runAnalysis,
-				     optAnalysis,
-				     modAnalysis};
-
-  for (auto& analysis : analyses)
-    {analysis->Execute();}
-
-  // write output
-  try
-    {
+                                      dl->GetEventTree(),
+                                      config->PerEntryEvent(),
+                                      config->ProcessSamplers(),
+                                      debug,
+                                      config->PrintOut(),
+                                      config->PrintModuloFraction(),
+                                      config->EmittanceOnTheFly(),
+                                      (long int) config->GetOptionNumber("eventstart"),
+                                      (long int) config->GetOptionNumber("eventend"));
+      
+      RunAnalysis* runAnalysis = new RunAnalysis(dl->GetRun(),
+                                                 dl->GetRunTree(),
+                                                 config->PerEntryRun(),
+                                                 debug);
+      OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl->GetOptions(),
+                                                         dl->GetOptionsTree(),
+                                                         config->PerEntryOption(),
+                                                         debug);
+      ModelAnalysis* modAnalysis = new ModelAnalysis(dl->GetModel(),
+                                                     dl->GetModelTree(),
+                                                     config->PerEntryModel(),
+                                                     debug);
+      
+      std::vector<Analysis*> analyses = {beaAnalysis,
+                                         evtAnalysis,
+                                         runAnalysis,
+                                         optAnalysis,
+                                         modAnalysis};
+      
+      for (auto &analysis: analyses)
+        {analysis->Execute();}
+      
+      // write output
       TFile* outputFile = new TFile(config->OutputFileName().c_str(),"RECREATE");
-
+      
       // add header for file type and version details
       outputFile->cd();
       BDSOutputROOTEventHeader* headerOut = new BDSOutputROOTEventHeader();
@@ -171,37 +157,39 @@ int main(int argc, char *argv[])
       headerOut->nEventsInFile = nEventsInFileTotal;
       headerOut->nEventsInFileSkipped = nEventsInFileSkippedTotal;
       headerOut->nEventsRequested = nEventsRequested;
+      headerOut->distrFileLoopNTimes = distrFileLoopNTimes;
       TTree* headerTree = new TTree("Header", "REBDSIM Header");
       headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
       headerTree->Fill();
       headerTree->Write("", TObject::kOverwrite);
       
       for (auto& analysis : analyses)
-	{analysis->Write(outputFile);}
+        {analysis->Write(outputFile);}
 
       // copy the model over and rename to avoid conflicts with Model directory
       TChain* modelTree = dl->GetModelTree();
       TTree* treeTest = modelTree->GetTree();
       if (treeTest)
-	{// TChain can be valid but TTree might not be in corrupt / bad file
-	  auto newTree = modelTree->CloneTree();
-	  // unfortunately we have a folder called Model in histogram output files
-	  // avoid conflict when copying the model for plotting
-	  newTree->SetName("ModelTree");
-	  newTree->Write("", TObject::kOverwrite);
-	}
+        {// TChain can be valid but TTree might not be in corrupt / bad file
+          auto newTree = modelTree->CloneTree();
+          // unfortunately we have a folder called Model in histogram output files
+          // avoid conflict when copying the model for plotting
+          newTree->SetName("ModelTree");
+          newTree->Write("", TObject::kOverwrite);
+        }
 
       outputFile->Close();
       delete outputFile;
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
+
+      delete dl;
+      for (auto analysis : analyses)
+        {delete analysis;}
     }
   catch (const RBDSException& error)
     {std::cerr << error.what() << std::endl; exit(1);}
   catch (const std::exception& error)
     {std::cerr << error.what() << std::endl; exit(1);}
-
-  delete dl;
-  for (auto analysis : analyses)
-    {delete analysis;}
+  
   return 0;
 }

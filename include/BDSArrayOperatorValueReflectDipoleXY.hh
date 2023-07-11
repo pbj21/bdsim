@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -67,6 +67,8 @@ public:
     // only top left or bottom right quadrant need the x-component flipped
     if ( (xInd < 0 && yInd >= 0) || (xInd >= 0 && yInd < 0) )
       {v[0] *= -1.0;}
+    if  ( (yInd < 0) )
+      {v[2] *= -1.0;}
     return v;
   }
 };

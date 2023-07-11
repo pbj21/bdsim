@@ -1,0 +1,6 @@
+beam,  particle="anti_proton",
+       energy=23.0 * GeV,
+       distrType="reference";
+
+include options.gmad;
+include fodo.gmad;

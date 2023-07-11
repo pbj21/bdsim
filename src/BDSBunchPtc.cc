@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -281,4 +281,3 @@ void BDSBunchPtc::RecreateAdvanceToEvent(G4int eventOffset)
   // generator action in the start of the event after BeamOn(nEvents) has been called
   // therefore this adjustment for recreation + match is done earlier in this class
 }
-

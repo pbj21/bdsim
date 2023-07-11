@@ -566,6 +566,9 @@ BDSOutputROOTEventHeader
 |                           |                          | distribution file that were skipped   |
 |                           |                          | due to filters.                       |
 +---------------------------+--------------------------+---------------------------------------+
+| distrFileLoopNTimes       | unsigned int             | Number of times to replay a given     |
+|                           |                          | distribution file.                    |
++---------------------------+--------------------------+---------------------------------------+
 
 
 * (\*) This variable may only be filled in the second entry of the tree as they are only

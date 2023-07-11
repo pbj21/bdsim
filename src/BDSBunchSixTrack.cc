@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -43,10 +43,10 @@ BDSBunchSixTrack::~BDSBunchSixTrack()
 }
 
 void BDSBunchSixTrack::SetOptions(const BDSParticleDefinition* beamParticle,
-				  const GMAD::Beam& beam,
-				  const BDSBunchType& distrType,
-				  G4Transform3D beamlineTransformIn,
-				  const G4double beamlineSIn)
+                                  const GMAD::Beam& beam,
+                                  const BDSBunchType& distrType,
+                                  G4Transform3D beamlineTransformIn,
+                                  const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   fileName = G4String(beam.distrFile); 
@@ -122,4 +122,3 @@ void BDSBunchSixTrack::LoadSixTrackFile()
   nPart = sixtrackData.size();
   infile.close();
 }
-

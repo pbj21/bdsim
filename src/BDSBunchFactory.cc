@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -48,10 +48,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle,
-				       const GMAD::Beam&            beam,
-				       const G4Transform3D&         beamlineTransform,
-				       G4double                     beamlineS,
-				       G4bool                       generatePrimariesOnlyIn)  
+                                       const GMAD::Beam&            beam,
+                                       const G4Transform3D&         beamlineTransform,
+                                       G4double                     beamlineS,
+                                       G4bool                       generatePrimariesOnlyIn)  
 {
   G4String distrName = G4String(beam.distrType);
   if (BDS::StrContains(distrName, ":")) // must be eventgeneratorfile:subtype
@@ -71,11 +71,11 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 }
 
 BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle,
-				       BDSBunchType                 distrType,
-				       const GMAD::Beam&            beam,
-				       const G4Transform3D&         beamlineTransform,
-				       G4double                     beamlineS,
-				       G4bool                       generatePrimariesOnlyIn)
+                                       BDSBunchType                 distrType,
+                                       const GMAD::Beam&            beam,
+                                       const G4Transform3D&         beamlineTransform,
+                                       G4double                     beamlineS,
+                                       G4bool                       generatePrimariesOnlyIn)
 { 
   BDSBunch* bdsBunch = nullptr;
 
@@ -104,22 +104,22 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchCompositeSDE(); break;}
     case BDSBunchType::userfile:
       {
-	G4String distrFile = G4String(beam.distrFile);
-	if(distrFile.rfind("gz") != std::string::npos)	  
+        G4String distrFile = G4String(beam.distrFile);
+        if(distrFile.rfind("gz") != std::string::npos)    
 #ifdef USE_GZSTREAM
-	  {
-	    if (distrFile.find("tar") != std::string::npos)
-	      {throw BDSException(__METHOD_NAME__, "Cannot load tar file -> only gzip compressed");}
-	    bdsBunch = new BDSBunchUserFile<igzstream>();}
+          {
+            if (distrFile.find("tar") != std::string::npos)
+              {throw BDSException(__METHOD_NAME__, "Cannot load tar file -> only gzip compressed");}
+            bdsBunch = new BDSBunchUserFile<igzstream>();}
 #else
-	{
-	  G4String message = beam.distrFile + " is a compressed file but BDSIM is compiled without GZIP.";
-	  throw BDSException(__METHOD_NAME__, message);
-	}
+        {
+          G4String message = beam.distrFile + " is a compressed file but BDSIM is compiled without GZIP.";
+          throw BDSException(__METHOD_NAME__, message);
+        }
 #endif
-	else
-	  {bdsBunch = new BDSBunchUserFile<std::ifstream>();}
-	break;
+        else
+          {bdsBunch = new BDSBunchUserFile<std::ifstream>();}
+        break;
       }
     case BDSBunchType::ptc:
       {bdsBunch = new BDSBunchPtc(); break;}

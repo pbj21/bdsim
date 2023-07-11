@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSBunchFileBased::BDSBunchFileBased(const G4String& distributionName):
   BDSBunch(distributionName),
+  nOriginalEvents(0),
   nEventsInFile(0),
   nEventsInFileSkipped(0),
   distrFileLoop(false),
@@ -40,4 +41,13 @@ void BDSBunchFileBased::SetOptions(const BDSParticleDefinition* beamParticle,
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   distrFileLoop = beam.distrFileLoop;
   distrFileLoopNTimes = beam.distrFileLoopNTimes;
+}
+
+void BDSBunchFileBased::BeginOfRunAction(G4int /*numberOfEvents*/,
+                                         G4bool batchMode)
+{
+  // If interactive, we must permit looping as the user may request more
+  // events than are in a file, and they may not have explicitly set the
+  // right combination of options in the input.
+  distrFileLoop = !batchMode || distrFileLoop;
 }

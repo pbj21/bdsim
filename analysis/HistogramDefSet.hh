@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -36,18 +36,20 @@ class HistogramDefSet
 {
 public:
   HistogramDefSet(const std::string&  branchNameIn,
-		  const HistogramDef* baseDefinitionIn,
-		  const std::set<ParticleSpec>& particlesSpecs = {},
-		  const std::string&  particleSpecificationIn = "");
+                  const HistogramDef* baseDefinitionIn,
+                  const std::set<ParticleSpec>& particlesSpecs = {},
+                  const std::string&  particleSpecificationIn = "");
   ~HistogramDefSet();
 
   static std::string AddPDGFilterToSelection(const ParticleSpec& particleSpec,
-					     const std::string& selection,
-					     const std::string& branchName);
+                                             const std::string& selection,
+                                             const std::string& branchName);
 
   /// Remove a substring from a string.
   std::string RemoveSubString(const std::string& stringIn,
                               const std::string& wordToRemove) const;
+
+  friend std::ostream& operator<< (std::ostream &out, const HistogramDefSet& s);
 
   std::string   branchName;
   HistogramDef* baseDefinition;
@@ -58,7 +60,7 @@ public:
 
   enum class writewhat {all, particles, ions, topN, topNParticles, topNIons};
   writewhat     what;
-  int           topN;  
+  int           topN;
 };
 
 #endif

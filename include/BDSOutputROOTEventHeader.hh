@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -59,6 +59,7 @@ public:
   unsigned long long int nEventsRequested;     ///< Number of events requested to be simulated from the file.
   unsigned long long int nEventsInFile;        ///< Number of events in the input distribution file irrespective of filters.
   unsigned long long int nEventsInFileSkipped; ///< Number of events from distribution file that were skipped due to filters.
+  unsigned int           distrFileLoopNTimes;  ///< Number of times a distribution file was replayed.
   
   /// Update the file type.
   void SetFileType(const std::string& fileTypeIn) {fileType = fileTypeIn;}
@@ -68,7 +69,7 @@ public:
   /// but as this doesn't use geant4 and is required when creating analysis output
   /// file, we break that convention.
   void Fill(const std::vector<std::string>& analysedFilesIn = std::vector<std::string>(),
-	    const std::vector<std::string>& combinedFilesIn = std::vector<std::string>());
+            const std::vector<std::string>& combinedFilesIn = std::vector<std::string>());
 
 #ifndef __ROOTBUILD__
   /// Fill with information from Geant4 side of things.

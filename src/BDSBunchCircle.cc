@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -34,20 +34,16 @@ BDSBunchCircle::BDSBunchCircle():
   envelopeRp(0.0),
   envelopeT(0.0),
   envelopeE(0.0)
-{
-  flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine());
-}
+{;}
 
 BDSBunchCircle::~BDSBunchCircle() 
-{
-  delete flatGen;
-}
+{;}
 
 void BDSBunchCircle::SetOptions(const BDSParticleDefinition* beamParticle,
-				const GMAD::Beam& beam,
-				const BDSBunchType& distrType,
-				G4Transform3D beamlineTransformIn,
-				const G4double beamlineSIn)
+                                const GMAD::Beam& beam,
+                                const BDSBunchType& distrType,
+                                G4Transform3D beamlineTransformIn,
+                                const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
   envelopeR  = beam.envelopeR  * CLHEP::m; 
@@ -71,22 +67,22 @@ void BDSBunchCircle::CheckParameters()
 
 BDSParticleCoordsFull BDSBunchCircle::GetNextParticleLocal()
 {
-  G4double dt    = envelopeT * (1.-2.*flatGen->shoot());
+  G4double dt    = envelopeT * (1.-2.*G4RandFlat::shoot());
   G4double dz    = dt * CLHEP::c_light;
 
   G4double t     = T0 + dt;
   G4double z     = Z0 + dz;
-  G4double phiR  = flatGen->shoot() * CLHEP::twopi;
-  G4double phiRp = flatGen->shoot() * CLHEP::twopi;
-  G4double r     = std::sqrt(flatGen->shoot()) * envelopeR;
-  G4double rp    = std::sqrt(flatGen->shoot()) * envelopeRp;
+  G4double phiR  = G4RandFlat::shoot() * CLHEP::twopi;
+  G4double phiRp = G4RandFlat::shoot() * CLHEP::twopi;
+  G4double r     = std::sqrt(G4RandFlat::shoot()) * envelopeR;
+  G4double rp    = std::sqrt(G4RandFlat::shoot()) * envelopeRp;
 
   G4double x  = X0  + std::cos(phiR)  * r;
   G4double y  = Y0  + std::sin(phiR)  * r;
   G4double xp = Xp0 + std::cos(phiRp) * rp;
   G4double yp = Yp0 + std::sin(phiRp) * rp; 
   G4double zp = CalculateZp(xp,yp,Zp0);
-  G4double E  = E0 + envelopeE * (1-2*flatGen->shoot());
+  G4double E  = E0 + envelopeE * (1-2*G4RandFlat::shoot());
   
   return BDSParticleCoordsFull(x,y,z,xp,yp,zp,t,S0-dz,E,/*weight=*/1.0);
 }

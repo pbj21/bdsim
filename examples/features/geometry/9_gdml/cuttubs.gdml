@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<cutTube name="ts" z="1200" rmin="0" rmax="500" startphi="0" deltaphi="6.283185307179586" lowX="-0.25881904510252074" lowY="0" lowZ="-0.9659258262890683" highX="-0.25881904510252074" highY="0" highZ="0.9659258262890683" lunit="mm" aunit="rad"/>
+	</solids>
+	<structure>
+		<volume name="wl">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="ts"/>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="wl"/>
+	</setup>
+</gdml>

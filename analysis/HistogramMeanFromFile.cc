@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2023.
 
 This file is part of BDSIM.
 
@@ -83,20 +83,20 @@ HistogramMeanFromFile::~HistogramMeanFromFile()
     {delete h;}
 }
 
-void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew)
+void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew, bool warnAboutZeroEntries)
 {
   auto h1i = hNew->Get1DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms1d.size(); ++i)
-    {histograms1d[i]->Accumulate(h1i[i]);}
+    {histograms1d[i]->Accumulate(h1i[i], warnAboutZeroEntries);}
   auto h2i = hNew->Get2DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms2d.size(); ++i)
-    {histograms2d[i]->Accumulate(h2i[i]);}
+    {histograms2d[i]->Accumulate(h2i[i], warnAboutZeroEntries);}
   auto h3i = hNew->Get3DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms3d.size(); ++i)
-    {histograms3d[i]->Accumulate(h3i[i]);}
+    {histograms3d[i]->Accumulate(h3i[i], warnAboutZeroEntries);}
   auto h4i = hNew->Get4DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms4d.size(); ++i)
-    {histograms4d[i]->Accumulate(h4i[i]);}
+    {histograms4d[i]->Accumulate(h4i[i], warnAboutZeroEntries);}
 }
 
 void HistogramMeanFromFile::Terminate()
