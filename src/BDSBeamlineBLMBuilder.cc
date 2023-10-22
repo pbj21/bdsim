@@ -53,12 +53,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>
 #include <vector>
 
+
 BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements,
-			    const BDSBeamline* parentBeamLine)
+                            const BDSBeamline* parentBeamLine)
 {
   if (blmPlacements.empty())
     {return nullptr;} // don't do anything - no placements
-
+  
   // loop over blm placements - if any have external geometry, force the loading of it now so any materials
   // that could be used in the BDSScorerInfo filters will be defined first by the load. The geometry is cached
   // so it won't be loaded twice.
@@ -67,7 +68,7 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
       if (!bp.geometryFile.empty())
         {BDSGeometryFactory::Instance()->BuildGeometry(G4String(bp.name), G4String(bp.geometryFile));}
     }
-
+  
   // we need to loop over all the blm definitions to work out the unique combinations of
   // scorers that need to be created. multiple scorers for a single blm ultimately have to be
   // in one G4MultiFunctionalSD sensitive detector.
@@ -90,16 +91,16 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
       for (const auto& name : scorersForThisBLM)
         {
           auto search = scorerRecipes.find(name);
-	      if (search == scorerRecipes.end())
-	        {throw BDSException(__METHOD_NAME__, "scorerQuantity \"" + name + "\" for blm \"" + bp.name + "\" not found.");}
-	      else
+          if (search == scorerRecipes.end())
+            {throw BDSException(__METHOD_NAME__, "scorerQuantity \"" + name + "\" for blm \"" + bp.name + "\" not found.");}
+          else
             {requiredScorers.insert(name);}
-	    }
-	  // no BDS::Warning here as that slows down print out - could be all the blms turned off
+        }
+      // no BDS::Warning here as that slows down print out - could be all the blms turned off
       if (requiredScorers.empty())
-	    {G4cout << "Warning - no scoreQuantity specified for blm \"" << bp.name << "\" - it will only be passive material" << G4endl;}
+        {G4cout << "Warning - no scoreQuantity specified for blm \"" << bp.name << "\" - it will only be passive material" << G4endl;}
       scorerSetsToMake.insert(requiredScorers);
-
+      
       // the set by definition orders its contents, so we iterate through it to form a uniquely
       // ordered combined name for the set.
       G4String combinedName = "";
@@ -112,7 +113,7 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
 #endif
   if (scorerSetsToMake.empty())
     {G4cout << "Warning - all BLMs have no scoreQuantity specified so are only passive material." << G4endl;}
-
+  
   // construct SDs
   BDSScorerFactory scorerFactory;
   std::map<G4String, G4MultiFunctionalDetector*> sensitiveDetectors;
@@ -127,21 +128,21 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
 #endif
       // If the sensitive detector with a unique combination of scorers is constructed already, skip
       if (sensitiveDetectors.count(combinedName) > 0)
-	{continue;}
+        {continue;}
 
       G4MultiFunctionalDetector* sd = new G4MultiFunctionalDetector("blm_"+combinedName);
       for (const auto& name : ssAndCombinedName.second.first)
-	{
-	  const auto& recipe = scorerRecipes.at(name); // safe as in previous loop we ensure it exists
-	  G4double unit = 1.0;
-	  G4VPrimitiveScorer* ps = scorerFactory.CreateScorer(&recipe, nullptr, &unit);
-	  sd->RegisterPrimitive(ps);
-	  // We rely on the prefix "blm_" here to intercept scorer hits in BDSOutput so if
-	  // this changes, that matching must be done there too. It's to distinguish them
-	  // from 3D mesh hits and put them in the BLM output.
-	  uniquePrimitiveScorerNames.emplace_back("blm_"+combinedName+"/"+name);
-	  scorerUnits.push_back(unit);
-	}
+        {
+          const auto& recipe = scorerRecipes.at(name); // safe as in previous loop we ensure it exists
+          G4double unit = 1.0;
+          G4VPrimitiveScorer* ps = scorerFactory.CreateScorer(&recipe, nullptr, &unit);
+          sd->RegisterPrimitive(ps);
+          // We rely on the prefix "blm_" here to intercept scorer hits in BDSOutput so if
+          // this changes, that matching must be done there too. It's to distinguish them
+          // from 3D mesh hits and put them in the BLM output.
+          uniquePrimitiveScorerNames.emplace_back("blm_"+combinedName+"/"+name);
+          scorerUnits.push_back(unit);
+        }
       sensitiveDetectors[combinedName] = sd;
       SDMan->AddNewDetector(sd);
     }
@@ -159,26 +160,30 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
 
       auto sdSearch = sensitiveDetectors.find(combinedName);
       if (sdSearch == sensitiveDetectors.end())
-	{throw BDSException(__METHOD_NAME__, "unknown set of scorers");}
-      G4MultiFunctionalDetector* sd = sdSearch->second;      
-
+        {throw BDSException(__METHOD_NAME__, "unknown set of scorers");}
+      G4MultiFunctionalDetector* sd = sdSearch->second;
+      
       BDSBLM* blm = factory.CreateBLM(bp, sd);
       BDSExtent blmExtent = blm->GetExtent();
       G4double  length    = blmExtent.DZ();
       if (!BDS::IsFinite(length))
         {throw BDSException(__METHOD_NAME__, "BLM: " + bp.name + " has 0 extent");}
       BDSSimpleComponent* comp = new BDSSimpleComponent(blm->GetName(),
-							blm,
-							length);
+                                                        blm,
+                                                        length);
       comp->Initialise();
       
       G4double S = -1000;
       G4Transform3D transform = BDSDetectorConstruction::CreatePlacementTransform(bp, parentBeamLine,
-										  &S, &blmExtent);
+                                                                                  &S, &blmExtent);
       // do a little checking here as transform code in CreatePlacement can't
       // know who's calling it to warn
       if (BDS::IsFinite(bp.s) && transform == G4Transform3D::Identity)
-	{throw BDSException(__METHOD_NAME__, "the S coordinate (" + std::to_string(bp.s) + " m) for blm \"" + bp.name + "\" was not found in the beam line - please check");}
+        {
+          G4String msg = "the S coordinate (" + std::to_string(bp.s) + " m) for blm \"" + bp.name;
+          msg += "\" was not found in the beam line - please check";
+          throw BDSException(__METHOD_NAME__, msg);
+        }
       
       BDSBLMRegistry::Instance()->RegisterBLM(bp.name, blm, S);
       
@@ -192,19 +197,19 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
       G4RotationMatrix* rm   = new G4RotationMatrix(transform.getRotation());
       
       BDSBeamlineElement* el = new BDSBeamlineElement(comp,
-						      startPos,
-						      midPos,
-						      endPos,
-						      rm,
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      startPos,
-						      midPos,
-						      endPos,
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      new G4RotationMatrix(*rm),
-						      -1,-1,-1);
+                                                      startPos,
+                                                      midPos,
+                                                      endPos,
+                                                      rm,
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      startPos,
+                                                      midPos,
+                                                      endPos,
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      new G4RotationMatrix(*rm),
+                                                      -1,-1,-1);
 
       blms->AddBeamlineElement(el);
     }

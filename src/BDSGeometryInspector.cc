@@ -63,8 +63,14 @@ std::pair<BDSExtent, BDSExtent> BDS::DetermineExtents(const G4VSolid* solid)
     {return BDS::InspectEllipticalTube(solid);}
   else
     {
-      G4cout << "BDS::DetermineExtents> Solid of type \"" << className << "\" is not supported" << G4endl;
-      return std::make_pair(BDSExtent(), BDSExtent());
+      G4ThreeVector low, high;
+      solid->BoundingLimits(low, high);
+      // take abs of low and high
+      BDSExtent outer = BDSExtent(std::max(std::abs(low.x()), std::abs(high.x())),
+                                  std::max(std::abs(low.y()), std::abs(high.y())),
+                                  std::max(std::abs(low.z()), std::abs(high.z())));
+      BDSExtent inner = BDSExtent();
+      return std::make_pair(outer, inner);
     }
 }
 

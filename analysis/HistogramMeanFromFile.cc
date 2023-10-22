@@ -83,20 +83,20 @@ HistogramMeanFromFile::~HistogramMeanFromFile()
     {delete h;}
 }
 
-void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew, bool warnAboutZeroEntries)
+void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew)
 {
   auto h1i = hNew->Get1DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms1d.size(); ++i)
-    {histograms1d[i]->Accumulate(h1i[i], warnAboutZeroEntries);}
+    {histograms1d[i]->Accumulate(h1i[i]);}
   auto h2i = hNew->Get2DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms2d.size(); ++i)
-    {histograms2d[i]->Accumulate(h2i[i], warnAboutZeroEntries);}
+    {histograms2d[i]->Accumulate(h2i[i]);}
   auto h3i = hNew->Get3DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms3d.size(); ++i)
-    {histograms3d[i]->Accumulate(h3i[i], warnAboutZeroEntries);}
+    {histograms3d[i]->Accumulate(h3i[i]);}
   auto h4i = hNew->Get4DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms4d.size(); ++i)
-    {histograms4d[i]->Accumulate(h4i[i], warnAboutZeroEntries);}
+    {histograms4d[i]->Accumulate(h4i[i]);}
 }
 
 void HistogramMeanFromFile::Terminate()

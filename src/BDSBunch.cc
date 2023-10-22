@@ -298,6 +298,13 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyTransform(const BDSParticleCoordsFull
     {result= BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
   if (useBunchTiming)
     {ApplyBunchTiming(result);}
+
+  // up until now the S0 is the S to offset the particle from the start of the
+  // line by finding that coordinate on the line. S0 = 0 means the same initial
+  // S of the beamline whatever that is. Therefore, we must now add that on to
+  // the coordinate for output purposes after we are finished applying any
+  // transform to the particle.
+  result.local.s += beamlineS;
   return result;
 }
 

@@ -50,7 +50,7 @@ public:
   virtual ~HistogramAccumulatorSum(){;}
 
   /// Use TH1::Add which works on 1,2 and 3D histograms.
-  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
+  virtual void Accumulate(TH1* newValue);
 
   /// Simply return the result as it's already the correct result.
   virtual TH1* Terminate();

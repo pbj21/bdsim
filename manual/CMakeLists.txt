@@ -8,37 +8,31 @@ find_package(Sphinx)
 include(FindPythonModule)
 find_python_module(sphinx_rtd_theme)
 
-if(SPHINX_FOUND AND PY_SPHINX_RTD_THEME)
-  # configured documentation tools and intermediate build results
-  set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+# configured documentation tools and intermediate build results
+set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-  # Sphinx cache with pickled ReST documents
-  set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/doctrees")
+# Sphinx cache with pickled ReST documents
+set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/doctrees")
 
-  # HTML output directory
-  set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
-  # LATEX output directory
-  set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/latex")
-  # Add directory to be able to add manual-pdf command in one go (hack)
-  file(MAKE_DIRECTORY ${SPHINX_LATEX_DIR})
-  
-  if (USE_SPHINX_GOOGLE)
-    set(BDSIM_USE_SPHINX_GOOGLE ",\n    'sphinxcontrib.googleanalytics'")
-    message(STATUS "Using sphinx google extension")
-  endif()
+# HTML output directory
+set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
+# LATEX output directory
+set(SPHINX_LATEX_DIR "${CMAKE_CURRENT_BINARY_DIR}/latex")
+# Add directory to be able to add manual-pdf command in one go (hack)
+file(MAKE_DIRECTORY ${SPHINX_LATEX_DIR})
 
-  configure_file(
+configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/source/conf.py.in"
       "${BINARY_BUILD_DIR}/conf.py"
       @ONLY)
 
-  configure_file(
+configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/source/licence.rst.in"
       "${BINARY_BUILD_DIR}/source/licence.rst"
       @ONLY)
 
-  # Helper target, not meant to be executed standalone
-  add_custom_target(manual-copy-files
+# Helper target, not meant to be executed standalone
+add_custom_target(manual-copy-files
     # Copy sources to build directory
     ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/source ${CMAKE_CURRENT_BINARY_DIR}/source
     # Make directory for examples
@@ -49,8 +43,8 @@ if(SPHINX_FOUND AND PY_SPHINX_RTD_THEME)
     VERBATIM
   )
 
-  # Make HTML manual
-  add_custom_target(manual
+# Make HTML manual
+add_custom_target(manual
       ${SPHINX_EXECUTABLE}
           -q -b html
           -c "${BINARY_BUILD_DIR}"
@@ -61,10 +55,10 @@ if(SPHINX_FOUND AND PY_SPHINX_RTD_THEME)
       COMMENT "Building HTML documentation with Sphinx"
   )
 
-  # Make PDF manual
-  # The number of LaTeX runs is quite conservative, but I don't expect it
-  # to get run often, so the little extra time won't hurt.
-  add_custom_target(manual-pdf
+# Make PDF manual
+# The number of LaTeX runs is quite conservative, but I don't expect it
+# to get run often, so the little extra time won't hurt.
+add_custom_target(manual-pdf
       ${SPHINX_EXECUTABLE}
           -q -b latex
           -c "${BINARY_BUILD_DIR}"
@@ -81,6 +75,8 @@ if(SPHINX_FOUND AND PY_SPHINX_RTD_THEME)
       COMMENT "Building LaTeX documentation with Sphinx"
     )
 
+
+if(SPHINX_FOUND AND PY_SPHINX_RTD_THEME)
     # add building to ctest
     add_test(Manual make manual)
     add_test(Manual-pdf make manual-pdf)

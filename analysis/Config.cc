@@ -190,7 +190,7 @@ void Config::ParseInputFile()
   // match a line starting with 'histogram', ignoring case
   std::regex histogram("(?:simple)*histogram.*", std::regex_constants::icase);
   // match a line starting with 'spectra', ignoring case - quite exact to avoid mismatching 'spectra' in file name in options
-  std::regex spectra("(?:simple)*spectra(?:TE|rigidity)*(?:log)*(?:\\s+)", std::regex_constants::icase);
+  std::regex spectra("(?:simple)*spectra(?:TE|rigidity|momentum)*(?:log)*(?:\\s+)", std::regex_constants::icase);
   // match particleset ignoring case
   std::regex particleSet("(?:simple)*particleset", std::regex_constants::icase);
 
@@ -411,6 +411,8 @@ void Config::ParseSpectraLine(const std::string& line)
     {variable = ".energy";}
   else if (ContainsWordCI(results[0], "Rigidity"))
     {variable = ".rigidity";}
+  else if (ContainsWordCI(results[0], "Momentum"))
+    {variable = ".p";}
     
   std::string samplerName = results[1];
   // because we can have multiple spectra on a branch and there are no user-specified names for this
@@ -455,7 +457,8 @@ void Config::ParseSpectraLine(const std::string& line)
   HistogramDefSet* result = new HistogramDefSet(samplerName,
                                                 def,
                                                 particles,
-                                                results[4]);
+                                                results[4],
+                                                line);
   delete def; // no longer needed
   
   if (perEntry)

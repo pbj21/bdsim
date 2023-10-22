@@ -38,8 +38,11 @@ if (Geant4_FOUND)
              PATHS $ENV{GEANT4_INSTALL}/bin
                    ${GEANT4_INSTALL}/bin
                    /usr/local/bin /opt/local/bin)
-      execute_process(COMMAND ${GEANT4_CONFIG} --has-feature clhep
-                  OUTPUT_VARIABLE _TMP)
+
+      # check geant4 was built with external clhep so we only have 1 clhep behind the scenes
+      # and therefore 1 random number generator. BDSIM requires to be compiled with the full
+      # clhep so if Geant4 has its own internal one, then we won't be reproducible.
+      execute_process(COMMAND ${GEANT4_CONFIG} --has-feature clhep OUTPUT_VARIABLE _TMP)
       if($ENV{VERBOSE})
          message(STATUS "Geant4 config executable:  ${GEANT4_CONFIG}")
          message(STATUS "Geant4 uses its own clhep: ${_TMP}")
@@ -48,13 +51,25 @@ if (Geant4_FOUND)
       	 message(FATAL_ERROR "BDSIM requires Geant4 to be compiled using the system CLHEP so it's the same as BDSIM for strong reproducibility - please reconfigure and reinstall Geant4")
       endif()
 
+      # check if Geant4 has GDML if we have that feature turned on in BDSIM
+      if(USE_GDML)
+        execute_process(COMMAND ${GEANT4_CONFIG} --has-feature gdml OUTPUT_VARIABLE _TMP3)
+        if($ENV{VERBOSE})
+          message(STATUS "Geant4 config executable:  ${GEANT4_CONFIG}")
+          message(STATUS "Geant4 uses gdml: ${_TMP3}")
+        endif()
+        if (_TMP3 MATCHES "no")
+          message(FATAL_ERROR "BDSIM has USE_GDML on but Geant4 was not compiled with GDML support - please reconfigure and reinstall Geant4")
+        endif()
+      endif()
+
       execute_process(COMMAND ${GEANT4_CONFIG} --prefix  OUTPUT_VARIABLE _TMP2)
       string(REGEX REPLACE "\n$" "" _TMP2 "${_TMP2}")
       set(Geant4_LIBRARY_DIR ${_TMP2}/lib)
 
       # We don't support multithreading for now
       if ("${Geant4_DEFINITIONS}" MATCHES "G4MULTITHREADED")
-	message(FATAL_ERROR "Currently Geant4 builds with multithreading are not supported at the moment! Please build Geant4 with multithreading off. Exiting")
+	    message(FATAL_ERROR "Currently Geant4 builds with multithreading are not supported at the moment! Please build Geant4 with multithreading off. Exiting")
       endif()
       
       if($ENV{VERBOSE})

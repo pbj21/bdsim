@@ -482,7 +482,7 @@ sampler name will be the name of the drift, "d1".
 We therefore bin any variable on this sampler with the selection of backwards going
 and weight by the energy. The histogram definition is as follows: ::
 
-  Histogram1D Event. Q3BackwardsEnergy {1} {-2:2} d1.x  d1.energy*d1.zp<0
+  Histogram1D Event. Q3BackwardsEnergy {1} {-2:2} d1.x  d1.energy*(d1.zp<0)
 
 
 The weighting by energy means that each entry will be filled with the energy instead

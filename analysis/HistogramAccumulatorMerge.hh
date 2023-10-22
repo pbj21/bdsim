@@ -57,7 +57,7 @@ public:
 
   /// This method must be overridden as the information passed to the
   /// AccumualteSingleValue is different.
-  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
+  virtual void Accumulate(TH1* newValue);
 
 protected:
 

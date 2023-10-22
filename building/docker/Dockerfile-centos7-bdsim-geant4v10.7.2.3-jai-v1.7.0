@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /tmp
 
 # BDSIM
-RUN git clone https://bitbucket.org/jairhul/bdsim.git && cd bdsim && git checkout v1.7.0-rc && cd ../ && \
+RUN git clone https://bitbucket.org/jairhul/bdsim.git && cd bdsim && git checkout v1.7.0 && cd ../ && \
     mkdir bdsim-build && cd bdsim-build && source scl_source enable devtoolset-7 && \
     cmake ../bdsim -DUSE_HEPMC3=ON && make -j6 && make install && cd ../ && cp -r bdsim/examples bdsim-examples && \
     rm -rfv bdsim-build bdsim && echo 'source /usr/local/bin/bdsim.sh' >> ~/.bashrc

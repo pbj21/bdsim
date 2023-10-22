@@ -164,7 +164,8 @@ public:
   /// Required to find beamline index careful including in streamer.
   BDSAuxiliaryNavigator* auxNavigator; //! add comment to avoid warning (no need to make persistent, see issue #191)
   
-  void Flush();
+  virtual void Flush();
+  void FlushLocal(); ///< Non-virtual version for initialising members.
   void Fill(const BDSOutputROOTEventTrajectory* other);
 
     

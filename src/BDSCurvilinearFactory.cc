@@ -42,32 +42,32 @@ BDSCurvilinearFactory::~BDSCurvilinearFactory()
 {;}
 
 BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String& name,
-								   G4double        chordLength,
-								   G4double        radius)
+                                                                   G4double        chordLength,
+                                                                   G4double        radius)
 {
   G4double halfLength = chordLength * 0.5 - lengthSafety;
   G4Tubs* solid = new G4Tubs(name + "_solid", // name
-			     0,                  // inner radius
-			     radius,             // outer radius
-			     halfLength,         // z half width
-			     0,                  // start angle
-			     CLHEP::twopi);      // sweep angle
+                             0,                  // inner radius
+                             radius,             // outer radius
+                             halfLength,         // z half width
+                             0,                  // start angle
+                             CLHEP::twopi);      // sweep angle
 
   G4ThreeVector inputFaceNormal  = G4ThreeVector(0, 0,-1);
   G4ThreeVector outputFaceNormal = G4ThreeVector(0, 0, 1);
 
   return CommonConstruction(name, chordLength, chordLength, radius,
-			    solid, 0);
+                            solid, 0);
 }
 
 BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String&      name,
-								   const G4double       arcLength,
-								   const G4double       chordLength,
-								   const G4double       radius,
-								   const G4double       angle,
-								   const G4ThreeVector& inputFaceNormal,
-								   const G4ThreeVector& outputFaceNormal,
-								   const BDSTiltOffset* tiltOffset)
+                                                                   const G4double       arcLength,
+                                                                   const G4double       chordLength,
+                                                                   const G4double       radius,
+                                                                   const G4double       angle,
+                                                                   const G4ThreeVector& inputFaceNormal,
+                                                                   const G4ThreeVector& outputFaceNormal,
+                                                                   const BDSTiltOffset* tiltOffset)
 {
   // angle is finite!
   // factor of 0.8 here is arbitrary tolerance as g4 cut tubs seems to fail
@@ -86,31 +86,31 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
     {// could be nullptr
       G4double tilt = tiltOffset->GetTilt();
       if (BDS::IsFinite(tilt))
-	{// rotate normal faces
-	  inputface = inputface.rotateZ(tilt);
-	  outputface = outputface.rotateZ(tilt);
-	}
+        {// rotate normal faces
+          inputface = inputface.rotateZ(tilt);
+          outputface = outputface.rotateZ(tilt);
+        }
     }
   
   G4double halfLength = chordLength * 0.5 - lengthSafety;
   G4CutTubs* solid = new G4CutTubs(name + "_solid", // name
-				   0,                  // inner radius
-				   radiusLocal,        // outer radius
-				   halfLength,         // half length (z)
-				   0,                  // rotation start angle
-				   CLHEP::twopi,       // rotation sweep angle
-				   inputface,          // input face normal vector
-				   outputface);        // output face normal vector
+                                   0,                  // inner radius
+                                   radiusLocal,        // outer radius
+                                   halfLength,         // half length (z)
+                                   0,                  // rotation start angle
+                                   CLHEP::twopi,       // rotation sweep angle
+                                   inputface,          // input face normal vector
+                                   outputface);        // output face normal vector
 
   return CommonConstruction(name, arcLength, chordLength, radiusLocal, solid, angle);
 }
 
 BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String& name,
-								   G4double        arcLength,
-								   G4double        chordLength,
-								   G4double        radius,
-								   G4double        angle,
-								   const BDSTiltOffset* tiltOffset)
+                                                                   G4double        arcLength,
+                                                                   G4double        chordLength,
+                                                                   G4double        radius,
+                                                                   G4double        angle,
+                                                                   const BDSTiltOffset* tiltOffset)
 {
   std::pair<G4ThreeVector,G4ThreeVector> faces = BDS::CalculateFaces(-0.5*angle, -0.5*angle);
   G4ThreeVector inputFaceNormal  = faces.first;
@@ -120,16 +120,16 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
 }
 
 BDSSimpleComponent* BDSCurvilinearFactory::CommonConstruction(const G4String& name,
-							      G4double        arcLength,
-							      G4double        chordLength,
-							      G4double        radius,
-							      G4VSolid*       solid,
-							      G4double        angle)
+                                                              G4double        arcLength,
+                                                              G4double        chordLength,
+                                                              G4double        radius,
+                                                              G4VSolid*       solid,
+                                                              G4double        angle)
 {
   // nullptr for material ONLY ok in parallel world!
   G4LogicalVolume* lv =  new G4LogicalVolume(solid,            // solid
-					     nullptr,          // material
-					     name + "_lv"); // name
+                                             nullptr,          // material
+                                             name + "_lv"); // name
 
   // always debug visualisation for read out geometry - only viewed via explicit commands
   lv->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());
@@ -137,11 +137,11 @@ BDSSimpleComponent* BDSCurvilinearFactory::CommonConstruction(const G4String& na
   // we don't specify the face normals as they are w.r.t the incoming or outgoing
   // reference trajectory - to which the curvilinear faces will be perpendicular
   BDSSimpleComponent* result = new BDSSimpleComponent(name,
-						      arcLength,
-						      angle,
-						      solid,
-						      lv,
-                              BDSExtent(radius, radius, chordLength*0.5));
+                                                      arcLength,
+                                                      angle,
+                                                      solid,
+                                                      lv,
+                                                      BDSExtent(radius, radius, chordLength*0.5));
   // we don't bother calling Initialise() as we don't need to set the vis attributes (waste of memory)
   return result;
 }

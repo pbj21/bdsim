@@ -38,7 +38,8 @@ public:
   HistogramDefSet(const std::string&  branchNameIn,
                   const HistogramDef* baseDefinitionIn,
                   const std::set<ParticleSpec>& particlesSpecs = {},
-                  const std::string&  particleSpecificationIn = "");
+                  const std::string&  particleSpecificationIn = "",
+                  const std::string&  definitionLineIn = "");
   ~HistogramDefSet();
 
   static std::string AddPDGFilterToSelection(const ParticleSpec& particleSpec,
@@ -61,6 +62,8 @@ public:
   enum class writewhat {all, particles, ions, topN, topNParticles, topNIons};
   writewhat     what;
   int           topN;
+
+  std::string   definitionLine; ///< Original definition line purely for print out.
 };
 
 #endif

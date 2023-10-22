@@ -44,19 +44,12 @@ HistogramAccumulatorMerge::HistogramAccumulatorMerge(TH1*               baseHist
 		       resultHistTitleIn)
 {;}
 
-void HistogramAccumulatorMerge::Accumulate(TH1* newValue, bool warnAboutZeroEntries)
+void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
 {
   // temporary variables
   double newMean = 0;
   double newVari = 0;
   double var     = 0;
-
-  if (newValue->GetEntries() == 0)
-    {
-      if (warnAboutZeroEntries)
-        {std::cout << "Histogram has no entries: \"" << newValue->GetName() << "\"" << std::endl;}
-      return; // can't accumulate nothing
-    }
 
   // Want the number of events accumulated so far. We purposively set the entries
   // in the mean histogram as the number of events accumulated, not the number of

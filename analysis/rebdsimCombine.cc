@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 
               if (!h)
                 {RBDS::WarningMissingHistogram(histPath, file); continue;}
-              hist.accumulator->Accumulate(h, true);
+              hist.accumulator->Accumulate(h);
             }
           
           Header* h = new Header();

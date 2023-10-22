@@ -3,9 +3,16 @@ OutputFileName	ana_spectra.root
 VerboseSpectra true
 
 #Object   Sampler Name  # Bins  Binning     Particles        Selection
-Spectra         c1      20      {0:200}    {11,-11,22,2212}  1
-Spectra         c1      20      {0:200}    {11,-11,22,2212}  PrimaryFirstHit.S>3.5
-SpectraLog      c1      30      {1:3}      {11,-11,22,2212}  1
-SpectraTE       c1      20      {0:200}    {11,-11,22,2212}  1
-SpectraTE       c1      20      {0:200}    {11,-11,22,2211}  PrimaryFirstHit.S>3.5
-SpectraTELog    c1      30      {1:3}      {11,-11,22,2212}  1
+Spectra               c1      20      {0:200}    {11,-11,22,2212}  1
+Spectra               c1      20      {0:200}    {11,-11,22,2212}  PrimaryFirstHit.S>3.5
+Spectra               c1      20      {0:200}    {11,-11,22,2212}  c1.weight*(PrimaryFirstHit.S>3.5)
+SpectraLog            c1      30      {1:3}      {11,-11,22,2212}  1
+SpectraTE             c1      20      {0:200}    {11,-11,22,2212}  1
+SpectraTE             c1      20      {0:200}    {11,-11,22,2211}  PrimaryFirstHit.S>3.5
+SpectraTELog          c1      30      {1:3}      {11,-11,22,2212}  1
+SpectraRigidity       c1      20      {0:200}    {11,-11,22,2212}  1
+SpectraRigidity       c1      20      {0:200}    {11,-11,22,2212}  PrimaryFirstHit.S>3.5
+SpectraRigidityLog    c1      30      {1:3}      {11,-11,22,2212}  1
+SpectraMomentum       c1      20      {0:200}    {11,-11,22,2212}  1
+SpectraMomentum       c1      20      {0:200}    {11,-11,22,2212}  PrimaryFirstHit.S>3.5
+SpectraMomentumLog    c1      30      {1:3}      {11,-11,22,2212}  1

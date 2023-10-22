@@ -911,11 +911,11 @@ std::vector<G4double> BDSBeamline::GetEdgeSPositions()const
   std::vector<G4double> sPos;
   sPos.reserve(beamline.size()+1);
   // add start position
-  sPos.push_back(0.0);
+  sPos.push_back(GetSMinimum()/CLHEP::m);
   for (auto element : beamline)
     {sPos.push_back(element->GetSPositionEnd()/CLHEP::m);}
-    if (sPos.size() == 1)
-      {sPos.push_back(1*CLHEP::m);}
+  if (sPos.size() == 1)
+    {sPos.push_back(1*CLHEP::m);}
   return sPos;
 }
 

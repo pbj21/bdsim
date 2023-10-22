@@ -51,7 +51,7 @@ public:
 
   /// Add a new set of histograms to the running total. Assume
   /// exact same structure in BDSOutputROOTEventHistogams input.
-  void Accumulate(BDSOutputROOTEventHistograms* hNew, bool warnAboutZeroEntries = false);
+  void Accumulate(BDSOutputROOTEventHistograms* hNew);
 
   /// Finish calculation.
   void Terminate();

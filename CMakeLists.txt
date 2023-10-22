@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0057 NEW)
 if (CMAKE_VERSION VERSION_LESS 3.9.0)
@@ -15,7 +15,7 @@ project(bdsim)
 # project version
 set( BDSIM_MAJOR_VERSION 1 )
 set( BDSIM_MINOR_VERSION 7 )
-set( BDSIM_PATCH_LEVEL   develop )
+set( BDSIM_PATCH_LEVEL   6.develop )
 set( BDSIM_VERSION ${BDSIM_MAJOR_VERSION}.${BDSIM_MINOR_VERSION}.${BDSIM_PATCH_LEVEL})
 
 message(STATUS "Configuring BDSIM ${BDSIM_VERSION}")

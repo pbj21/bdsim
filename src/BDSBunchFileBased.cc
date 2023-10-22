@@ -39,7 +39,7 @@ void BDSBunchFileBased::SetOptions(const BDSParticleDefinition* beamParticle,
                                    const G4double beamlineSIn)
 {
   BDSBunch::SetOptions(beamParticle, beam, distrType, beamlineTransformIn, beamlineSIn);
-  distrFileLoop = beam.distrFileLoop;
+  distrFileLoop = beam.distrFileLoop || beam.distrFileLoopNTimes > 1;
   distrFileLoopNTimes = beam.distrFileLoopNTimes;
 }
 

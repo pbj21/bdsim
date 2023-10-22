@@ -238,7 +238,7 @@ void DataLoader::BuildEventBranchNameList()
   delete f;
   delete modTemporary;
 
-  if(debug)
+  if (debug)
     {
       for (const auto& n : branchNames)
         {std::cout << "DataLoader::BuildEventBranchNameList> Non-sampler : " << n << std::endl;}
@@ -294,7 +294,7 @@ void DataLoader::SetBranchAddress(bool allOn,
               if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
                 {samplerCNames.push_back(bName + "."); continue;}
               if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
-                { samplerSNames.push_back(bName + "."); continue;}
+                {samplerSNames.push_back(bName + "."); continue;}
             }
         }
     }

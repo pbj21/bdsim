@@ -229,6 +229,15 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 |                      | Currently, sin/SIN/Sin and cos/COS/Cos can be used.             |
 +----------------------+-----------------------------------------------------------------+
 
+Advanced parameter to be used with caution:
+
++---------------------------+--------------------------------------------------------------+
+| maximumStepLengthOverride | Maximum step length (m) in the field that will override the  |
+|                           | length calcualted from the minimal field map grid spacing.   |
+|                           | This overrides `maximumStepLength` and the one calculated.   |
++---------------------------+--------------------------------------------------------------+
+
+
 Simple example: ::
 
   detectorField: field, type="bmap2d",
@@ -1420,7 +1429,7 @@ A completely custom aperture can be used with `pointsfile`. See the notes below.
 	  only the vacuum volume without any beam pipe. The vacuum material is the usual vacuum
 	  but can of course can be controlled with :code:`vacuumMaterial`. So you could create
 	  a magnet with air and no beam pipe.
-.. note:: The default beam pipe material is "stainlessSteel".
+.. note:: The default beam pipe material is "stainlesssteel".
 
 .. tabularcolumns:: |p{3cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|
 

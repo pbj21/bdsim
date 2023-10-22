@@ -201,8 +201,9 @@ void BDSFieldQuery::CheckIfFieldObjectSpecified(const BDSFieldQueryInfo* query) 
 {
   if (!(query->fieldObject.empty()))
     {
-      G4String msg = "\"fieldObject\" variable is specified in query definition \"" + query->name;
-      msg += "\" - this has no effect\nInstead use \"referenceElement\"";
+      G4String msg = "The \"fieldObject\" variable is specified in the query definition \"" + query->name;
+      msg += "\".\nThis has no effect when using a query in bdsim (instead of bdsinterpolator)\n";
+      msg += "Remove \"fieldObject\" to suppress this warning.";
       BDS::Warning(msg);
     }
 }

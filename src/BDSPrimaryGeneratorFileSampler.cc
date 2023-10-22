@@ -134,7 +134,9 @@ void BDSPrimaryGeneratorFileSampler::ReadPrimaryParticlesFloat(G4long index)
       G4double x = (G4double)sampler->x[i] * CLHEP::m;
       G4double y = (G4double)sampler->y[i] * CLHEP::m;
       G4ThreeVector localPosition(x,y,0);
+      G4double weight = (G4double)sampler->weight[i];
       auto g4prim = new G4PrimaryParticle(pdgID, momentum.x(), momentum.y(), momentum.z());
+      g4prim->SetWeight(weight);
       vertices.emplace_back(DisplacedVertex{localPosition, g4prim});
     }
 }
@@ -156,7 +158,9 @@ void BDSPrimaryGeneratorFileSampler::ReadPrimaryParticlesDouble(G4long index)
       G4double x = (G4double)sampler->x[i] * CLHEP::m;
       G4double y = (G4double)sampler->y[i] * CLHEP::m;
       G4ThreeVector localPosition(x,y,0);
+      G4double weight = (G4double)sampler->weight[i];
       auto g4prim = new G4PrimaryParticle(pdgID, momentum.x(), momentum.y(), momentum.z());
+      g4prim->SetWeight(weight);
       vertices.emplace_back(DisplacedVertex{localPosition, g4prim});
     }
 }
@@ -168,7 +172,6 @@ void BDSPrimaryGeneratorFileSampler::ReadSingleEvent(G4long index, G4Event* anEv
   else
     {ReadPrimaryParticlesFloat(index);}
   
-  double overallWeight = 1.0;
   G4int nParticlesSkipped = 0;
   for (const auto& xyzVertex : vertices)
     {
@@ -204,7 +207,7 @@ void BDSPrimaryGeneratorFileSampler::ReadSingleEvent(G4long index, G4Event* anEv
                                   centralCoords.T,
                                   centralCoords.s,
                                   vertex->GetTotalEnergy(),
-                                  overallWeight);
+                                  vertex->GetWeight());
 
       if (!bunch->AcceptParticle(local, rp, vertex->GetKineticEnergy(), vertex->GetPDGcode()))
         {

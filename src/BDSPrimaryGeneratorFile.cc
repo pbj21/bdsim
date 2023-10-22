@@ -110,7 +110,7 @@ BDSPrimaryGeneratorFile* BDSPrimaryGeneratorFile::ConstructGenerator(const GMAD:
       BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
       if (!beg)
         {throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
-      G4bool shouldLoopFile = beam.distrFileLoop || !batchMode;
+      G4bool shouldLoopFile = beam.distrFileLoop || !batchMode || beam.distrFileLoopNTimes > 1;
       if (useEventGeneratorFile)
         {
 #ifdef USE_HEPMC3

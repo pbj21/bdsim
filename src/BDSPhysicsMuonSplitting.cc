@@ -116,34 +116,38 @@ void BDSPhysicsMuonSplitting::ConstructProcess()
       G4String particleName = particle->GetParticleName();
       const auto& search = particleProcesses.find(particleName);
       if (search == particleProcesses.end())
-	{continue;}
+        {continue;}
       
       // else it's in the set
       G4ProcessManager* pManager = particle->GetProcessManager();
       G4ProcessVector* processVector = pManager->GetProcessList();
       const std::set<G4String>& processNamesToLookFor = search->second;
       for (G4int i=0; i < (G4int)processVector->entries(); ++i)
-	{
-	  G4VProcess* process = (*processVector)[i];
-	  G4String processName = process->GetProcessName();
-	  if (processNamesToLookFor.count(processName) == 0)
-	    {continue;}
-	  
-	  auto wrappedProcess = new BDSWrapperMuonSplitting(process, splittingFactor, splittingThresholdEK,
-                                                      splittingFactor2, splittingThresholdEK2, excludeWeight1Particles,
-                                                      muonSplittingExclusionWeight);
-	  pManager->RemoveProcess(process);
-	  ph->RegisterProcess(wrappedProcess, particle);
-	  G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
-           << "\" for particle \"" << particle->GetParticleName() << "\": x" << splittingFactor
-           << " for parent Ek > " << splittingThresholdEK / CLHEP::GeV << " GeV" << G4endl;
-	  if (splittingFactor2 > 1)
-	    {
-	      G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
-		     << "\" for particle \"" << particle->GetParticleName() << "\": (2nd band) x" << splittingFactor2
-		     << " for parent Ek > " << splittingThresholdEK2 / CLHEP::GeV << " GeV" << G4endl;
-	    }
-	}
+        {
+          G4VProcess* process = (*processVector)[i];
+          G4String processName = process->GetProcessName();
+          if (processNamesToLookFor.count(processName) == 0)
+            {continue;}
+          
+          auto wrappedProcess = new BDSWrapperMuonSplitting(process,
+                                                            splittingFactor,
+                                                            splittingThresholdEK,
+                                                            splittingFactor2,
+                                                            splittingThresholdEK2,
+                                                            excludeWeight1Particles,
+                                                            muonSplittingExclusionWeight);
+          pManager->RemoveProcess(process);
+          ph->RegisterProcess(wrappedProcess, particle);
+          G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
+                 << "\" for particle \"" << particle->GetParticleName() << "\": x" << splittingFactor
+                 << " for parent Ek > " << splittingThresholdEK / CLHEP::GeV << " GeV" << G4endl;
+          if (splittingFactor2 > 1)
+            {
+              G4cout << "Bias> muon splitting> wrapping \"" << process->GetProcessName()
+                     << "\" for particle \"" << particle->GetParticleName() << "\": (2nd band) x" << splittingFactor2
+                     << " for parent Ek > " << splittingThresholdEK2 / CLHEP::GeV << " GeV" << G4endl;
+            }
+        }
     }
   
   SetActivated();

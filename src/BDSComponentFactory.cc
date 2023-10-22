@@ -2685,7 +2685,7 @@ G4Colour* BDSComponentFactory::PrepareColour(Element const* el)
 }
 
 G4Material* BDSComponentFactory::PrepareMaterial(Element const* el,
-						 const G4String& defaultMaterialName)
+                                                 const G4String& defaultMaterialName)
 {
   G4String materialName = el->material;
   if (materialName.empty())
@@ -2704,56 +2704,56 @@ G4Material* BDSComponentFactory::PrepareMaterial(Element const* el)
 }
 
 void BDSComponentFactory::SetFieldDefinitions(Element const* el,
-					      BDSAcceleratorComponent* component) const
+                                              BDSAcceleratorComponent* component) const
 {
   // Test for a line. And if so apply to each sub-component.
   G4Transform3D fieldTrans = CreateFieldTransform(element);
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {
       for (auto comp : *line)
-	{SetFieldDefinitions(el, comp);}
+        {SetFieldDefinitions(el, comp);}
     }
   // RF can ues fieldVacuum for the cavity field model but this would overwrite it which is wrong
   BDSMagnet* mag = dynamic_cast<BDSMagnet*>(component);
   if (mag && el->type != ElementType::_RF)
     {
       if (!(el->fieldAll.empty()))
-	{
-	  G4cerr << "Error: Magnet named \"" << elementName
-		 << "\" is a magnet, but has fieldAll defined." << G4endl
-		 << "Can only have fieldOuter and or fieldVacuum specified." << G4endl;
-	  throw BDSException(__METHOD_NAME__, "");
-	}
+        {
+          G4cerr << "Error: Magnet named \"" << elementName
+                 << "\" is a magnet, but has fieldAll defined." << G4endl
+                 << "Can only have fieldOuter and or fieldVacuum specified." << G4endl;
+          throw BDSException(__METHOD_NAME__, "");
+        }
       if (!(el->fieldOuter.empty()))
-	{
-	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldOuter)));
-	  if (info->ProvideGlobal())
-	    {info->SetTransformBeamline(fieldTrans);}
-	  info->CompoundBScaling(ScalingFieldOuter(el));
-	  SetModulatorDefinition(el, info);
-	  mag->SetOuterField(info);
-	}
+        {
+          BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldOuter)));
+          if (info->ProvideGlobal())
+            {info->SetTransformBeamline(fieldTrans);}
+          info->CompoundBScaling(ScalingFieldOuter(el));
+          SetModulatorDefinition(el, info);
+          mag->SetOuterField(info);
+        }
       if (!(el->fieldVacuum.empty()))
-	{
-	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldVacuum)));
-	  if (info->ProvideGlobal())
-	    {info->SetTransformBeamline(fieldTrans);}
-	  SetModulatorDefinition(el, info);
-	  mag->SetVacuumField(info);
-	}
+        {
+          BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldVacuum)));
+          if (info->ProvideGlobal())
+            {info->SetTransformBeamline(fieldTrans);}
+          SetModulatorDefinition(el, info);
+          mag->SetVacuumField(info);
+        }
     }
   else
     {
       if (!(el->fieldAll.empty()))
-	{
-	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldAll)));
-	  if (info->ProvideGlobal())
-	    {info->SetTransformBeamline(fieldTrans);}
-	  SetModulatorDefinition(element, info);
-	  if (el->scalingFieldOuter != 1)
-	    {BDS::Warning("component \"" + el->name + "\" has \"scalingFieldOuter\" != 1.0 -> this will have no effect for \"fieldAll\"");}
-	  component->SetField(info);
-	}
+        {
+          BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldAll)));
+          if (info->ProvideGlobal())
+            {info->SetTransformBeamline(fieldTrans);}
+          SetModulatorDefinition(element, info);
+          if (el->scalingFieldOuter != 1)
+            {BDS::Warning("component \"" + el->name + "\" has \"scalingFieldOuter\" != 1.0 -> this will have no effect for \"fieldAll\"");}
+          component->SetField(info);
+        }
     }
 }
 
@@ -2834,7 +2834,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareMagnetStrengthForRMatrix(Element 
 }
 
 G4double BDSComponentFactory::FieldFromAngle(const G4double angle,
-					     const G4double arcLength) const
+                                             const G4double arcLength) const
 {
   if (!BDS::IsFinite(angle))
     {return 0;}
@@ -2843,7 +2843,7 @@ G4double BDSComponentFactory::FieldFromAngle(const G4double angle,
 }
 
 G4double BDSComponentFactory::AngleFromField(const G4double field,
-					     const G4double arcLength) const
+                                             const G4double arcLength) const
 {
   if (!BDS::IsFinite(field))
     {return 0;}
@@ -2852,8 +2852,8 @@ G4double BDSComponentFactory::AngleFromField(const G4double field,
 }
 
 void BDSComponentFactory::CalculateAngleAndFieldSBend(Element const* el,
-						      G4double&      angle,
-						      G4double&      field) const
+                                                      G4double&      angle,
+                                                      G4double&      field) const
 {
   G4double arcLength = el->l * CLHEP::m;
   if (BDS::IsFinite(el->B) && el->angleSet)
@@ -2881,10 +2881,10 @@ void BDSComponentFactory::CalculateAngleAndFieldSBend(Element const* el,
 }
 
 void BDSComponentFactory::CalculateAngleAndFieldRBend(const Element* el,
-						      G4double& arcLength,
-						      G4double& chordLength,
-						      G4double& field,
-						      G4double& angle) const
+                                                      G4double& arcLength,
+                                                      G4double& chordLength,
+                                                      G4double& field,
+                                                      G4double& angle) const
 {
   // 'l' in the element represents the chord length for an rbend - must calculate arc length
   // for the field calculation and the accelerator component.
@@ -2919,16 +2919,16 @@ void BDSComponentFactory::CalculateAngleAndFieldRBend(const Element* el,
     {// (assume) only angle - calculate B field
       angle = el->angle * CLHEP::rad;
       if (BDS::IsFinite(angle))
-	{
-	  // sign for bending radius doesn't matter (from angle) as it's only used for arc length.
-	  // this is the inverse equation of that in BDSAcceleratorComponent to calculate
-	  // the chord length from the arclength and angle.
-	  G4double bendingRadius = chordLength * 0.5 / std::sin(std::abs(angle) * 0.5);
-	  arcLengthLocal = bendingRadius * angle;
-	  field = brho * angle / std::abs(arcLengthLocal);
+        {
+          // sign for bending radius doesn't matter (from angle) as it's only used for arc length.
+          // this is the inverse equation of that in BDSAcceleratorComponent to calculate
+          // the chord length from the arclength and angle.
+          G4double bendingRadius = chordLength * 0.5 / std::sin(std::abs(angle) * 0.5);
+          arcLengthLocal = bendingRadius * angle;
+          field = brho * angle / std::abs(arcLengthLocal);
         }
       else
-	{field = 0;} // 0 angle -> chord length and arc length the same; field 0
+        {field = 0;} // 0 angle -> chord length and arc length the same; field 0
     }
 
   // Ensure positive length despite sign of angle.
@@ -2979,7 +2979,7 @@ G4double BDSComponentFactory::OutgoingFaceAngle(const Element* el) const
   else if (el->type == ElementType::_RBEND)
     {
       if (integratorSet->IsMatrixIntegratorSet())
-	{return outgoingFaceAngle;}
+        {return outgoingFaceAngle;}
       // angle is w.r.t. outgoing reference trajectory so rbend face is angled
       // by half the bend angle
       outgoingFaceAngle += 0.5 * bendAngle;
@@ -3026,7 +3026,7 @@ G4double BDSComponentFactory::IncomingFaceAngle(const Element* el) const
   else if (el->type == ElementType::_RBEND)
     {
       if (integratorSet->IsMatrixIntegratorSet())
-	{return incomingFaceAngle;}
+        {return incomingFaceAngle;}
       // angle is w.r.t. outgoing reference trajectory so rbend face is angled
       // by half the bend angle
       incomingFaceAngle += 0.5 * bendAngle;

@@ -321,6 +321,8 @@ int BDSIM::Initialise()
   runManager->SetUserAction(new BDSStackingAction(globals));
   
   auto primaryGeneratorAction = new BDSPrimaryGeneratorAction(bdsBunch, parser->GetBeam(), globals->Batch());
+  // possibly updated after the primary generator as loaded a beam file
+  eventAction->SetPrintModulo(BDSGlobalConstants::Instance()->PrintModuloEvents());
   runManager->SetUserAction(primaryGeneratorAction);
   BDSFieldFactory::SetPrimaryGeneratorAction(primaryGeneratorAction);
 

@@ -1,0 +1,24 @@
+! the 3 cm forced maximum step size is bigger than the usual spacing step limit (0.5cm for this map)
+
+f1: field, type="bmap1d",
+    	   magneticFile="bdsim1d:1dexample-along-z.dat",
+	   magneticInterpolator="cubic",
+	   integrator="g4classicalrk4",
+	   bScaling=20,
+	   z=-30*cm,
+           maximumStepLengthOverride=3*cm;
+
+! here the maximum step length of 0.5mm is shorter than the minimal
+! spacing in the field map (detected automatically) of 6mm, so this should
+! take precedence.
+
+d1: drift, l=0.8*m, aper1=4*cm, fieldAll="f1";
+
+l1: line=(d1);
+
+use, l1;
+
+beam, particle="e-",
+      energy=3*GeV;
+
+option, ngenerate=1;

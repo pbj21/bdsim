@@ -27,12 +27,19 @@ ClassImp(BDSOutputROOTEventCoords)
 
 BDSOutputROOTEventCoords::BDSOutputROOTEventCoords():
   n(0)
-{;}
+{
+  FlushLocal();
+}
 
 BDSOutputROOTEventCoords::~BDSOutputROOTEventCoords()
 {;}
 
 void BDSOutputROOTEventCoords::Flush()
+{
+  FlushLocal();
+}
+
+void BDSOutputROOTEventCoords::FlushLocal()
 {
   n = 0;
   X.clear();

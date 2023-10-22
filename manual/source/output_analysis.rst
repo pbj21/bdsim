@@ -71,8 +71,8 @@ If the setup is correct, you should be able to execute 'rebdsim' in the terminal
 details.
 
 .. figure:: figures/rebdsim_execution.png
-	    :width: 100%
-	    :align: center
+            :width: 100%
+            :align: center
 
 If the analysis will be regularly used interactively, it is worth automating the library
 loading in root by finding and editing the :code:`rootlogon.C` in your
@@ -266,13 +266,13 @@ Notes:
   provided with `bdsimCombine`.
 
 .. note:: This tool is distinct from :ref:`rebdsim-combine-tool` as this tool only handles
-	  raw BDSIM output data. `rebdsimCombine` handles output from the analysis
-	  tool `rebdsim`.
+          raw BDSIM output data. `rebdsimCombine` handles output from the analysis
+          tool `rebdsim`.
 
-To merge files together in small chunks to reduce a data size (e.g. every 10 files into 1), a small
-Python (3) script is available in :code:`bdsim/utils/chunkermp.py`. This allows us to reduce a data
-set into fewer files in parallel. Note, this may cause intensive disk usage, but usually using some
-parallel processes will be significantly faster than just one.
+To merge files together in small chunks to reduce a data size (e.g. every 10 files into 1), a utility
+function in pybdsim is provided. See :code:`pybdsim.Run.Reduce` and :code:`pybdsim.Run.ReduceParallel`.
+This allows us to reduce a data set into fewer files in parallel. Note, this may cause intensive disk
+usage, but usually using some parallel processes will be significantly faster than just one.
 
 Example: ::
 
@@ -388,7 +388,7 @@ where :math:`\sigma` is the standard deviation of the values in that bin for all
   between error on the mean and the standard deviation.
 
 .. note:: Per-entry histograms will only be calculated where there exists two or more entries
-	  in the tree. In the case of the Event tree, this corresponds to more than two events.
+          in the tree. In the case of the Event tree, this corresponds to more than two events.
 
 Standard Error On The Mean
 --------------------------
@@ -404,7 +404,7 @@ If the standard deviation is required, the user should multiply the errors by :m
 See :ref:`numerical-methods` for a mathematical description of how the errors are calculated.
 
 .. _output-analysis-configuration-file:
-	  
+
 Histograms
 ----------
 
@@ -427,9 +427,9 @@ Below is a complete of a rebdsim analysis configuration text file.
   Histogram2DLog  Event  PhaseSpaceXYAbs2 {20,30}    {-6:-3,-1e-6:1e-5}  abs(Primary.y):Primary.x 1
 
 .. warning:: The variable for plotting is really a simple interface to CERN ROOT's TTree Draw
-	     method.  This is **totally inconsistent**.  If 1D, there is just :code:`x`.  If 2D, it's
-	     :code:`y : x`. If 3D, it's :code:`x : y : z`.  This **only** applies to the variable and
-	     **not** to the bin specification. 
+             method. If 1D, there is just :code:`x`. If 2D, it's :code:`y : x`.
+             If 3D, it's :code:`z : y : x`. This **only** applies to the variable and
+             **not** to the bin specification. 
 
 
 * :code:`HistogramND` defines an N-dimension per-entry histogram where `N` is 1,2 or 3.
@@ -468,9 +468,9 @@ want to filter it out.
   the documentation link immediately below.
 
 .. note:: Per-entry histograms will only be calculated where there exists two or more entries
-	  in the tree. In the case of the Event tree, this corresponds to more than two events.
-	  Whilst the per-entry histograms will work for any tree in the output, they are primarily
-	  useful for per-event analysis on the Event tree.
+          in the tree. In the case of the Event tree, this corresponds to more than two events.
+          Whilst the per-entry histograms will work for any tree in the output, they are primarily
+          useful for per-event analysis on the Event tree.
 
 The variable and selection go directly into ROOT's TTree::Draw method and if you are familiar with
 these, any syntax it supports can be used.  A full explanation on the combination of selection parameters
@@ -544,11 +544,15 @@ The following commands are accepted.
 +========================+===========================================+
 | Spectra                | Per-event histograms in kinetic energy    |
 +------------------------+-------------------------------------------+
+| SpectraMomentum        | Per-event histograms in momentum          |
++------------------------+-------------------------------------------+
 | SpectraTE              | Per-event histograms in total energy      |
 +------------------------+-------------------------------------------+
 | SpectraRigidity        | Per-event histograms in rigidity          |
 +------------------------+-------------------------------------------+
 | SimpleSpectra          | Total histograms in kinetic energy        |
++------------------------+-------------------------------------------+
+| SimpleSpectraMomentum  | Total histograms in momentum              |
 +------------------------+-------------------------------------------+
 | SimpleSpectraTE        | Total histograms in total energy          |
 +------------------------+-------------------------------------------+
@@ -604,18 +608,18 @@ Particles can be specified in several ways:
 +---------------------+-------------------------------------------------------------------------+
 
 .. warning:: (\*) The `topN` syntax cannot be used with simple histograms (e.g. with the syntax
-	     SimpleSpectra) because we need to perform per-event analysis to build up a set of
-	     PDG IDs at each event and re-evaluate the top N.
+             SimpleSpectra) because we need to perform per-event analysis to build up a set of
+             PDG IDs at each event and re-evaluate the top N.
 
 .. warning:: (\*) When using `rebdsimCombine` to merge multiple rebdsim output files, spectra
-	     will be merged too as expected. In the case of Top N histograms, the top (by integral)
-	     particle species may be different from file to file. The histograms are mapped in the
-	     first file loaded and any not matching these ones will be ignored, so you may end up
-	     with a subset of histograms and statistics. This is purposeful because adding 0 entries
-	     for a newly encountered histogram in the accumulation would result in a possibly lower
-	     than average true mean. Care should be taken to observe the number of entries in each
-	     merged histogram which is the number of events merged for that histogram. To avoid this,
-	     specific PDG IDs should be given.
+             will be merged too as expected. In the case of Top N histograms, the top (by integral)
+             particle species may be different from file to file. The histograms are mapped in the
+             first file loaded and any not matching these ones will be ignored, so you may end up
+             with a subset of histograms and statistics. This is purposeful because adding 0 entries
+             for a newly encountered histogram in the accumulation would result in a possibly lower
+             than average true mean. Care should be taken to observe the number of entries in each
+             merged histogram which is the number of events merged for that histogram. To avoid this,
+             specific PDG IDs should be given.
 
 .. note:: No white space should be in the particle specification.
 
@@ -936,18 +940,18 @@ the `InputFilePath` should be specified as `"*.root"` to match all the root file
 in the current directory.
 
 .. note:: For `"*.root"` all files should be from the same simulation and only BDSIM
-	  output files (i.e. not `rebdsim` output files).
+          output files (i.e. not `rebdsim` output files).
 
 `rebdsim` will 'chain' the files together to behave as one big file with all of the events.
 This is shown schematically in the figure below.
 
 .. figure:: figures/multiple_outputs_rebdsim.pdf
-	    :width: 100%
-	    :align: center
+            :width: 100%
+            :align: center
 
-	    Schematic of strategy for a low volume of data produced from a computationally
-	    intense simulation. Multiple instances of BDSIM are executed, each producing their
-	    own output file. These are analysed all at once with `rebdsim`.
+            Schematic of strategy for a low volume of data produced from a computationally
+            intense simulation. Multiple instances of BDSIM are executed, each producing their
+            own output file. These are analysed all at once with `rebdsim`.
 
 This strategy works best for a relatively low number of events and data volume (example
 numbers might be < 10000 events and < 10 GB of data).
@@ -967,14 +971,14 @@ file. This is numerically equivalent to analysing all the data in one execution 
 `rebdsim` but significantly faster. See :ref:`rebdsim-combine-tool` for more details.
 
 .. figure:: figures/multiple_analyses.pdf
-	    :width: 100%
-	    :align: center
+            :width: 100%
+            :align: center
 
-	    Schematic of strategy for a high-data volume analysis. Multiple instances of
-	    BDSIM are executed in a script that then executes `rebdsim` with a suitable
-	    analysis configuration. Only the output files from `rebdsim` are then combined
-	    into a final output identical to what would have been produced from analysing
-	    all data at once, but in vastly reduced time.
+            Schematic of strategy for a high-data volume analysis. Multiple instances of
+            BDSIM are executed in a script that then executes `rebdsim` with a suitable
+            analysis configuration. Only the output files from `rebdsim` are then combined
+            into a final output identical to what would have been produced from analysing
+            all data at once, but in vastly reduced time.
 
 
 .. _output-analysis-strategy-skimming:
@@ -999,13 +1003,13 @@ The total number of events simulated is preserved in the header so we can normal
 correctly later on to get the correct physical rate.
 
 .. figure:: figures/skimming.pdf
-	    :width: 100%
-	    :align: center
+            :width: 100%
+            :align: center
 
-	    Schematic of strategy for a skimming data reduction. Multiple instances of
-	    BDSIM are executed in a script that then executes `bdskim` with a suitable
-	    selection file. Only the output files from `bdskim` are then combined
-	    into a final output.
+            Schematic of strategy for a skimming data reduction. Multiple instances of
+            BDSIM are executed in a script that then executes `bdskim` with a suitable
+            selection file. Only the output files from `bdskim` are then combined
+            into a final output.
 
 Normalisation
 *************
@@ -1046,7 +1050,7 @@ These are also documented in :ref:`output-header-tree`.
   available at the end of a run and ROOT does not permit overwriting an entry. The first entry
   to the header tree is written when the file is opened and must be there in case of a crash
   or the BDSIM instance was killed.
-            
+
 
 As an example, the following 2-stage simulation is described:
 
@@ -1103,7 +1107,7 @@ entries, where one entry represents one event. The histograms must be multiplied
 to recover the original rate per proton on target in this simulation. This is done automatically
 by rebdsim. rebdsimCombine just adds together the already correctly normalised histograms.
 
-  
+
 .. _output-user-analysis:
 
 User Analysis
@@ -1165,11 +1169,11 @@ associated with it. ::
   >>> import pybdsim
   >>> d = pybdsim.Data.Load("combined-ana.root")
   >>> d.
-  d.ConvertToPybdsimHistograms d.histograms2d                
-  d.filename                   d.histograms2dpy              
+  d.ConvertToPybdsimHistograms d.histograms2d
+  d.filename                   d.histograms2dpy
   d.histograms                 d.histograms3d
-  d.histograms1d               d.histograms3dpy              
-  d.histograms1dpy             d.histogramspy 
+  d.histograms1d               d.histograms3dpy
+  d.histograms1dpy             d.histogramspy
 
 
 Raw Data Loading
@@ -1259,12 +1263,12 @@ Event tree in the BDSIM output. See :ref:`basic-data-inspection` for more detail
 on how to browse the data.
 
 .. note:: The branch "Summary" in the Event and Run trees used to be called "Info"
-	  in BDSIM < V1.3. This conflicted with TObject::Info() so this looping in
-	  Python would work for any data in this branch, hence the change.
+          in BDSIM < V1.3. This conflicted with TObject::Info() so this looping in
+          Python would work for any data in this branch, hence the change.
 
 .. warning:: Do not construct numpy arrays inside the loop - this seems to expose
-	     some behaviour with numpy where it gets slower and slower with every
-	     loop.
+             some behaviour with numpy where it gets slower and slower with every
+             loop.
 
 
 Accumulating - Average Histograms
@@ -1310,11 +1314,11 @@ This is the basic usage of HistogramAccumulator in Python: ::
 
 
 .. note:: We need a basic ROOT histogram to base the accumulator off of. It needs to have a
-	  different name, but it can have the same title. The first argument, the object name,
-	  is the one used when writing to a file and ROOT uses this internally to identify it
-	  so it **must** be unique. Here, we append the suffix "BASE" onto its name for the
-	  simple histogram, and we give the accumulator the desired name without this suffix
-	  by stripping it off (:code:`[:-4]` means up to the 4th last character).
+          different name, but it can have the same title. The first argument, the object name,
+          is the one used when writing to a file and ROOT uses this internally to identify it
+          so it **must** be unique. Here, we append the suffix "BASE" onto its name for the
+          simple histogram, and we give the accumulator the desired name without this suffix
+          by stripping it off (:code:`[:-4]` means up to the 4th last character).
 
 An example in a loop: ::
 
@@ -1324,9 +1328,9 @@ An example in a loop: ::
   >>> ha = ROOT.HistogramAccumulator(h, h.GetName()[:-4], h.GetTitle())
   >>> for event in d.GetEventTree():
           h.Reset()
-	  for i in range(event.someSampler.n):
-	      h.Fill(event.someSampler.x, event.someSampler.weight)
-	  ha.Accumulate(h)
+          for i in range(event.someSampler.n):
+              h.Fill(event.someSampler.x, event.someSampler.weight)
+          ha.Accumulate(h)
   >>> result = ha.Terminate()
   >>> outfile = pybdsim.Data.CreateEmptyRebdsimFile("somehistograms.root", d.header.nOriginalEvents)
   >>> pybdsim.Data.WriteROOTHistogramsToDirectory(outfile, "Event/PerEntryHistograms", [result])
@@ -1368,7 +1372,7 @@ are provided that illustrate the usage of the classes and tools. See:
 * :code:`bdsim/examples/features/analysis/pythonAnalysis`
 
 .. note:: rebdsim itself **cannot** be used in Python. This part only describes how to reproduce
-	  rebdsim again in Python as an example of data analysis.
+          rebdsim again in Python as an example of data analysis.
 
 
 Sampler Data
@@ -1412,15 +1416,15 @@ index (zero counting) of the sampler or the name as it appears in the file. This
 includes the primaries ("Primary").
 
 .. note:: This loads all data into memory at once and is generally not as efficient
-	  as looping over event by event. This is provided for convenience, but may
-	  not scale well to very large data sets.
+          as looping over event by event. This is provided for convenience, but may
+          not scale well to very large data sets.
 
 .. warning:: This concatenates all events into one array, so the event by event
-	     nature of the data is lost. This may be acceptable in some cases, but
-	     it is worth considering making a 2D histogram directly using `rebdsim`
-	     rather than say loading the sampler data here and making a 2D plot.
-	     Certainly, if the statistical uncertainties are to be calculated, this
-	     is a far preferable route.
+             nature of the data is lost. This may be acceptable in some cases, but
+             it is worth considering making a 2D histogram directly using `rebdsim`
+             rather than say loading the sampler data here and making a 2D plot.
+             Certainly, if the statistical uncertainties are to be calculated, this
+             is a far preferable route.
 
   
 

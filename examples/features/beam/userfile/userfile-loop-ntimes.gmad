@@ -1,4 +1,3 @@
 include userfile.gmad;
 
-beam, distrFileLoop=1,
-      distrFileLoopNTimes=3;
+beam, distrFileLoopNTimes=3;

@@ -38,7 +38,7 @@ HistogramAccumulatorSum::HistogramAccumulatorSum(TH1*               baseHistogra
   result->Sumw2();
 }
 
-void HistogramAccumulatorSum::Accumulate(TH1* newValue, bool /*warnAboutZeroEntries*/)
+void HistogramAccumulatorSum::Accumulate(TH1* newValue)
 {
   result->Add(newValue);
 }

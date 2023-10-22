@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4GDMLParser.hh"
 #endif
 #include "G4FileUtilities.hh"
+#include "G4String.hh"
 #include "G4TransportationManager.hh"
 
 class G4VPhysicalVolume;
@@ -59,8 +60,19 @@ void BDSGeometryWriter::WriteToGDML(G4String           outputFileName,
   if (BDS::FileExists(outputFileName))
     {
       G4FileUtilities fileUtilities;
+      G4cout << "Removing existing file: \"" << outputFileName << "\"" << G4endl;
       fileUtilities.DeleteFile(outputFileName, "");
     }
+
+  // if the filename is in part a path to a directory, check that directory exists
+  // otherwise the GDML writer will give an abort trap bad access
+  if (BDS::StrContains(outputFileName, "/"))
+    {
+      G4String dirName = BDS::GetFullPath(outputFileName, true);
+      if (!BDS::DirectoryExists(dirName))
+        {throw BDSException(__METHOD_NAME__, "directory \"" + dirName + "\" does not exist - please create it first.");}
+    }
+
   G4GDMLParser parser;
   parser.Write(outputFileName, volume, true);
 }

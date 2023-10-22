@@ -198,6 +198,9 @@ void BDSOutputROOTEventLoss::Fill(const BDSOutputROOTEventLoss* other)
 }
 
 void BDSOutputROOTEventLoss::Flush()
+{FlushLocal();}
+
+void BDSOutputROOTEventLoss::FlushLocal()
 {
   n = 0;
   energy.clear();

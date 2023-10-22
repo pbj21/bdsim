@@ -101,6 +101,7 @@ BDSOutput::BDSOutput(const G4String& baseFileNameIn,
   baseFileName(baseFileNameIn),
   fileExtension(fileExtensionIn),
   outputFileNumber(fileNumberOffset),
+  sMinHistograms(0),
   sMaxHistograms(0),
   nbins(0),
   energyDeposited(0),
@@ -118,6 +119,7 @@ BDSOutput::BDSOutput(const G4String& baseFileNameIn,
   numberEventPerFile = g->NumberOfEventsPerNtuple();
   useScoringMap      = g->UseScoringMap();
 
+  sMinHistograms             = g->BeamlineS();
   storeApertureImpacts       = g->StoreApertureImpacts();
   storeApertureImpactsHistograms = g->StoreApertureImpactsHistograms();
   storeCavityInfo            = g->StoreCavityInfo();
@@ -447,7 +449,7 @@ void BDSOutput::CalculateHistogramParameters()
       if (!flatBeamline->empty())
         {
           G4double sMax = flatBeamline->GetLastItem()->GetSPositionEnd();
-          nbins = (int) std::ceil(sMax / binWidth); // round up to integer # of bins
+          nbins = (int) std::ceil((sMax - sMinHistograms)/ binWidth); // round up to integer # of bins
         }
     }
   else
@@ -456,7 +458,7 @@ void BDSOutput::CalculateHistogramParameters()
   if (nbins == 0)
     {nbins = 1;}
   
-  sMaxHistograms = nbins * binWidth;
+  sMaxHistograms = sMinHistograms + nbins * binWidth;
 }
 
 void BDSOutput::CreateHistograms()
@@ -464,8 +466,8 @@ void BDSOutput::CreateHistograms()
   // construct output histograms
   // calculate histogram dimensions
   CalculateHistogramParameters();
-  const G4double smin   = 0.0;
-  const G4double smax   = sMaxHistograms / CLHEP::m;
+  const G4double smin = sMinHistograms / CLHEP::m;
+  const G4double smax = sMaxHistograms / CLHEP::m;
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "histogram parameters calculated to be: " << G4endl;
   G4cout << "s minimum: " << smin     << " m" << G4endl;

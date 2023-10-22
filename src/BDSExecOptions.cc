@@ -515,7 +515,7 @@ void BDSExecOptions::PrintCitation() const
   G4cout << "https://doi.org/10.1016/j.cpc.2020.107200" << G4endl << G4endl;
   G4cout << R"(@article{NEVAY2020107200,)" << G4endl;
   G4cout << R"(title = {BDSIM: An accelerator tracking code with particle–matter interactions},)" << G4endl;
-  G4cout << R"(journal = {Computer Physics Communications},)" << G4endl;
+  G4cout << R"(journal = {Comput. Phys. Commun.},)" << G4endl;
   G4cout << R"(volume = {252},)" << G4endl;
   G4cout << R"(pages = {107200},)" << G4endl;
   G4cout << R"(year = {2020},)" << G4endl;

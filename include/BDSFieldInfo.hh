@@ -128,6 +128,7 @@ public:
   inline const BDSArrayReflectionTypeSet& MagneticArrayReflectionType() const {return magneticArrayReflectionTypeSet;}
   inline const BDSArrayReflectionTypeSet& ElectricArrayReflectionType() const {return electricArrayReflectionTypeSet;}
   inline BDSModulatorInfo*   ModulatorInfo()            const {return modulatorInfo;}
+  inline G4bool IgnoreUpdateOfMaximumStepSize() const {return ignoreUpdateOfMaximumStepSize;}
   inline BDSFieldInfoExtra*  ExtraInfo()                const {return extraInfo;}
   /// @}
   
@@ -152,6 +153,7 @@ public:
   inline void SetElectricSubField(const G4String& efnIn) {electricSubFieldName = efnIn;}
   inline void SetUsePlacementWorldTransform(G4bool use) {usePlacementWorldTransform = use;}
   inline void SetModulatorInfo(BDSModulatorInfo* modulatorInfoIn) {modulatorInfo = modulatorInfoIn;}
+  inline void SetIgnoreUpdateOfMaximumStepSize(G4bool ignoreUpdateOfMaximumStepSizeIn) {ignoreUpdateOfMaximumStepSize = ignoreUpdateOfMaximumStepSizeIn;}
 
   /// *= for BScaling.
   inline void CompoundBScaling(G4double extraBScalingIn) {bScaling *= extraBScalingIn;}
@@ -216,6 +218,7 @@ private:
   G4String                 electricSubFieldName;
   G4bool                   usePlacementWorldTransform;
   BDSModulatorInfo*        modulatorInfo;
+  G4bool                   ignoreUpdateOfMaximumStepSize; ///< To be used when enforcing a larger maximum step size value.
   
   /// Transform from curvilinear frame to this field - ie beam line bit only.
   G4Transform3D*           transformBeamline;

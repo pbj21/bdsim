@@ -132,6 +132,8 @@ public:
   void SetBranchAddress(TTree *);
   virtual void Flush();  ///< Clean Sampler
 
+  void FlushLocal(); ///< Actual flush that is non virtual function to use in constructor.
+
   static BDSOutputROOTParticleData* particleTable;
 
   ClassDef(BDSOutputROOTEventSampler,5);

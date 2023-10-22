@@ -684,7 +684,7 @@ described by :ref:`yoke-multipole-field`) is provided for the yoke.
 Examples: ::
 
    sx1: sextupole, l=0.5*m, k2=4.678;
-   sx2: sextupole, l=20*cm, k2=45.32, magnetGeometry="normalconducting";
+   sx2: sextupole, l=20*cm, k2=45.32;
 
 octupole
 ^^^^^^^^

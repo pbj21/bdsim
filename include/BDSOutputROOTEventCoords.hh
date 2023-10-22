@@ -43,6 +43,8 @@ public:
   virtual ~BDSOutputROOTEventCoords();
   virtual void Flush();
 
+  void FlushLocal();
+
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventCoords* other);
 

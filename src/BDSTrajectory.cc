@@ -33,8 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 G4Allocator<BDSTrajectory> bdsTrajectoryAllocator;
 
 BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
-			     G4bool         interactiveIn,
-			     const BDS::TrajectoryOptions& storageOptionsIn):
+                             G4bool         interactiveIn,
+                             const BDS::TrajectoryOptions& storageOptionsIn):
   G4Trajectory(aTrack),
   interactive(interactiveIn),
   storageOptions(storageOptionsIn),
@@ -62,9 +62,9 @@ BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
   fpBDSPointsContainer = new BDSTrajectoryPointsContainer();
   // this is for the first point of the track
   (*fpBDSPointsContainer).push_back(new BDSTrajectoryPoint(aTrack,
-							   storageOptions.storeLocal,
+                                                           storageOptions.storeLocal,
                                                            storageOptions.storeLinks,
-							   storageOptions.storeIon));
+                                                           storageOptions.storeIon));
 }
 
 BDSTrajectory::~BDSTrajectory()
@@ -81,19 +81,19 @@ void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
   if (suppressTransportationAndNotInteractive)
     {
       if (pointIn->NotTransportationLimitedStep())
-	{
+        {
           auto r = new BDSTrajectoryPoint(*pointIn);
           if (fpBDSPointsContainer->size() == 1)
             {(*fpBDSPointsContainer)[0]->SetMaterial(pointIn->GetMaterial());}
           CleanPoint(r);
           fpBDSPointsContainer->push_back(r);
-	}
+        }
     }
   else
     {
       auto r = new BDSTrajectoryPoint(*pointIn);
       if (fpBDSPointsContainer->size() == 1)
-	{(*fpBDSPointsContainer)[0]->SetMaterial(pointIn->GetMaterial());}
+        {(*fpBDSPointsContainer)[0]->SetMaterial(pointIn->GetMaterial());}
       CleanPoint(r);
       fpBDSPointsContainer->push_back(r);
     }
@@ -128,17 +128,17 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
       auto postStepPoint = aStep->GetPostStepPoint(); 
       const G4VProcess* postProcess = postStepPoint->GetProcessDefinedStep();
       if (postProcess)
-	{
-	  G4int postProcessType = postProcess->GetProcessType();
-	  if(postProcessType != 1   /* transportation */ &&
-	     postProcessType != 10 /* parallel world */ )
-	    {
-	      fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
-								     storageOptions.storeLocal,
-								     storageOptions.storeLinks,
-								     storageOptions.storeIon));
-	    }
-	}
+        {
+          G4int postProcessType = postProcess->GetProcessType();
+          if(postProcessType != 1   /* transportation */ &&
+             postProcessType != 10 /* parallel world */ )
+            {
+              fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
+                                                                     storageOptions.storeLocal,
+                                                                     storageOptions.storeLinks,
+                                                                     storageOptions.storeIon));
+            }
+        }
     }
   else
     {
@@ -170,7 +170,7 @@ BDSTrajectoryPoint* BDSTrajectory::FirstInteraction()const
     {
       BDSTrajectoryPoint* point = static_cast<BDSTrajectoryPoint*>(GetPoint(i));
       if (point->IsScatteringPoint())
-	{return point;}
+        {return point;}
     }
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "no interaction" << G4endl;
@@ -185,7 +185,7 @@ BDSTrajectoryPoint* BDSTrajectory::LastInteraction()const
     {
       BDSTrajectoryPoint* point = static_cast<BDSTrajectoryPoint*>(GetPoint(i));
       if (point->IsScatteringPoint())
-	{return point;}
+        {return point;}
   }
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "no interaction" << G4endl;

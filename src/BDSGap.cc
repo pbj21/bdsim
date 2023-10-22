@@ -23,9 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 globals / types
 
-BDSGap::BDSGap (G4String   nameIn,
-			    G4double   lengthIn,
-			    G4double   angleIn):
+BDSGap::BDSGap (const G4String&   nameIn,
+                G4double   lengthIn,
+                G4double   angleIn):
   BDSAcceleratorComponent(nameIn, lengthIn, angleIn, "gap")
 {;}
 
@@ -37,6 +37,4 @@ void BDSGap::BuildContainerLogicalVolume()
 {;}
 
 void BDSGap::Build()
-{
-  BDSAcceleratorComponent::Build();
-}
+{;}

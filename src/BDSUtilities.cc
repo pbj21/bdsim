@@ -600,6 +600,8 @@ G4UserLimits* BDS::CreateUserLimits(G4UserLimits*  defaultUL,
       result = new G4UserLimits(*defaultUL);
       G4double lengthScale = length * fraction;
       lengthScale = std::max(lengthScale, 1.0*CLHEP::um); // no smaller than 1um limit
+      if (!BDS::IsFinite(lengthScale))
+        {lengthScale = 1*CLHEP::mm;} // if identically 0 due to some upstream issue, set a small default
       result->SetMaxAllowedStep(lengthScale);
     }
   return result;

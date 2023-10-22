@@ -152,6 +152,8 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
   
   particleChange->Clear();
   particleChange->SetNumberOfSecondaries(nOriginalSecondaries + static_cast<G4int>(newMuons.size()));
+  // cache this flag so we can reset it back afterwards
+  G4bool originalSetSecondaryWeightByProcess = particleChange->IsSecondaryWeightSetByProcess();
   particleChange->SetSecondaryWeightByProcess(true);
   if (nSuccessfulMuonSplits == 0)
     {// we've cleared the original ones, so we have to put them back
@@ -181,6 +183,12 @@ G4VParticleChange* BDSWrapperMuonSplitting::PostStepDoIt(const G4Track& track,
       newMuon->SetWeight(newWeight);
       particleChange->AddSecondary(newMuon);
     }
+  // IMPORTANT - we must reset this back to its default value as the process owns
+  // (usually) a single particle change object that it reuses, so setting this flag
+  // will change that process's behaviour forever more in the run even if this wrapper
+  // decides not to act. We must reset it after AddSecondary().
+  particleChange->SetSecondaryWeightByProcess(originalSetSecondaryWeightByProcess);
+
   nCallsThisEvent++;
   return particleChange;
 }

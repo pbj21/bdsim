@@ -76,6 +76,8 @@ public:
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventLoss* other);
   virtual void Flush();
+
+  void FlushLocal(); ///< Non-virtual function for initialising / clearing variables.
   
 #ifndef __ROOTBUILD__
   BDSOutputROOTEventLoss(bool storeTurnIn,

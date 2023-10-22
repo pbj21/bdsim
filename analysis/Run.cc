@@ -75,7 +75,7 @@ void Run::SetBranchAddress(TTree *t,
     {t->SetBranchStatus("*", true);}
   else if (branchesToTurnOn)
     {
-      for (auto name : *branchesToTurnOn)
+      for (const auto& name : *branchesToTurnOn)
 	{
 	  std::string nameStar = name + "*";
 	  if (debug)

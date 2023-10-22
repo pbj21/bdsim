@@ -12,6 +12,204 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Restructure code into proper C++ libraries rather than just analysis and 'bdsim'.
 * Multiple beam line tracking.
 
+
+v1.8.X - 2023 / XX / XX
+=======================
+
+New Features
+------------
+
+General Updates
+---------------
+
+Bug Fixes
+---------
+
+Output Changes
+--------------
+
+Output Class Versions
+---------------------
+
+* Data Version 9.
+
++-----------------------------------+-------------+-----------------+-----------------+
+| **Class**                         | **Changed** | **Old Version** | **New Version** |
++===================================+=============+=================+=================+
+| BDSOutputROOTEventAperture        | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventBeam            | N           | 6               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCavityInfo      | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimator      | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimatorInfo  | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHeader          | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHistograms      | N           | 4               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventInfo            | N           | 7               | 7               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLoss            | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLossWorld       | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventModel           | N           | 6               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventOptions         | N           | 7               | 7               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventRunInfo         | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSampler         | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerC        | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerS        | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectory      | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectoryPoint | N           | 6               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTParticleData         | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+
+
+Utilities
+---------
+
+These are no longer included directly with BDSIM but are available through pip. At the time
+of writing, the corresponding versions of each utility are:
+
+* pybdsim v3.3.2
+* pymadx v2.0.1
+* pymad8 v2.0.1
+* pytransport v2.0.1
+
+
+V1.7.6 - 2023 / 10 / 18
+=======================
+
+Hot-fix for muon splitting. When muon splitting occurred it turned on a flag in the G4VParticleChange
+object belonging to the physics process in Geant4 as required to give each particle unique weights
+(as non-muon secondaries are not split). However, most processes in Geant4 reuse the same object and
+do not reset this with each initialisation of a track so it remains in place. Also, the same G4Decay
+process object is registered to different particle definitions. When decay happens for another particle
+after this (for a particle that is not in the muon splitting), the flag results in the weights not being
+transferred to the new secondaries.
+
+In short, particles that were not in the list (pi+, pi-, e+, kaon+, kaon-, kaon0L) that had an incoming
+weight from other biasing would have their weights reset to 1, only after splitting had occurred once
+in that run. And for every subsequent event.
+
+* It is not required to set :code:`beam, distrFileLoop=1` if :code:`beam, distrFileLoopNTimes` is set
+  to a value greater than 1 for any file-based input distributions.
+
+  
+v1.7.5 - 2023 / 10 / 03
+=======================
+
+General Updates
+---------------
+
+* The ability to purposively override the (good) default maximum step length in a
+  field map is provided in a field definition. Normally, the maximum step length is
+  limited to 1x the minimum grid spacing of a field map in any dimension. Larger
+  steps result in the field only being evaluated on that length scale and therefore
+  giving a possibly wrong numerical integration of the field. However, in specific
+  high-energy cases, it is a useful optimisation to increase this length. This must
+  be used with knowledge and caution though.
+
+Bug Fixes
+---------
+
+* Weights for primaries were not loaded from file when using a :code:`bdsimsampler` distribution.
+  Previously, they were all weight 1 by default. This affects any second stage simulation where
+  biasing was used in the first stage.
+* CMake fix for HepMC3 for versions greater than 3.1.1.
+* Fix :code:`geant4Version` in the header output as it didn't contain the patch number
+  as Geant4's string for this is a little inconsistent.
+* :code:`BDSOutputROOTEventTrajectory` copy constructor did not copy the `mass` variable.
+
+  
+
+V1.7.4 - 2023 / 08 / 25
+=======================
+
+New Features
+------------
+
+* Spectra by momentum: :code:`SpectraMomentum` in rebdsim.
+
+
+General Updates
+---------------
+
+* Fix manual description of 3D histograms in rebdsim. Should be :code:`z:y:x` for 3D histogram
+  variables. :code:`y:x` for 2D, and :code:`x` for 1D histograms.
+
+
+Bug Fixes
+---------
+
+* Fix S coordinate of primaries in the output if a negative :code:`option, beamlineS`
+  was used. It would previously always be 0.
+* Fix print out in terminal of how many events have been completed when using a file-based
+  beam distribution. It would always be each event instead of the usual 10%, which may have
+  slowed down simulations or inflated log files.
+
+
+V1.7.3 - 2023 / 08 / 11
+=======================
+
+* Hotfix - undo recent optimisation for histograms as it accidentally affected the mean
+  in non-simple (i.e. per-entry average) histograms.
+  
+
+V1.7.2 - 2023 / 08 / 11
+=======================
+
+General Updates
+---------------
+
+* Determine extents of any container solid loaded from an external geometry file.
+
+Bug Fixes
+---------
+
+**Installation**
+
+* Fix compilation when BDSIM is compiled with GDML on but the Geant4 used does not
+  have GDML compiled into it. This would result in a compilation error rather than
+  a CMake error at configuration time.
+
+**Geometry**
+
+* A placement where the outermost solid was an extruded solid would cause the extents
+  not to be determined properly and therefore the maximum step size to be set to 1 micron,
+  which would result in very slow running events. Fixed by automatically determining the
+  size of any potential solid given from externally loaded geometry.
+* Generic BLM shapes now have consistent user limits for tracking applied as other volumes.
+* Do not allocate a G4UserLimits object for every placement that wasn't used.
+
+**Visualisation**
+
+* `shield` component now obeys `colour` property correctly.
+
+  
+V1.7.1 - 2023 / 07 / 20
+=======================
+
+* Fix NANs appearing in merged histograms from rebdsimCombine where histograms were empty.
+* Fix wrong number of entries in per-entry histograms (e.g. per-event histograms)
+  from rebdsim.
+* Fix crash from Geant4 GDML writer when exporting GDML geometry from BDSIM where
+  a directory is included in the destination file path but it does not exist.
+
+
 V1.7.0 - 2023 / 07 / 11
 =======================
 
@@ -190,6 +388,7 @@ New Features
   be used alone to store only the single total energy deposition (including weights) in the world and
   world contents (in case of an externally provided world volume) without storing all the individual
   hits that would use a lot of disk space.
+* :code:`storeSamplerKineticEnergy` is now on by default.
 
 
 General Updates
@@ -469,7 +668,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCollimator      | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventCollimatorInfo  | Y           | 2               | 1               |
+| BDSOutputROOTEventCollimatorInfo  | Y           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCoords          | N           | 3               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -508,10 +707,10 @@ Utilities
 These are no longer included directly with BDSIM but are available through pip. At the time
 of writing, the corresponding versions of each utility are:
 
-* pybdsim v3.1.1
-* pymadx v2.0.0
-* pymad8 v2.0.0
-* pytransport v2.0.0
+* pybdsim v3.3.2
+* pymadx v2.0.1
+* pymad8 v2.0.1
+* pytransport v2.0.1
 
 
 V1.6.0 - 2021 / 06 / 16

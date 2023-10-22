@@ -22,14 +22,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 
 BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
-				                       BDSGeometryComponent* component,
+                                       BDSGeometryComponent* component,
                                        G4double              arcLengthIn,
-				                       G4double              angleIn,
-				                       const G4ThreeVector&  inputFaceNormalIn,
-				                       const G4ThreeVector&  outputFaceNormalIn,
-				                       BDSBeamPipeInfo*      beamPipeInfoIn):
+                                       G4double              angleIn,
+                                       const G4ThreeVector&  inputFaceNormalIn,
+                                       const G4ThreeVector&  outputFaceNormalIn,
+                                       BDSBeamPipeInfo*      beamPipeInfoIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "simpleComponent", beamPipeInfoIn,
-			  inputFaceNormalIn, outputFaceNormalIn)
+                          inputFaceNormalIn, outputFaceNormalIn)
 {
   RegisterDaughter(component);
   InheritExtents(component);
@@ -40,16 +40,16 @@ BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
 }
 
 BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
-				                       G4double              arcLengthIn,
-				                       G4double              angleIn,
-				                       G4VSolid*             containerSolidIn,
-				                       G4LogicalVolume*      containerLogicalVolumeIn,
-				                       const BDSExtent&      extentIn,
-				                       const G4ThreeVector&  inputFaceNormalIn,
-				                       const G4ThreeVector&  outputFaceNormalIn,
-				                       BDSBeamPipeInfo*      beamPipeInfoIn):
+                                       G4double              arcLengthIn,
+                                       G4double              angleIn,
+                                       G4VSolid*             containerSolidIn,
+                                       G4LogicalVolume*      containerLogicalVolumeIn,
+                                       const BDSExtent&      extentIn,
+                                       const G4ThreeVector&  inputFaceNormalIn,
+                                       const G4ThreeVector&  outputFaceNormalIn,
+                                       BDSBeamPipeInfo*      beamPipeInfoIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "simpleComponent", beamPipeInfoIn,
-			  inputFaceNormalIn, outputFaceNormalIn)
+                          inputFaceNormalIn, outputFaceNormalIn)
 {
   SetExtent(extentIn);
   containerSolid         = containerSolidIn;
@@ -59,14 +59,6 @@ BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
 void BDSSimpleComponent::Build()
 {
   BuildContainerLogicalVolume();
-  
-  // set user limits for container & visual attributes
-  if (containerLogicalVolume || containerAssembly)
-    {
-      BuildUserLimits();
-      if (containerIsAssembly)
-        {AttachUserLimitsToAssembly(containerAssembly, userLimits);}
-      else
-        {containerLogicalVolume->SetUserLimits(userLimits);}
-    }
+  // in each case this is used, user limits are attached already,
+  // so it is not needed to overwrite them here.
 }

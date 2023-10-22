@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtent.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
+#include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
 #include "BDSUtilities.hh"
 
@@ -67,15 +68,15 @@ BDSBLM* BDSBLMFactory::CreateBLM(const GMAD::BLMPlacement& bp,
 }
 
 BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
-				const G4String& geometryFile,
-				const G4String& geometryType,
-				const G4String& material,
-				G4double blm1,
-				G4double blm2,
-				G4double blm3,
-				G4double /*blm4*/,
-				G4VSensitiveDetector* sd,
-				const G4String& bias)
+                                const G4String& geometryFile,
+                                const G4String& geometryType,
+                                const G4String& material,
+                                G4double blm1,
+                                G4double blm2,
+                                G4double blm3,
+                                G4double /*blm4*/,
+                                G4VSensitiveDetector* sd,
+                                const G4String& bias)
 {
   // if geometry file is specified then we load the external file.
   BDSBLM* result = nullptr;
@@ -88,16 +89,16 @@ BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
     {
       BDSBLMType shape = BDS::DetermineBLMType(geometryType);
       switch (shape.underlying())
-	{
-	case BDSBLMType::cylinder:
-	  {result = BuildBLMCylinder(name, material, blm1, blm2); break;}
-	case BDSBLMType::cube:
-	  {result = BuildBLMCube(name, material, blm1, blm2, blm3); break;}
-	case BDSBLMType::sphere:
-	  {result = BuildBLMSphere(name, material, blm1); break;}
-	default:
-	  {break;}
-	}
+        {
+        case BDSBLMType::cylinder:
+          {result = BuildBLMCylinder(name, material, blm1, blm2); break;}
+        case BDSBLMType::cube:
+          {result = BuildBLMCube(name, material, blm1, blm2, blm3); break;}
+        case BDSBLMType::sphere:
+          {result = BuildBLMSphere(name, material, blm1); break;}
+        default:
+          {break;}
+        }
     }
   if (!result)
     {return result;}
@@ -113,27 +114,27 @@ BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
 }
 
 BDSBLM* BDSBLMFactory::BuildBLMCylinder(const G4String& name,
-					const G4String& material,
-					G4double        halfLength,
-					G4double        radius)
+                                        const G4String& material,
+                                        G4double        halfLength,
+                                        G4double        radius)
 {
   PositiveFinite(halfLength, "blm1 (half length)", name);
   PositiveFinite(radius,     "blm2 (radius)",      name);
   G4Tubs* shape = new G4Tubs(name + "_solid",
-			     0,
-			     radius,
-			     halfLength,
-			     0,
-			     CLHEP::twopi);
+                             0,
+                             radius,
+                             halfLength,
+                             0,
+                             CLHEP::twopi);
   BDSExtent ext = BDSExtent(radius, radius, halfLength);
   return CommonConstruction(name, material, shape, ext);
 }
 
 BDSBLM* BDSBLMFactory::BuildBLMCube(const G4String& name,
-				    const G4String& material,
-				    G4double        halfLengthX,
-				    G4double        halfLengthY,
-				    G4double        halfLengthZ)
+                                    const G4String& material,
+                                    G4double        halfLengthX,
+                                    G4double        halfLengthY,
+                                    G4double        halfLengthZ)
 {
   PositiveFinite(halfLengthX, "blm1 (half length in x)", name);
   PositiveFinite(halfLengthY, "blm2 (half length in y)", name);
@@ -144,8 +145,8 @@ BDSBLM* BDSBLMFactory::BuildBLMCube(const G4String& name,
 }
 
 BDSBLM* BDSBLMFactory::BuildBLMSphere(const G4String& name,
-				      const G4String& material,
-				      G4double        radius)
+                                      const G4String& material,
+                                      G4double        radius)
 {
   PositiveFinite(radius, "blm1 (radius)", name);
   G4Orb* shape = new G4Orb(name + "_solid", radius);
@@ -154,13 +155,13 @@ BDSBLM* BDSBLMFactory::BuildBLMSphere(const G4String& name,
 }
 
 BDSBLM* BDSBLMFactory::CommonConstruction(const G4String&  name,
-					  const G4String&  material,
-					  G4VSolid*        shape,
-					  const BDSExtent& extent)
+                                          const G4String&  material,
+                                          G4VSolid*        shape,
+                                          const BDSExtent& extent)
 {
   G4Material* mat = BDSMaterials::Instance()->GetMaterial(material);
   G4LogicalVolume* lv = new G4LogicalVolume(shape, mat, name + "_lv");
-  
+  lv->SetUserLimits(BDSGlobalConstants::Instance()->DefaultUserLimits());
   BDSBLM* result = new BDSBLM(shape, lv, extent);
   return result;
 }

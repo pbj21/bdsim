@@ -82,7 +82,7 @@ public:
   /// Loop over the bins in a histogram and accumulate that bin from a new
   /// histogram ("newValue"). newValue is assumed to be the exact same as
   /// the baseHistogram the instance of this class was constructed with.
-  virtual void Accumulate(TH1* newValue, bool warnAboutZeroEntries = false);
+  virtual void Accumulate(TH1* newValue);
 
   /// Write the result to the result histogram. Calculate the standard error
   /// on the mean from the variance for the error in each bin.

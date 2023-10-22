@@ -1,6 +1,5 @@
 include ptc.gmad;
 
-beam, distrFileLoop=1,
-      distrFileLoopNTimes=3;
+beam, distrFileLoopNTimes=3;
 
 beam, distrFile="ptc-inrays-short.madx";

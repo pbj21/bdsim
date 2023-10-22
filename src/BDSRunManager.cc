@@ -53,10 +53,10 @@ void BDSRunManager::Initialize()
       /// Check for any 3D field queries of the model and carry them out
       const auto& fieldQueries = detectorConstruction->FieldQueries();
       if (!fieldQueries.empty())
-	{
-	  BDSFieldQuery querier;
-	  querier.QueryFields(fieldQueries);
-	}
+        {
+          BDSFieldQuery querier;
+          querier.QueryFields(fieldQueries);
+        }
     }
   if (const auto primaryGeneratorAction = dynamic_cast<BDSPrimaryGeneratorAction*>(userPrimaryGeneratorAction))
     {primaryGeneratorAction->SetWorldExtent(worldExtent);}
@@ -74,7 +74,7 @@ void BDSRunManager::DoEventLoop(G4int n_event,const char* macroFile,G4int n_sele
     {
       // Print seed to try and recreate an event in a run 
       G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
-	     << CLHEP::HepRandom::getTheSeed() << G4endl;
+             << CLHEP::HepRandom::getTheSeed() << G4endl;
       // Print generator full state to output 
       G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
       CLHEP::HepRandom::saveFullState(G4cout);
@@ -91,7 +91,7 @@ void BDSRunManager::ProcessOneEvent(G4int i_event)
       G4cout << __METHOD_NAME__ << "Event="<<i_event<<G4endl;
       // Print seed to try and recreate an event in a run
       G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
-	     << CLHEP::HepRandom::getTheSeed() << G4endl;
+             << CLHEP::HepRandom::getTheSeed() << G4endl;
       // Print generator full state to output 
       G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
       CLHEP::HepRandom::saveFullState(G4cout);
@@ -115,4 +115,3 @@ void BDSRunManager::AbortRun(G4bool)
   G4cout << "Terminate run - trying to write and close output file" << G4endl;
   G4RunManager::AbortRun();
 }
-

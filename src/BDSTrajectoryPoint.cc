@@ -296,10 +296,8 @@ G4bool BDSTrajectoryPoint::NotTransportationLimitedStep() const
 {
   // if prestep process doesn't exist it won't be set and will
   // default to value in InitialiseVariables which is -1
-  G4bool preStep = (preProcessType  != 1   /* transportation */ &&
-		    preProcessType  != 10 /* parallel world */);
-  G4bool posStep = (postProcessType != 1   /* transportation */ &&
-		    postProcessType != 10 /* parallel world */);
+  G4bool preStep = (preProcessType  != G4ProcessType::fTransportation && preProcessType  != G4ProcessType::fParallel);
+  G4bool posStep = (postProcessType != G4ProcessType::fTransportation && postProcessType != G4ProcessType::fParallel);
   return preStep || posStep;
 }
 

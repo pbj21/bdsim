@@ -44,7 +44,7 @@ BDSOutputROOTEventHeader::~BDSOutputROOTEventHeader()
 void BDSOutputROOTEventHeader::FlushLocal()
 {
   bdsimVersion  = std::string(BDSIM_GIT_VERSION);
-  geant4Version = G4Version;
+  geant4Version = G4Version + " " + G4Date + " : v" + std::to_string(G4VERSION_NUMBER);
   rootVersion   = std::string(gROOT->GetVersion());
   clhepVersion  = CLHEP::Version::String();
   timeStamp     = "";

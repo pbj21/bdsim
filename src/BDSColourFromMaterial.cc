@@ -63,6 +63,7 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["lhcconcrete"] = defines["concrete"];
   defines["copper"]      = c->GetColour("coil");
   defines["cu"]          = defines["copper"];
+  defines["cuh2o"]       = defines["copper"];
   defines["iron"]        = c->GetColour("iron");
   defines["fe"]          = defines["iron"];
   defines["gold"]        = c->GetColour("gold:220 176 71");
@@ -70,6 +71,10 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["kapton"]      = c->GetColour("kapton");
   defines["lead"]        = c->GetColour("lead");
   defines["pb"]          = defines["lead"];
+  defines["lyso"]        = c->GetColour("lyso: 230 210 235 0.3");
+  defines["lso"]         = defines["lyso"];
+  defines["yso"]         = defines["lyso"];
+  defines["lysoce"]      = defines["lyso"];
   defines["marble"]      = c->GetColour("marble:228 228 228 1.0");
   defines["stainlesssteel"] = c->GetColour("beampipe");
   defines["stainless-steel"] = defines["stainlesssteel"];

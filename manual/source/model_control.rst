@@ -1168,7 +1168,7 @@ Behaviour
 The default behaviour since BDSIM V1.7 is to 'match' the file length - i.e. simulate the
 number of events as there would be in the file. The default is **not to loop** (i.e. repeat) the file.
 However, the user can explicitly request a certain number of events, or that the file is
-looped (knowing that certain primaries might be repeated introducing correlations).
+looped (knowingly introducing potential correlations).
 
 For all the file-based distributions, the following beam options apply.
 
@@ -1180,8 +1180,9 @@ For all the file-based distributions, the following beam options apply.
 +------------------------------+---------------+-----------------------------------------------+
 | `distrFileLoop`              | 0 (false)     | Whether to loop back to the start of the file |
 +------------------------------+---------------+-----------------------------------------------+
-| `distrFileLoopNTimes`        | 1             | Number of times to repeat the distribution    |
-|                              |               | file in its entirety                          |
+| `distrFileLoopNTimes`        | 1             | Number of times to go through the             |
+|                              |               | distribution file in its entirety - a value   |
+|                              |               | greater than 1 is required to repeat the file |
 +------------------------------+---------------+-----------------------------------------------+
 
 .. warning:: `option, ngenerate=N` in input GMAD text will be ignored when a distribution file
@@ -1203,9 +1204,11 @@ To simulate fewer events, we must specify ngenerate as an **executable** option.
 
   bdsim --file=mymodel_w_generator.gmad --outfile=r1 --batch --ngenerate=3
 
-This will generate 3 events, no matter how many are in the file.
+This will generate 3 events, no matter how many are in the file. But it will complain
+if the number requested is greater than the number in the file and looping is not turned
+on in the input GMAD beam definition.
 
-**Looping**
+**Loop as Needed up to N Events**
 
 We must explicitly turn off file length matching and turn on looping. ::
 
@@ -1224,7 +1227,7 @@ it will be replayed (with different event seeds) 5x.
              a file, you may 'enhance' the statistics of one set of input coordinates
              and may bias the final result.
 
-**Looping N Times**
+**Looping the Whole File N Times**
 
 We can repeat the same file `N` times. The random engine seed will continue to advance
 for the physics so even with the same initial particles or coordinates, a different
@@ -1233,10 +1236,11 @@ sometimes repeat the same distribution multiple times. ::
 
   beam, distrType="somedistributionhere...",
         distrFile="somefile.dat",
-        distrFileLoop=1,
         distrFileLoopNTimes=3;
 
-This will match the file length and repeat the file 3 times.
+This will match the file length and repeat the file 3 times. This is the number of times
+the file is 'played' through, so a value **greater than 1** is typically required to
+repeat the file.
 
 **Filtering**
 
@@ -1454,6 +1458,9 @@ compiled with respect to it.  See :ref:`installation-bdsim-config-options` for m
 
 When using an event generator file, the **design** particle and total energy must still be
 specified. These are used to calculate the magnetic field strengths.
+
+Per-event weights are not yet supported in BDSIM or rebdsim (the analysis tool) and are
+set to 1.0.
 
 The following parameters are used to control the use of an event generator file. These are
 implemented as :math:`>=` and :math:`<=` for `Min` and `Max` respectively. i.e.
@@ -2550,6 +2557,15 @@ interest. With more muons, we sample this better.
 We cannot use a factor of say, 1 million and only sample 1 event, because we would only
 sample 1 (e.g.) decay in 1 location. We must still sample many locations well to properly
 estimate the muon flux.
+
+.. figure:: figures/muon_splitting_comparison_with_divsym.png
+	    :width: 70%
+	    :align: center
+                    
+            Comparison of the muon spectrum for the same model with activated muon splitting
+            and without muon splitting [F. Metzger, `Examination of the RF separated beam
+            technique at CERN's M2 beam line`, PhD thesis (in progress)].
+
 
 **Notes:**
 
