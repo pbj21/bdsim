@@ -427,7 +427,7 @@ void Element::print(int ident) const
         std::cout << "scaling = " << scaling << std::endl;
         if (scalingFieldOuter != 1)
           {std::cout << "scalingFieldOuter = " << scalingFieldOuter << std::endl;}
-	    std::cout << "fieldModulator = \"" << fieldModulator << "\"" << std::endl;
+        std::cout << "fieldModulator = \"" << fieldModulator << "\"" << std::endl;
         break;
       }
     case ElementType::_MUONCOOLER:
