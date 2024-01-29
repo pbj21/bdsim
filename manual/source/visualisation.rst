@@ -64,7 +64,7 @@ session box (terminal prompt) inside the visualiser:
 * :code:`/vis/viewer/set/targetPoint 0 0 20 m` - sets the rotation view point at 0,0,20 m as an example
 * :code:`/vis/scene/add/axes 0 0 0` - adds a set of unit vector axes at position (0,0,0)
 * :code:`/vis/drawVolume worlds` - view all invisible geometry including samplers
-* :code:`/vis/viewer/set/lightsVecto 1 1 1` - change the orientation of the lighting to
+* :code:`/vis/viewer/set/lightsVector 1 1 1` - change the orientation of the lighting to
   roughly opposite
 * :code:`/vis/viewer/set/viewpointThetaPhi 180 0` - look along the beam line
 * :code:`/bds/beamline/goto d1` - reposition the view point at beam line element named `d1`
@@ -227,8 +227,15 @@ This may be useful for particular view points or visualisation settings. ::
 Adding Other Visualisers
 ========================
 
-BDSIM makes use of the visualisers Geant4 was compiled with on your system. When
-BDSIM is started interactively (i.e. without the :code:`--batch` command), Geant4
+BDSIM makes use of the visualisers Geant4 was compiled with on your system.
+
+To see the list of visualiser, include the option: ::
+
+  option, visVerbosity=1;
+
+in the input GMAD file. The default value is 0, which means no print out at all.
+Then, when BDSIM is started interactively
+(i.e. without the :code:`--batch` command), Geant4
 will print a list of all available visualisers that are available. Below is an
 example excerpt from the terminal output that shows the list of available
 visualisers on the developer's system.
@@ -239,8 +246,9 @@ visualisers on the developer's system.
    :figclass: align-center
 
 By default, BDSIM uses the **OpenGL Qt** visualiser - we highly recommend this, as
-it is the most modern one with the best feature set. It is also recommended by
-Geant4.
+it is the most modern one with the best feature set. For Geant4.11.2, BDSIM uses
+whatever the default best visualiser is available in Geant4. This is usually Vtk,
+then Qt.
 
 To add another available visualiser, you must change the build options of Geant4
 (in ccmake), recompile and install it; then you must recompile BDSIM against

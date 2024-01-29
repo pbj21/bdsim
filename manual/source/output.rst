@@ -1565,7 +1565,8 @@ doubles the output file size.
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | r (\*)             | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
 +--------------------+-------------------+--------------------------------------------------------------------------+
-| rp (\*)            | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
+| rp (\*)            | std::vector<T>    | Vector of the radial fractional transverse momentum calculated from xp   |
+|                    |                   | and yp                                                                   |
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | phi (\*)           | std::vector<T>    | Vector of angle of x and y (calculated from arctan(y/x)                  |
 +--------------------+-------------------+--------------------------------------------------------------------------+

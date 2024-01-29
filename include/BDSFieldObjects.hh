@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -134,6 +134,12 @@ private:
 
   /// EM field integrator driver (optional) - only for EM fields.
   G4MagInt_Driver* magIntDriver;
+
+  /// Field manager settings
+  void SetFieldManagerOptions();
+
+  /// Field manager settings for thin elements
+  void SetFieldManagerOptionsThin();
 };
 
 #endif

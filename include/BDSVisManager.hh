@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSDetectorConstruction;
 class BDSMessenger;
+class G4UIsession;
 class G4VisManager;
 
 /**
@@ -38,7 +39,8 @@ class BDSVisManager
 public:
   BDSVisManager(const G4String& visMacroFileNameIn,
                 const G4String& geant4MacroFileNameIn,
-                const BDSDetectorConstruction* realWorldIn = nullptr);
+                const BDSDetectorConstruction* realWorldIn = nullptr,
+                G4int visVerbosity = 0);
   
   ~BDSVisManager();
 
@@ -46,6 +48,7 @@ public:
   void StartSession(int argc, char** argv);
 
 private:
+  G4UIsession* uiSession;
   G4VisManager* visManager;
   BDSMessenger* bdsMessenger;
   G4String visMacroFileName;    ///< Full macro file path to run for visualisation.

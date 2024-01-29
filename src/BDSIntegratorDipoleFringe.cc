@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -264,7 +264,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
     {
 	  yTempOut[i]     = pos[i];
 	  yTempOut[i + 3] = globalMom[i];
-      yErr[i]         = globalMomU[i];
+      yErr[i]         = globalMomU[i]*1e-10;
       yErr[i + 3]     = 1e-40;
     }
 

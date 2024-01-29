@@ -818,7 +818,7 @@ These variables are set in the :code:`<bdsim-install-dir>/bin/bdsim.sh` provided
 .. _setup-python-utilities:
   
 Python Utilities
-----------------
+================
 
 * Quick setup: simply run ``source pyutils.sh`` from the ``bdsim/utils`` directory.
   
@@ -849,6 +849,18 @@ To switch between these modes, simply uninstall the utilities, then reinstall. :
           not already available it will get them from PyPi on the internet. To use
           multiple develop versions of these from local git repositories, install in
           the order: `pytransport`, `pymad8`, `pymadx`, then `pybdsim`.
+
+
+Updating the Python Utilities
+-----------------------------
+
+With pip you can see if packages are outdated with: ::
+
+  pip list -o
+
+If you see pybdsim as an outdated package, you can do the following to update it: ::
+
+  pip install --upgrade pybdsim
 
 
 

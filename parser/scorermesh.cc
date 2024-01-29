@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -101,32 +101,32 @@ void ScorerMesh::PublishMembers()
 
 void ScorerMesh::print()const
 {
-  std::cout << "ScorerMesh: "
-	    << "name "          << name          << std::endl
-	    << "scoreQuantity " << scoreQuantity << std::endl
-	    << "nx "            << nx            << std::endl
-    	    << "ny "            << ny            << std::endl
-    	    << "nz "            << nz            << std::endl
-    	    << "ne "            << ne            << std::endl
-	    << "xsize "         << xsize         << std::endl
-    	    << "ysize "         << ysize         << std::endl
-    	    << "zsize "         << zsize         << std::endl
-    	    << "eLow "          << eLow          << std::endl
-    	    << "eHigh "          << eHigh          << std::endl
-    	    << "eScale "        << eScale          << std::endl
-	    << "sequence "      << sequence      << std::endl
-	    << "referenceElement" << referenceElement << std::endl
-	    << "referenceElementNumber" << referenceElementNumber << std::endl
-	    << "s"              << s             << std::endl
-	    << "x "             << x             << std::endl
-    	    << "y "             << y             << std::endl
-    	    << "z "             << z             << std::endl
-    	    << "phi "           << phi           << std::endl
-    	    << "theta "         << theta         << std::endl
-    	    << "psi "           << psi           << std::endl
-    	    << "axisX "         << axisX         << std::endl
-    	    << "axisY "         << axisY         << std::endl
-    	    << "axisZ "         << axisZ         << std::endl
-    	    << "angle "         << angle         << std::endl
-	    << "axisAngle "     << axisAngle     << std::endl;
+  std::cout << "ScorerMesh: "   << std::endl
+            << "name "          << name          << std::endl
+            << "scoreQuantity " << scoreQuantity << std::endl
+            << "nx "            << nx            << std::endl
+            << "ny "            << ny            << std::endl
+            << "nz "            << nz            << std::endl
+            << "ne "            << ne            << std::endl
+            << "xsize "         << xsize         << std::endl
+            << "ysize "         << ysize         << std::endl
+            << "zsize "         << zsize         << std::endl
+            << "eLow "          << eLow          << std::endl
+            << "eHigh "         << eHigh         << std::endl
+            << "eScale "        << eScale        << std::endl
+            << "sequence "      << sequence      << std::endl
+            << "referenceElement " << referenceElement << std::endl
+            << "referenceElementNumber " << referenceElementNumber << std::endl
+            << "s "             << s             << std::endl
+            << "x "             << x             << std::endl
+            << "y "             << y             << std::endl
+            << "z "             << z             << std::endl
+            << "phi "           << phi           << std::endl
+            << "theta "         << theta         << std::endl
+            << "psi "           << psi           << std::endl
+            << "axisX "         << axisX         << std::endl
+            << "axisY "         << axisY         << std::endl
+            << "axisZ "         << axisZ         << std::endl
+            << "angle "         << angle         << std::endl
+            << "axisAngle "     << axisAngle     << std::endl;
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -836,6 +836,7 @@ BDSMagnet* BDS::BuildDipoleFringe(const GMAD::Element*     element,
 					       true,
 					       fieldTiltOffset);
   vacuumField->SetModulatorInfo(fieldModulator);
+  vacuumField->SetFieldAsThin();
 
   return new BDSMagnet(BDSMagnetType::dipolefringe,
 		       name,

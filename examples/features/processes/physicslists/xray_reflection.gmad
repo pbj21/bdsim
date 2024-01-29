@@ -1,0 +1,16 @@
+c1: rcol, l=2*m, outerDiameter=20*cm, material="copper", xsize=1*cm, ysize=1*cm;
+
+l1: line = (c1);
+
+use, l1;
+
+option, physicsList="xray_reflection";
+
+option, checkOverlaps=1;
+
+beam, particle="gamma",
+      energy=3*GeV,
+      Xp0=1e-5,
+      X0=0.999999*cm;
+
+option, physicsVerbose=1;

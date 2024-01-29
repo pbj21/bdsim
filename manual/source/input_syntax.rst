@@ -97,6 +97,14 @@ Examples: ::
    mat = "copper";
 
 
+Floating Point and Integer Numbers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The result of a calculation may be a floating point number. If assigned to what should
+be an integer value, such as the number of bins in a scoring mesh, the number is rounded
+to the nearest integer.
+
+   
 Common Pitfalls
 ^^^^^^^^^^^^^^^
 

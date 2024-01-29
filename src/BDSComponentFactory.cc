@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -880,11 +880,13 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       buildExitFringe = false;
     }
 
+  G4bool isThin = false;  // required for setting field as 'thin' later (which controls geant tracking error parameters)
   if (!HasSufficientMinimumLength(element, false)) // false for don't print warning
     {// thin kicker
       fieldType   = BDSFieldType::bfieldzero;
       intType     = BDSIntegratorType::kickerthin;
       chordLength = thinElementLength;
+      isThin      = true;
 
       // Fringe and poleface effects for a thin kicker require an effective bending radius, rho.
       // Lack of length and angle knowledge means the field is the only way rho can be calculated.
@@ -1049,6 +1051,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 					       true,
 					       fieldTrans);
   vacuumField->SetModulatorInfo(ModulatorDefinition(element, true)); // works even if none
+  if (isThin)
+    {vacuumField->SetFieldAsThin();}
 
   G4bool yokeOnLeft = YokeOnLeft(element, st);
   auto bpInf = PrepareBeamPipeInfo(element);
@@ -1222,6 +1226,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinMultipole(G4double angle
 					       true,
 					       fieldTrans);
   vacuumField->SetModulatorInfo(ModulatorDefinition(element, true));
+  vacuumField->SetFieldAsThin();
   
   BDSMagnet* thinMultipole =  new BDSMagnet(BDSMagnetType::thinmultipole,
 					    elementName,
@@ -1980,6 +1985,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double        
                                                fieldTrans);
   vacuumField->SetBeamPipeRadius(beamPipeInfo->aper1);
   vacuumField->SetModulatorInfo(fieldModulator);
+  vacuumField->SetFieldAsThin();
 
   BDSMagnet* thinRMatrix =  new BDSMagnet(BDSMagnetType::rmatrix,
                                           name,

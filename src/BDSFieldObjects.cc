@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2023.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -70,12 +70,10 @@ BDSFieldObjects::BDSFieldObjects(const BDSFieldInfo*     infoIn,
   // We use our custom field manager that is a thin wrapper for the Geant4 one
   // that only identifies whether we have a primary track or not for BDSIntegratorMag
   fieldManager = new BDSFieldManager(field, chordFinder);
-
-  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
-  fieldManager->SetDeltaIntersection(globals->DeltaIntersection());
-  fieldManager->SetMinimumEpsilonStep(globals->MinimumEpsilonStep());
-  fieldManager->SetMaximumEpsilonStep(globals->MaximumEpsilonStep());
-  fieldManager->SetDeltaOneStep(globals->DeltaOneStep());
+  if (info->IsThin())
+    {SetFieldManagerOptionsThin();}
+  else
+    {SetFieldManagerOptions();}
 }
 
 #if G4VERSION_NUMBER > 1049
@@ -99,11 +97,10 @@ BDSFieldObjects::BDSFieldObjects(const BDSFieldInfo*     infoIn,
   chordFinder  = new G4ChordFinder(magIntDriver);
   fieldManager = new G4FieldManager(field, chordFinder);
 
-  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
-  fieldManager->SetDeltaIntersection(globals->DeltaIntersection());
-  fieldManager->SetMinimumEpsilonStep(globals->MinimumEpsilonStep());
-  fieldManager->SetMaximumEpsilonStep(globals->MaximumEpsilonStep());
-  fieldManager->SetDeltaOneStep(globals->DeltaOneStep());
+  if (info->IsThin())
+    {SetFieldManagerOptionsThin();}
+  else
+    {SetFieldManagerOptions();}
 }
 #endif
 
@@ -147,4 +144,22 @@ void BDSFieldObjects::AttachUserLimitsToVolume(G4LogicalVolume* volume,
       for (G4int i = 0; i < (G4int)volume->GetNoDaughters(); i++)
 	{AttachUserLimitsToVolume(volume->GetDaughter(i)->GetLogicalVolume(), userLimits, penetrateToDaughterVolumes);}
     }
+}
+
+void BDSFieldObjects::SetFieldManagerOptions()
+{
+  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+  fieldManager->SetDeltaIntersection(globals->DeltaIntersection());
+  fieldManager->SetMinimumEpsilonStep(globals->MinimumEpsilonStep());
+  fieldManager->SetMaximumEpsilonStep(globals->MaximumEpsilonStep());
+  fieldManager->SetDeltaOneStep(globals->DeltaOneStep());
+}
+
+void BDSFieldObjects::SetFieldManagerOptionsThin()
+{
+  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+  fieldManager->SetDeltaIntersection(globals->DeltaIntersection());
+  fieldManager->SetMinimumEpsilonStep(globals->MinimumEpsilonStepThin());
+  fieldManager->SetMaximumEpsilonStep(globals->MaximumEpsilonStepThin());
+  fieldManager->SetDeltaOneStep(globals->DeltaOneStep());
 }

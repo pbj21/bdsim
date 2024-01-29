@@ -19,6 +19,10 @@ Installing Python Utilities
 
 Installation is described in the setup section in :ref:`setup-python-utilities`.
 
+But trivially, one can do :code:`pip install pybdsim` and this will install all of
+the Python utilities. pybdsim will work without ROOT but if available, it will be
+able to load the raw and histogram data files.
+
 .. _python-utilities-documentation:
 
 Documentation

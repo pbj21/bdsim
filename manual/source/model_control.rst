@@ -983,7 +983,7 @@ halosigma
 Similar to type `halo` except instead of uniformly sampling :math:`J`, the single
 particle emittance (action), the particle's :math:`n\sigma` is sampled uniformly
 instead. The particle action :math:`J` is expressed in terms of the multiple of
-sigma, :math:`n`, the one-sigma transverse beamsize :math:`\sigma` and the Twiss
+sigma, :math:`n`, the one-sigma transverse beam size :math:`\sigma` and the Twiss
 beta function :math:`\beta` using
 
 .. math::
@@ -994,7 +994,7 @@ This randomly generated action variable, combined with the Twiss parameters
 randomly generated on this ellipse to get the position and momentum pair for the
 given transverse dimension.  This is useful for situations where beam halo intensity
 distributions are expressed in terms of :math:`\sigma`, allowing for easier
-reweighting in post-processing.
+re-weighting in post-processing.
 
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
@@ -1526,6 +1526,13 @@ where `W` is some coordinate.
 |                            | without producing any secondaries.                        |
 +----------------------------+-----------------------------------------------------------+
 
++-------------------------------------+------------------------------------------------------+
+| eventGeneratorWarnSkippedParticles  | 1 (true) by default. Print a small warning for each  |
+|                                     | event if any particles loaded were skipped or there  |
+|                                     | were none suitable at all and the event was skipped. |
++-------------------------------------+------------------------------------------------------+
+
+
 * The filters are applied **before** any offset is added from the reference distribution, i.e.
   in the original coordinates of the event generator file.
 
@@ -1691,9 +1698,18 @@ and pattern 2) as Geant4 reference physics lists.
      option, physicsList = "completechannelling";
 
 
-For general high energy hadron physics we recommend::
+For general high energy hadron physics it is recommended to use::
 
-  option, physicsList = "em ftfp_bert decay muon hadronic_elastic em_extra"
+  option, physicsList = "g4FTFP_BERT";
+
+For similar high-energy studies, but concerned with muons it is recommended to use a :ref:`physics-macro-file`
+with the following options: ::
+
+  /physics_lists/em/GammaToMuons true
+  /physics_lists/em/PositronToMuons true
+  /physics_lists/em/PositronToHadrons true
+  /physics_lists/em/MuonNuclear true
+  /physics_lists/em/GammaNuclear true
 
 
 Some physics lists are only available in later versions of Geant4. These are filtered at compile
@@ -1707,6 +1723,7 @@ See the Geant4 documentation for a more complete explanation of the physics list
 
 * `Physics List Guide <http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/html/physicslistguide.html>`_
 * `User Case Guide <http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/html/reference_PL/index.html>`_
+
 
 .. _physics-macro-file:
   
@@ -1724,7 +1741,6 @@ Inside this file, the following commands were used: ::
   /physics_lists/em/GammaToMuons true
   /physics_lists/em/PositronToMuons true
   /physics_lists/em/PositronToHadrons true
-  /physics_lists/em/NeutrinoActivation true
   /physics_lists/em/MuonNuclear true
   /physics_lists/em/GammaNuclear true
 
@@ -1936,6 +1952,9 @@ Examples: ::
 | synch_rad                    | Provides synchrotron radiation for all charged particles. Provided by  |
 |                              | BDSIM physics builder `BDSPhysicsSynchRad` that provides the process   |
 |                              | `G4SynchrotronRadiation`.                                              |
++------------------------------+------------------------------------------------------------------------+
+| xray_reflection              | X-ray reflection for most materials. Available from Geant4.11.2        |
+|                              | onwards.                                                               |
 +------------------------------+------------------------------------------------------------------------+
 
 The following are also accepted as aliases to current physics lists. These are typically previously
@@ -3241,6 +3260,11 @@ Physics Processes
 |                                     | annihilation process when using `em_extra` physics    |
 |                                     | list. Default Off.  Requires Geant4.10.3 onwards.     |
 +-------------------------------------+-------------------------------------------------------+
+| xrayAllSurfaceRoughness             | The length scale of roughness features for the X-ray  |
+|                                     | reflection model (from the `xray_reflection` physics  |
+|                                     | modular list). Default 0, units metres. A typical     |
+|                                     | value would be 5 nm. This applies to all surfaces.    |
++-------------------------------------+-------------------------------------------------------+
 
 * (\*) If using Geant4.10.7 or upwards, this will also set the high energy limit for the
   hadronic physics too. For previous versions of Geant4 it is required to edit the Geant4
@@ -3260,6 +3284,9 @@ Visualisation
 |                                  | visualiser. Note, this does not affect the accuracy   |
 |                                  | of the geometry - only the visualisation (default =   |
 |                                  | 50).                                                  |
++----------------------------------+-------------------------------------------------------+
+| visVerbosity                     | (0-5 inclusive) the verbosity level passed into the   |
+|                                  | Geant4 visualisation system. 0 is the default.        |
 +----------------------------------+-------------------------------------------------------+
 
 .. _bdsim-options-output:
@@ -3701,6 +3728,7 @@ The options listed below are list roughly in terms of the simulation hierarchy.
 |                                  |          | to every single volume in the model once fully constructed.       |
 +----------------------------------+----------+-------------------------------------------------------------------+
 
+
 Examples: ::
 
   option, verboseEventStart=3,
@@ -3732,6 +3760,10 @@ Offset for Main Beam Line
 
 The following options may be used to offset the main beam line with respect to the world
 volume, which is the outermost coordinate system.
+
+.. warning:: The beam definition moves with the beamline. It is 'attached' or relative
+             to the start of the beamline. Consider introducing a `transform3d` element
+             at the start if you want to offset the beamline but not the beam.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -3862,6 +3894,10 @@ should only be used with understanding.
 | maximumEpsilonStep                | Maximum relative error acceptable in stepping                      |
 +-----------------------------------+--------------------------------------------------------------------+
 | minimumEpsilonStep                | Minimum relative error acceptable in stepping                      |
++-----------------------------------+--------------------------------------------------------------------+
+| maximumEpsilonStepThin            | Similar to maximumEpsilonStep but for thin objects                 |
++-----------------------------------+--------------------------------------------------------------------+
+| minimumEpsilonStepThin            | Similar to minimumEpsilonStep but for thin objects                 |
 +-----------------------------------+--------------------------------------------------------------------+
 | sampleElementsWithPoleface        | Default false. Samplers are not to be attached to elements with    |
 |                                   | poleface rotations, as the sampler will overlap with the mass world|
