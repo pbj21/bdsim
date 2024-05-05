@@ -30,6 +30,10 @@ void CoolingChannel::clear()
 {
   name = "";
   surroundingMaterial = "vacuum";
+
+  nCells = 0;
+  cellLengthZ = 0;
+
   nCoils = 0;
   coilInnerRadius.clear();
   coilRadialThickness.clear();
@@ -63,6 +67,7 @@ void CoolingChannel::clear()
   rfCavityVacuumMaterial.clear();
   rfCavityRadius.clear();
   rfCavityThickness.clear();
+  rfTimeOffset.clear();
   integrator = "g4classicalrk4";
   magneticFieldModel = "solenoidblock";
   electricFieldModel = "rfcavity";
@@ -73,7 +78,8 @@ void CoolingChannel::PublishMembers()
   publish("name",                 &CoolingChannel::name);
 
   publish("surroundingMaterial",  &CoolingChannel::surroundingMaterial);
-  
+  publish("nCells",               &CoolingChannel::nCells);
+  publish("cellLengthZ",          &CoolingChannel::cellLengthZ);
   publish("nCoils",               &CoolingChannel::nCoils);
   publish("coilInnerRadius",      &CoolingChannel::coilInnerRadius);
   publish("coilRadialThickness",  &CoolingChannel::coilRadialThickness);
@@ -109,11 +115,12 @@ void CoolingChannel::PublishMembers()
   publish("rfCavityVacuumMaterial", &CoolingChannel::rfCavityVacuumMaterial);
   publish("rfCavityRadius",    &CoolingChannel::rfCavityRadius);
   publish("rfCavityThickness", &CoolingChannel::rfCavityThickness);
+  publish("rfTimeOffset",      &CoolingChannel::rfTimeOffset);
 
   publish("integrator",        &CoolingChannel::integrator);
   publish("magneticFieldModel",&CoolingChannel::magneticFieldModel);
   publish("electricFieldModel",&CoolingChannel::electricFieldModel);
-  
+
   attribute_map_list_double["coilInnerRadius"]     = &coilInnerRadius;
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;
   attribute_map_list_double["coilLengthZ"]         = &coilLengthZ;
@@ -143,6 +150,7 @@ void CoolingChannel::PublishMembers()
   attribute_map_list_string["rfCavityMaterial"]    = &rfCavityMaterial;
   attribute_map_list_double["rfCavityRadius"]      = &rfCavityRadius;
   attribute_map_list_double["rfCavityThickness"]   = &rfCavityThickness;
+  attribute_map_list_double["rfTimeOffset"]        = &rfTimeOffset;
   // integrator, magneticFieldModel and electricFieldModel can't be lists or arrays, so don't include here
 }
 
@@ -150,45 +158,49 @@ template <class T>
 std::ostream& operator<<(std::ostream& out, const std::list<T>& l);
 
 void CoolingChannel::print()const
+
 {
   std::cout << "coolingchannel: "
-	    << "name "                       << name                       << std::endl
-	    << "nCoils "                     << nCoils                     << std::endl
-	    << "coilInnerRadius "            << coilInnerRadius            << std::endl
-	    << "coilRadialThickness "        << coilRadialThickness        << std::endl
-	    << "coilLengthZ "                << coilLengthZ                << std::endl
-	    << "coilCurrent "                << coilCurrent                << std::endl
-	    << "coilOffsetZ "                << coilOffsetZ                << std::endl
-	    << "coilMaterial "               << coilMaterial               << std::endl
-	    << "mirrorCoils "                << mirrorCoils                << std::endl
-	    << "nAbsorbers "                 << nAbsorbers                 << std::endl
-	    << "absorberType "               << absorberType               << std::endl
-	    << "absorberMaterial "           << absorberMaterial           << std::endl
-	    << "absorberOffsetZ "            << absorberOffsetZ            << std::endl
-	    << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
-	    << "absorberCylinderRadius "     << absorberCylinderRadius     << std::endl
-	    << "absorberWedgeOpeningAngle "  << absorberWedgeOpeningAngle  << std::endl
-	    << "absorberWedgeHeight "        << absorberWedgeHeight        << std::endl
-	    << "absorberWedgeRotationAngle " << absorberWedgeRotationAngle << std::endl
-	    << "absorberWedgeOffsetX "       << absorberWedgeOffsetX       << std::endl
-	    << "absorberWedgeOffsetY "       << absorberWedgeOffsetY       << std::endl
-	    << "absorberWedgeApexToBase "    << absorberWedgeApexToBase    << std::endl
-	    << "nRFCavities "                << nRFCavities                << std::endl
-	    << "rfOffsetZ "                  << rfOffsetZ                  << std::endl
-	    << "rfLength"                    << rfLength                   << std::endl
-	    << "rfVoltage "                  << rfVoltage                  << std::endl
-	    << "rfPhase "                    << rfPhase                    << std::endl
-	    << "rfFrequency "                << rfFrequency                << std::endl
-	    << "rfWindowThickness "          << rfWindowThickness          << std::endl
-	    << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
-	    << "rfCavityVacuumMaterial "     << rfCavityVacuumMaterial     << std::endl
-	    << "rfWindowRadius "             << rfWindowRadius             << std::endl
-	    << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
-	    << "rfCavityRadius "             << rfCavityRadius             << std::endl
-	    << "rfCavityThickness "          << rfCavityThickness          << std::endl
-	    << "integrator "                 << integrator                 << std::endl
-	    << "magneticFieldModel "         << magneticFieldModel         << std::endl
-	    << "electricFieldModel "         << electricFieldModel         << std::endl;
+            << "name "                       << name                       << std::endl
+            << "nCells "                     << nCells                     << std::endl
+            << "cellLengthZ "                << cellLengthZ                << std::endl
+            << "nCoils "                     << nCoils                     << std::endl
+            << "coilInnerRadius "            << coilInnerRadius            << std::endl
+            << "coilRadialThickness "        << coilRadialThickness        << std::endl
+            << "coilLengthZ "                << coilLengthZ                << std::endl
+            << "coilCurrent "                << coilCurrent                << std::endl
+            << "coilOffsetZ "                << coilOffsetZ                << std::endl
+            << "coilMaterial "               << coilMaterial               << std::endl
+            << "mirrorCoils "                << mirrorCoils                << std::endl
+            << "nAbsorbers "                 << nAbsorbers                 << std::endl
+            << "absorberType "               << absorberType               << std::endl
+            << "absorberMaterial "           << absorberMaterial           << std::endl
+            << "absorberOffsetZ "            << absorberOffsetZ            << std::endl
+            << "absorberCylinderLength "     << absorberCylinderLength     << std::endl
+            << "absorberCylinderRadius "     << absorberCylinderRadius     << std::endl
+            << "absorberWedgeOpeningAngle "  << absorberWedgeOpeningAngle  << std::endl
+            << "absorberWedgeHeight "        << absorberWedgeHeight        << std::endl
+            << "absorberWedgeRotationAngle " << absorberWedgeRotationAngle << std::endl
+            << "absorberWedgeOffsetX "       << absorberWedgeOffsetX       << std::endl
+            << "absorberWedgeOffsetY "       << absorberWedgeOffsetY       << std::endl
+            << "absorberWedgeApexToBase "    << absorberWedgeApexToBase    << std::endl
+            << "nRFCavities "                << nRFCavities                << std::endl
+            << "rfOffsetZ "                  << rfOffsetZ                  << std::endl
+            << "rfLength"                    << rfLength                   << std::endl
+            << "rfVoltage "                  << rfVoltage                  << std::endl
+            << "rfPhase "                    << rfPhase                    << std::endl
+            << "rfFrequency "                << rfFrequency                << std::endl
+            << "rfWindowThickness "          << rfWindowThickness          << std::endl
+            << "rfWindowMaterial "           << rfWindowMaterial           << std::endl
+            << "rfCavityVacuumMaterial "     << rfCavityVacuumMaterial     << std::endl
+            << "rfWindowRadius "             << rfWindowRadius             << std::endl
+            << "rfCavityMaterial "           << rfCavityMaterial           << std::endl
+            << "rfCavityRadius "             << rfCavityRadius             << std::endl
+            << "rfCavityThickness "          << rfCavityThickness          << std::endl
+            << "rfTimeOffset "               << rfTimeOffset               << std::endl
+            << "integrator "                 << integrator                 << std::endl
+            << "magneticFieldModel "         << magneticFieldModel         << std::endl
+            << "electricFieldModel "         << electricFieldModel         << std::endl;
 }
 
 template <class T>
@@ -210,11 +222,11 @@ void CoolingChannel::set_value(const std::string& property, Array* value)
     {
       auto search2 = attribute_map_list_string.find(property);
       if (search2 != attribute_map_list_string.end())
-	{value->set_vector(*search2->second);}
+        {value->set_vector(*search2->second);}
       else
-	{
-	  std::cerr << "Error: parser> unknown coolingchannel option \"" << property << "\", or doesn't expect vector type" << std::endl;
-	  exit(1);
-	}
+        {
+          std::cerr << "Error: parser> unknown coolingchannel option \"" << property << "\", or doesn't expect vector type" << std::endl;
+          exit(1);
+        }
     }
 }

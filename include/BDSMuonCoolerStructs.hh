@@ -43,6 +43,9 @@ namespace BDS
   {
     G4double    offsetZ;
     G4double    lengthZ;
+    G4double    peakEField;
+    G4double    phaseOffset;
+    G4double    frequency;
     G4Material* vacuumMaterial;
     G4double    windowThickness;
     G4Material* windowMaterial;
@@ -50,7 +53,6 @@ namespace BDS
     G4Material* cavityMaterial;
     G4double    cavityRadius;
     G4double    cavityThickness;
-    BDSFieldInfo* fieldRecipe;
   };
 
   struct MuonCoolerAbsorberInfo
