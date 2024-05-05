@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSFIELDINFOEXTRA_H
 
 #include "BDSFieldType.hh"
-#include "BDSMuonCooler.hh" // for coil and cavity info structs
+#include "BDSMuonCoolerStructs.hh"
 
 #include <vector>
 
