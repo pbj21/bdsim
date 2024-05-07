@@ -34,7 +34,7 @@ BDSFieldEMVectorSum::BDSFieldEMVectorSum(const std::vector<BDSFieldEM*>& fieldsI
   fieldOffsets(fieldOffsetsIn),
   timeOffsets(timeOffsetsIn)
 {
-  if (fields.size() != fieldOffsets.size() != timeOffsets.size())
+  if (fields.size() != fieldOffsets.size() || fields.size() != timeOffsets.size())
     {throw BDSException(__METHOD_NAME__, "number of fields, offsets and time offsets do not match");}
 }
 
