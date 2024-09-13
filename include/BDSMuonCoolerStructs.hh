@@ -53,6 +53,7 @@ namespace BDS
     G4Material* cavityMaterial;
     G4double    cavityRadius;
     G4double    cavityThickness;
+    G4double    globalTimeOffset;
   };
 
   struct MuonCoolerAbsorberInfo

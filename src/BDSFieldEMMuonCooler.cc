@@ -121,7 +121,7 @@ void BDSFieldEMMuonCooler::BuildRF(const BDSFieldInfoExtraMuonCooler* info)
                                               ci.phaseOffset,
                                               ci.cavityRadius));
       fieldOffsets.emplace_back(0.0, 0.0, ci.offsetZ);
-      timeOffsets.push_back(0.0); // TODO
+      timeOffsets.push_back(ci.globalTimeOffset);
     }
   rfField = new BDSFieldEMVectorSum(fields, fieldOffsets, timeOffsets);
 }

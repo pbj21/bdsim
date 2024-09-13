@@ -381,6 +381,7 @@ std::vector<BDS::MuonCoolerCavityInfo> BDS::BuildMuonCoolerCavityInfos(const GMA
                                         cavityMaterials[i],       // cavity material
                                         rfVarsV[7][i] * CLHEP::m, // cavityRadius
                                         rfVarsV[8][i] * CLHEP::m, // cavityThickness
+                                        rfVarsV[9][i] * CLHEP::s  // globalTimeOffset
                                         };
       result.push_back(info);
     }
