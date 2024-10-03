@@ -111,19 +111,22 @@ void BDSFieldEMMuonCooler::BuildMagnets(const BDSFieldInfoExtraMuonCooler* info)
 void BDSFieldEMMuonCooler::BuildRF(const BDSFieldInfoExtraMuonCooler* info)
 {
   const auto& cavityInfos = info->cavityInfos;
-  std::vector<BDSFieldEM*> fields;
   std::vector<G4ThreeVector> fieldOffsets;
-  std::vector<G4double> timeOffsets;
+  BDSFieldEMVectorSum* emSum = new BDSFieldEMVectorSum();
   for (const auto& ci : cavityInfos)
     {
-      fields.push_back(new BDSFieldEMRFCavity(ci.peakEField,
-                                              ci.frequency,
-                                              ci.phaseOffset,
-                                              ci.cavityRadius));
-      fieldOffsets.emplace_back(0.0, 0.0, ci.offsetZ);
-      timeOffsets.push_back(ci.globalTimeOffset);
+      BDSFieldEMRFCavity* rfCav = new BDSFieldEMRFCavity(
+           ci.peakEField,
+           ci.frequency,
+           ci.phaseOffset,
+           ci.cavityRadius);
+      double lengthZ = ci.lengthZ;
+      std::cerr << "BDSFieldEMMuonCoolder::BuildRF " << ci.offsetZ << std::endl;
+      G4ThreeVector posOffset(0.0, 0.0, ci.offsetZ);
+      double tOffset = ci.globalTimeOffset;
+      emSum->PushBackField(posOffset, tOffset, lengthZ, rfCav);
     }
-  rfField = new BDSFieldEMVectorSum(fields, fieldOffsets, timeOffsets);
+  rfField = emSum;
 }
 
 BDSFieldEMMuonCooler::~BDSFieldEMMuonCooler()

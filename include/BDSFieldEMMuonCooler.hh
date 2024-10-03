@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
+#include <vector>
 
 #include <utility>
 
