@@ -36,12 +36,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldEMVectorSum: public BDSFieldEM
 {
 public:
-  BDSFieldEMVectorSum() = delete;
+  BDSFieldEMVectorSum() ;// = delete; RK - check this
   explicit BDSFieldEMVectorSum(const std::vector<BDSFieldEM*>& fieldsIn,
                                const std::vector<G4ThreeVector>& fieldOffsetsIn,
-                               const std::vector<G4double>& timeOffsetsIn);
+                               const std::vector<double>& timeOffsetsIn,
+                               const std::vector<double>& zLengthsIn);
   virtual ~BDSFieldEMVectorSum();
 
+  virtual void PushBackField(const G4ThreeVector& positionOffset,
+                           double timeOffset,
+                           double zLength,
+                           BDSFieldEM* emfield);
   /// Calculate the field value.
   virtual std::pair<G4ThreeVector,G4ThreeVector> GetField(const G4ThreeVector& position,
 							  const G4double       t = 0) const;
@@ -50,6 +55,8 @@ private:
   std::vector<BDSFieldEM*> fields;
   std::vector<G4ThreeVector> fieldOffsets;
   std::vector<G4double> timeOffsets;
+  std::vector<double> zLengthsOver2; // store half lengths to save a flop at lookup time
+
 };
 
 #endif
