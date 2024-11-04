@@ -156,7 +156,9 @@ std::vector<BDS::MuonCoolerCoilInfo> BDS::BuildMuonCoolerCoilInfos(const GMAD::C
                                       coilVarsV[3][i] * CLHEP::ampere, // current
                                       coilVarsV[4][i] * CLHEP::m,      // offsetZ
                                       coilMaterials[i],        // no material for now
-                                      definition->onAxisTolerance
+                                      definition->onAxisTolerance,
+                                      definition->nSheets
+
       };
       result.push_back(info);
     }

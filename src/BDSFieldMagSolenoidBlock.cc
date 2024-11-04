@@ -20,6 +20,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetStrength.hh"
 #include "BDSMaths.hh"
 #include "BDSUtilities.hh"
+#include "BDSFieldMagSolenoidSheet.hh"
+#include "BDSFieldMagVectorSum.hh"
+
 
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
@@ -31,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSFieldMagSolenoidBlock::BDSFieldMagSolenoidBlock(BDSMagnetStrength const* strength,
                                                    G4double innerRadiusIn):
-  BDSFieldMagSolenoidBlock((*strength)["field"], false, innerRadiusIn, (*strength)["coilRadialThickness"], (*strength)["length"])
+  BDSFieldMagSolenoidBlock((*strength)["field"], false, innerRadiusIn, (*strength)["coilRadialThickness"], (*strength)["length"], 0, 1)
 {;}
 
 
@@ -39,14 +42,18 @@ BDSFieldMagSolenoidBlock::BDSFieldMagSolenoidBlock(G4double strength,
                                                    G4bool   strengthIsCurrent,
                                                    G4double innerRadiusIn,
                                                    G4double radialThicknessIn,
-                                                   G4double fullLengthZIn):
+                                                   G4double fullLengthZIn,
+                                                   G4double toleranceIn,
+                                                   G4int    nSheetsIn):
   a(innerRadiusIn),
   radialThickness(radialThicknessIn),
   fullLengthZ(fullLengthZIn),
   B0(0),
   I(0),
   spatialLimit(1e-6*innerRadiusIn),
-  mu0OverPiTimesITimesA(1)
+  mu0OverPiTimesITimesA(1),
+  coilTolerance(toleranceIn),
+  nSheetsBlock(nSheetsIn)
 {
   // 'strength' can be current or B field
   finiteStrength = BDS::IsFinite(std::abs(strength));
@@ -55,69 +62,40 @@ BDSFieldMagSolenoidBlock::BDSFieldMagSolenoidBlock(G4double strength,
   if (strengthIsCurrent)
     {
       I = strength;
-      B0 = CLHEP::mu0 * strength / (2*a);
     }
   else
     {// strength is B0 -> calculate current
       B0 = strength;
       I = B0 * 2 * a / CLHEP::mu0;
     }
-  
-  mu0OverPiTimesITimesA = CLHEP::mu0 * I * a / CLHEP::pi;
+  currentDensity = I/(fullLengthZ*radialThickness); //TODO: Check!
 }
 
 G4ThreeVector BDSFieldMagSolenoidBlock::GetField(const G4ThreeVector& position,
                                                  const G4double       /*t*/) const
 {
-  G4double z = position.z();
-  G4double rho = position.perp();
+  //G4double z = position.z();
+  //G4double rho = position.perp();
   G4double phi = position.phi(); // angle about z axis
+  std::unique_ptr<BDSFieldMag> field;
+  G4ThreeVector blockField;
+  G4ThreeVector result;
   
-  // check if close to current loop - function not well-behaved at exactly
-  // the rho of the current loop
-  if (std::abs(z) < spatialLimit && (std::abs(rho - a) < spatialLimit))
-    {return G4ThreeVector();}
-  
-  
-  /// @{ MUON TBC
-  
-  /// this is the sheet equation....
-  G4double Bz;   // calculate these...
-  G4double Brho;
-  
-  G4double zSq = z*z;
-      
-  G4double aPlusRho    = a + rho;
-  G4double aPlusRhoSq  = aPlusRho * aPlusRho;
-  G4double aMinusRho   = a - rho;
-  G4double aMinusRhoSq = aMinusRho*aMinusRho;
-  
-  G4double gamma = aMinusRho / aPlusRho;
-      
-  G4double zSqPlusAPlusRhoSq  = zSq + aPlusRhoSq;
-  G4double zSqPlusAMinusRhoSq = zSq + aMinusRhoSq;
-      
-  G4double k1Sq = zSqPlusAMinusRhoSq / zSqPlusAPlusRhoSq;
-  G4double k1   = std::sqrt(k1Sq);
-      
-  G4double zSqPlusAPlusRhoSqFactor3o2 = std::pow(zSqPlusAPlusRhoSq, 1.5);
-      
-  G4double commonFactor = mu0OverPiTimesITimesA / zSqPlusAPlusRhoSqFactor3o2;
-  
-  Brho = commonFactor * z * BDS::CEL(k1, k1Sq, -1, 1);
-  Bz   = commonFactor * aPlusRho * BDS::CEL(k1, k1Sq, 1, gamma);
-  
-  /// @} MUONTBC
-  
-  // technically possible for integral to return nan, so protect against it and default to B0 along z
-  if (std::isnan(Brho))
-    {Brho = 0;}
-  if (std::isnan(Bz))
-    {Bz = B0;}
+  for (int sheet = 0; sheet < nSheetsBlock; sheet++)
+          {
+            field = std::make_unique<BDSFieldMagSolenoidSheet>(currentDensity,
+                                                               true,
+                                                               a+sheet*radialThickness/nSheetsBlock,
+                                                               fullLengthZ,
+                                                               coilTolerance);
+            blockField += field->GetField(position);
+
+          }
+
+
   
   // we have to be consistent with the phi we calculated at the beginning,
   // so unit rho is in the x direction.
-  G4ThreeVector result = G4ThreeVector(Brho,0,Bz);
   result = result.rotateZ(phi);
   return result;
 }
