@@ -53,6 +53,7 @@ namespace GMAD
     std::list<double>      coilOffsetZ;
     std::list<std::string> coilMaterial;
     bool                   mirrorCoils;
+    double                 onAxisTolerance;
 
     int                    nAbsorbers;
     std::list<std::string> absorberType;

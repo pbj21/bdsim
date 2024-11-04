@@ -48,14 +48,16 @@ public:
   /// This constructor uses the "field" and "length" parameters
   /// from the BDSMagnetStrength instance and forwards to the next constructor.
   BDSFieldMagSolenoidSheet(BDSMagnetStrength const* strength,
-                           G4double radiusIn);
+                           G4double radiusIn ,G4double toleranceIn = 0.0);
   /// More reasonable constructor for the internal parameterisation. 'strength'
   /// can be either B0 or I. This is interpreted via 'strengthIsCurrent'. Have
   /// to do this as the signature would be the same for either case.
   BDSFieldMagSolenoidSheet(G4double strength,
                            G4bool   strengthIsCurrent,
                            G4double sheetRadius,
-                           G4double fullLength);
+                           G4double fullLength
+                           ,G4double toleranceIn = 0.0
+                           );
 
   virtual ~BDSFieldMagSolenoidSheet(){;}
 
@@ -79,6 +81,7 @@ private:
   G4double I;
   G4double spatialLimit;
   G4double normalisation;
+  G4double coilTolerance;
 };
 
 #endif

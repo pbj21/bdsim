@@ -32,23 +32,26 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(BDSMagnetStrength const* strength,
-                                                   G4double radiusIn):
-  BDSFieldMagSolenoidSheet((*strength)["field"], false, radiusIn, (*strength)["length"])
+                                                   G4double radiusIn, G4double toleranceIn):
+  BDSFieldMagSolenoidSheet((*strength)["field"], false, radiusIn, (*strength)["length"], toleranceIn)
 {;}
 
 BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double strength,
                                                    G4bool   strengthIsCurrent,
                                                    G4double sheetRadius,
-                                                   G4double fullLength):
+                                                   G4double fullLength,
+                                                   G4double toleranceIn
+                                                   ):
   a(sheetRadius),
   halfLength(0.5*fullLength),
   B0(0.0),
   I(0.0),
   spatialLimit(std::min(1e-5*sheetRadius, 1e-5*fullLength)),
-  normalisation(1.0)
+  normalisation(1.0) ,
+  coilTolerance(toleranceIn)
 {
   finiteStrength = BDS::IsFinite(std::abs(strength));
-  
+//  std::cerr<<coilTolerance<<std::endl;
   // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
   if (strengthIsCurrent)
     {
@@ -85,6 +88,11 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   G4double zp = z + halfLength;
   G4double zm = z - halfLength;
   
+  if (OnAxisBz(zp, zm) < coilTolerance)
+    { std::cerr << coilTolerance << std::endl;
+      std::cerr << OnAxisBz(zp, zm) << std::endl; 
+      std::cerr << "Warning: BDSFieldMagSolenoidSheet::GetField: On-axis Bz is greater than tolerance." << std::endl;
+      return G4ThreeVector();}
   G4double Brho = 0;
   G4double Bz   = 0;
   

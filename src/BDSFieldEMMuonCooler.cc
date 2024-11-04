@@ -77,7 +77,8 @@ void BDSFieldEMMuonCooler::BuildMagnets(const BDSFieldInfoExtraMuonCooler* info)
             fields.push_back(new BDSFieldMagSolenoidSheet(ci.current,
                                                           true,
                                                           ci.innerRadius + 0.5*ci.radialThickness,
-                                                          ci.fullLengthZ));
+                                                          ci.fullLengthZ,
+                                                          ci.onAxisTolerance));
             fieldOffsets.emplace_back(0,0,ci.offsetZ);
           }
         coilField = new BDSFieldMagVectorSum(fields, fieldOffsets);

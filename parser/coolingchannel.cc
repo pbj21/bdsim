@@ -88,6 +88,9 @@ void CoolingChannel::PublishMembers()
   publish("coilOffsetZ",          &CoolingChannel::coilOffsetZ);
   publish("coilMaterial",         &CoolingChannel::coilMaterial);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
+  publish("onAxisTolerance",      &CoolingChannel::onAxisTolerance);
+
+
 
   publish("nAbsorbers",                 &CoolingChannel::nAbsorbers);
   publish("absorberType",               &CoolingChannel::absorberType);
