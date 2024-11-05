@@ -48,7 +48,6 @@ BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double strength,
   normalisation(1.0)
 {
   finiteStrength = BDS::IsFinite(std::abs(strength));
-  //test
   // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
   if (strengthIsCurrent)
     {
