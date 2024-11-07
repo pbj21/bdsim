@@ -88,19 +88,19 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   G4double zp = z + halfLength;
   G4double zm = z - halfLength;
   
-  if (OnAxisBz(zp, zm) < coilTolerance)
-    { std::cerr << coilTolerance << std::endl;
-      std::cerr << OnAxisBz(zp, zm) << std::endl; 
-      std::cerr << "Warning: BDSFieldMagSolenoidSheet::GetField: On-axis Bz is greater than tolerance." << std::endl;
-      return G4ThreeVector();}
+
   G4double Brho = 0;
   G4double Bz   = 0;
   
   // approximation for on-axis
   if (std::abs(rho) < spatialLimit)
     {Bz = OnAxisBz(zp, zm);}
-  else
+  else if (std::abs(OnAxisBz(zp, zm)) < coilTolerance){
+      Bz = 0;
+    }
+    else
     {
+
       G4double zpSq = zp*zp;
       G4double zmSq = zm*zm;
       
