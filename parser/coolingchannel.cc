@@ -42,7 +42,9 @@ void CoolingChannel::clear()
   coilOffsetZ.clear();
   coilMaterial.clear();
   mirrorCoils = false;
+  onAxisTolerance = 0;
   nAbsorbers = 0;
+  nSheets = 0;
   absorberType.clear();
   absorberMaterial.clear();
   absorberOffsetZ.clear();
@@ -88,6 +90,10 @@ void CoolingChannel::PublishMembers()
   publish("coilOffsetZ",          &CoolingChannel::coilOffsetZ);
   publish("coilMaterial",         &CoolingChannel::coilMaterial);
   publish("mirrorCoils",          &CoolingChannel::mirrorCoils);
+  publish("onAxisTolerance",      &CoolingChannel::onAxisTolerance);
+  publish("nSheets",             &CoolingChannel::nSheets);
+
+
 
   publish("nAbsorbers",                 &CoolingChannel::nAbsorbers);
   publish("absorberType",               &CoolingChannel::absorberType);

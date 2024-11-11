@@ -32,20 +32,23 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(BDSMagnetStrength const* strength,
-                                                   G4double radiusIn):
-  BDSFieldMagSolenoidSheet((*strength)["field"], false, radiusIn, (*strength)["length"])
+                                                   G4double radiusIn, G4double toleranceIn):
+  BDSFieldMagSolenoidSheet((*strength)["field"], false, radiusIn, (*strength)["length"], toleranceIn)
 {;}
 
 BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double strength,
                                                    G4bool   strengthIsCurrent,
                                                    G4double sheetRadius,
-                                                   G4double fullLength):
+                                                   G4double fullLength,
+                                                   G4double toleranceIn
+                                                   ):
   a(sheetRadius),
   halfLength(0.5*fullLength),
   B0(0.0),
   I(0.0),
   spatialLimit(std::min(1e-5*sheetRadius, 1e-5*fullLength)),
-  normalisation(1.0)
+  normalisation(1.0) ,
+  coilTolerance(toleranceIn)
 {
   finiteStrength = BDS::IsFinite(std::abs(strength));
   // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
@@ -73,7 +76,7 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   G4double z = position.z();
   G4double rho = position.perp();
   G4double phi = position.phi(); // angle about z axis
-  
+   
   // check if close to current source - function not well-behaved at exactly the rho of
   // the current source or at the boundary of +- halfLength
   if (std::abs(std::abs(z) - halfLength) < spatialLimit && (rho < a+2*spatialLimit))
@@ -84,14 +87,23 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   G4double zp = z + halfLength;
   G4double zm = z - halfLength;
   
+  if (OnAxisBz(zp, zm) < coilTolerance)
+    { //std::cerr << coilTolerance << std::endl;
+      //std::cerr << OnAxisBz(zp, zm) << std::endl; 
+      //std::cerr << "Warning: BDSFieldMagSolenoidSheet::GetField: On-axis Bz is greater than tolerance." << std::endl;
+      return G4ThreeVector();}
   G4double Brho = 0;
   G4double Bz   = 0;
   
   // approximation for on-axis
   if (std::abs(rho) < spatialLimit)
     {Bz = OnAxisBz(zp, zm);}
-  else
+  else if (std::abs(OnAxisBz(zp, zm)) < coilTolerance){
+      Bz = 0;
+    }
+    else
     {
+
       G4double zpSq = zp*zp;
       G4double zmSq = zm*zm;
       

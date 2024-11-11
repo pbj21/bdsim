@@ -47,7 +47,9 @@ public:
                            G4bool   strengthIsCurrent,
                            G4double innerRadiusIn,
                            G4double radialThicknessIn,
-                           G4double fullLengthZIn);
+                           G4double fullLengthZIn,
+                           G4double toleranceIn,
+                           G4int  nSheetsIn);
   /// Alternative constructor for field factory that uses "field" (i.e. B) strength
   /// from the magnet strength instance, the argument innerRadiusIn, coilRadialThickness,
   /// and length from the strength instance.
@@ -73,6 +75,9 @@ private:
   G4double I;
   G4double spatialLimit;
   G4double mu0OverPiTimesITimesA;
+  G4double coilTolerance;
+  G4int    nSheetsBlock;
+  G4double currentDensity;
 };
 
 #endif
