@@ -54,6 +54,7 @@ namespace GMAD
     std::list<std::string> coilMaterial;
     bool                   mirrorCoils;
     double                 onAxisTolerance;
+    int                    nSheets;
 
     int                    nAbsorbers;
     std::list<std::string> absorberType;

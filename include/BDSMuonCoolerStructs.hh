@@ -38,6 +38,7 @@ namespace BDS
     G4double offsetZ;
     G4Material* material;
     G4double onAxisTolerance;
+    G4int   nSheets;
   };
 
   struct MuonCoolerCavityInfo
