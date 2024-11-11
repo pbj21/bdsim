@@ -51,7 +51,6 @@ BDSFieldMagSolenoidSheet::BDSFieldMagSolenoidSheet(G4double strength,
   coilTolerance(toleranceIn)
 {
   finiteStrength = BDS::IsFinite(std::abs(strength));
-//  std::cerr<<coilTolerance<<std::endl;
   // apply relationship B0 = mu_0 I / 2 a for on-axis rho=0,z=0
   if (strengthIsCurrent)
     {
