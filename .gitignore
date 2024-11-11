@@ -69,5 +69,5 @@ examples/features/interfaces/*build
 
 # Development environment #
 ###########################
-.devcontainer
-.vscode
+.devcontainer/
+.vscode/
