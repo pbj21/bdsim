@@ -99,8 +99,12 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   // approximation for on-axis
   if (std::abs(rho) < spatialLimit)
     {Bz = OnAxisBz(zp, zm);}
-  else
+  else if (std::abs(OnAxisBz(zp, zm)) < coilTolerance){
+      Bz = 0;
+    }
+    else
     {
+
       G4double zpSq = zp*zp;
       G4double zmSq = zm*zm;
       
