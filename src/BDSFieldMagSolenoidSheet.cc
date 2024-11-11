@@ -77,7 +77,7 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
   G4double z = position.z();
   G4double rho = position.perp();
   G4double phi = position.phi(); // angle about z axis
-  
+   
   // check if close to current source - function not well-behaved at exactly the rho of
   // the current source or at the boundary of +- halfLength
   if (std::abs(std::abs(z) - halfLength) < spatialLimit && (rho < a+2*spatialLimit))

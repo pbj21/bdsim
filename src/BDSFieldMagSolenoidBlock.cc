@@ -68,7 +68,7 @@ BDSFieldMagSolenoidBlock::BDSFieldMagSolenoidBlock(G4double strength,
       B0 = strength;
       I = B0 * 2 * a / CLHEP::mu0;
     }
-  currentDensity = I/(fullLengthZ*radialThickness); //TODO: Check!
+  currentDensity = I*radialThickness*fullLengthZ/nSheetsBlock; //TODO: Check and change!
 }
 
 G4ThreeVector BDSFieldMagSolenoidBlock::GetField(const G4ThreeVector& position,
@@ -80,12 +80,12 @@ G4ThreeVector BDSFieldMagSolenoidBlock::GetField(const G4ThreeVector& position,
   std::unique_ptr<BDSFieldMag> field;
   G4ThreeVector blockField;
   G4ThreeVector result;
-  
+  double dr = radialThickness/nSheetsBlock;
   for (int sheet = 0; sheet < nSheetsBlock; sheet++)
           {
             field = std::make_unique<BDSFieldMagSolenoidSheet>(currentDensity,
                                                                true,
-                                                               a+sheet*radialThickness/nSheetsBlock,
+                                                               a+(sheet*dr) + dr/2,
                                                                fullLengthZ,
                                                                coilTolerance);
             blockField += field->GetField(position);
