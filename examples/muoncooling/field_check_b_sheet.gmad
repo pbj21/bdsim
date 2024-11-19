@@ -1,0 +1,60 @@
+gradient = 22.0;
+cellLength = 0.255;
+voltage = gradient * cellLength;
+
+dz2 = -0.5;
+dz1 = dz2 - cellLength;
+dz3 = dz2 + cellLength;
+
+dz5 = 0.5;
+dz4 = dz5 - cellLength;
+dz6 = dz5 + cellLength;
+
+cooldef1:  coolingchannel, nCoils=2,
+    		    	   coilInnerRadius = {0.45, 0.45},
+		    	   coilRadialThickness = {0.1, 0.1},
+			   coilLengthZ = {0.5, 0.5},
+			   coilCurrent = {1.2, -1.2},
+			   coilOffsetZ = {-0.5, 0.5},
+			   coilMaterial = {"G4_Cu"},
+			   mirrorCoils = 0,
+			   nAbsorbers = 3,
+			   absorberType = {"cylinder"},
+			   absorberMaterial = {"G4_Li"},
+			   absorberOffsetZ = {-0.95*m,0,0.95*m},
+			   absorberCylinderLength = {8*cm, 15*cm, 8*cm},
+			   absorberCylinderRadius = {10*cm},
+			   absorberWedgeOpeningAngle = {0},
+			   absorberWedgeHeight = {0},
+			   absorberWedgeRotationAngle = {0},
+			   absorberWedgeOffsetX = {0},
+			   absorberWedgeOffsetY = {0},
+			   absorberWedgeApexToBase = {0},
+			   nRFCavities = 6,
+			   rfOffsetZ = {dz1,dz2,dz3,dz4,dz5,dz6},
+			   rfLength  = {25.5*cm - 2*cm},
+			   rfVoltage = {voltage},
+			   rfPhase = {14*degrees},
+			   rfFrequency = {325*MHz},
+			   rfWindowThickness = {100*um},
+			   rfWindowMaterial = {"G4_Al"},
+			   rfWindowRadius = {15*cm},
+			   rfCavityMaterial = {"G4_Cu"},
+			   rfCavityVacuumMaterial = {"vacuum"},
+			   rfCavityRadius = {35*cm},
+			   rfCavityThickness = {5*mm},
+			   magneticFieldModel="solenoidsheet",
+			   electricFieldModel="rfcavity";
+
+mc1: muoncooler, l=2*m, horizontalWidth=1.3*m, coolingDefinition="cooldef1";
+lat: line=(mc1);
+use, lat;
+
+beam, particle="mu+", momentum=250*MeV;
+
+q1: query, ny=10, ymin=-50*cm, ymax=50*cm,
+    	   nz=20, zmin=-1*m, zmax=1*m,
+	   queryMagneticField=1,
+	   queryMagneticField=1,
+	   outfileMagnetic="out_field_check_b_sheet_q1.dat",
+	   referenceElement="mc1";
