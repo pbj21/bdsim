@@ -53,6 +53,7 @@ use, period=lat;
 option, checkOverlaps=1,
         collimatorsAreInfiniteAbsorbers=1,
         stopSecondaries=1,
-        physicsList="qgsp_bic em muon";
+        physicsList="qgsp_bic em muon",
+        ngenerate=2;
 
 beam, particle="mu+", momentum=200.0*MeV;
