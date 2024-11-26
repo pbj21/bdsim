@@ -91,13 +91,6 @@ G4ThreeVector BDSFieldMagSolenoidBlock::GetField(const G4ThreeVector& position,
                                                                coilTolerance);
             blockField += field->GetField(position);
 
-
           }
-
-
-  
-  // we have to be consistent with the phi we calculated at the beginning,
-  // so unit rho is in the x direction.
-  blockField = blockField.rotateZ(phi);
   return blockField;
 }
