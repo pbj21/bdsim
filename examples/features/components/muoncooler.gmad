@@ -7,7 +7,7 @@ cooldef1:  coolingchannel,
                 coilCurrent = {4900000, -4900000, 4900000, -4900000, 4900000, -4900000},
                 coilMaterial = {"G4_Cu"},
                 onAxisTolerance=1e-7,
-                nSheets=20,
+                nSheets=20,!not used yet
 
 
                 nAbsorbers = 2,
@@ -40,7 +40,7 @@ cooldef1:  coolingchannel,
                 rfCavityThickness = {3*mm},
 
 
-                magneticFieldModel="solenoidblock",
+                magneticFieldModel="solenoidsheet",
                 electricFieldModel="rfpillbox";
                 
             mc1: muoncooler, l=3.0*m, horizontalWidth=2.2*m, coolingDefinition="cooldef1";
