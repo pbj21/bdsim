@@ -79,9 +79,7 @@ G4ThreeVector BDSFieldMagSolenoidSheet::GetField(const G4ThreeVector& position,
    
   // check if close to current source - function not well-behaved at exactly the rho of
   // the current source or at the boundary of +- halfLength
-  if (std::abs(std::abs(z) - halfLength) < spatialLimit && (rho < a+2*spatialLimit))
-    {return G4ThreeVector();} // close to +-z edge of cylinder and inside the radius
-  else if (std::abs(rho - a) < spatialLimit && (std::abs(z) < halfLength+2*spatialLimit))
+  if (std::abs(rho - a) < spatialLimit && (std::abs(z) < halfLength+2*spatialLimit))
     {return G4ThreeVector();} // close to radius and inside +- z
   
   G4double zp = z + halfLength;
