@@ -301,7 +301,7 @@ add_subdirectory(examples)
 if (GIT_FOUND)
   copy_examples()
 else()
-  copy_examples_no_git()
+  copy_examples()
 endif()
 
 # optional test programs
