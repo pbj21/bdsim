@@ -156,7 +156,9 @@ void BDSFieldEMMuonCooler::BuildRF(const BDSFieldInfoExtraMuonCooler* info)
            ci.peakEField,
            ci.frequency,
            ci.phaseOffset,
-           ci.cavityRadius);
+           ci.cavityRadius,
+           0.0 //TODO: Check this is correct
+           );
       double lengthZ = ci.lengthZ;
       std::cerr << "BDSFieldEMMuonCoolder::BuildRF " << ci.offsetZ << std::endl;
       G4ThreeVector posOffset(0.0, 0.0, ci.offsetZ);

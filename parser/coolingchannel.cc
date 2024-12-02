@@ -63,7 +63,7 @@ void CoolingChannel::clear()
   absorberWedgeOffsetX.clear();
   absorberWedgeOffsetY.clear();
   absorberWedgeApexToBase.clear();
-
+  
   nRFCavities = 0;
   rfOffsetZ.clear();
   rfLength.clear();
@@ -91,7 +91,7 @@ void CoolingChannel::PublishMembers()
 
   publish("surroundingMaterial",  &CoolingChannel::surroundingMaterial);
   publish("nCells",               &CoolingChannel::nCells);
-
+  
   publish("cellLengthZ",          &CoolingChannel::cellLengthZ);
   publish("nCoils",               &CoolingChannel::nCoils);
   publish("coilInnerRadius",      &CoolingChannel::coilInnerRadius);

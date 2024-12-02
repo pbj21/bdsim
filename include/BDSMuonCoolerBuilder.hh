@@ -46,8 +46,8 @@ namespace BDS
   /// Loop over parser definition variables and construct a set of infos. Tolerate
   /// if some variables are single-valued with the intention that these are therefore
   /// the same of all the infos.
+  
   std::vector<BDS::MuonCoolerCoilInfo> BuildMuonCoolerCoilInfos(const GMAD::CoolingChannel* definition);
-
   /// Check if any of the definitions will cause overlaps. Do this by using the square
   /// cross-section of each coil in 2D and perform a simple un-rotated square overlap
   /// calculation. Check they will also fit inside the container length, radius.
