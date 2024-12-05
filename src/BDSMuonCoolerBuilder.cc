@@ -238,11 +238,15 @@ std::vector<BDS::MuonCoolerDipoleInfo> BDS::BuildMuonCoolerDipoleInfos(const GMA
   std::vector<std::string> dipoleParamNames = {"dipoleAperture",
                                                "dipoleLengthZ",
                                                "dipoleCurrent",
-                                               "dipoleOffsetZ"};
+                                               "dipoleEngeCoefficient",
+                                               "dipoleOffsetZ",
+                                               "dipoleTolerance"};
   std::vector<const std::list<double>*> dipoleVars = {&(definition->dipoleAperture),
                                                       &(definition->dipoleLengthZ),
                                                       &(definition->dipoleCurrent),
-                                                      &(definition->dipoleOffsetZ)};
+                                                      &(definition->dipoleEngeCoefficient),
+                                                      &(definition->dipoleOffsetZ),
+                                                      &(definition->dipoleTolerance)};
   std::vector<std::vector<double> > dipoleVarsV;
   BDS::MuonParamsToVector(definition->name,
                           dipoleVars,
@@ -257,7 +261,9 @@ std::vector<BDS::MuonCoolerDipoleInfo> BDS::BuildMuonCoolerDipoleInfos(const GMA
       BDS::MuonCoolerDipoleInfo info = {dipoleVarsV[0][i] * CLHEP::m,      // apertureRadius
                                         dipoleVarsV[1][i] * CLHEP::m,      // lengthZ
                                         dipoleVarsV[2][i] * CLHEP::tesla, // current
-                                        dipoleVarsV[3][i] * CLHEP::m      // offsetZ
+                                        dipoleVarsV[3][i], // enge Coeff
+                                        dipoleVarsV[4][i] * CLHEP::m,      // offsetZ
+                                        dipoleVarsV[5][i]      // tolerance
       };
       result.push_back(info);
     }
