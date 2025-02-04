@@ -13,7 +13,7 @@ blmEDep: scorer, type="depositedenergy";
 option, physicsList="em";
 
 minidetector: blm, s=0.2*m, x=0.5*m, y=0.5*m,
-	           geometryFile="gdml:../../geometry/9_gdml/box1.gdml",
+	           geometryFile="gdml:../../geometry/9_gdml/gdmls/box1.gdml",
 		   scoreQuantity="blmDose blmEDep";
 
 option, preprocessGDML=0;

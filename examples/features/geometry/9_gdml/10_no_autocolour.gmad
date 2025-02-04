@@ -1,7 +1,7 @@
-p1: placement, geometryFile="gdml:box1.gdml",
+p1: placement, geometryFile="gdml:gdmls/box1.gdml",
     	       x=0.3*m, autoColour=0;
 
-p2: placement, geometryFile="gdml:box2.gdml",
+p2: placement, geometryFile="gdml:gdmls/box2.gdml",
     	       x=-0.3*m, autoColour=0;
 
 

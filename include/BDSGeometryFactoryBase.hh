@@ -37,6 +37,7 @@ class G4UserLimits;
 class G4VisAttributes;
 class G4VPhysicalVolume;
 class G4VSolid;
+class BDSColourMap;
 class BDSGeometryExternal;
 
 /**
@@ -64,16 +65,16 @@ public:
                                      BDSSDType              vacuumSensitivityType    = BDSSDType::energydepvacuum,
                                      G4UserLimits*          userLimitsToAttachToAllLVs = nullptr) = 0;
 
-  /// Apply a colour mapping to a set of logical volumes.  This applies a colour from the map
+  /// Apply a colour mapping to a set of logical volumes. This applies a colour from the map
   /// if the key value is found as a substring or whole part of the logical volume name. Ie
   /// the BDSColour* (red) is defined to key 'quad' and any logical volume with 'quad'
   /// (case sensitive) will be set as red. Caches common G4VisAttributes (so no repeats for
   /// same colour) and returns those constructed. Map is searched through so key order gives
   /// precedence order.
-  virtual std::set<G4VisAttributes*> ApplyColourMapping(std::set<G4LogicalVolume*>&    lvs,
-                                                        std::map<G4String, G4Colour*>* mapping,
-                                                        G4bool                         autoColour,
-                                                        const G4String&                preprocessPrefix = "");
+  virtual std::set<G4VisAttributes*> ApplyColourMapping(const std::set<G4LogicalVolume*>& lvs,
+                                                        const std::map<G4String, G4Colour*>& mapping,
+                                                        G4bool                            autoColour,
+                                                        const G4String&                   preprocessPrefix = "");
 
   /// Attach a set of user limits to every logical volume supplied.
   virtual void ApplyUserLimits(const std::set<G4LogicalVolume*>& lvsIn,

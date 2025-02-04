@@ -5,15 +5,22 @@ Below is a brief list of planned developments for the next version. Please get i
 if you'd like to give us feedback or help in the development.  See :ref:`support-section`.
 
 * Multiple beam line tracking.
-* Restructure code into proper C++ libraries rather than just analysis and 'bdsim'.
-* Change run histograms to be per-event averages rather than simple histograms.
+* Restructure code into more C++ libraries rather than just analysis and 'bdsim'.
 * Interpolated aperture shapes between any two shapes.
 * Tapered aperture for all elements.
 * Beam pipe sections to fill gaps between changes in aperture.
 * Any aperture shape can be used for both the inside and the outside of a collimator.
 
-v1.8.0 - 2024 / XX / XX
+
+v1.8.0 - 2025 / XX / XX
 =======================
+
+The BDSIM source code has moved to Github and is available here: https://github.com/bdsim-collaboration/bdsim
+
+This move was done due to better provision of testing resources and interfaces. All issues
+should now be launched here. A more modern approach of pull-requests is being used and
+more publicly accessible and complete continuous integration is now used. This was done
+to maintain the expected high quality of the code.
 
 * For models with acceleration, the rigidity and synchronous time are now calculated
   along the beamline and pre-calculated **scaling factors are no longer needed**.
@@ -36,6 +43,8 @@ New Features
 
 * :code:`autoColour=1` now works for all collimators and target elements. If turned on, the
   colour of the element in the visualiser will be given by the material.
+* GDML exports from BDSIM now include auxliary colour information that can be handled by
+  pyg4ometry and also be BDSIM if the same file is loaded in again.
 
 **Physics**
 
@@ -81,6 +90,9 @@ Bug Fixes
 * Fix a bug where rebdsim would crash if a Spectra command was used on a cylindrical or
   spherical sampler. This was caused by loading the data into the wrong class.
 * The pill-box field was fixed where it should have no `z` dependence whereas it did previously.
+* :code:`--exportGeometryTo` executable option used to build up relative paths with respect to the
+  input file and not the executable location. This has been fixed to be relative to the executable
+  location. Noticeable if executing BDSIM from a different directory from the main input file.
 
 
 Output Changes

@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box name="saContainerSolid" x="200" y="200" z="200" lunit="mm"/>
+		<orb name="saOuterSolid" r="100" lunit="mm"/>
+		<orb name="saInnerSolid" r="50" lunit="mm"/>
+	</solids>
+	<structure>
+		<volume name="saInnerLV">
+			<materialref ref="G4_Ca"/>
+			<solidref ref="saInnerSolid"/>
+		</volume>
+		<volume name="saOuterLV">
+			<materialref ref="G4_C"/>
+			<solidref ref="saOuterSolid"/>
+			<physvol name="saInnerPV">
+				<volumeref ref="saInnerLV"/>
+			</physvol>
+		</volume>
+		<volume name="saContainerLV">
+			<materialref ref="G4_Be"/>
+			<solidref ref="saContainerSolid"/>
+			<physvol name="saOuterPV">
+				<volumeref ref="saOuterLV"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="saContainerLV"/>
+	</setup>
+</gdml>

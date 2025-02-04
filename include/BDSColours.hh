@@ -19,9 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSCOLOURS_H
 #define BDSCOLOURS_H
 
-#include "globals.hh"         // geant4 types / globals
+#include "globals.hh"
 
 #include <map>
+#include <tuple>
 
 class G4Colour;
 
@@ -32,13 +33,21 @@ class G4Colour;
 class BDSColours
 {
 public:
+  typedef std::tuple<G4double, G4double, G4double, G4double> BDSColourKey;
+
   static BDSColours* Instance(); ///< singleton pattern
 
   ~BDSColours();
 
+  /// Get a cached anonymous colour by values.
+  G4Colour* GetColour(G4double red,
+                      G4double green,
+                      G4double blue,
+                      G4double alpha = 1);
+
   /// Get colour from name
   G4Colour* GetColour(const G4String& type,
-                      G4bool   normaliseTo255 = true);
+                      G4bool normaliseTo255 = true);
 
   /// Define a new colour.
   void DefineColour(const G4String& name,
@@ -62,6 +71,11 @@ private:
 
   /// A map of the colour for each type or component by name
   std::map<G4String, G4Colour*> colours;
+
+  /// A map of colours with no name. Can only be retrieved by
+  /// a tuple of their values - an optimisation for repeated loading
+  /// of the same colours in GDML that we don't care about naming.
+  std::map<BDSColourKey, G4Colour*> anonymousColours;
 };
 
 #endif

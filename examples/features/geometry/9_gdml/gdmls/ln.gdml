@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define>
+		<constant name="w" value="500.000000000000000"/>
+		<constant name="h" value="500.000000000000000"/>
+		<constant name="t" value="50.000000000000000"/>
+	</define>
+	<materials/>
+	<solids>
+		<box name="world-solid" x="(w) * (3.000000000000000)" y="(w) * (3.000000000000000)" z="(w) * (3.000000000000000)" lunit="mm"/>
+		<xtru name="l-solid" lunit="mm">
+			<twoDimVertex x="(w) * (-0.500000000000000)" y="(h) * (-0.500000000000000)"/>
+			<twoDimVertex x="(w) * (-0.500000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (-0.350000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (-0.350000000000000)" y="(h) * (-0.350000000000000)"/>
+			<twoDimVertex x="(w) * (0.500000000000000)" y="(h) * (-0.350000000000000)"/>
+			<twoDimVertex x="(w) * (0.500000000000000)" y="(h) * (-0.500000000000000)"/>
+			<section zOrder="0" zPosition="(t) * (-0.500000000000000)" xOffset="0" yOffset="0" scalingFactor="1.0"/>
+			<section zOrder="1" zPosition="(t) * (0.500000000000000)" xOffset="0" yOffset="0" scalingFactor="1.0"/>
+		</xtru>
+		<xtru name="n-solid" lunit="mm">
+			<twoDimVertex x="(w) * (-0.300000000000000)" y="(w) * (-0.300000000000000)"/>
+			<twoDimVertex x="(w) * (-0.300000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (-0.050000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (0.350000000000000)" y="(h) * (-0.050000000000000)"/>
+			<twoDimVertex x="(w) * (0.350000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (0.500000000000000)" y="(h) * (0.500000000000000)"/>
+			<twoDimVertex x="(w) * (0.500000000000000)" y="(w) * (-0.300000000000000)"/>
+			<twoDimVertex x="(w) * (0.300000000000000)" y="(w) * (-0.300000000000000)"/>
+			<twoDimVertex x="(w) * (-0.150000000000000)" y="(h) * (0.350000000000000)"/>
+			<twoDimVertex x="(w) * (-0.150000000000000)" y="(w) * (-0.300000000000000)"/>
+			<section zOrder="0" zPosition="(t) * (-0.500000000000000)" xOffset="0" yOffset="0" scalingFactor="1.0"/>
+			<section zOrder="1" zPosition="(t) * (0.500000000000000)" xOffset="0" yOffset="0" scalingFactor="1.0"/>
+		</xtru>
+	</solids>
+	<structure>
+		<volume name="l-lv">
+			<materialref ref="G4_Cu"/>
+			<solidref ref="l-solid"/>
+		</volume>
+		<volume name="n-lv">
+			<materialref ref="G4_Cu"/>
+			<solidref ref="n-solid"/>
+		</volume>
+		<assembly name="ln-assembly">
+			<physvol name="l-av-pv">
+				<volumeref ref="l-lv"/>
+			</physvol>
+			<physvol name="n-av-pv">
+				<volumeref ref="n-lv"/>
+			</physvol>
+		</assembly>
+		<volume name="world-lv">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="world-solid"/>
+			<physvol name="l-pv">
+				<volumeref ref="l-lv"/>
+			</physvol>
+			<physvol name="n-pv">
+				<volumeref ref="n-lv"/>
+			</physvol>
+			<physvol name="ln-left">
+				<volumeref ref="ln-assembly"/>
+				<position name="ln-left_pos" x="0.000000000000000" y="(t) * (0.200000000000000)" z="(t) * (2.000000000000000)" unit="mm"/>
+				<rotation name="ln-left_rot" x="0.000000000000000" y="0.100000000000000" z="0.000000000000000" unit="rad"/>
+			</physvol>
+			<physvol name="ln-right">
+				<volumeref ref="ln-assembly"/>
+				<position name="ln-right_pos" x="0.000000000000000" y="(t) * (0.200000000000000)" z="(t) * (4.000000000000000)" unit="mm"/>
+				<rotation name="ln-right_rot" x="0.000000000000000" y="-0.100000000000000" z="0.000000000000000" unit="rad"/>
+			</physvol>
+			<physvol name="ln-right2">
+				<volumeref ref="ln-assembly"/>
+				<position name="ln-right2_pos" x="(t) * (-0.400000000000000)" y="(t) * (-0.200000000000000)" z="(t) * (-2.000000000000000)" unit="mm"/>
+				<rotation name="ln-right2_rot" x="0.000000000000000" y="-0.100000000000000" z="-1.500000000000000" unit="rad"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="world-lv"/>
+	</setup>
+</gdml>

@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+class BDSBeamPipeInfo;
 class BDSMuonCooler;
 namespace GMAD
 {
@@ -37,17 +38,22 @@ namespace BDS
   struct SquareCheck;
   
   /// Build a muon cooler beam line element interpreting and checking
-  /// all the relevant parameters from the parser definition. This also
+  /// all the relevant parameters from the parser cooling definition. This also
   /// handles units from the parser to Geant4. Materials are upgraded
   /// from strings to real materials as well as some other information refined.
-  BDSMuonCooler* BuildMuonCooler(const GMAD::Element* element,
+  BDSMuonCooler* BuildMuonCooler(const G4String& elementName,
+                                 G4double chordLength,
+                                 G4double horizontalWidth,
+                                 const GMAD::CoolingChannel& definition,
+                                 BDSBeamPipeInfo* beamPipeInfo,
                                  G4double designRigidity);
   
   /// Loop over parser definition variables and construct a set of infos. Tolerate
   /// if some variables are single-valued with the intention that these are therefore
   /// the same of all the infos.
+
+  std::vector<BDS::MuonCoolerCoilInfo> BuildMuonCoolerCoilInfos(const GMAD::CoolingChannel& definition);
   
-  std::vector<BDS::MuonCoolerCoilInfo> BuildMuonCoolerCoilInfos(const GMAD::CoolingChannel* definition);
   /// Check if any of the definitions will cause overlaps. Do this by using the square
   /// cross-section of each coil in 2D and perform a simple un-rotated square overlap
   /// calculation. Check they will also fit inside the container length, radius.
@@ -57,10 +63,11 @@ namespace BDS
                                            G4double elementChordLength,
                                            G4double elementRadius);
 
-  std::vector<BDS::MuonCoolerDipoleInfo> BuildMuonCoolerDipoleInfos(const GMAD::CoolingChannel* definition);
+  std::vector<BDS::MuonCoolerDipoleInfo> BuildMuonCoolerDipoleInfos(const GMAD::CoolingChannel& definition);
   /// No checks for overlaps for dipoles as we don't physically build them yet.
   
-  std::vector<BDS::MuonCoolerAbsorberInfo> BuildMuonCoolerAbsorberInfo(const GMAD::CoolingChannel* definition);
+  std::vector<BDS::MuonCoolerAbsorberInfo> BuildMuonCoolerAbsorberInfo(const GMAD::CoolingChannel& definition);
+
   void CheckMuonCoolerAbsorberInfoForOverlaps(const G4String& definitionName,
                                               const G4String& elementName,
                                               const std::vector<BDS::MuonCoolerAbsorberInfo>& absorberInfos,
@@ -69,7 +76,8 @@ namespace BDS
                                               G4double elementChordLength,
                                               G4double elementRadius);
   
-  std::vector<BDS::MuonCoolerCavityInfo> BuildMuonCoolerCavityInfos(const GMAD::CoolingChannel* definition);
+  std::vector<BDS::MuonCoolerCavityInfo> BuildMuonCoolerCavityInfos(const GMAD::CoolingChannel& definition);
+
   void CheckMuonCoolerCavityInfosForOverlaps(const G4String& definitionName,
                                              const G4String& elementName,
                                              const std::vector<BDS::SquareCheck>& cavitySquares,

@@ -2232,6 +2232,27 @@ GDML Geometry Specifics
 * The Geant4 installation that BDSIM is compiled with repsect to must have GDML support turned on.
 * BDSIM must be compiled with the GDML build option in CMake turned on for GDML loading to work.
 
+Auxiliary Colour Information
+****************************
+
+When preparing a GDML file for input to BDSIM, you can supply extra information in the form of
+an auxiliary tag in GDML. This is attached the :code:`volume` and an example is: ::
+  
+    <volume name="q2_outer_pole_lv0x600003006e40">
+      <materialref ref="G4_Fe0x147912550"/>
+      <solidref ref="q2_outer_pole_solid0x600003006bc0"/>
+      <auxiliary auxtype="bds_vrgba" auxvalue="1 0.82 0.1 0.1 1"/>
+    </volume>
+
+
+The format should be: ::
+
+  <auxiliary auxtype="bds_vrgba" auxvalue="v r g b a"/>
+
+where :code:`v` is a 1 or 0 for visible or not. :code:`r g b a` are double values for the
+normalised red green blue and alpha colour components. These should range from 0 to 1 (inclusive).
+
+
 Creating GDML Geometry
 **********************
 

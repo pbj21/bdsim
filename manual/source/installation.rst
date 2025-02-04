@@ -12,8 +12,41 @@ or Cygwin, X11 and CVMFS access). See :ref:`solution-windows` for Windows setup.
 Tested systems: Mac OS 11, 12, both Intel & M1 (ARM64); Centos7, SLC6. A full list
 can be found in :ref:`tested-platforms`.
 
+Different methods of installation are described in :ref:`solutions`.
+
+.. _source-code:
+ 
+Source Code
+===========
+
+The source code for BDSIM can be obtained from the git repository and is available under
+the GPLv3 licence (see :ref:`licence`). If using the source code, then the user must
+compile it on their system and must have Geant4, CLHEP and ROOT already present.
+
+Obtaining via the git repository allows easier updates in future as the
+user can 'pull' the latest version and then recompile without having to
+create a separate copy.
+
+To download the source from the git repository, use the command: ::
+
+  git clone https://github.com/bdsim-collaboration/bdsim.git
+
+or (if you have an SSH key setup with github): ::
+
+  git clone git@github.com:bdsim-collaboration/bdsim.git
+
+This will create a directory called ``bdsim``, inside which all the code, examples
+and documentation is provided. BDSIM source code versions can be downloaded as zipped
+archives from the git repository website:
+
+https://github.com/bdsim-collaboration/bdsim/tags
+
+.. note:: If you download a tag, this is not necessarily a clone of the git repository and should
+          not be used as such for development. the repository should be cloned explicitly.
 
 
+.. _solutions:
+          
 Solutions
 =========
 
@@ -24,12 +57,14 @@ Solutions
 * :ref:`docker`
 * :ref:`apptainer`
 
+
 .. _solution-precompiled:
 
 Pre-Compiled Libraries
 ----------------------
 
 These are not yet provided but will be shortly.
+
 
 .. _solution-cvmfs:
 
@@ -41,6 +76,7 @@ is linked in some way with CERN or makes use of CVMFS, you can find builds of BD
 CVMFS is a file system accessible over the internet, and in a certain folder we have some
 pre-made BDSIM libraries. These use CERN software for the all the dependencies also available
 on CVMFS. Currently, only Centos7 (CC7) builds are provided.
+
 
 .. _cvmfs-build:
 
@@ -87,6 +123,7 @@ at caching files and it will subsequently be much faster.
 	  the actual visualisation itself is missing. This is because MacOS, by default, blocks OpenGL over X11.
 	  This should be re-enabled. See :ref:`mac-xwindows`.
 
+
 .. _solution-from-source:
 	  
 Compilation From Source
@@ -103,6 +140,7 @@ it yourself for the best options compatible with BDSIM. See:
    *  :ref:`geant4-installation-guide`
       
 #. :ref:`installation-building`
+
 
 .. _solution-windows:
 
@@ -124,6 +162,7 @@ BDSIM visualiser from the Linux subsystem. We recommend installing the XMing dis
 to view windows with XMing you will need to run the command :code:`export DISPLAY=:0` in the Linux Bash environment.
 The command should be added to your ``.bashrc`` or profile so that it's loaded automatically every time.	  
 
+
 .. _docker:
 	  
 Docker
@@ -137,7 +176,6 @@ The initial setup takes about 30 minutes, but after that it is nearly instantane
 
 A prebuilt image can be downloaded and run on your computer. First, donwload and install
 
-
 Docker Local Build
 ******************
 
@@ -150,7 +188,7 @@ uses some docker commands.
 To use this, do the following:
 
 1) Download the DockerDesktop application (e.g. `<https://www.docker.com/products/docker-desktop>`_).
-2) Clone the BDSIM git repository: :code:`git clone https://bitbucket.org/jairhul/bdsim`.
+2) Clone the BDSIM git repository: :code:`git clone https://github.com/bdsim-collaboration/bdsim.git`.
 3) In a terminal (unix or Cygwin), go to :code:`bdsim/building/docker`.
 4) Use the docker build script :code:`source build-centos-bdsim.sh` - this may take 20 mins. (\*)
 5) Adapt and use the run script :code:`run-centos-bdsim.sh` which is made for Mac / unix.
@@ -215,42 +253,6 @@ Initially, this will take some time to download and convert to the apptainer for
 After this initial step, it will run nearly instantly.
 
 
-
-Download BDSIM Source Code
-==========================
-
-BDSIM may be obtained either from the BDSIM website or the git repository may be cloned.
-The user must compile it on their system and must have Geant4, CLHEP and ROOT already present.
-
-Obtaining via the git repository allows easier updates in future as the
-user can 'pull' the latest version and then recompile without having to
-create a separate copy.
-
-..  _from-git-repository:
-
-GIT Repository
---------------
-
-To download the source from the git repository, use the command::
-
-  git clone --recursive https://bitbucket.org/jairhul/bdsim
-
-This will create a directory called ``bdsim``, inside which all the code, examples
-and documentation is provided. Also, the Python utilities that come with BDSIM will be present
-when the :code:`--recursive` option is used.
-
-Archive
--------
-
-BDSIM source code versions can be downloaded as zipped archives from the git repository website:
-
-https://bitbucket.org/jairhul/bdsim/downloads/?tab=tags
-
-.. note:: If you download a branch such as develop.tar.gz then it is not a git repository but just
-	  a copy of the files. In the case of the develop branch, the BDSIM version recorded in the
-	  output will just be "develop" and not the specific git SHA1 commit ID. Therefore, if
-	  dealing with the develop branch, it's recommended to clone the repository.
-	  
 .. _required-packages:
    
 Requirements \& Environment
@@ -313,6 +315,7 @@ to add this to your ``.bashrc`` or profile so that it's loaded automatically
 every time::
 
   source path/to/geant4/installation/bin/geant4.sh
+
 
 .. _build-setup:
 
@@ -414,6 +417,7 @@ Make and install::
 
    make
    sudo make install
+
 
 .. _geant4-installation-guide:
 

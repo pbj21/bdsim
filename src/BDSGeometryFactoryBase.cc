@@ -46,50 +46,47 @@ BDSGeometryFactoryBase::BDSGeometryFactoryBase()
 BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
-std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
-                                                                      std::map<G4String, G4Colour*>* mapping,
+std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(const std::set<G4LogicalVolume*>& lvsIn,
+                                                                      const std::map<G4String, G4Colour*>& mapping,
                                                                       G4bool                         autoColour,
                                                                       const G4String&                prefixToStripFromName)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
   // no mapping, just return.
-  if (!mapping && !autoColour)
+  if (mapping.empty() && !autoColour)
     {return visAttributes;}
 
-  if (mapping)
-    {
-      if (mapping->size() == 1)
-        {// only one colour for all - simpler
-          G4VisAttributes* vis = new G4VisAttributes(*BDSColours::Instance()->GetColour("gdml"));
-          vis->SetVisibility(true);
-          visAttributes.insert(vis);
-          for (auto lv : lvsIn)
-            {lv->SetVisAttributes(*vis);}
-          return visAttributes;
-        }
-
-      // else iterate over all lvs and required vis attributes
-      // prepare required vis attributes
-      std::map<G4String, G4VisAttributes*> attMap;
-      for (const auto& it : *mapping)
-        {
-          G4VisAttributes* vis = new G4VisAttributes(*(it.second));
-          vis->SetVisibility(true);
-          visAttributes.insert(vis);
-          attMap[it.first] = vis;
-        }
-
+  if (mapping.size() == 1)
+    {// only one colour for all - simpler
+      G4VisAttributes* vis = new G4VisAttributes(*BDSColours::Instance()->GetColour("gdml"));
+      vis->SetVisibility(true);
+      visAttributes.insert(vis);
       for (auto lv : lvsIn)
-        {// iterate over all volumes
-          const G4String& name = lv->GetName();
-          for (const auto& it : attMap)
-            {// iterate over all mappings to find first one that matches substring
-              if (BDS::StrContains(name, it.first))
-                {
-                  lv->SetVisAttributes(it.second);
-                  break;
-                }
+        {lv->SetVisAttributes(*vis);}
+      return visAttributes;
+    }
+
+  // else iterate over all lvs and required vis attributes
+  // prepare required vis attributes
+  std::map<G4String, G4VisAttributes*> attMap;
+  for (const auto& it : mapping)
+    {
+      G4VisAttributes* vis = new G4VisAttributes(*(it.second));
+      vis->SetVisibility(true);
+      visAttributes.insert(vis);
+      attMap[it.first] = vis;
+    }
+
+  for (auto lv : lvsIn)
+    {// iterate over all volumes
+      const G4String& name = lv->GetName();
+      for (const auto& it : attMap)
+        {// iterate over all mappings to find first one that matches substring
+          if (BDS::StrContains(name, it.first))
+            {
+              lv->SetVisAttributes(it.second);
+              break;
             }
         }
     }
@@ -109,7 +106,6 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G
             }
         }
     }
-
   return visAttributes;
 }
 

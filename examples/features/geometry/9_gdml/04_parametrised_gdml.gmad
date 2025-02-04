@@ -1,0 +1,6 @@
+e1: element, geometry="gdml:gdmls/parametrised_boxes.gdml", l=100*cm;
+l1: line = (e1);
+use,period=l1;
+sample,all;
+beam, particle="e-",
+energy=250.0*GeV;

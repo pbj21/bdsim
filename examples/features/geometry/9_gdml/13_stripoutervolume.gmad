@@ -1,20 +1,20 @@
 d1: drift,l=67*cm;
 l1: line=(d1,d1,d1,d1,d1,ele,d1,d1);
-ele: element, l=0.6*m, geometryFile="gdml:ln.gdml", stripOuterVolume=1;
-!ele: element, l=1.5*m, geometryFile="gdml:ln.gdml", stripOuterVolume=0;
+ele: element, l=0.6*m, geometryFile="gdml:gdmls/ln.gdml", stripOuterVolume=1;
+!ele: element, l=1.5*m, geometryFile="gdml:gdmls/ln.gdml", stripOuterVolume=0;
 use, l1;
 
 ! reference placement off to the side without any rotation to compare to
 ! note, the x offset here is too small if the next placement of the same
 ! geometry isn't stripped
-reflnpv: placement, geometryFile="gdml:ln.gdml", x=1.3*m, z=1.5*m;
+reflnpv: placement, geometryFile="gdml:gdmls/ln.gdml", x=1.3*m, z=1.5*m;
 
 ! technically overlapping placement
 ! relies on stripping outer volume away and forming assembly
 ! to not overlap with the beam pipe
 ! this also tests placing 2x the same geometry where one is stripped
 ! and the other remains unstripped -> unique copy in memory
-lnpv: placement, geometryFile="gdml:ln.gdml",
+lnpv: placement, geometryFile="gdml:gdmls/ln.gdml",
       		 z=1.5*m, axisY=1, axisAngle=1,
 		 angle=0.05, stripOuterVolume=1;
 

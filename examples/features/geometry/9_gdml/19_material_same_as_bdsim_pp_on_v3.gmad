@@ -1,5 +1,5 @@
-box1: element, l=1.1*m, geometry="gdml:box-w-bdsim-material-conflict-1.gdml";
-box2: element, l=1.1*m, geometry="gdml:box-w-bdsim-material-conflict-3.gdml";
+box1: element, l=1.1*m, geometry="gdml:gdmls/box-w-bdsim-material-conflict-1.gdml";
+box2: element, l=1.1*m, geometry="gdml:gdmls/box-w-bdsim-material-conflict-3.gdml";
 
 q1: quadrupole, l=0.2*m, k1=0.2;
 

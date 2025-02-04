@@ -1,8 +1,0 @@
-p1: placement, geometryFile="gdml:container-cuttubs.gdml",
-    	       x=3*mm,
-	       z=5*mm;
-
-beam, particle="e-",
-      energy=1.3*GeV;
-
-option, physicsList="em";

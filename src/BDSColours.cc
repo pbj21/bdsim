@@ -202,6 +202,27 @@ void BDSColours::Print()
     }
 }
 
+G4Colour* BDSColours::GetColour(G4double red,
+                                G4double green,
+                                G4double blue,
+                                G4double alpha)
+{
+  BDSColourKey key = {red, green, blue, alpha};
+  auto search = anonymousColours.find(key);
+  if (search != anonymousColours.end())
+    {return search->second;}
+  else
+    {
+      BDS::EnsureInLimits(red, 0, 255);
+      BDS::EnsureInLimits(green, 0, 255);
+      BDS::EnsureInLimits(blue, 0, 255);
+      BDS::EnsureInLimits(alpha, 0, 1);
+      auto result = new G4Colour(red, green, blue, alpha);
+      anonymousColours[key] = result;
+      return result;
+    }
+}
+
 G4Colour* BDSColours::GetColour(const G4String& type,
                                 G4bool normaliseTo255)
 {
@@ -228,7 +249,7 @@ G4Colour* BDSColours::GetColour(const G4String& type,
       G4double a = 1;
       ss >> r >> g >> b;
       if (ss.rdbuf()->in_avail() != 0)
-	{ss >> a;}
+        {ss >> a;}
       DefineColour(colourName, r, g, b, a, normaliseTo255);
       return colours[colourName];
     }

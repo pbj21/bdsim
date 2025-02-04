@@ -1,0 +1,22 @@
+q1: quadrupole, l=100.0001*mm, k1=0.2, magnetGeometryType="gdml:gdmls/mag.gdml";
+d1: drift, l=10*cm;
+
+l1: line=(d1,q1,d1);
+
+use, l1;
+
+option, aper1=13*mm,
+	beampipeThickness=1*mm;
+
+! fire the beam into the yoke to check sensitivity
+beam, particle="proton",
+      energy=13*GeV,
+      X0=12*cm,
+      Y0=12*cm;
+
+option, checkOverlaps=1;
+
+option, physicsList="em",
+        minimumKineticEnergy=100*MeV,
+        worldMaterial="vacuum",
+        elossHistoBinWidth=1*cm;

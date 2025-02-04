@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box name="sbContainerSolid" x="200" y="200" z="200" lunit="mm"/>
+		<box name="sbOuterSolid" x="100" y="100" z="100" lunit="mm"/>
+		<box name="sbInnerSolid" x="50" y="50" z="50" lunit="mm"/>
+		<box name="sbCoreSolid" x="30" y="30" z="30" lunit="mm"/>
+	</solids>
+	<structure>
+		<volume name="sbCoreLV">
+			<materialref ref="G4_Fe"/>
+			<solidref ref="sbCoreSolid"/>
+		</volume>
+		<volume name="sbInnerLV">
+			<materialref ref="G4_Ca"/>
+			<solidref ref="sbInnerSolid"/>
+			<physvol name="sbCorePV">
+				<volumeref ref="sbCoreLV"/>
+			</physvol>
+		</volume>
+		<volume name="sbOuterLV">
+			<materialref ref="G4_C"/>
+			<solidref ref="sbOuterSolid"/>
+			<physvol name="sbInnerPV">
+				<volumeref ref="sbInnerLV"/>
+			</physvol>
+		</volume>
+		<volume name="sbContainerLV">
+			<materialref ref="G4_Be"/>
+			<solidref ref="sbContainerSolid"/>
+			<physvol name="sbOuterPV">
+				<volumeref ref="sbOuterLV"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="sbContainerLV"/>
+	</setup>
+</gdml>

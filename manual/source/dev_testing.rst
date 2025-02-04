@@ -121,6 +121,12 @@ Please review the already existing ones and extend if necessary.
 .. note:: There are different test macros for various executables.
 
 
+
+**Deprecated**
+
+.. warning:: The following sections are kept for posterity and will shortly be removed.
+          
+
 Regression Testing
 ==================
 

@@ -59,11 +59,8 @@ This is described in more detail in the dedicated `pybdsim` documentation
 
 .. note:: The python utilities require "`.tfs`" suffix as the file type to work properly.
 
-To convert the TFS file, `pybdsim` should be used.  `pybdsim` along with other utilities can
-be found in the utils directory in the BDSIM source directory.
-
-.. note:: If these folders are empty, please update the submodules as described in
-	  :ref:`from-git-repository`.
+To convert the TFS file, `pybdsim` should be used and can be installed via pip - see
+:ref:`python-utilities`.
 
 
 MAD8 Conversion

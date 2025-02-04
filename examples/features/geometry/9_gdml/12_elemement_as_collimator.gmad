@@ -1,4 +1,4 @@
-tcp1: element, l=900.2*mm, geometryFile="gdml:jcol.gdml", markAsCollimator=1;
+tcp1: element, l=900.2*mm, geometryFile="gdml:gdmls/jcol.gdml", markAsCollimator=1;
 
 d1: drift, l=5*m, aper1=5*cm;
 tcp2: jcol, l=0.6*m, material="Cu", xsize=15*mm;

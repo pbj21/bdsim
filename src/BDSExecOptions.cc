@@ -139,8 +139,8 @@ void BDSExecOptions::Parse(int argc, char **argv)
   int OptionIndex  = 0;
   int OptionNumber = 0;
   const char* optionName;
-  // number conversion check
-  bool conversion = true;
+  // number numberConversionOK check
+  bool numberConversionOK = true;
   for (;;)
     {
       OptionIndex = 0;
@@ -199,56 +199,56 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName , "verbose_event_num") || !strcmp(optionName , "verboseEventNumber"))
               {
                 int result = -1;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseEventStart", result);
                 options.set_value("verboseEventContinueFor", 1);
               }
             else if ( !strcmp(optionName , "verboseEventStart") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseEventStart", result);
               }
             else if ( !strcmp(optionName , "verboseEventContinueFor") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseEventContinueFor", result);
               }
             else if ( !strcmp(optionName , "verbose_G4run") || !strcmp(optionName , "verboseRunLevel") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseRunLevel", result);
               }
             else if ( !strcmp(optionName , "verbose_G4event") || !strcmp(optionName , "verboseEventLevel") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseEventLevel", result);
               }
             else if ( !strcmp(optionName , "verbose_G4tracking") || !strcmp(optionName , "verboseTrackingLevel") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseTrackingLevel", result);
               }
             else if ( !strcmp(optionName , "verbose_G4stepping") || !strcmp(optionName , "verboseSteppingLevel"))
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseSteppingLevel", result);
               }
             else if ( !strcmp(optionName , "verboseSteppingEventStart") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseSteppingEventStart", result);
               }
             else if ( !strcmp(optionName , "verboseSteppingEventContinueFor") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("verboseSteppingEventContinueFor", result);
               }
             else if ( !strcmp(optionName , "verboseSteppingPrimaryOnly") )
@@ -272,32 +272,32 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "distrFileNLinesSkip") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 beam.set_value("nlinesSkip", result);
               }
             else if ( !strcmp(optionName, "distrFileLoopNTimes") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 beam.set_value("distrFileLoopNTimes", result);
                 beam.set_value("distrFileLoop", true);
               }
             else if (!strcmp(optionName, "E0") )
               {
                 double result = 1;
-                conversion = BDS::IsNumber(optarg, result);
+                numberConversionOK = BDS::IsNumber(optarg, result);
                 beam.set_value("E0", result);
               }
             else if (!strcmp(optionName, "P0") )
               {
                 double result = 1;
-                conversion = BDS::IsNumber(optarg, result);
+                numberConversionOK = BDS::IsNumber(optarg, result);
                 beam.set_value("P0", result);
               }
             else if (!strcmp(optionName, "Ek0") )
               {
                 double result = 1;
-                conversion = BDS::IsNumber(optarg, result);
+                numberConversionOK = BDS::IsNumber(optarg, result);
                 beam.set_value("Ek0", result);
               }
             else if ( !strcmp(optionName, "vis_debug") )
@@ -327,7 +327,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "seed")  )
               {
                 int result = -1;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("seed", result);
               }
             else if ( !strcmp(optionName, "recreate") )
@@ -338,7 +338,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "startFromEvent") )
               {
                 int result = 0;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("startFromEvent", result);
               }
             else if ( !strcmp(optionName, "writeSeedState") )
@@ -351,26 +351,26 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "ngenerate") || !strcmp(optionName, "nGenerate"))
               {
                 int result = 1;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("ngenerate", result);
                 beam.set_value("distrFileMatchLength", false); // ngenerate overrides.
               }
             else if ( !strcmp(optionName, "nturns") || !strcmp(optionName, "nTurns"))
               {
                 int result = 1;
-                conversion = BDS::IsInteger(optarg, result);
+                numberConversionOK = BDS::IsInteger(optarg, result);
                 options.set_value("nturns", result);
               }
             else if ( !strcmp(optionName, "printFractionEvents") )
               {
                 double result = 1;
-                conversion = BDS::IsNumber(optarg, result);
+                numberConversionOK = BDS::IsNumber(optarg, result);
                 options.set_value("printFractionEvents", result);
               }
             else if ( !strcmp(optionName, "printFractionTurns") )
               {
                 double result = 1;
-                conversion = BDS::IsNumber(optarg, result);
+                numberConversionOK = BDS::IsNumber(optarg, result);
                 options.set_value("printFractionTurns", result);
               }
             else if ( !strcmp(optionName, "printPhysicsProcesses") )
@@ -380,17 +380,20 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "ignoresigint") )
               {ignoreSIGINT = true;}
             else if ( !strcmp(optionName, "exportGeometryTo") )
-              {// TODO - this should be put into geometry classes
+              {
                 std::string fn = optarg;
-                if (fn.substr(fn.find_last_of(".") + 1) == "gdml")
+                // Expand to an absolute path relative to the executable as this is an executable option.
+                // Later on, it will be processed again, but since it's an absolute path it won't change.
+                G4String fnAbs = BDS::GetFullPath(fn, false, true);
+                if (fn.substr(fn.find_last_of('.') + 1) == "gdml")
                   {
                     options.set_value("exportType",     std::string("gdml"));
-                    options.set_value("exportFileName", fn);
+                    options.set_value("exportFileName", (std::string)fnAbs);
                   }
                 else
                   {
                     G4cerr << __METHOD_NAME__ << "Unknown geometry format \""
-                           << fn.substr(fn.find_last_of(".") + 1) << "\"\n"
+                           << fn.substr(fn.find_last_of('.') + 1) << "\"\n"
                            << "Please specify a valid filename extension - options are: \"gdml\"" << G4endl;
                     exit(1);
                   }
@@ -398,9 +401,8 @@ void BDSExecOptions::Parse(int argc, char **argv)
               }
             // remember if you extend this to do it also in the usage print out
             
-            if (conversion == false)
-              {
-                // conversion from character string to number went wrong, exit
+            if (!numberConversionOK)
+              {// conversion from character string to a number went wrong -> exit
                 G4cerr << __METHOD_NAME__ << "Conversion to number (or integer) went wrong for \""
                        << optionName << "\" with value: \"" << optarg << "\"" << G4endl;
                 exit(1);

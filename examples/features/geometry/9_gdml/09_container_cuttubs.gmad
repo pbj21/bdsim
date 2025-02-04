@@ -1,0 +1,9 @@
+d1: drift, l=0.01*cm;
+e1: element, geometry="gdml:gdmls/container-cuttubs.gdml", l=78.2842712474619*mm;
+l1: line = (e1);
+use, period=l1;
+
+sample, all;
+beam, particle="e-",
+      energy=250*GeV;
+option, physicsList="em";

@@ -65,7 +65,7 @@ void CoolingChannel::clear()
   absorberWedgeOffsetX.clear();
   absorberWedgeOffsetY.clear();
   absorberWedgeApexToBase.clear();
-  
+
   nRFCavities = 0;
   rfOffsetZ.clear();
   rfLength.clear();
@@ -146,6 +146,7 @@ void CoolingChannel::PublishMembers()
   publish("magneticFieldModel",&CoolingChannel::magneticFieldModel);
   publish("electricFieldModel",&CoolingChannel::electricFieldModel);
   publish("dipoleFieldModel",  &CoolingChannel::dipoleFieldModel);
+
 
   attribute_map_list_double["coilInnerRadius"]     = &coilInnerRadius;
   attribute_map_list_double["coilRadialThickness"] = &coilRadialThickness;

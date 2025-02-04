@@ -1,9 +1,0 @@
-e1: element, geometry="gdml:colourful_materials.gdml", l=561.0000000000001*mm;
-l1: line = (e1);
-use, period=l1;
-
-sample, all;
-beam, particle="e-",
-      energy=250*GeV;
-option, physicsList="em";
-option, preprocessGDML=0;

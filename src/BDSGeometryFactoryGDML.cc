@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactoryGDML.hh"
 #include "BDSGeometryInspector.hh"
+#include "BDSGeometryWriter.hh" // for BDSGeometryWriter::auxType
 #include "BDSGDMLPreprocessor.hh"  // also only available with USE_GDML
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
@@ -38,6 +39,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
 
+#include <array>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -49,6 +52,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VisAttributes;
 class G4VSolid;
+
 
 BDSGeometryFactoryGDML::BDSGeometryFactoryGDML()
 {;}
@@ -102,55 +106,14 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String               compon
   BDSMaterials::Instance()->CheckForConflictingMaterialsAfterLoad(fileName, componentName);
   BDSMaterials::Instance()->CacheMaterialsFromGDML(materialsGDML);
 
-  // load possible colours in auxiliary tags
-  std::map<G4String, G4Colour*> gdmlColours;
-  G4int iColour = 0;
-  for (auto lv : lvsGDML)
-    {
-      auto auxInfo = parser->GetVolumeAuxiliaryInformation(lv);
-      for (const auto& af : auxInfo)
-        {
-          if (af.type == "colour")
-            {
-              std::stringstream ss(af.value);
-              std::vector<G4String> colVals((std::istream_iterator<G4String>(ss)), std::istream_iterator<G4String>());
-              if (colVals.size() != 4)
-                {BDS::Warning(__METHOD_NAME__, "invalid number of colour values for logical volume " + lv->GetName());}
-              G4String colourName = componentName + "_colour_"+std::to_string(iColour);
-              iColour++;
-              G4String colourString = colourName + ":";
-              for (const auto& c : colVals)
-                {colourString += " " + c;}
-              // false = don't normalise to 255 as already done so
-              G4Colour* colour = BDSColours::Instance()->GetColour(colourString, false);
-              gdmlColours[lv->GetName()] = colour;
-            }
-        }
-    }
+  std::map<G4String, G4Colour*> gdmlColours = BuildColourMap(lvsGDML, parser, componentName);
+  if (mapping)
+    {gdmlColours.insert(mapping->begin(), mapping->end());}
 
   G4cout << "Loaded GDML file \"" << processedFile << "\" containing:" << G4endl;
   G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
 
-  // resolve loaded map with possible external map with minimal copying
-  std::map<G4String, G4Colour*>* mappingToUse = nullptr;
-  G4bool deleteMap = false;
-  if (!gdmlColours.empty())
-    {
-      if (mapping)
-        {// copy and extend the map
-          mappingToUse = new std::map<G4String, G4Colour*>(*mapping);
-          mappingToUse->insert(gdmlColours.begin(), gdmlColours.end());
-          deleteMap = true;
-        }
-      else
-        {mappingToUse = &gdmlColours;}
-    }
-  else
-    {mappingToUse = mapping;}
-  
-  auto visesGDML = ApplyColourMapping(lvsGDML, mappingToUse, autoColour, preprocessNameToStrip);
-  if (deleteMap)
-    {delete mappingToUse;}
+  auto visesGDML = ApplyColourMapping(lvsGDML, gdmlColours, autoColour, preprocessNameToStrip);
   
   G4UserLimits* ul = userLimitsToAttachToAllLVs ? userLimitsToAttachToAllLVs : BDSGlobalConstants::Instance()->DefaultUserLimits();
   ApplyUserLimits(lvsGDML, ul);
@@ -184,6 +147,70 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String               compon
     }
   
   delete parser;
+  return result;
+}
+
+std::map<G4String, G4Colour*> BDSGeometryFactoryGDML::BuildColourMap(const std::set<G4LogicalVolume*>& lvsGDML,
+                                                                     G4GDMLParser* parser,
+                                                                     const G4String& componentName)
+{
+  std::map<G4String, G4Colour*> result;
+  G4int iColour = 0;
+  for (auto lv : lvsGDML)
+    {
+      auto auxInfo = parser->GetVolumeAuxiliaryInformation(lv);
+      for (const auto& af : auxInfo)
+        {
+          if (af.type == "colour")
+            {
+              std::stringstream ss(af.value);
+              std::vector<G4String> colVals((std::istream_iterator<G4String>(ss)), std::istream_iterator<G4String>());
+              if (colVals.size() != 4)
+                {BDS::Warning(__METHOD_NAME__, "invalid number of colour values for logical volume " + lv->GetName());}
+              G4String colourName = componentName + "_colour_"+std::to_string(iColour);
+              iColour++;
+              G4String colourString = colourName + ":";
+              for (const auto& c : colVals)
+                {colourString += " " + c;}
+              // false = don't normalise to 255 as already done so
+              G4Colour* colour = BDSColours::Instance()->GetColour(colourString, false);
+              result[lv->GetName()] = colour;
+           }
+          else if (af.type == BDSGeometryWriter::auxType)
+            {
+              G4bool visible = false;
+              std::array<G4double, 4> rgba = VRGBAStringAndUnitToColourAndStyle(af.value, visible);
+              if (visible)
+                {
+                  G4Colour* colour = BDSColours::Instance()->GetColour(rgba[0], rgba[1], rgba[2], rgba[3]);
+                  result[lv->GetName()] = colour;
+                }
+            }
+        }
+    }
+  return result;
+}
+
+std::array<G4double, 4> BDSGeometryFactoryGDML::VRGBAStringAndUnitToColourAndStyle(const G4String& value,
+                                                                                   G4bool& visible)
+{
+  std::array<G4double, 4> result{0,0,0,0};
+  std::stringstream ss(value);
+  try
+  {
+    ss >> visible;
+    G4int i = 0;
+    G4double v = 0;
+    while (ss >> v)
+      {
+        if (i > 3)
+          {break;}
+        result[i] = v;
+        i++;
+      }
+  }
+  catch (std::exception& e)
+    {throw BDSException(__METHOD_NAME__, "error in colour definition " + value);}
   return result;
 }
 
@@ -226,13 +253,13 @@ void BDSGeometryFactoryGDML::ReplaceStringInFile(const G4String& fileName,
   G4cout << __METHOD_NAME__ << "Temporary file: " << outputFileName << G4endl;
 #endif
 
-  int lenOfKey = key.size();
+  int lenOfKey = (int)key.size();
   
   // loop over and replace
   std::string buffer;
   while (std::getline(ifs, buffer))
     {// if we find key, replace it
-      int f = buffer.find(key);    
+      int f = (int)buffer.find(key);
       if (f != -1)
         {
           std::string outputString = std::string(buffer);

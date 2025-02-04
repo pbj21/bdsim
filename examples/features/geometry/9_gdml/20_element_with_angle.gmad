@@ -1,6 +1,6 @@
 ! longer for now so we clearly see the angle
 a = pi/3;
-tcp1: element, l=900.2*mm, geometryFile="gdml:jcol.gdml", angle=a, e1=-a/2, e2=-a/2;
+tcp1: element, l=900.2*mm, geometryFile="gdml:gdmls/jcol.gdml", angle=a, e1=-a/2, e2=-a/2;
 d1: drift, l=0.5*m, aper1=5*cm;
 l1: line=(d1,tcp1,d1);
 use, l1;

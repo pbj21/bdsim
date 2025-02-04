@@ -81,6 +81,7 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["sulphur"]     = c->GetColour("yellow");
   defines["s"]           = defines["sulphur"];
   defines["vacuum"]      = defines["air"];
+  defines["cucrzr"]      = defines["copper"];
   
   // for older versions of Geant4 < V11 we have to use G4DataVector which
   // can't use list initialisation. In V11 onwards, G4PhysicsFreeVector

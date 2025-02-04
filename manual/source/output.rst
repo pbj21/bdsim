@@ -1948,3 +1948,40 @@ It is a friend tree to the Event tree.
 |                    |                | combinedFiles vector for the file this event was     |
 |                    |                | combined from.                                       |
 +--------------------+----------------+------------------------------------------------------+
+
+
+Geometry Export
+---------------
+
+BDSIM can 'output' its geometry to a GDML file. This is done with the executable option :code:`--exportGeometryTo`.
+The format is determined from the file extension given. Currently, only GDML export is supported.
+
+Example:
+::
+
+   bdsim --file=mylovelmodel.gmad --output=none --batch --exportGeometryTo=model_render.gdml
+
+
+This will produce the GDML file `model_render.gdml` that has the BDSIM mass world with the geometry you
+would see in the visualiser. GDML auxiliary information is written out with the visual attributes
+such as whether a volume is visible or not, the colour and the transparency. This information will
+be loaded by any GDML loader irrespective of BDSIM and not interfere with that loading.
+
+The information is written like the following:
+
+::
+
+   <volume name="q2_outer_pole_lv0x600003006e40">
+      <materialref ref="G4_Fe0x147912550"/>
+      <solidref ref="q2_outer_pole_solid0x600003006bc0"/>
+      <auxiliary auxtype="bds_vrgba" auxvalue="1 0.82 0.1 0.1 1"/>
+   </volume>
+
+
+The :code:`auxiliary` tag has `auxtype` "bds_vrgba" for "BDSIM visibility red green blue alpha". The
+value is these numbers in sequence of type :code:`int double double double double`.
+
+BDSIM will use this information if any such GDML exported from BDSIM is reloaded into it.
+
+
+   

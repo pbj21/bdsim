@@ -1,0 +1,4 @@
+option, worldGeometryFile="gdml:gdmls/ln.gdml";
+
+beam, particle="proton",
+      kineticEnergy=1*GeV;

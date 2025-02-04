@@ -1,0 +1,13 @@
+e1: element, geometry="gdml:gdmls/sensitive1.gdml", l=0.21*m;
+e2: element, geometry="gdml:gdmls/sensitive2.gdml", l=0.21*m;
+d1: drift, l=0.2*m, aper1=10*cm;
+
+l1: line = (d1,e1,d1,e2,d1,e1);
+use,period=l1;
+
+beam, particle="e-",
+      energy=1*GeV;
+
+option, physicsList="em",
+        minimumKineticEnergy=10*MeV,
+        elossHistoBinWidth=1*cm;
