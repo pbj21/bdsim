@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldMagSolenoidLoop.hh"
 #include "BDSFieldMagDipole.hh"
 #include "BDSFieldMagDipoleEnge.hh"
+#include "BDSFieldMagDipoleHardEdgeMuonCooler.hh"
 #include "BDSFieldMagVectorSum.hh"
 #include "BDSFieldMag.hh"
 #include "BDSFieldEMVectorSum.hh"
@@ -126,7 +127,9 @@ void BDSFieldEMMuonCooler::BuildDipoles(const BDSFieldInfoExtraMuonCooler* info)
         std::vector<G4ThreeVector> fieldOffsets;
         for (const auto& di : dipoleInfos)
           {
-            fields.push_back(new BDSFieldMagDipole(G4ThreeVector(0, di.fieldStrength, 0))); ///> currently only y component
+            fields.push_back(new BDSFieldMagDipoleHardEdgeMuonCooler(di.fieldStrength,
+                                                           di.apertureRadius,
+                                                           di.fullLengthZ));
             fieldOffsets.emplace_back(0,0,di.offsetZ);
           }
         dipoleField = new BDSFieldMagVectorSum(fields, fieldOffsets);
@@ -149,10 +152,6 @@ void BDSFieldEMMuonCooler::BuildDipoles(const BDSFieldInfoExtraMuonCooler* info)
         dipoleField = new BDSFieldMagVectorSum(fields, fieldOffsets);
         break;
       }  
-    case BDSFieldType::none: ///> no dipole field
-      {
-        break;
-      }
     default:
       {
         G4String msg = "\"" + info->dipoleFieldType.ToString();
