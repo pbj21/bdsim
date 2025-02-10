@@ -72,7 +72,7 @@ examples/features/options/*.dat
 .build*
 .install*
 
-# Development environment #
+# VSCode Development environment #
 ###########################
 .devcontainer/
 .vscode/
