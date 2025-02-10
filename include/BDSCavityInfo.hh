@@ -88,7 +88,7 @@ public:
   G4double irisVerticalAxis;      ///< Iris ellipse vertical semi-axis.
   G4double tangentLineAngle;      ///< Tangent angle.
 
-  /// If the material is not nullptr then the window is built.
+  /// If the material is not nullptr then the input window is built.
   G4Material* inputWindowMaterial;
   G4double    inputWindowThickness;
   G4Material* outputWindowMaterial;

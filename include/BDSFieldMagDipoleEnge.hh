@@ -28,13 +28,9 @@ class BDSMagnetStrength;
 
 /**
  * @brief A dipole field with Enge-type fringes.
- * 
  * This follows the model and parameterisation described in:
- * 
  * https://journals.aps.org/prab/abstract/10.1103/PhysRevSTAB.18.064001
- * 
  * This class represents a dipole field with Enge fringes. To expand description.
- * 
  * The field is calculated in cartesian coordinates. A complete description to be added in the manual.
  * 
  * @author Paul Bogdan Jurj

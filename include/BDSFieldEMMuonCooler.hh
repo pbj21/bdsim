@@ -34,7 +34,7 @@ class BDSFieldMag;
 /**
  * @brief A composite RF and B field for a muon cooler.
  *
- * @author Laurie Nevay
+ * @author Laurie Nevay,Chris Rogers, Paul Jurj, Rohan Kamath
  */
 
 class BDSFieldEMMuonCooler: public BDSFieldEM
