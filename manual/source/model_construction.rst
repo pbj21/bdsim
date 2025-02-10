@@ -2120,7 +2120,7 @@ Parameters for these components can be specified as either:
 - A **single value**, applying uniformly across all instances of that component  
 - A **list of values**, where each value corresponds to the respective component's position in the cooling channel  
 
-The **solenoid field model** can be either a **sheet model** (`solenoidsheet`) or a **block model** (`solenoidblock`). For dipoles, the `dipoleenge` model has been implemented, following the treatment outlined in: Muratori, B.D. et al (2015) ‘Analytical expressions for fringe fields in multipole magnets’, *Physical Review Special Topics - Accelerators and Beams*, 18(6). https://doi.org/10.1103/physrevstab.18.064001   
+The **solenoid field model** can be either a **sheet model** (`solenoidsheet`) or a **block model** (`solenoidblock`). For dipoles, two models exist currently: `dipole` and `dipoleenge`. The `dipole` model is a simple hard-edge dipole field, while the `dipoleenge` model follows the treatment outlined in: Muratori, B.D. et al (2015) ‘Analytical expressions for fringe fields in multipole magnets’, *Physical Review Special Topics - Accelerators and Beams*, 18(6). https://doi.org/10.1103/physrevstab.18.064001   
 
 +------------------------------+-------------------------------+--------------+
 | **Parameter**                | **Description**               | **Type**     |
