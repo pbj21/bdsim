@@ -265,11 +265,7 @@ BDSParticleCoordsFull BDSBunchGaussian::GetNextParticleLocalCoords()
   G4double zp = CalculateZp(xp,yp,Zp0);
   G4double z  = Z0;
   G4double dz = 0;
-  if (finiteSigmaT)
-    {
-      dz = t * CLHEP::c_light;
-      z += dz;
-    }
+
   G4double E  = E0; // exceptionally left in G4 units
   if (finiteSigmaE)
     {E *= v[5];} // only if there's a finite energy spread
